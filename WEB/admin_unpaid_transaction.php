@@ -56,6 +56,7 @@ if((empty($_GET['DeleteProduct'])) && (empty($_GET['QTY']))) {
 
   if (($db->query($sql2)) && ($db->query($sql3)) === TRUE) {
     echo "Record updated successfully";
+    header("Location: admin_unpaid_transaction.php?id=".$_GET['id']."");
   } else {
     echo "Error updating record: " . $db->error;
   }

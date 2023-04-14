@@ -24,7 +24,7 @@
                 </a>
                 <div class="dropdown-menu">
                   <a class="dropdown-item" href="admin_category.php?pcategory=BRAKE CABLE">Manage</a>
-                  <a class="dropdown-item" href="#">Report</a>
+                  <a class="dropdown-item" href="admin_inventory_report.php">Report</a>
                   <a class="dropdown-item" href="admin_addcategory.php">Add Category</a>
                   <a class="dropdown-item" href="admin_addproduct.php">Add Product</a>
                   <a class="dropdown-item" href="admin_restock_product.php">Re-Stock Product</a>
@@ -44,7 +44,8 @@
                   Users
                 </a>
                 <div class="dropdown-menu">
-                  <a class="dropdown-item" href="admin_users_manage.php">Manage</a>
+                  <a class="dropdown-item" href="admin_manage_cashiers.php">Manage Cashiers</a>
+                  <a class="dropdown-item" href="admin_manage_admins.php">Manage Admin</a>
                 </div>
               </li>
               <li class="nav-item dropdown">

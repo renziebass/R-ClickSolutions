@@ -14,41 +14,41 @@ function validateInput($data) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   
-  if (empty($_POST["id"])) {
-    $id_err = "* ";
+  if (empty($_POST["userid"])) {
+    $userid_err = "* ";
   } else {
-    $id = validateInput($_POST["id"]);
+    $userid = validateInput($_POST["userid"]);
   }
-  if (empty($_POST["name"])) {
-    $name_err = "* ";
+  if (empty($_POST["first_name"])) {
+    $first_name_err = "* ";
   } else {
-    $name = validateInput($_POST["name"]);
+    $first_name = validateInput($_POST["first_name"]);
   }
-  if (empty($_POST["address"])) {
-    $address_err = "* ";
+  if (empty($_POST["middle_name"])) {
+    $middle_name_err = "* ";
   } else {
-    $address = validateInput($_POST["address"]);
+    $middle_name = validateInput($_POST["middle_name"]);
   }
-  if (empty($_POST["notes"])) {
-    $notes_err = "* ";
+  if (empty($_POST["last_name"])) {
+    $last_name = "* ";
   } else {
-    $notes = validateInput($_POST["notes"]);
+    $last_name = validateInput($_POST["last_name"]);
   }
-  if (empty($_POST["number"])) {
-    $number_err = "* ";
+  if (empty($_POST["phone"])) {
+    $phone_err = "* ";
   } else {
-    $number = validateInput($_POST["number"]);
+    $phone = validateInput($_POST["phone"]);
   }
   
-  if(!empty($_POST["id"]) && !empty($_POST["name"] ) && !empty($_POST["address"]) && !empty($_POST["notes"]) && !empty($_POST["number"]))
+  if(!empty($_POST["userid"]) && !empty($_POST["first_name"] ) && !empty($_POST["middle_name"]) && !empty($_POST["last_name"]) && !empty($_POST["phone"]))
   {
     try {
 
-        $sql2 = "INSERT INTO `tb_supplier` (`id`, `name`, `address`, `notes`, `mobile`)
-        VALUES ('$id','$name','$address','$notes','$number')";
-        $saveSupplier = mysqli_query($db, $sql2);
+        $sql2 = "INSERT INTO `tb_cashiers` (`userid`, `first_name`, `middle_name`, `last_name`, `phone`)
+        VALUES ('$userid','$first_name','$middle_name','$last_name','$phone')";
+        $saveCashier = mysqli_query($db, $sql2);
         
-        header("Location: admin_supplier.php");
+        header("Location: admin_manage_cashiers.php");
       
     }
     catch(PDOException $e)
@@ -59,11 +59,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 }
 if(!empty($_GET['xid'])) {
-  $sql7="DELETE FROM tb_supplier WHERE tb_supplier.id='" .$_GET['xid']. "'";
+  $sql7="DELETE FROM tb_cashiers WHERE tb_cashiers.userid='" .$_GET['xid']. "'";
 
   if (($db->query($sql7)) === TRUE) {
-    echo "Supplier Deleted";
-    header("Location: admin_supplier.php");
+    echo "Cashier Deleted";
+    header("Location: admin_manage_cashiers.php");
   } else {
     echo "Error updating record: " . $db->error;
   }
@@ -80,7 +80,7 @@ if(!empty($_GET['xid'])) {
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
 
-    <title>SUPPLIERS  </title>
+    <title>CASHIERS</title>
 
   </head>
   <body style="background-color: #c7c7c7;" onload = "navbar();">
@@ -101,26 +101,24 @@ if(!empty($_GET['xid'])) {
     <div class="mx-5">
       <div class="m-3 bg-light rounded">
       <div class="col">
-      <h5 class="text-center pt-3" id="text1">ADD SUPPLIER</h5>
+      <h5 class="text-center pt-3" id="text1">ADD CASHIER</h5>
           <div class="col px-5">
               <form method="post" action="" enctype="multipart/form-data">
               <div class="form-row">
+                <div class="form-group col-md-1">
+                  <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" name="userid" placeholder="ID">
+                </div>
+                <div class="form-group col-md-3">
+                  <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" name="first_name" placeholder="First Name">
+                </div>
+                <div class="form-group col-md-3">
+                  <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" name="middle_name" placeholder="Middle Name">
+                </div>
+                <div class="form-group col-md-3">
+                  <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" name="last_name" placeholder="Last Name">
+                </div>
                 <div class="form-group col-md-2">
-                  <input type="text" class="form-control" name="id" placeholder="ID">
-                </div>
-                <div class="form-group col-md-10">
-                  <input type="text" class="form-control" onkeyup="this.value = this.value.toUpperCase();" name="name" placeholder="Fullname / Company">
-                </div>
-              </div>
-              <div class="form-group">
-                <input type="text" class="form-control" onkeyup="this.value = this.value.toUpperCase();" name="address" placeholder="Address / Location">
-              </div>
-              <div class="form-group">
-                <input type="text" class="form-control" onkeyup="this.value = this.value.toUpperCase();" name="notes" placeholder="Notes / Remarks / Shop link / Social Media">
-              </div>
-              <div class="form-row">
-                <div class="form-group col-md-12">
-                  <input type="text" class="form-control" name="number" placeholder="Contact Number">
+                  <input type="text" class="form-control" name="phone" placeholder="Phone">
                 </div>
               </div>
               <div class=" input-group d-flex flex-row-reverse">
@@ -133,15 +131,13 @@ if(!empty($_GET['xid'])) {
           </div>
           <div class="col">
           <div class="" id="page">
-      <table class=" col-md-12 mx-auto table table-hover" id="saleshistorydiv">
+      <table class=" col-md-6 mx-auto table table-hover" id="saleshistorydiv">
                 <thead >
-                <h5 class="text-center" id="text1">ALL SUPPLIERS</h5>
+                <h5 class="text-center" id="text1">ALL CASHIERS</h5>
                 
                   <tr class="text-muted">
-                    <th scope="col">Supplier ID</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Address</th>
-                    <th scope="col" colspan="5">Remarks</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Fullname</th>
                     <th scope="col">Mobile #</th>
                     <th scope="col"></th>
                   </tr>
@@ -149,7 +145,11 @@ if(!empty($_GET['xid'])) {
                 <tbody>
                   
                 <?php
-                  $sql="SELECT * FROM `tb_supplier`";
+                  $sql="SELECT
+                  tb_cashiers.userid,
+                  CONCAT(tb_cashiers.first_name,' ',tb_cashiers.middle_name,' ',tb_cashiers.last_name)AS name,
+                  tb_cashiers.phone
+                   FROM `tb_cashiers`";
                                                       
                   $result = mysqli_query($db,$sql);
       
@@ -159,12 +159,10 @@ if(!empty($_GET['xid'])) {
                   {
                 ?>
                       <tr>  
-                        <td><?php echo $items['id']; ?></td>
+                        <td><?php echo $items['userid']; ?></td>
                         <td><?php echo $items['name']; ?></td>
-                        <td><?php echo $items['address']; ?></td>
-                        <td colspan="5"><?php echo $items['notes']; ?></td>
-                        <td><?php echo $items['mobile']; ?></td>
-                        <td><button onclick="location.href='admin_supplier.php?xid=<?php echo $items['id'];?>'" type="button" class="close text-danger" aria-label="Close">
+                        <td><?php echo $items['phone']; ?></td>
+                        <td><button onclick="location.href='admin_manage_cashiers.php?xid=<?php echo $items['userid'];?>'" type="button" class="close text-danger" aria-label="Close">
                               <span aria-hidden="true">&times;</span>
                             </button></td>
                       </tr>
@@ -198,4 +196,4 @@ if(!empty($_GET['xid'])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
     -->
   </body>
-</html>
+</html> 
