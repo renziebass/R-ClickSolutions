@@ -53,7 +53,7 @@
                   Account
                 </a>
                 <div class="dropdown-menu">
-                  <a class="dropdown-item" href="#">Setting</a>
+                  <a class="dropdown-item" href="admin_settings.php">Setting</a>
                   <a class="dropdown-item" href="logout.php">Logout</a>
                 </div>
               </li>
