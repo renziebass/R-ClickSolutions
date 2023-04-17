@@ -47,6 +47,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql2 = "INSERT INTO `tb_cashiers` (`userid`, `first_name`, `middle_name`, `last_name`, `phone`)
         VALUES ('$userid','$first_name','$middle_name','$last_name','$phone')";
         $saveCashier = mysqli_query($db, $sql2);
+        $sql3 = "INSERT INTO `tb_accounts` (`userid`, `password`, `acc_type`)
+        VALUES ('$userid','pw123','CASHIER')";
+        $saveAcc = mysqli_query($db, $sql3);
         
         header("Location: admin_manage_cashiers.php");
       

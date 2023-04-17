@@ -87,6 +87,30 @@ class DataBase
         return $mcbrand;
         }
     }
+    function add_supplier($id, $name, $address, $notes, $mobile)
+    {
+        $id = $this->prepareData($id);
+        $name = $this->prepareData($name);
+        $address = $this->prepareData($address);
+        $notes = $this->prepareData($notes);
+        $mobile = $this->prepareData($mobile);
+
+ 
+        $this->sql = "SELECT * FROM tb_supplier WHERE tb_supplier.id  = '" . $id . "'
+         AND tb_supplier.name = '" . $name . "'";   
+        $result = mysqli_query($this->connect, $this->sql);
+        $row = mysqli_fetch_assoc($result);
+        if (mysqli_num_rows($result) != 0) {
+            $add_supplier = false;
+        } else {
+            $this->sql =
+            "INSERT INTO tb_supplier (id,name,address,notes,mobile) VALUES ('" . $id . "','" . $name . "','" . $address . "','" . $notes . "','" . $mobile . "')";
+                if (mysqli_query($this->connect, $this->sql)) {
+                    return true;
+                } else return false;
+        return $supplier;
+        }
+    }
     function add_mcmodel($brand,$model)
     {
         $brand = $this->prepareData($brand);
