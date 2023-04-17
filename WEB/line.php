@@ -8,7 +8,7 @@
               <div class="col-9 my-auto py-auto">
                   <p class="m-0 p-0" style="font-size: 12px;" ><?php echo $row1['id']; ?></p>
                   <p class="m-0 p-0" style="font-size: 11px;"><?php echo $row1['specification']; ?></p>
-                  <p class="m-0 p-0" style="font-size: 12px; font-weight: bold;"><?php echo $row1['price']; ?></p>
+                  <p class="m-0 p-0 text-danger" style="font-size: 12px; font-weight: bold;"><?php echo $row1['price']; ?></p>
               </div>
             </div>
           </div>
@@ -21,7 +21,7 @@
               <div class="col-9 my-auto py-auto">
                   <p class="m-0 p-0" style="font-size: 12px;" ><?php echo $row1['id']; ?></p>
                   <p class="m-0 p-0" style="font-size: 11px;"><?php echo $row1['specification']; ?></p>
-                  <p class="m-0 p-0" style="font-size: 12px; font-weight: bold;"><?php echo $row1['price']; ?></p>
+                  <p class="m-0 p-0 text-danger" style="font-size: 12px; font-weight: bold;"><?php echo $row1['price']; ?></p>
               </div>
             </div>
           </div>
@@ -34,9 +34,10 @@
               <div class="col-9 my-auto py-auto">
                   <p class="m-0 p-0" style="font-size: 12px;" ><?php echo $row1['id']; ?></p>
                   <p class="m-0 p-0" style="font-size: 11px;"><?php echo $row1['specification']; ?></p>
-                  <p class="m-0 p-0" style="font-size: 12px; font-weight: bold;"><?php echo $row1['price']; ?></p>
+                  <p class="m-0 p-0 text-danger" style="font-size: 12px; font-weight: bold;"><?php echo $row1['price']; ?></p>
               </div>
             </div>
           </div>
+          
           
     </div>
