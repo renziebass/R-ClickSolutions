@@ -14,7 +14,7 @@
    $login_session = $row['userid'];
    
    if(!isset($_SESSION['id'])){
-      header("location:signin.php");
+      header("location:index.php");
       die();
    }
 
