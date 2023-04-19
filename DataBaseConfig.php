@@ -10,7 +10,7 @@ class DataBaseConfig
     public function __construct()
     {
 
-        $this->servername = 'u186319490_kg_db';
+        $this->servername = 'localhost';
         $this->username = 'u186319490_admin123';
         $this->password = 'Kg9182022';
         $this->databasename = 'u186319490_kg_db';
