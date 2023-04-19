@@ -54,7 +54,7 @@ include("config.php");
           border-top-right-radius: 0;
         }
     </style>
-    <title>DASHBOARD</title>
+    <title>POS SIGN IN</title>
 
     <body style="background-color: #c7c7c7;">
     <div style="background-color: #ffc067;" id="navbar">
