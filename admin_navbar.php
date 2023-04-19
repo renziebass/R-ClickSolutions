@@ -6,7 +6,7 @@
           <div class="collapse navbar-collapse d-flex flex-row-reverse" id="navbarNavDropdown">
             <ul class="navbar-nav">
               <li class="nav-item active">
-                <a class="nav-link font-weight-bold" href="https://rclickpos.com/WEB/admin_home.php">Dashboard<span class="sr-only">(current)</span></a>
+                <a class="nav-link font-weight-bold" href="admin_home.php">Dashboard<span class="sr-only">(current)</span></a>
               </li>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle font-weight-bold" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
