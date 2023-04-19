@@ -119,7 +119,7 @@ include("config.php");
             
               //redirect somehwere
               $_SESSION['id'] = $id;
-              header("location:admin_home.php");
+              header("location:https://rclickpos.com/WEB/admin_home.php");
             
               
         }
