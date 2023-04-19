@@ -74,8 +74,7 @@ if(!empty($_POST["mb"]))
       if(empty($result5)) {
         $sql5 = "INSERT INTO tb_mc_brand (brand) VALUES ('$mb');";
         $Addmb = mysqli_query($db, $sql5);
-        echo '<script>alert("Motorcycle Brand Succesfully Added!")</script>';
-        header("Refresh:0");
+        header("Location: admin_addcategory.php");
       } else {
         echo '<script>alert("Motorcycle Brand Already Exist!")</script>';
         header("Refresh:0");
@@ -102,8 +101,7 @@ if(!empty($_POST["mcbrand"]) && !empty($_POST["mcmodel"]))
       if(empty($result6)) {
         $sql6 = "INSERT INTO tb_mc_model (brand,model) VALUES ('$mcbrand','$mcmodel')";
         $Addmc = mysqli_query($db, $sql6);
-        echo '<script>alert("Motorcycle Model Succesfully Added!")</script>';
-        header("Refresh:0");
+        header("Location: admin_addcategory.php");
       } else {
         echo '<script>alert("Motorcycle Model Already Exist!")</script>';
         header("Refresh:0");
