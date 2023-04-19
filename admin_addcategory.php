@@ -176,9 +176,9 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
     </script>
     <div style="background-color: #ffc067;" id="navbar"></div><!--navbar -->
     <div class="mx-5">
-      <div class="m-3 bg-light rounded" style="min-height: 600px;">
+      <div class="m-3 bg-light rounded">
         <!--A1-->
-        <div class="container-fluid" style="height:600px;">
+        <div class="container-fluid">
           <div class="row">
             <!--B1-->
             <div class="col">
