@@ -13,9 +13,9 @@
                   Transactions
                 </a>
                 <div class="dropdown-menu">
-                  <a class="dropdown-item" href="https://rclickpos.com/WEB/admin_recent.php">Recent</a>
-                  <a class="dropdown-item" href="https://rclickpos.com/WEB/admin_paid.php?date=<?php echo date("Y-m-d") ?>">Paid</a>
-                  <a class="dropdown-item" href="https://rclickpos.com/WEB/admin_unpaid.php?date=<?php echo date("Y-m-d") ?>">Unpaid</a>
+                  <a class="dropdown-item" href="admin_recent.php">Recent</a>
+                  <a class="dropdown-item" href="admin_paid.php?date=<?php echo date("Y-m-d") ?>">Paid</a>
+                  <a class="dropdown-item" href="admin_unpaid.php?date=<?php echo date("Y-m-d") ?>">Unpaid</a>
                 </div>
               </li>
               <li class="nav-item dropdown">
