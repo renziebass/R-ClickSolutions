@@ -1,5 +1,5 @@
 <?php
-   define('HOST','u186319490_kg_db');
+   define('HOST','localhost');
    define('USER','u186319490_admin123');
    define('PASS','Kg9182022');
    define('DB','u186319490_kg_db');
