@@ -119,7 +119,7 @@ include("config.php");
             
               //redirect somehwere
               $_SESSION['id'] = $id;
-              header("location: admin_home.php");
+              header("location: */admin_home.php");
             
               
         }

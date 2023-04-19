@@ -1,8 +1,8 @@
 <?php
-define('HOST','localhost');
-define('USER','root');
-define('PASS','');
-define('DB','kg_db');
+   define('HOST','https://auth-db445.hstgr.io/');
+   define('USER','u186319490_admin123');
+   define('PASS','Kg9182022');
+   define('DB','u186319490_kg_db');
 
 
 $con = mysqli_connect(HOST,USER,PASS,DB);
