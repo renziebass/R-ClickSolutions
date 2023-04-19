@@ -152,7 +152,7 @@ if(!empty($_GET['xid'])) {
                 </div>
 
                 <div class="input-group-prepend">
-                      <select name="mcbrand" onchange="location.href='admin_addproduct.php?mcbrand=<?php echo $row3['brand'];?>'"">
+                      <select name="mcbrand" >
                       <?php while($row2 = mysqli_fetch_array($result2)):;?> 
                       <option class="dropdown-item" value="<?php echo $row2['brand'];?>">
                       <?php echo $row2['brand'];?></option>
