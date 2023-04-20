@@ -11,7 +11,7 @@ FROM (SELECT
 JOIN (SELECT
       tb_cart.product_id,
       SUM(tb_cart.quantity) as quantity,
-      SUM(tb_cart.price) AS total
+      SUM(tb_cart.price*tb_cart.quantity) AS total
       FROM tb_cart WHERE tb_cart.transaction_id='" .$_GET['id']. "'
 GROUP BY tb_cart.product_id) AS B
 ON A.id=B.product_id
