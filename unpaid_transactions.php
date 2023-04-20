@@ -16,7 +16,7 @@ FROM (SELECT
 JOIN (SELECT
 		tb_cart.transaction_id,
 		SUM(tb_cart.quantity) as items,
-      	SUM(tb_cart.total) AS total
+		SUM(tb_cart.price*tb_cart.quantity) AS total,
         FROM tb_cart
 		GROUP BY tb_cart.transaction_id) AS B
 ON A.id=B.transaction_id
