@@ -10,7 +10,7 @@ FROM (SELECT
       FROM tb_cart LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id) AS A
 JOIN (SELECT
       tb_cart.product_id,
-      COUNT(tb_cart.product_id) as quantity,
+      SUM(tb_cart.quantity) as quantity,
       SUM(tb_cart.price) AS total
       FROM tb_cart WHERE tb_cart.transaction_id='" .$_GET['id']. "'
 GROUP BY tb_cart.product_id) AS B
@@ -26,10 +26,9 @@ if (mysqli_num_rows($result) > 0) {
 }
 
 
-$sql1="SELECT   (SELECT COUNT(tb_cart.transaction_id)
-FROM tb_cart
-WHERE tb_cart.transaction_id='" .$_GET['id']. "') AS items,
-SUM(tb_cart.price) AS total,
+$sql1="SELECT 
+SUM(tb_cart.quantity) AS items,
+SUM(tb_cart.price*tb_cart.quantity) AS total,
 CONCAT(DATE_FORMAT(tb_transactions.date,'%M %d,%Y'),'  ',tb_transactions.time) AS date_time
 FROM tb_cart LEFT JOIN tb_transactions ON tb_cart.transaction_id=tb_transactions.id
 WHERE tb_cart.transaction_id='" .$_GET['id']. "'
