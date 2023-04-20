@@ -17,8 +17,8 @@ FROM (SELECT
 		FROM tb_transactions WHERE tb_transactions.status='paid') AS A
 JOIN (SELECT
 		tb_payments.id,
-		COUNT(tb_cart.transaction_id) as items,
-      	SUM(tb_cart.price) AS total,
+		SUM(tb_cart.quantity) as items,
+		SUM(tb_cart.price*tb_cart.quantity) AS total,
       	tb_payments.change1
         FROM tb_payments
       JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
