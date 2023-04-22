@@ -1,6 +1,6 @@
 <?php
 include('user_session.php');
-$sql1 = "SELECT * FROM `tb_product_category`";
+$sql1 = "SELECT * FROM `tb_product_category` ORDER BY tb_product_category.category ASC";
 $result1=mysqli_query($db,$sql1);
 
 $sql2 = "SELECT
