@@ -16,13 +16,14 @@ FROM (SELECT
         FROM tb_transactions
         LEFT JOIN tb_payments ON tb_transactions.id=tb_payments.id
         WHERE tb_transactions.status='paid'
-        AND tb_payments.date NOT IN ("2023-04-22")
-        GROUP BY tb_transactions.date) AS A JOIN (SELECT
+        AND tb_payments.date NOT IN ('$except')
+        GROUP BY tb_transactions.date) AS A
+JOIN (SELECT
       tb_cart.date,
     COUNT(tb_cart.transaction_id) as items,
 	SUM(tb_cart.price) AS amount
      FROM tb_cart
-     WHERE tb_cart.date NOT IN ("2023-04-22")
+     WHERE tb_cart.date NOT IN ('$except')
      GROUP BY tb_cart.date) AS B
 ON A.date=B.date
 GROUP BY B.date";
