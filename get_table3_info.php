@@ -15,10 +15,17 @@ FROM tb_products
 WHERE tb_products.available <= 5 AND tb_products.available
 NOT IN (SELECT tb_products.available FROM tb_products WHERE tb_products.available='0')";
 
-$result = mysqli_query($con,$sql);
-
-while(($row = mysqli_fetch_assoc($result)) == true){
-	$data[]=$row;
+$res = mysqli_query($con,$sql);
+ 
+$result = array();
+ 
+while($row = mysqli_fetch_array($res)){
+array_push($result,
+array('specification'=>$row[0]),
+array('product_brand'=>$row[1]));
 }
-echo json_encode($data);
+ 
+echo json_encode(array("result"=>$result));
+ 
+mysqli_close($con);
 ?>
