@@ -22,4 +22,5 @@ while(($row = mysqli_fetch_assoc($result)) == true){
 	$data[]=$row;
 }
 echo json_encode($data);
+
 ?>
