@@ -12,7 +12,7 @@ $sql="SELECT
 CONCAT(tb_products.mc_brand,' ',tb_products.mc_model,' ',tb_products.category) AS specification,
 tb_products.product_brand
 FROM tb_products
-WHERE tb_products.available = 0";
+WHERE tb_products.available=0";
 
 $result = mysqli_query($con,$sql);
 
