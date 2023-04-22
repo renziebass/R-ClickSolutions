@@ -11,21 +11,22 @@ $except= $_GET['except'];
  
 $sql="SELECT *
 FROM (SELECT
-      tb_payments.id,
-		tb_payments.date,
-		COUNT(tb_payments.id) AS customers,
-      SUM(tb_payments.total) AS amount
-		FROM tb_payments
-      WHERE tb_payments.date NOT IN (
-      SELECT tb_payments.date FROM tb_payments WHERE tb_payments.date='$except')
-     GROUP BY tb_payments.date) AS A
+        tb_payments.date,
+        COUNT(tb_payments.id) AS customers
+        FROM tb_transactions
+        LEFT JOIN tb_payments ON tb_transactions.id=tb_payments.id
+        WHERE tb_transactions.status='paid'
+        AND tb_payments.date NOT IN ("$except")
+        GROUP BY tb_transactions.date) AS A
 JOIN (SELECT
-      tb_cart.transaction_id,
-		COUNT(tb_cart.product_id) as items
-		FROM tb_cart
-		GROUP BY tb_cart.product_id) AS B
-ON A.id=B.transaction_id
-GROUP BY A.date";
+      tb_cart.date,
+    COUNT(tb_cart.transaction_id) as items,
+	SUM(tb_cart.price) AS amount
+     FROM tb_cart
+     WHERE tb_cart.date NOT IN ("$except")
+     GROUP BY tb_cart.date) AS B
+ON A.date=B.date
+GROUP BY B.date";
 
 $result = mysqli_query($con,$sql);
 
