@@ -10,13 +10,14 @@ $con = mysqli_connect(HOST,USER,PASS,DB);
 $DateNow = $_GET['datenow'];
  
 $sql = "SELECT
-SUM(tb_payments.total) AS income_today,
-COUNT(tb_payments.id) AS customers,
-COUNT(tb_cart.product_id) AS items
+CONCAT(FORMAT(SUM(tb_cart.price), 2)) AS income_today,
+(SELECT COUNT(tb_payments.id)
+FROM tb_payments WHERE tb_payments.date='$DateNow') AS customers,
+(SELECT COUNT(tb_cart.product_id)) AS items
 FROM tb_transactions
-JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
-JOIN tb_payments ON tb_transactions.id=tb_payments.id
-WHERE tb_transactions.date='$DateNow' AND tb_transactions.status='paid'";
+LEFT JOIN tb_payments ON tb_transactions.id=tb_payments.id
+RIGHT JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
+WHERE tb_transactions.status='paid' AND tb_transactions.date='$DateNow'";
 
  
 $res = mysqli_query($con,$sql);
