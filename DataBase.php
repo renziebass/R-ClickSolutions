@@ -175,16 +175,17 @@ class DataBase
             return true;
         } else return false;
     }
-    function Confirm_Payment($table, $id, $date, $time, $total, $change)
+    function Confirm_Payment($table, $id, $date, $time, $total, $payment, $change)
     {
         $id = $this->prepareData($id);
         $date = $this->prepareData($date);
         $time = $this->prepareData($time);
         $total = $this->prepareData($total);
+        $payment = $this->prepareData($payment);
         $change = $this->prepareData($change);
         
         $this->sql =
-            "INSERT INTO " . $table . " (id, date,time, total, change1) VALUES ('" . $id . "','" . $date . "','" . $time . "','" . $total . "','" . $change . "')";
+            "INSERT INTO " . $table . " (id, date,time, total, payment, change1) VALUES ('" . $id . "','" . $date . "','" . $time . "','" . $total . "','" . $payment . "','" . $change . "')";
         if (mysqli_query($this->connect, $this->sql)) {
             return true;
         } else return false;
