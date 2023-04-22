@@ -7,7 +7,7 @@ define('DB','u186319490_kg_db');
 
 $con = mysqli_connect(HOST,USER,PASS,DB);
 
-$sql = "SELECT * FROM tb_product_category";
+$sql = "SELECT * FROM `tb_product_category` ORDER BY tb_product_category.category ASC";
 
 $con = mysqli_query($con,$sql);
 
