@@ -17,12 +17,13 @@ FROM (SELECT
 		FROM tb_transactions WHERE tb_transactions.status='paid') AS A
 JOIN (SELECT
 		tb_payments.id,
-		SUM(tb_cart.quantity) as items,
-		SUM(tb_cart.price*tb_cart.quantity) AS total,
-      	tb_payments.change1
-        FROM tb_payments
-      JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
-      WHERE tb_payments.date='$date'
+		COUNT(tb_cart.transaction_id) as items,
+		  SUM(tb_cart.price) AS total,
+		  tb_payments.payment,
+		  tb_payments.change1
+		FROM tb_payments
+	  JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
+	  WHERE tb_payments.date='". $_GET['date'] . "'
 		GROUP BY tb_payments.id) AS B
 ON A.id=B.id
 GROUP BY A.id
