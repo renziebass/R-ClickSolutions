@@ -15,18 +15,10 @@ tb_products.available
 FROM tb_products
 WHERE tb_products.available=0";
 
-$res = mysqli_query($con,$sql);
- 
-$result = array();
- 
-while($row = mysqli_fetch_array($res)){
-array_push($result,
-array('specification'=>$row[0]),
-array('product_brand'=>$row[1]),
-array('available'=>$row[2]));
+$result = mysqli_query($con,$sql);
+
+while(($row = mysqli_fetch_assoc($result)) == true){
+	$data[]=$row;
 }
- 
-echo json_encode(array("result"=>$result));
- 
-mysqli_close($con);
+echo json_encode($data);
 ?>
