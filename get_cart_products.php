@@ -13,7 +13,7 @@ $sql="SELECT *
 FROM (SELECT
 		tb_products.id,
 		tb_products.product_brand,
-		CONCAT(tb_products.mc_brand,'-',tb_products.mc_model,'-',tb_products.category) AS specification,
+		CONCAT(tb_products.mc_brand,' ',tb_products.mc_model,' ',tb_products.category) AS specification,
 		  tb_products.price
 		FROM tb_cart LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id) AS A
 JOIN (SELECT
