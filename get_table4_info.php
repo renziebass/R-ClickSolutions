@@ -22,7 +22,7 @@ while($row = mysqli_fetch_array($res)){
 array_push($result,
 array('specification'=>$row[0]),
 array('product_brand'=>$row[1]),
-array('available'=>$row[2]));
+array('iteavailablems'=>$row[2]));
 }
  
 echo json_encode(array("result"=>$result));
