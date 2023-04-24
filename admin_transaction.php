@@ -214,7 +214,7 @@ if (($db->query($sql4)) && ($db->query($sql5)) === TRUE) {
                   {
                 ?>
                       <tr>  
-                      <td><?php echo $items['product_id']; ?></td>
+                      <td><a class="" onclick="location.href='admin_product_manage.php?id=<?php echo $items['product_id'];?>'"><?php echo $items['product_id'];?></a></td>
                       <td><?php echo $items['product_brand']; ?></td>
                       <td><?php echo $items['specification']; ?></td>
                       <td><?php echo $items['quantity']; ?></td>
