@@ -27,6 +27,7 @@
                     <li class="nav-item"><a class="nav-link" href="transactions.html"><i class="fas fa-user"></i><span>Transactions</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="table.html"><i class="fas fa-table"></i><span>Products</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="login.html"><i class="far fa-user-circle"></i><span>Suppliers</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="login.html"><i class="far fa-user-circle"></i><span>Logout   </span></a></li>
                     <li class="nav-item"></li>
                 </ul><span class="text-center d-flex d-lg-flex" style="font-size: 12px;margin: 0px;margin-top: 0px;margin-bottom: 0px;padding: 0px;padding-bottom: 0px;padding-top: 0px;">Copyright © Brand 2023</span>
                 <div class="text-center d-none d-md-inline"></div>
