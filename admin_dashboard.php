@@ -206,7 +206,51 @@ $result5=mysqli_query($db,$sql5);
                         </div>
                         <div class="col-lg-5 col-xl-4" style="height: 180px;width: 600px;">
                             <div class="card shadow mb-4" style="height: 165px;">
-                                <div class="card-body" style="height: 165px;width: auto;"></div>
+                                <div class="card-body" style="height: 165px;width: auto;">
+                                <table style="width:100%;">
+                
+                <thead>
+                <h5 class="text-center">Low on Stocks</h5>
+                  <tr>
+                  <th scope="col" style="padding-left: 10px; padding-right: 10px;">Product ID</th>
+                    <th scope="col" style="padding-left: 10px; padding-right: 10px;">Brand</th>
+                    <th scope="col" style="padding-left: 10px; padding-right: 10px;">Specification</th>
+                    <th scope="col" style="padding-left: 10px; padding-right: 10px;">Available</th>
+                  </tr>
+                </thead>
+                <tbody>
+                <?php
+                  $sql="SELECT
+                  tb_products.id,
+                  tb_products.product_brand,
+                  CONCAT(tb_products.category,'-',tb_products.mc_model) AS specification,
+                  tb_products.available
+                  FROM
+                  tb_products
+                  WHERE tb_products.available <= 5 AND tb_products.available
+                  NOT IN (SELECT tb_products.available FROM tb_products WHERE tb_products.available='0') 
+                  LIMIT 3";
+                                                      
+                  $result = mysqli_query($db,$sql);
+      
+                  if (mysqli_num_rows($result) > 0) 
+                  {
+                  foreach($result as $items)
+                  {
+                ?>
+                      <tr>  
+                      <td style="padding-left: 10px; padding-right: 10px;"><?php echo $items['id']; ?></td>
+                      <td style="padding-left: 10px; padding-right: 10px;"><?php echo $items['product_brand']; ?></td>
+                      <td style="padding-left: 10px; padding-right: 10px;"><?php echo $items['specification']; ?></td>
+                      <td style="padding-left: 10px; padding-right: 10px;"><?php echo $items['available']; ?></td>
+                      </tr>
+                <?php
+                  } 
+                } 
+                  ?>
+                </tbody>
+              </table> 
+                                </div>
                             </div>
                         </div>
                     </div>
