@@ -2,11 +2,14 @@
 date_default_timezone_set("Asia/Manila");
 include('user_session.php');
 $sql1 = "SELECT
-COUNT(tb_products.id)AS products,
-COUNT(tb_products.category)AS category
+COUNT(tb_products.id)AS products
 FROM tb_products";
 $result1=mysqli_query($db,$sql1);
 $row1 = mysqli_fetch_assoc($result1);
+
+$sql2 = "SELECT COUNT(tb_product_category.category) AS category FROM tb_product_category";
+$result2=mysqli_query($db,$sql2);
+$row2 = mysqli_fetch_assoc($result2);
 
 ?>
 <!doctype html>
@@ -72,7 +75,7 @@ $row1 = mysqli_fetch_assoc($result1);
                       <?php echo $row1['products']; ?>
                       </div>
                       <div class="col-sm text-center mb-0 font-weight-bold">
-                      <?php echo $row1['category']; ?>
+                      <?php echo $row2['category']; ?>
                       </div>
                       <div class="col-sm text-center mb-0 font-weight-bold">
                       <?php echo date("Y-m-d H:i") ?>
