@@ -4,10 +4,10 @@ include('user_session.php');
 $sql1 = "SELECT * FROM tb_product_category";
 $result1=mysqli_query($db,$sql1);
 
-$sql2 = "SELECT * FROM `tb_mc_brand`";
+$sql2 = "SELECT * FROM tb_mc_brand ORDER BY tb_mc_brand.brand ASC";
 $result2=mysqli_query($db,$sql2);
 
-$sql3 = "SELECT * FROM `tb_mc_model`";
+$sql3 = "SELECT * FROM tb_mc_model ORDER BY tb_mc_model.model ASC";
 $result3=mysqli_query($db,$sql3);
 
 $sql4 = "SELECT * FROM `tb_supplier`";
