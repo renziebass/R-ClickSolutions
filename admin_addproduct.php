@@ -217,7 +217,7 @@ if(!empty($_GET['xid'])) {
                   {
                 ?>
                       <tr>  
-                      <td><?php echo $items['id']; ?></td>
+                      <td><a class="" onclick="location.href='admin_product_manage.php?id=<?php echo $items['id'];?>'"><?php echo $items['id'];?></a></td>
                       <td><?php echo $items['supplier_id']; ?></td>
                       <td><?php echo $items['specification']; ?></td>
                       <td><?php echo $items['product_brand']; ?></td>
