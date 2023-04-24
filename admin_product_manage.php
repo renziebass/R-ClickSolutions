@@ -243,7 +243,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   $sql="SELECT
                   tb_transactions.id,
                   tb_transactions.date,
-                  COUNT(tb_cart.product_id) AS quantity,
+                  SUM(tb_cart.quantity) AS quantity,
                   SUM(tb_products.price) AS total
                   FROM tb_products 
                   LEFT JOIN tb_cart ON tb_products.id=tb_cart.product_id
