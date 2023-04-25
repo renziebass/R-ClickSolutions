@@ -7,8 +7,6 @@ CONCAT(tb_products.category,'',tb_products.mc_brand,'',tb_products.mc_model,' ',
  FROM tb_products WHERE tb_products.id='".$_GET['product_id']."'";
 $result1=mysqli_query($db,$sql1);
 $row1 = mysqli_fetch_assoc($result1);
-
-
 ?>
 <!doctype html>
 <html lang="en">
@@ -20,7 +18,7 @@ $row1 = mysqli_fetch_assoc($result1);
   </head>
   
   <body>
-  <h3 class="fw-bold text-center mt-3  text-danger">PRODUCT QR CODE GENERATE</h3>
+  <h5 class="fw-bold text-center mt-3  text-danger">PRODUCT QR CODE GENERATE</h5>
   <div class="container mb-3">
   <div class="mx-auto" style="width: 200px;">
         <div class="input-group">
