@@ -1,36 +1,80 @@
 <?php
 include('user_session.php');
-$sql1 = "SELECT DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date1,tb_payments.date FROM tb_payments GROUP BY tb_payments.date DESC";
+$sql="SELECT *
+      FROM (SELECT
+      tb_products.id,
+      tb_products.product_brand,
+      tb_products.category,
+      CONCAT(tb_products.mc_brand,'-',tb_products.mc_model,'-',tb_products.category) AS specification,
+      tb_products.price
+      FROM tb_cart LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id) AS A
+JOIN (SELECT
+      tb_cart.product_id,
+      COUNT(tb_cart.product_id) as quantity,
+      SUM(tb_cart.price) AS total
+      FROM tb_cart
+      LEFT JOIN tb_transactions ON tb_cart.transaction_id=tb_transactions.id
+      WHERE tb_transactions.id='" .$_GET['id']. "' AND tb_transactions.status='unpaid'
+      GROUP BY tb_cart.product_id) AS B
+      ON A.id=B.product_id
+      GROUP BY B.product_id";
+$result = mysqli_query($db,$sql);
+
+if (mysqli_num_rows($result) > 0) {
+  $voidButton = "disabled";
+} else {
+  $voidButton = null;
+}
+$sql1="SELECT   
+tb_transactions.name,
+(SELECT COUNT(tb_cart.transaction_id)
+FROM tb_cart
+WHERE tb_cart.transaction_id='" .$_GET['id']. "') AS items,
+SUM(tb_cart.price) AS total,
+CONCAT(DATE_FORMAT(tb_transactions.date,'%M %d,%Y'),'  ',tb_transactions.time) AS date_time
+FROM tb_cart LEFT JOIN tb_transactions ON tb_cart.transaction_id=tb_transactions.id
+WHERE tb_cart.transaction_id='" .$_GET['id']. "'
+GROUP BY tb_cart.transaction_id";
 $result1=mysqli_query($db,$sql1);
-$sql2 = "SELECT
-CONCAT(FORMAT(SUM(tb_cart.price), 2)) AS sales_total,
-(SELECT COUNT(tb_payments.id)
-FROM tb_payments WHERE tb_payments.date='".$_GET['date']."') AS paidcustomers,
-(SELECT COUNT(tb_cart.product_id)) AS paiditems
-FROM tb_transactions
-LEFT JOIN tb_payments ON tb_transactions.id=tb_payments.id
-RIGHT JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
-WHERE tb_transactions.status='paid' AND tb_transactions.date='".$_GET['date']."'";
-$result2=mysqli_query($db,$sql2);
-$row2 = mysqli_fetch_assoc($result2);
+$row1 = mysqli_fetch_assoc($result1);
 
-$sql3 = "SELECT
-CONCAT(FORMAT(SUM(tb_cart.price), 2)) AS total_receivables,
-(SELECT COUNT(tb_transactions.id) FROM tb_transactions WHERE tb_transactions.status='unpaid' AND tb_transactions.date='".$_GET['date']."') AS unpaid_customers,
-COUNT(tb_cart.product_id) AS unpaid_items
-FROM tb_transactions
-JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
-WHERE tb_transactions.status='unpaid' AND tb_transactions.date='".$_GET['date']."';";
-$result3=mysqli_query($db,$sql3);
-$row3 = mysqli_fetch_assoc($result3);
+if((empty($_GET['id']))) {
+  header("Location: admin_transactions.php?date=".date("Y-m-d")."");
 
+} 
+
+if((empty($_GET['DeleteProduct'])) && (empty($_GET['QTY']))) {
+
+} else {
+  $sql2="DELETE FROM tb_cart WHERE tb_cart.product_id='" .$_GET['DeleteProduct']. "' AND tb_cart.transaction_id='" .$_GET['id']. "'";
+  $sql3="UPDATE tb_products
+  SET tb_products.available=tb_products.available+'" .$_GET['QTY']. "'
+  WHERE tb_products.id='" .$_GET['DeleteProduct']. "'";
+
+  if (($db->query($sql2)) && ($db->query($sql3)) === TRUE) {
+    echo "Record updated successfully";
+    header("Location: admin_unpaid_transaction.php?id=".$_GET['id']."");
+  } else {
+    echo "Error updating record: " . $db->error;
+  }
+}
+
+if((empty($_GET['VoidID']))) {
+} else {
+  $sql4="DELETE FROM tb_transactions WHERE tb_transactions.id='" .$_GET['VoidID']. "'";
+if ($db->query($sql4) === TRUE) {
+    echo "Transaction Void Successfully";
+  } else {
+    echo "Error Voiding Transaction: " . $db->error;
+  }
+}
 ?>
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TRANASCTIONS</title>
+    <title>UNPAID ID : <?php echo $_GET['id']; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="sidebars.css" rel="stylesheet">
 </head>
@@ -50,7 +94,6 @@ $row3 = mysqli_fetch_assoc($result3);
     </script>
   <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="bootstrap" viewBox="0 0 118 94">
-    <title>Bootstrap</title>
     <path fill-rule="evenodd" clip-rule="evenodd" d="M24.509 0c-6.733 0-11.715 5.893-11.492 12.284.214 6.14-.064 14.092-2.066 20.577C8.943 39.365 5.547 43.485 0 44.014v5.972c5.547.529 8.943 4.649 10.951 11.153 2.002 6.485 2.28 14.437 2.066 20.577C12.794 88.106 17.776 94 24.51 94H93.5c6.733 0 11.714-5.893 11.491-12.284-.214-6.14.064-14.092 2.066-20.577 2.009-6.504 5.396-10.624 10.943-11.153v-5.972c-5.547-.529-8.934-4.649-10.943-11.153-2.002-6.484-2.28-14.437-2.066-20.577C105.214 5.894 100.233 0 93.5 0H24.508zM80 57.863C80 66.663 73.436 72 62.543 72H44a2 2 0 01-2-2V24a2 2 0 012-2h18.437c9.083 0 15.044 4.92 15.044 12.474 0 5.302-4.01 10.049-9.119 10.88v.277C75.317 46.394 80 51.21 80 57.863zM60.521 28.34H49.948v14.934h8.905c6.884 0 10.68-2.772 10.68-7.727 0-4.643-3.264-7.207-9.012-7.207zM49.948 49.2v16.458H60.91c7.167 0 10.964-2.876 10.964-8.281 0-5.406-3.903-8.178-11.425-8.178H49.948z"></path>
   </symbol>
   <symbol id="home" viewBox="0 0 16 16">
@@ -86,15 +129,7 @@ $row3 = mysqli_fetch_assoc($result3);
                 <div class="row align-items-start">
                     <div class="col-6 d-flex flex-row">
                         <div class="btn-group">
-                            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Select Date
-                            </button>
-                            <ul class="dropdown-menu">
-                                <?php while($row1 = mysqli_fetch_array($result1)):;?>
-                                <a class="dropdown-item" href="admin_transactions.php?date=<?php echo $row1['date'];?>" value="<?php echo $row1['date'];?>">
-                                <?php echo $row1['date1'];?></a>
-                                <?php endwhile; ?>
-                            </ul>
+                        <button type="button" onclick="location.href='admin_transaction.php?VoidID=<?php echo $_GET['id']?>'" class="btn btn-danger btn-sm" <?php echo $voidButton; ?>>Void</button>
                         </div>
                     </div>
                     <div class="col-6 d-flex flex-row-reverse">
@@ -116,90 +151,92 @@ $row3 = mysqli_fetch_assoc($result3);
                 <div class="row align-items-start overflow-auto mt-3" id="page" style="height: 620px;">
                     <div class="col-12" id="">
                         <div class="col text-danger">
-                            SALES REPORT: <?php echo $_GET['date'];?>
+                        <?php
+                        if(empty($row1['name']) && ($_GET['id'])) {
+                          echo "No Products, Please VOID this TRANSACTION";
+                        } else {
+                          echo "UNPAID ACCOUNT OF ".$row1['name']." ".$_GET['id']."";
+                        }
+                        ?>
                         </div>
                         <div class="col text-muted">
-                            Paid Customers: <?php echo $row2['paidcustomers'] ?>,  Paid Items: <?php echo $row2['paiditems'] ?>,  Sales Total: P <?php echo $row2['sales_total'] ?>
-                        </div>
-                        <div class="col text-muted">
-                            Credit Customers: <?php echo $row3['unpaid_customers'] ?>,  Unpaid Items: <?php echo $row3['unpaid_items'] ?>,  Receivables Total: P <?php echo $row3['total_receivables'] ?>
-                        </div>
-                        <div class="row mt-4">
-                            <div class="col-6 text-muted border-end">
-                                PAID TRANSACTIONS
-                            </div>
-                            <div class="col-6 text-muted">
-                                UNPAID TRANSACTIONS
-                            </div>
+                           Date & Time : <?php
+                          if(empty($row1['date_time'])) {
+                            $date_time ="N/A";
+                          } else {
+                            $date_time = $row1['date_time'];
+                          }
+                          echo $date_time;
+                          ?>, Total Items : <?php
+                          if(empty($row1['items'])) {
+                            $items ="0";
+                          } else {
+                            $items = $row1['items'];
+                          }
+                          echo $items;
+                          ?>, Total Unpaid Amount <?php
+                          if(empty($row1['total'])) {
+                            $total ="0";
+                          } else {
+                            $total = $row1['total'];
+                          }
+                          echo $total;
+                          ?>:
+                      ?>
                         </div>
                         <div class="row">
-                            <div class="col-6 border-end">
+                            <div class="col-12 mt-3">
                                 <div class="row">
-                                    <div class="col-4 text-muted">
-                                        TR ID
+                                    <div class="col">
                                     </div>
                                     <div class="col text-muted">
-                                        TIME
+                                        PRODUCT ID
                                     </div>
                                     <div class="col text-muted">
-                                        ITEMS
+                                        BRAND
+                                    </div>
+                                    <div class="col text-muted">
+                                        SPECIFICATION
+                                    </div>
+                                    <div class="col text-muted">
+                                        QTY
+                                    </div>
+                                    <div class="col text-muted">
+                                        PRICE
                                     </div>
                                     <div class="col text-muted">
                                         TOTAL
                                     </div>
-                                    <div class="col text-muted">
-                                        PAYMENT
-                                    </div>
-                                    <div class="col text-muted">
-                                        CHANGE
-                                    </div>
                                 </div>
                                 <?php
-                  $sql="SELECT *
-                  FROM (SELECT
-                          tb_transactions.id,
-                          tb_transactions.time,
-                          tb_transactions.date
-                          FROM tb_transactions WHERE tb_transactions.status='paid') AS A
-                  JOIN (SELECT
-                          tb_payments.id,
-                          COUNT(tb_cart.transaction_id) as items,
-                            SUM(tb_cart.price) AS total,
-                            tb_payments.payment,
-                            tb_payments.change1
-                          FROM tb_payments
-                        JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
-                        WHERE tb_payments.date='". $_GET['date'] . "'
-                          GROUP BY tb_payments.id) AS B
-                  ON A.id=B.id
-                  GROUP BY A.id
-                  ORDER BY A.time DESC";
-                                                      
-                  $result = mysqli_query($db,$sql);
-      
-                  if (mysqli_num_rows($result) > 0) 
-                  {
-                  foreach($result as $items)
-                  {
-                ?>
+                                  if (mysqli_num_rows($result) > 0) 
+                                  {
+                                  foreach($result as $items)
+                                  {
+                                ?>
                                 <div class="row">
-                                    <div class="col-4">
-                                    <a class="link-offset-1" onclick="location.href='admin_unpaid_transaction.php?id=<?php echo $items['id'];?>'"><?php echo $items['id'];?></a>
+                                    <div class="col">
+                                    <svg onclick="location.href='admin_transaction.php?id=<?php echo $_GET['id']?>&DeleteProduct=<?php echo $items['id'];?>&QTY=<?php echo $items['quantity'];?>'" class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
+                                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
+                                    </svg>
                                     </div>
                                     <div class="col">
-                                    <?php echo $items['time']; ?>
+                                    <a class="" onclick="location.href='admin_product.php?id=<?php echo $items['product_id'];?>'"><?php echo $items['product_id'];?></a>
                                     </div>
                                     <div class="col">
-                                    <?php echo $items['items']; ?>
+                                    <?php echo $items['product_brand']; ?>
+                                    </div>
+                                    <div class="col">
+                                    <?php echo $items['specification']; ?>
+                                    </div>
+                                    <div class="col">
+                                    <?php echo $items['quantity']; ?>
+                                    </div>
+                                    <div class="col">
+                                    <?php echo $items['price']; ?>
                                     </div>
                                     <div class="col">
                                     <?php echo $items['total']; ?>
-                                    </div>
-                                    <div class="col">
-                                    <?php echo $items['payment']; ?>
-                                    </div>
-                                    <div class="col">
-                                    <?php echo $items['change1']; ?>
                                     </div>
                                 </div>
                                 <?php
@@ -207,66 +244,7 @@ $row3 = mysqli_fetch_assoc($result3);
                                 } 
                             ?>
                             </div>
-                            <div class="col-6">
-                                <div class="row">
-                                    <div class="col-4 text-muted">
-                                        TR ID 
-                                    </div>
-                                    <div class="col text-muted">
-                                        NAME
-                                    </div>
-                                    <div class="col text-muted">
-                                        TIME
-                                    </div>
-                                    <div class="col text-muted">
-                                        ITEMS
-                                    </div>
-                                    <div class="col text-muted">
-                                        TOTAL
-                                    </div>
-                                </div>
-                                <?php
-                                $sql="SELECT
-                                tb_transactions.id,
-                                tb_transactions.name,
-                                tb_transactions.time,
-                                SUM(tb_cart.quantity) as items,
-                                SUM(tb_cart.total) AS total
-                                FROM tb_transactions
-                                INNER JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
-                                WHERE tb_transactions.status='unpaid'
-                                AND tb_transactions.date='". $_GET['date'] . "'
-                                GROUP BY tb_cart.transaction_id";
-                                                                    
-                                $result = mysqli_query($db,$sql);
-                    
-                                if (mysqli_num_rows($result) > 0) 
-                                {
-                                foreach($result as $items)
-                                {
-                                ?>
-                                <div class="row">
-                                    <div class="col-4">
-                                    <a class="" onclick="location.href='.php?id=<?php echo $items['id'];?>'"><?php echo $items['id'];?></a>
-                                    </div>
-                                    <div class="col">
-                                    <?php echo $items['name']; ?>
-                                    </div>
-                                    <div class="col">
-                                    <?php echo $items['time']; ?>
-                                    </div>
-                                    <div class="col">
-                                    <?php echo $items['items']; ?>
-                                    </div>
-                                    <div class="col">
-                                    <?php echo $items['total']; ?>
-                                    </div>
-                                </div>
-                                <?php
-                                } 
-                                } 
-                                ?>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>
