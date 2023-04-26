@@ -3,7 +3,7 @@ include('user_session.php');
 $sql1 = "SELECT DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date1,tb_payments.date FROM tb_payments GROUP BY tb_payments.date DESC";
 $result1=mysqli_query($db,$sql1);
 $sql2 = "SELECT
-CONCAT(FORMAT(SUM(tb_payments.total), 2)) AS sales_total,
+CONCAT(FORMAT(SUM(tb_payments.price), 2)) AS sales_total,
 (SELECT COUNT(tb_payments.id)
 FROM tb_payments WHERE tb_payments.date='".$_GET['date']."') AS paidcustomers,
 (SELECT COUNT(tb_cart.product_id)) AS paiditems
@@ -164,7 +164,7 @@ $row3 = mysqli_fetch_assoc($result3);
                   JOIN (SELECT
                           tb_payments.id,
                           COUNT(tb_cart.transaction_id) as items,
-                            SUM(tb_payments.total) AS total,
+                            SUM(tb_cart.price) AS total,
                             tb_payments.payment,
                             tb_payments.change1
                           FROM tb_payments
