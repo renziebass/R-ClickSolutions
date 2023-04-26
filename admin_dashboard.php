@@ -35,7 +35,7 @@ $currentcustomers=$row3['paidcustomers']+$row4['unpaidcustomers'];
 
 $sql5="SELECT
 tb_transactions.date,
-SUM(tb_payments.total) AS sales,
+SUM(tb_cart.price*tb_cart.quantity) AS sales,
 SUM(tb_cart.price) AS unpaid
 FROM tb_transactions
 JOIN tb_payments ON tb_transactions.id=tb_payments.id
