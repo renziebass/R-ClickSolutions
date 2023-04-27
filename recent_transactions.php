@@ -12,7 +12,7 @@ $date = $_GET['date'];
 $sql="SELECT *
 FROM (SELECT
 		tb_transactions.id,
-		tb_transactions.time,
+		DATE_FORMAT(tb_transactions.time,'%H:%i') AS time,
 		tb_transactions.date
 		FROM tb_transactions WHERE tb_transactions.status='paid') AS A
 JOIN (SELECT
