@@ -21,7 +21,7 @@ FROM (SELECT
 JOIN (SELECT
       tb_cart.date,
     COUNT(tb_cart.transaction_id) as items,
-	SUM(tb_cart.price) AS amount
+	SUM(tb_cart.price*tb_cart.quantity) AS amount
      FROM tb_cart
      WHERE tb_cart.date NOT IN ('$except')
      GROUP BY tb_cart.date) AS B
