@@ -9,6 +9,7 @@ $con = mysqli_connect(HOST,USER,PASS,DB);
 
  
 $sql="SELECT
+tb_transactions.id,
 tb_transactions.name,
 CONCAT(tb_transactions.date,' ',tb_transactions.time) AS date_time,
 SUM(tb_cart.total) AS amount
