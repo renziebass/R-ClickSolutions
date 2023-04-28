@@ -232,10 +232,10 @@ $row8 = mysqli_fetch_assoc($result8);
                 <thead>
                 <div class="text-uppercase text-muted">Recent Paid Transactions</div> 
                   <tr>
-                    <th scope="col">Time</th>
-                    <th scope="col">Items</th>
-                    <th scope="col">Total</th>
-                    <th scope="col">Change</th>
+                    <th scope="col text-muted">Time</th>
+                    <th scope="col text-muted">Items</th>
+                    <th scope="col text-muted">Total</th>
+                    <th scope="col text-muted">Change</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -286,10 +286,10 @@ $row8 = mysqli_fetch_assoc($result8);
                 <thead>
                 <div class="text-uppercase text-muted">Recent Unpaid Transactions</div>
                   <tr>
-                    <div scope="col text-muted">LastName</div>
-                    <div scope="col text-muted">Time</div>
-                    <div scope="col text-muted">Items</div>
-                    <div scope="col text-muted">Total</div>
+                    <th scope="col text-muted">LastName</th>
+                    <th scope="col text-muted">Time</th>
+                    <th scope="col text-muted">Items</th>
+                    <th scope="col text-muted">Total</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -335,10 +335,10 @@ $row8 = mysqli_fetch_assoc($result8);
                                 <thead>
                                 <div class="text-uppercase text-muted">Zero Stocks</div>
                                   <tr>
-                                    <th scope="col">Product ID</th>
-                                    <th scope="col">Brand</th>
-                                    <th scope="col">Specification</th>
-                                    <th scope="col">Available</th>
+                                    <th scope="col text-muted">Product ID</th>
+                                    <th scope="col text-muted">Brand</th>
+                                    <th scope="col text-muted">Specification</th>
+                                    <th scope="col text-muted">Available</th>
                                   </tr>
                                 </thead>
                                 <tbody>
