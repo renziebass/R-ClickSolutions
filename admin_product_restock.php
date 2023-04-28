@@ -183,16 +183,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     </div>
                                 </div>
                                 <?php
-                 $sql="SELECT
-                 tb_transactions.id,
-                 tb_transactions.date,
-                 SUM(tb_cart.quantity) AS quantity,
-                 SUM(tb_products.price) AS total
-                 FROM tb_products 
-                 LEFT JOIN tb_cart ON tb_products.id=tb_cart.product_id
-                 RIGHT JOIN tb_transactions ON tb_cart.transaction_id=tb_transactions.id
-                 WHERE tb_products.id='" .$_GET['Pid']. "'
-                 GROUP BY tb_transactions.id";
+                 $sql="SELECT 
+                 tb_restock_history.date,
+                 tb_restock_history.qty
+                 FROM tb_restock_history
+                 WHERE tb_restock_history.product_id='" .$_GET['Pid']. "'";
                                                      
                  $result = mysqli_query($db,$sql);
      
@@ -209,10 +204,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <?php echo $items['date']; ?>
                                     </div>
                                     <div class="col">
-                                    <?php echo $items['quantity']; ?>
-                                    </div>
-                                    <div class="col">
-                                    <?php echo $items['total']; ?>
+                                    <?php echo $items['qty']; ?>
                                     </div>
                                 </div>
                                 <?php
