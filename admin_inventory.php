@@ -11,7 +11,7 @@ $sql2 = "SELECT COUNT(tb_product_category.category) AS category FROM tb_product_
 $result2=mysqli_query($db,$sql2);
 $row2 = mysqli_fetch_assoc($result2);
 
-$sql3 = "SELECT SUM(tb_products.price) AS amount FROM tb_products";
+$sql3 = "SELECT SUM(tb_products.available*tb_products.price) AS amount FROM tb_products";
 $result3=mysqli_query($db,$sql3);
 $row3 = mysqli_fetch_assoc($result3);
 
