@@ -232,7 +232,7 @@ $row1 = mysqli_fetch_assoc($result1);
                                     </svg>
                                     </div>
                                     <div class="col">
-                                    <a class="" onclick="location.href='admin_product.php?id=<?php echo $items['product_id'];?>'"><?php echo $items['product_id'];?></a>
+                                    <a class="link-offset-2 link-underline link-underline-opacity-0" onclick="location.href='admin_product.php?id=<?php echo $items['product_id'];?>'"><?php echo $items['product_id'];?></a>
                                     </div>
                                     <div class="col">
                                     <?php echo $items['product_brand']; ?>

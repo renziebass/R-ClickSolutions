@@ -193,7 +193,7 @@ $row3 = mysqli_fetch_assoc($result3);
                 ?>
                                 <div class="row">
                                     <div class="col-4">
-                                    <a class="link-offset-1" onclick="location.href='admin_transaction.php?id=<?php echo $items['id'];?>'"><?php echo $items['id'];?></a>
+                                    <a class="link-offset-2 link-underline link-underline-opacity-0" onclick="location.href='admin_transaction.php?id=<?php echo $items['id'];?>'"><?php echo $items['id'];?></a>
                                     </div>
                                     <div class="col">
                                     <?php echo $items['time']; ?>
