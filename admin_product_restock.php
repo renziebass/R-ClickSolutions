@@ -110,7 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                       <div class="input-group input-group-sm">
                                           <button class="btn btn-outline-secondary" type="submit">Scan</button>
                                           <div class="btn-group">
-                                              <button class="btn btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                              <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                   Select Product
                                               </button>
                                               <ul class="dropdown-menu">
