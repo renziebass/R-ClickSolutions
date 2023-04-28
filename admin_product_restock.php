@@ -121,7 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                               <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                   Select Product
                                               </button>
-                                              <ul class="dropdown-menu overflow-y-auto" style="height: 100px;">
+                                              <ul class="dropdown-menu overflow-y-auto" style="height: 500px;">
                                                   <?php while($row1 = mysqli_fetch_array($result1)):;?>
                                                   <a class="dropdown-item" href="admin_product_restock.php?Pid=<?php echo $row1['id'];?>" value="<?php echo $row1['id'];?>">
                                                   <?php echo $row1['id'];?></a>
