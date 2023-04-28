@@ -230,7 +230,7 @@ $row8 = mysqli_fetch_assoc($result8);
                             <table style="width:100%;">
                 
                 <thead>
-                <h5 class="text-center mt-2">Recent Paid Transactions</h5>
+                <div class="text-center mt-2 text-muted">Recent Paid Transactions</div>
                   <tr>
                     <th scope="col">Time</th>
                     <th scope="col">Items</th>
