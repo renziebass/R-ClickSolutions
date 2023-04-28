@@ -109,8 +109,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <form method="post" action="" enctype="multipart/form-data">
                                       <div class="input-group input-group-sm">
                                           <button class="btn btn-outline-secondary" type="submit">Scan</button>
-                          
-                                              <button class="btn btn-outline-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                              <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                   Select Product
                                               </button>
                                               <ul class="dropdown-menu">
@@ -119,7 +118,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                                   <?php echo $row1['id'];?></a>
                                                   <?php endwhile; ?>
                                               </ul>
-                                          
                                           <input name="qty" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="QTY">
                                           <button class="btn btn-outline-secondary" type="submit">Add</button>
                                       </div>
