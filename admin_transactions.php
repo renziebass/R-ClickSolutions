@@ -142,7 +142,7 @@ $row3 = mysqli_fetch_assoc($result3);
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-6 border-end table-hover">
+                            <div class="col-6 border-end">
                                 <div class="row">
                                     <div class="col-4 text-muted">
                                         TR ID
