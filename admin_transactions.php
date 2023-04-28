@@ -191,7 +191,7 @@ $row3 = mysqli_fetch_assoc($result3);
                   foreach($result as $items)
                   {
                 ?>
-                                <table class="row table table-hover">
+                                <div class="row">
                                     <div class="col-4">
                                     <a class="link-offset-1" onclick="location.href='admin_transaction.php?id=<?php echo $items['id'];?>'"><?php echo $items['id'];?></a>
                                     </div>
@@ -210,7 +210,7 @@ $row3 = mysqli_fetch_assoc($result3);
                                     <div class="col">
                                     <?php echo $items['change1']; ?>
                                     </div>
-                  </table>
+                                </div>
                                 <?php
                                 } 
                                 } 
