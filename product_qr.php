@@ -1,9 +1,9 @@
 <?php
 include('user_session.php');
 $sql1 = "SELECT 
-tb_products.category,
+CONCAT(tb_products.category,'-',tb_products.product_brand) AS cpb,
 tb_products.price,
-CONCAT(tb_products.category,'',tb_products.mc_brand,'',tb_products.mc_model,' ',tb_products.product_brand) AS specification
+CONCAT(tb_products.mc_brand,' ',tb_products.mc_model,' ',tb_products.product_brand) AS specification
  FROM tb_products WHERE tb_products.id='".$_GET['product_id']."'";
 $result1=mysqli_query($db,$sql1);
 $row1 = mysqli_fetch_assoc($result1);
