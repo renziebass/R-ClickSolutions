@@ -115,13 +115,13 @@ $row3 = mysqli_fetch_assoc($result3);
                 </div>
                 <div class="row align-items-start overflow-auto mt-3" id="page" style="height: 620px;">
                     <div class="col-12" id="">
-                        <div class="col text-danger">
+                        <div class="col text-danger fw-bold">
                             SALES REPORT: <?php echo $_GET['date'];?>
                         </div>
-                        <div class="col text-muted">
+                        <div class="col fw-bold">
                             Paid Customers: <?php echo $row2['paidcustomers'] ?>,  Paid Items: <?php echo $row2['paiditems'] ?>,  Sales Total: P <?php echo $row2['sales_total'] ?>
                         </div>
-                        <div class="col text-muted">
+                        <div class="col fw-bold">
                             Credit Customers: <?php echo $row3['unpaid_customers'] ?>,  Unpaid Items: <?php echo $row3['unpaid_items'] ?>,  Receivables Total: P <?php echo $row3['total_receivables'] ?>
                         </div>
                         <div class="row mt-4">

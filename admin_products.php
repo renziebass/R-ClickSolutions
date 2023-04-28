@@ -127,10 +127,10 @@ $row4 = mysqli_fetch_assoc($result4);
                 </div>
                 <div class="row align-items-start overflow-auto mt-3" id="page" style="height: 620px;">
                     <div class="col-12" id="">
-                        <div class="col text-danger">
+                        <div class="col text-danger fw-bold">
                         <?php echo $_GET['pcategory'];?>
                         </div>
-                        <div class="col text-muted">
+                        <div class="col fw-bold">
                            Products: <?php echo $row2['products']; ?>, Zero Stocks : <?php echo $row3['zerostocks']; ?>, Low on Stocks : <?php echo $row4['lowstocks']; ?>
                         </div>
                         <div class="row">

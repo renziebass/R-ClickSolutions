@@ -149,10 +149,10 @@ $row1 = mysqli_fetch_assoc($result1);
                 </div>
                 <div class="row align-items-start overflow-auto mt-3" id="page" style="height: 620px;">
                     <div class="col-12" id="">
-                        <div class="col text-danger">
+                        <div class="col text-danger fw-bold">
                             TRANSACTION ID # : <?php echo $_GET['id']; ?>
                         </div>
-                        <div class="col text-muted">
+                        <div class="col fw-bold">
                            Date & Time : <?php
                       if(empty($row1['date_time'])) {
                         $date_time ="N/A";

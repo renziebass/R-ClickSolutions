@@ -94,10 +94,10 @@ $row1 = mysqli_fetch_assoc($result1);
                 
                 <div class="row align-items-start overflow-auto mt-3" id="page" style="height: 620px;">
                     <div class="col-12" id="">
-                        <div class="col text-danger">
+                        <div class="col text-danger fw-bold">
                         <?php echo $_GET['id']?>
                         </div>
-                        <div class="col text-muted">
+                        <div class="col fw-bold">
                            Product Brand : <?php echo $row1['product_brand']; ?>, Category : <?php echo $row1['category']; ?>, Specification : <?php echo $row1['specification']; ?>, Stocks : <?php echo $row1['stocks']; ?>, Available : <?php echo $row1['available']; ?>, Price : <?php echo $row1['price']; ?>
                         </div>
                         <div class="row mt-3 border-top">

@@ -175,11 +175,11 @@ $row8 = mysqli_fetch_assoc($result8);
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col me-2">
-                                            <div class="text-uppercase text-success fw-bold text-xs mb-1"><span>Customers</span></div>
+                                            <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span>Customers</span></div>
                                             <div class="text-dark fw-bold h5 mb-0"><span></span><?php echo $row3['paidcustomers'];?></div>
                                         </div>
                                         <div class="col me-2">
-                                            <div class="text-uppercase text-success fw-bold text-xs mb-1"><span>ITEMS</span></div>
+                                            <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span>ITEMS</span></div>
                                             <div class="text-dark fw-bold h5 mb-0"><span><?php echo $row6['items']; ?></span></div>
                                         </div>
                                     </div>
@@ -191,7 +191,7 @@ $row8 = mysqli_fetch_assoc($result8);
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col me-2">
-                                            <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span>ALL TIME SALES</span></div>
+                                            <div class="text-uppercase text-success fw-bold text-xs mb-1"><span>ALL TIME SALES</span></div>
                                             <div class="text-dark fw-bold h5 mb-0"><span>P <?php echo $row7['paid']; ?></span></div>
                                         </div>
                                         <div class="col-auto"><i class="fas fa-dollar-sign fa-2x text-gray-300"></i></div>
@@ -204,7 +204,7 @@ $row8 = mysqli_fetch_assoc($result8);
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col me-2">
-                                            <div class="text-uppercase text-warning fw-bold text-xs mb-1"><span>Receivables</span></div>
+                                            <div class="text-uppercase text-danger fw-bold text-xs mb-1"><span>Receivables</span></div>
                                             <div class="text-dark fw-bold h5 mb-0"><span>P <?php echo $row8['receivable'];?></span></div>
                                         </div>
                                         <div class="col-auto"><i class="fas fa-comments fa-2x text-gray-300"></i></div>
