@@ -1,6 +1,7 @@
 <?php
 include('user_session.php');
-$sql1 = "SELECT 
+$sql1 = "SELECT
+tb_products.id,
 CONCAT(tb_products.category,'-',tb_products.product_brand) AS cpb,
 tb_products.price,
 CONCAT(tb_products.mc_brand,' ',tb_products.mc_model) AS specification
@@ -24,18 +25,18 @@ $row1 = mysqli_fetch_assoc($result1);
         <div class="input-group">
               <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Quantity</button>
               <div class="dropdown-menu">
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $_GET['id'];?>&line=1" value="">3</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $_GET['id'];?>&line=2" value="">6</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $_GET['id'];?>&line=3" value="">9</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $_GET['id'];?>&line=4" value="">12</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $_GET['id'];?>&line=5" value="">15</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $_GET['id'];?>&line=6" value="">18</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $_GET['id'];?>&line=7" value="">21</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $_GET['id'];?>&line=8" value="">24</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $_GET['id'];?>&line=9" value="">27</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $_GET['id'];?>&line=10" value="">30</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $_GET['id'];?>&line=11" value="">33</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $_GET['id'];?>&line=12" value="">36</a>
+                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=1" value="">3</a>
+                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=2" value="">6</a>
+                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=3" value="">9</a>
+                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=4" value="">12</a>
+                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=5" value="">15</a>
+                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=6" value="">18</a>
+                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=7" value="">21</a>
+                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=8" value="">24</a>
+                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=9" value="">27</a>
+                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=10" value="">30</a>
+                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=11" value="">33</a>
+                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=12" value="">36</a>
               </div>
               <button onclick="printDiv()" class="btn btn-outline-secondary" type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer-fill" viewBox="0 0 16 16">
                 <path d="M5 1a2 2 0 0 0-2 2v1h10V3a2 2 0 0 0-2-2H5zm6 8H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1z"/>
