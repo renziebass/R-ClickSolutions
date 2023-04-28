@@ -286,10 +286,10 @@ $row8 = mysqli_fetch_assoc($result8);
                 <thead>
                 <div class="text-uppercase text-muted">Recent Unpaid Transactions</div>
                   <tr>
-                    <th scope="col text-muted">LastName</th>
-                    <th scope="col text-muted">Time</th>
-                    <th scope="col text-muted">Items</th>
-                    <th scope="col text-muted">Total</th>
+                    <th scope="col">LastName</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Items</th>
+                    <th scope="col">Total</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -335,10 +335,10 @@ $row8 = mysqli_fetch_assoc($result8);
                                 <thead>
                                 <div class="text-uppercase text-muted">Zero Stocks</div>
                                   <tr>
-                                    <th scope="col text-muted">Product ID</th>
-                                    <th scope="col text-muted">Brand</th>
-                                    <th scope="col text-muted">Specification</th>
-                                    <th scope="col text-muted">Available</th>
+                                    <th scope="col">Product ID</th>
+                                    <th scope="col">Brand</th>
+                                    <th scope="col">Specification</th>
+                                    <th scope="col">Available</th>
                                   </tr>
                                 </thead>
                                 <tbody>
