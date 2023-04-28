@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         VALUES ('" .$_GET['Pid']. "', '".date("Y-m-d H:i:s")."', '$qty')";
         $Restock = mysqli_query($db, $sql4);
         
-        header("Location: admin_restock_product.php?Pid=".$_GET['Pid']."");
+        header("Location: admin_product_restock.php?Pid=".$_GET['Pid']."");
     
     }
     catch(PDOException $e)
