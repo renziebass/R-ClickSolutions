@@ -3,7 +3,7 @@
           <div class="col">
             <div class="row border border-dark p-1">
               <div class="col-3 mx-auto py-auto">
-                  <img class="m-0" src="https://chart.googleapis.com/chart?chs=100x100&cht=qr&chl=<?php echo $row1['id']; ?>">
+                  <img class="m-0" src="https://chart.googleapis.com/chart?chs=80x80&cht=qr&chl=<?php echo $row1['id']; ?>">
               </div>
               <div class="col-9 my-auto py-auto">
                   <p class="m-0 p-0" style="font-size: 12px;" ><?php echo $row1['cpb']; ?></p>
@@ -16,7 +16,7 @@
           <div class="col">
             <div class="row border border-dark p-1">
               <div class="col-3 mx-auto py-auto">
-                  <img class="m-0" src="https://chart.googleapis.com/chart?chs=90x90&cht=qr&chl=<?php echo $row1['id']; ?>">
+                  <img class="m-0" src="https://chart.googleapis.com/chart?chs=80x80&cht=qr&chl=<?php echo $row1['id']; ?>">
               </div>
               <div class="col-9 my-auto py-auto">
                   <p class="m-0 p-0" style="font-size: 12px;" ><?php echo $row1['cpb']; ?></p>
