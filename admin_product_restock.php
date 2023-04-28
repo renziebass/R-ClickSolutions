@@ -1,18 +1,50 @@
 <?php
 include('user_session.php');
-$sql1="SELECT
-tb_products.id,
-tb_products.product_brand,
-tb_products.category,
-CONCAT(tb_products.mc_brand,'-',tb_products.mc_model) AS specification,
-tb_products.price,
-tb_products.available,
-tb_products.stocks
-FROM tb_products
-WHERE tb_products.id='" .$_GET['id']. "'";
+$sql1 = "SELECT * FROM tb_products";
 $result1=mysqli_query($db,$sql1);
-$row1 = mysqli_fetch_assoc($result1);
 
+function validateInput($data) {
+  $data = trim($data);
+  $data = stripslashes($data);
+  $data = htmlspecialchars($data);
+  return $data;
+}
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  
+  if (empty($_POST["qty"])) {
+    $qty_err = "* ";
+  } else {
+    $qty = validateInput($_POST["qty"]);
+  }
+  if (empty($_POST["pid"])) {
+    $pid_err = "* ";
+  } else {
+    $pid = validateInput($_POST["pid"]);
+  }
+
+  if(!empty($_POST["qty"]) && !empty($_POST["pid"]))
+  {
+    try {
+      
+        $sql2 = "UPDATE tb_products
+        SET tb_products.stocks=tb_products.stocks+'$qty',tb_products.available=tb_products.available+'$qty'
+        WHERE tb_products.id='$pid'";
+        $RestockUpdate = mysqli_query($db, $sql2);
+
+        $sql3 = "INSERT INTO `tb_restock_history` (`product_id`, `date`, `qty`)
+        VALUES ('$pid', '".date("Y-m-d H:i:s")."', '$qty')";
+        $Restock = mysqli_query($db, $sql3);
+        
+        header("Location: admin_restock_product.php");
+    
+    }
+    catch(PDOException $e)
+      {
+        echo $sql1 . "<br>" . $e->getMessage();
+      }
+    $db=null;
+  }
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -77,11 +109,13 @@ $row1 = mysqli_fetch_assoc($result1);
                                     <form method="post" action="" enctype="multipart/form-data">
                                       <div class="input-group input-group-sm">
                                           <button class="btn btn-outline-secondary" type="submit">Scan</button>
-                                          <select name="supplier" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
-                                              
+                                          <select name="pid" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
+                                          <?php while($row1 = mysqli_fetch_array($result1)):;?> 
+                                          <option class="dropdown-item" value="<?php echo $row1['id'];?>">
+                                          <?php echo $row1['id'];?></option>
+                                          <?php endwhile; ?>
                                           </select>
                                           <input name="qty" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="QTY">
-                                          
                                           <button class="btn btn-outline-secondary" type="submit">Add</button>
                                       </div>
                                     </form>
