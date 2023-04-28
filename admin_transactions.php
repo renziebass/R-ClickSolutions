@@ -1,7 +1,13 @@
 <?php
 include('user_session.php');
-$sql1 = "SELECT DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date1,tb_payments.date FROM tb_payments GROUP BY tb_payments.date DESC";
+$sql1 = "SELECT DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date1,
+tb_payments.date,
+SUM(tb_cart.price*tb_cart.quantity) AS sales
+FROM tb_payments 
+JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
+GROUP BY tb_payments.date DESC";
 $result1=mysqli_query($db,$sql1);
+
 $sql2 = "SELECT
 CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS sales_total,
 (SELECT COUNT(tb_payments.id)
@@ -89,10 +95,10 @@ $row3 = mysqli_fetch_assoc($result3);
                             <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Select Date
                             </button>
-                            <ul class="dropdown-menu">
+                            <ul class="dropdown-menu overflow-y-auto" style="height: 500px;">
                                 <?php while($row1 = mysqli_fetch_array($result1)):;?>
                                 <a class="dropdown-item" href="admin_transactions.php?date=<?php echo $row1['date'];?>" value="<?php echo $row1['date'];?>">
-                                <?php echo $row1['date1'];?></a>
+                                <?php echo $row1['date1']+"-"+$row1['sales'];?></a>
                                 <?php endwhile; ?>
                             </ul>
                         </div>
