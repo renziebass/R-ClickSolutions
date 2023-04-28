@@ -37,11 +37,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       
         $sql2 = "UPDATE tb_products
         SET tb_products.stocks=tb_products.stocks+'$qty',tb_products.available=tb_products.available+'$qty'
-        WHERE tb_products.id='$_GET['Pid']'";
+        WHERE tb_products.id='" .$_GET['Pid']. "'";
         $RestockUpdate = mysqli_query($db, $sql2);
 
         $sql3 = "INSERT INTO `tb_restock_history` (`product_id`, `date`, `qty`)
-        VALUES ('$_GET['Pid']', '".date("Y-m-d H:i:s")."', '$qty')";
+        VALUES ('" .$_GET['Pid']. "', '".date("Y-m-d H:i:s")."', '$qty')";
         $Restock = mysqli_query($db, $sql3);
         
         header("Location: admin_restock_product.php");
