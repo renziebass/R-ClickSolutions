@@ -162,7 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div class="col text-danger">
                         <?php echo $_GET['id']?>
                         </div>
-                        <div class="col text-muted">
+                        <div class="col">
                            Product Brand : <?php echo $row2['product_brand']; ?>, Category : <?php echo $row2['category']; ?>, Specification : <?php echo $row2['specification']; ?>, Stocks : <?php echo $row2['stocks']; ?>, Available : <?php echo $row2['available']; ?>, Price : <?php echo $row2['price']; ?>
                         </div>
                         <div class="row mt-3 border-top">
