@@ -1,6 +1,8 @@
 <?php
 include('user_session.php');
-$sql1 = "SELECT * FROM tb_products";
+$sql1 = "SELECT tb_products.id,
+CONCAT(tb_products.mc_brand,'-',tb_products.mc_model,' ',tb_products.category,' ',tb_products.product_brand)AS pname
+FROM tb_products";
 $result1=mysqli_query($db,$sql1);
 
 $sql2="SELECT
@@ -124,7 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                               <ul class="dropdown-menu overflow-y-auto" style="height: 500px;">
                                                   <?php while($row1 = mysqli_fetch_array($result1)):;?>
                                                   <a class="dropdown-item" href="admin_product_restock.php?Pid=<?php echo $row1['id'];?>" value="<?php echo $row1['id'];?>">
-                                                  <?php echo ""+$row1['mc_brand']+"-"+$row1['mc_model']+" "+$row1['category']+" "+$row1['product_brand'];?></a>
+                                                  <?php echo $row1['pname'];?></a>
                                                   <?php endwhile; ?>
                                               </ul>
                                           <input name="qty" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="QTY">
