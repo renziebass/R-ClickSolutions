@@ -109,12 +109,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <form method="post" action="" enctype="multipart/form-data">
                                       <div class="input-group input-group-sm">
                                           <button class="btn btn-outline-secondary" type="submit">Scan</button>
-                                          <select name="pid" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
-                                              <?php while($row1 = mysqli_fetch_array($result1)):;?>
-                                              <a class="dropdown-item" href="admin_product_restock.php?Pid=<?php echo $row1['id'];?>" value="<?php echo $row1['id'];?>">
-                                              <?php echo $row1['id'];?></a>
-                                              <?php endwhile; ?>
-                                          </select>
+                                          <div class="btn-group">
+                                              <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                  Select Product
+                                              </button>
+                                              <ul class="dropdown-menu">
+                                                  <?php while($row1 = mysqli_fetch_array($result1)):;?>
+                                                  <a class="dropdown-item" href="admin_product_restock.php?date=<?php echo $row1['id'];?>" value="<?php echo $row1['id'];?>">
+                                                  <?php echo $row1['id'];?></a>
+                                                  <?php endwhile; ?>
+                                              </ul>
+                                          </div>
                                           <input name="qty" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="QTY">
                                           <button class="btn btn-outline-secondary" type="submit">Add</button>
                                       </div>
