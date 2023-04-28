@@ -191,7 +191,7 @@ $row3 = mysqli_fetch_assoc($result3);
                   foreach($result as $items)
                   {
                 ?>
-                                <div class="row">
+                                <div class="row table table-hover">
                                     <div class="col-4">
                                     <a class="link-offset-1" onclick="location.href='admin_transaction.php?id=<?php echo $items['id'];?>'"><?php echo $items['id'];?></a>
                                     </div>
