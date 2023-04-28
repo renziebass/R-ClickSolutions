@@ -98,7 +98,7 @@ $row3 = mysqli_fetch_assoc($result3);
                             <ul class="dropdown-menu overflow-y-auto" style="height: 500px;">
                                 <?php while($row1 = mysqli_fetch_array($result1)):;?>
                                 <a class="dropdown-item" href="admin_transactions.php?date=<?php echo $row1['date'];?>" value="<?php echo $row1['date'];?>">
-                                <?php echo $row1['date1']." - ".$row1['sales'];?></a>
+                                <?php echo $row1['date1']." - P".$row1['sales'];?></a>
                                 <?php endwhile; ?>
                             </ul>
                         </div>
