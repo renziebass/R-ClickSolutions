@@ -103,7 +103,7 @@ $row4 = mysqli_fetch_assoc($result4);
                         </button>
                         <ul class="dropdown-menu">
                           <a class="dropdown-item" href="admin_add_products.php">Add Product</a>
-                          <a class="dropdown-item" href="admin_product_restock.php?id=20230419172925">Re-Stock Product</a>
+                          <a class="dropdown-item" href="admin_product_restock.php?Pid=20230419172925">Re-Stock Product</a>
                           <a class="dropdown-item" href="admin_add_category.php">Manage Category & Supplier</a>
                         </ul>
                         
