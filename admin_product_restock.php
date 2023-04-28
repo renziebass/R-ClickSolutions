@@ -110,12 +110,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                       <div class="input-group input-group-sm">
                                           <button class="btn btn-outline-secondary" type="submit">Scan</button>
                                           <div class="btn-group">
-                                              <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                              <button class="btn btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                   Select Product
                                               </button>
                                               <ul class="dropdown-menu">
                                                   <?php while($row1 = mysqli_fetch_array($result1)):;?>
-                                                  <a class="dropdown-item" href="admin_product_restock.php?date=<?php echo $row1['id'];?>" value="<?php echo $row1['id'];?>">
+                                                  <a class="dropdown-item" href="admin_product_restock.php?Pid=<?php echo $row1['id'];?>" value="<?php echo $row1['id'];?>">
                                                   <?php echo $row1['id'];?></a>
                                                   <?php endwhile; ?>
                                               </ul>
