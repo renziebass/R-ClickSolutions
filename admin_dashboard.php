@@ -284,12 +284,12 @@ $row8 = mysqli_fetch_assoc($result8);
                             <table>
                 
                 <thead>
-                <h5 class="text-uppercase text-muted">Recent Unpaid Transactions</h5>
+                <div class="text-uppercase text-muted">Recent Unpaid Transactions</div>
                   <tr>
-                    <th scope="col">LastName</th>
-                    <th scope="col">Time</th>
-                    <th scope="col">Items</th>
-                    <th scope="col">Total</th>
+                    <div scope="col text-muted">LastName</div>
+                    <div scope="col text-muted">Time</div>
+                    <div scope="col text-muted">Items</div>
+                    <div scope="col text-muted">Total</div>
                   </tr>
                 </thead>
                 <tbody>
@@ -333,7 +333,7 @@ $row8 = mysqli_fetch_assoc($result8);
                                 <div class="card-body" style="height: 165px;width: auto;">
                                 <table style="width:100%;">
                                 <thead>
-                                <h5 class="text-uppercase text-muted">Zero Stocks</h5>
+                                <div class="text-uppercase text-muted">Zero Stocks</div>
                                   <tr>
                                     <th scope="col">Product ID</th>
                                     <th scope="col">Brand</th>
@@ -381,7 +381,7 @@ $row8 = mysqli_fetch_assoc($result8);
                                                     <table style="width:100%;">
                                     
                                     <thead>
-                                    <h5 class="text-uppercase text-muted">Low on Stocks</h5>
+                                    <div class="text-uppercase text-muted">Low on Stocks</div>
                                       <tr>
                                         <th scope="col">Product ID</th>
                                         <th scope="col">Brand</th>
