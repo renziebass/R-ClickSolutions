@@ -198,9 +198,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ?>
                                 <div class="row">
                                     <div class="col">
-                                    <a class="" onclick="location.href='admin_transaction.php?id=<?php echo $items['id'];?>'"><?php echo $items['id'];?></a>
-                                    </div>
-                                    <div class="col">
                                     <?php echo $items['date']; ?>
                                     </div>
                                     <div class="col">
