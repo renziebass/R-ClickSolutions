@@ -3,6 +3,19 @@ include('user_session.php');
 $sql1 = "SELECT * FROM tb_products";
 $result1=mysqli_query($db,$sql1);
 
+$sql2="SELECT
+tb_products.id,
+tb_products.product_brand,
+tb_products.category,
+CONCAT(tb_products.mc_brand,'-',tb_products.mc_model) AS specification,
+tb_products.price,
+tb_products.available,
+tb_products.stocks
+FROM tb_products
+WHERE tb_products.id='" .$_GET['Pid']. "'";
+$result2=mysqli_query($db,$sql2);
+$row2 = mysqli_fetch_assoc($result2);
+
 function validateInput($data) {
   $data = trim($data);
   $data = stripslashes($data);
@@ -152,7 +165,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <?php echo $_GET['id']?>
                         </div>
                         <div class="col text-muted">
-                           Product Brand : <?php echo $row1['product_brand']; ?>, Category : <?php echo $row1['category']; ?>, Specification : <?php echo $row1['specification']; ?>, Stocks : <?php echo $row1['stocks']; ?>, Available : <?php echo $row1['available']; ?>, Price : <?php echo $row1['price']; ?>
+                           Product Brand : <?php echo $row2['product_brand']; ?>, Category : <?php echo $row2['category']; ?>, Specification : <?php echo $row2['specification']; ?>, Stocks : <?php echo $row2['stocks']; ?>, Available : <?php echo $row2['available']; ?>, Price : <?php echo $row2['price']; ?>
                         </div>
                         <div class="row mt-3 border-top">
                             <div class="col-12 mt-3">
