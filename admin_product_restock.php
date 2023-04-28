@@ -178,7 +178,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                  FROM tb_products 
                  LEFT JOIN tb_cart ON tb_products.id=tb_cart.product_id
                  RIGHT JOIN tb_transactions ON tb_cart.transaction_id=tb_transactions.id
-                 WHERE tb_products.id='" .$_GET['id']. "'
+                 WHERE tb_products.id='" .$_GET['Pid']. "'
                  GROUP BY tb_transactions.id";
                                                      
                  $result = mysqli_query($db,$sql);
