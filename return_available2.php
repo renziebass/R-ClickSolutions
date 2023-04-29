@@ -1,5 +1,5 @@
 <?php
-require('config.php');
+require('config_app.php');
 
 $transaction_id = $_GET['transaction_id'];
  

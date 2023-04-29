@@ -1,5 +1,5 @@
 <?php
-require('config.php');
+require('config_app.php');
 
 $sql="SELECT
 CONCAT(tb_products.mc_brand,' ',tb_products.mc_model,' ',tb_products.category) AS specification,

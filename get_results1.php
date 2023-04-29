@@ -1,5 +1,5 @@
 <?php
-require('config.php');
+require('config_app.php');
 
 $category = $_GET['category'];
 $brand = $_GET['brand'];

@@ -1,5 +1,5 @@
 <?php
-require('config.php');
+require('config_app.php');
 $except= $_GET['except'];
  
 $sql="SELECT *

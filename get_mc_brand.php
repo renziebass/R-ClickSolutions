@@ -1,5 +1,6 @@
 <?php 
-require('config.php');
+require('config_app.php');
+
 
 $sql = "SELECT * FROM tb_mc_brand";
 

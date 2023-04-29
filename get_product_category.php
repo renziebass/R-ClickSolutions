@@ -1,5 +1,5 @@
 <?php 
-require('config.php');
+require('config_app.php');
 
 $sql = "SELECT * FROM `tb_product_category` ORDER BY tb_product_category.category ASC";
 

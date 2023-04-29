@@ -1,5 +1,5 @@
 <?php
-require('config.php');
+require('config_app.php');
 
 $DateNow = $_GET['datenow'];
  

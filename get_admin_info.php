@@ -1,5 +1,6 @@
 <?php
-require('config.php');
+require('config_app.php');
+
 $userid  = $_GET['userid'];
  
 $sql = "SELECT

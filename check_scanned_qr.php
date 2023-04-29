@@ -1,5 +1,5 @@
 <?php
-require('config.php');
+require('config_app.php');
 
 $product_id = $_GET['product_id'];
  
