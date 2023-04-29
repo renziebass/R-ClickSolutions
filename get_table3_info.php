@@ -1,13 +1,6 @@
 <?php
- define('HOST','localhost');
- define('USER','u186319490_admin123');
- define('PASS','Kg9182022');
- define('DB','u186319490_kg_db');
+require('config.php');
 
-
-$con = mysqli_connect(HOST,USER,PASS,DB);
-
- 
 $sql="SELECT
 CONCAT(tb_products.mc_brand,' ',tb_products.mc_model,' ',tb_products.category) AS specification,
 tb_products.product_brand,
