@@ -28,7 +28,7 @@ $row3 = mysqli_fetch_assoc($result3);
 <style>
 @media print {
   div {
-    break-inside: avoid;
+    break-inside: auto;
   }
 } 
 </style>
@@ -149,7 +149,6 @@ $row3 = mysqli_fetch_assoc($result3);
                    foreach($result as $items)
                    {
                 ?>
-                            <div class="col-12">
                                 <div class="row">
                                     <div class="col">
                                     <?php echo $items['id']; ?>
@@ -181,7 +180,7 @@ $row3 = mysqli_fetch_assoc($result3);
                                 } 
                             ?>
                             </div>
-                          </div>
+                            
                         </div>
                     </div>
                 </div>
