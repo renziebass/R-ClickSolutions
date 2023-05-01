@@ -100,7 +100,7 @@ $row3 = mysqli_fetch_assoc($result3);
                       </script>
                     </div>
                 </div>
-                <div class="row align-items-start overflow-auto mt-5" id="page" style="height: 620px;">
+                <div class="row align-items-start overflow-auto mt-3" id="page" style="height: 620px;">
                     <div class="col-12" id="">
                         <div class="col text-danger fw-bold">
                         INVENTORY REPORT :  <?php echo date("Y-m-d H:i") ?>
@@ -149,7 +149,7 @@ $row3 = mysqli_fetch_assoc($result3);
                    foreach($result as $items)
                    {
                 ?>
-                                <div class="row">
+                                <div class="row mt-5">
                                     <div class="col">
                                     <?php echo $items['id']; ?>
                                     </div>
