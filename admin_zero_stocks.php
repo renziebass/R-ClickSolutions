@@ -117,7 +117,7 @@ $row3 = mysqli_fetch_assoc($result3);
                         ZERO STOCKS as of :  <?php echo date("Y-m-d H:i") ?>
                         </div>
                         <div class="col fw-bold">
-                           Product Categories: <?php echo $row2['category']; ?>, Total Products: <?php echo $row1['products']; ?>, Amount Salable: <?php echo $row3['amount']; ?>
+                           Product Categories: <?php echo $row2['category']; ?>, Total Products: <?php echo $row1['products']; ?>
                         </div>
                         <div class="row">
                             <div class="col-12 mt-3">
@@ -151,8 +151,8 @@ $row3 = mysqli_fetch_assoc($result3);
                    $sql="SELECT
                    *
                    FROM tb_products
-                   ORDER BY tb_products.date DESC
-                   WHERE tb_products.available='0'";
+                   WHERE tb_products.available='0'
+                   ORDER BY tb_products.date DESC";
                                                        
                    $result = mysqli_query($db,$sql);
        
