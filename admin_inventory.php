@@ -83,7 +83,7 @@ $row3 = mysqli_fetch_assoc($result3);
                 <div class="row align-items-start">
                     <div class="col-6">
                       <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                           All Inventory
                         </button>
                         <ul class="dropdown-menu">
