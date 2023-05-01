@@ -81,7 +81,7 @@ $row3 = mysqli_fetch_assoc($result3);
             <div class="card-body">
             <div class="container text-center">
                 <div class="row align-items-start">
-                    <div class="col-6">
+                    <div class="col-6 d-flex flex-row">
                       <div class="dropdown">
                         <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                           All Inventory
