@@ -9,9 +9,10 @@ NOT IN (SELECT tb_products.available FROM tb_products WHERE tb_products.availabl
 $result1=mysqli_query($db,$sql1);
 $row1 = mysqli_fetch_assoc($result1);
 
-$sql2 = "SELECT COUNT(tb_product_category.category) AS category FROM tb_product_category
+$sql2 = "SELECT COUNT(tb_product_category.category) AS category FROM tb_products
+JOIN tb_product_category ON tb_products.category=tb_product_category.category
 WHERE tb_products.available <= 5 AND tb_products.available
-NOT IN (SELECT tb_products.available FROM tb_products WHERE tb_products.available='0') ";
+NOT IN (SELECT tb_products.available FROM tb_products WHERE tb_products.available='0')";
 $result2=mysqli_query($db,$sql2);
 $row2 = mysqli_fetch_assoc($result2);
 
