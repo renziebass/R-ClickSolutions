@@ -87,7 +87,7 @@ $row3 = mysqli_fetch_assoc($result3);
                           All Inventory
                         </button>
                         <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" href="#">Zero Stocks</a></li>
+                          <li><a class="dropdown-item" href="admin_zero_stocks.php">Zero Stocks</a></li>
                           <li><a class="dropdown-item" href="#">Low Stocks</a></li>
                         </ul>
                       </div>
