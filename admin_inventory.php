@@ -179,7 +179,7 @@ $row3 = mysqli_fetch_assoc($result3);
                                 } 
                                 } 
                             ?>
-                            </div>
+                            
                             
                         </div>
                     </div>
