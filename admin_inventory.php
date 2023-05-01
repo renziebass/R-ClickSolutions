@@ -101,7 +101,7 @@ $row3 = mysqli_fetch_assoc($result3);
                     </div>
                 </div>
                 <div class="row align-items-start overflow-auto mt-3" id="page" style="height: 620px;">
-                    <div class="row">
+                    <div class="col-12" id="">
                         <div class="col text-danger fw-bold">
                         INVENTORY REPORT :  <?php echo date("Y-m-d H:i") ?>
                         </div>
