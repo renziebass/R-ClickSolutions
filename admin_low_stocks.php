@@ -1,21 +1,6 @@
 <?php
 include('user_session.php');
 
-$sql1 = "SELECT
-COUNT(tb_products.id)AS products
-FROM tb_products
-WHERE tb_products.available <= 5 AND tb_products.available
-NOT IN (SELECT tb_products.available FROM tb_products WHERE tb_products.available='0') ";
-$result1=mysqli_query($db,$sql1);
-$row1 = mysqli_fetch_assoc($result1);
-
-$sql2 = "SELECT COUNT(tb_products.category) AS category FROM tb_products
-WHERE tb_products.available <= 5 AND tb_products.available
-NOT IN (SELECT tb_products.available FROM tb_products WHERE tb_products.available='0')
-GROUP BY tb_products.category";
-$result2=mysqli_query($db,$sql2);
-$row2 = mysqli_fetch_assoc($result2);
-
 $sql3 = "SELECT SUM(tb_products.available*tb_products.price) AS amount FROM tb_products";
 $result3=mysqli_query($db,$sql3);
 $row3 = mysqli_fetch_assoc($result3);
@@ -121,9 +106,7 @@ $row3 = mysqli_fetch_assoc($result3);
                         <div class="col text-danger fw-bold">
                         LOW STOCKS as of <?php echo date("Y-m-d H:i") ?>
                         </div>
-                        <div class="col fw-bold">
-                           Product Categories: <?php echo $row2['category']; ?>, Total Products: <?php echo $row1['products']; ?>
-                        </div>
+                     
                         <div class="row">
                             <div class="col-12 mt-3">
                                 <div class="row">
