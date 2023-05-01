@@ -114,7 +114,7 @@ $row3 = mysqli_fetch_assoc($result3);
                 <div class="row align-items-start overflow-auto mt-3" id="page" style="height: 620px;">
                     <div class="col-12" id="">
                         <div class="col text-danger fw-bold">
-                        ZERO STOCKS as of :  <?php echo date("Y-m-d H:i") ?>
+                        ZERO STOCKS as of <?php echo date("Y-m-d H:i") ?>
                         </div>
                         <div class="col fw-bold">
                            Product Categories: <?php echo $row2['category']; ?>, Total Products: <?php echo $row1['products']; ?>
