@@ -120,7 +120,7 @@ $row3 = mysqli_fetch_assoc($result3);
                                     <div class="col-2 text-muted">
                                         BRAND
                                     </div>
-                                    <div class="col-3 text-muted">
+                                    <div class="col-2 text-muted">
                                         CATEGORY
                                     </div>
                                     <div class="col text-muted">
@@ -159,7 +159,7 @@ $row3 = mysqli_fetch_assoc($result3);
                                     <div class="col-2">
                                     <?php echo $items['product_brand']; ?>
                                     </div>
-                                    <div class="col-3">
+                                    <div class="col-2">
                                     <td><?php echo $items['category']; ?></td>
                                     </div>
                                     <div class="col">
