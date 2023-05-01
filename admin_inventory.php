@@ -108,80 +108,50 @@ $row3 = mysqli_fetch_assoc($result3);
                         <div class="col fw-bold">
                            Product Categories: <?php echo $row2['category']; ?>, Total Products: <?php echo $row1['products']; ?>, Amount Salable: <?php echo $row3['amount']; ?>
                         </div>
-                        <div class="row">
-                            <div class="col-12 mt-3">
-                                <div class="row">
-                                    <div class="col text-muted">
-                                        PRODUCT ID
-                                    </div>
-                                    <div class="col text-muted">
-                                        SUPPLIER ID
-                                    </div>
-                                    <div class="col-3 text-muted">
-                                        BRAND
-                                    </div>
-                                    <div class="col-3 text-muted">
-                                        CATEGORY
-                                    </div>
-                                    <div class="col text-muted">
-                                        MC BRAND
-                                    </div>
-                                    <div class="col text-muted">
-                                        MC MODEL
-                                    </div>
-                                    <div class="col text-muted">
-                                        STOCKS
-                                    </div>
-                                    <div class="col text-muted">
-                                        AVAILABLE
-                                    </div>
-                                </div>
-                                <?php
-                   $sql="SELECT
-                   *
-                   FROM tb_products
-                   ORDER BY tb_products.date DESC";
-                                                       
-                   $result = mysqli_query($db,$sql);
-       
-                   if (mysqli_num_rows($result) > 0) 
-                   {
-                   foreach($result as $items)
-                   {
-                ?>
-                                <div class="row">
-                                    <div class="col">
-                                    <?php echo $items['id']; ?>
-                                    </div>
-                                    <div class="col">
-                                    <?php echo $items['supplier_id']; ?>
-                                    </div>
-                                    <div class="col-2">
-                                    <?php echo $items['product_brand']; ?>
-                                    </div>
-                                    <div class="col-3">
-                                    <td><?php echo $items['category']; ?></td>
-                                    </div>
-                                    <div class="col">
-                                    <?php echo $items['mc_brand']; ?>
-                                    </div>
-                                    <div class="col">
-                                    <?php echo $items['mc_model']; ?>
-                                    </div>
-                                    <div class="col">
-                                    <?php echo $items['stocks']; ?>
-                                    </div>
-                                    <div class="col">
-                                    <?php echo $items['available']; ?>
-                                    </div>
-                                </div>
-                                <?php
-                                } 
-                                } 
-                            ?>
-                            </div>
-                            
-                        </div>
+                    </div>
+                    <div class="col-12" id="">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th scope="col">PRODUCT ID</th>
+                          <th scope="col">BRAND</th>
+                          <th scope="col">CATEGORY</th>
+                          <th scope="col">MC BRAND</th>
+                          <th scope="col">MC MODEL</th>
+                          <th scope="col">MC BRAND</th>
+                          <th scope="col">STOCKS</th>
+                          <th scope="col">AVAILABLE</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      <?php
+                        $sql="SELECT
+                        *
+                        FROM tb_products
+                        ORDER BY tb_products.date DESC";
+                                                            
+                        $result = mysqli_query($db,$sql);
+            
+                        if (mysqli_num_rows($result) > 0) 
+                        {
+                        foreach($result as $items)
+                        {
+                      ?>
+                        <tr>
+                          <td><?php echo $items['supplier_id']; ?></td>
+                          <td><?php echo $items['product_brand']; ?></td>
+                          <td><?php echo $items['category']; ?></td>
+                          <td><?php echo $items['mc_brand']; ?></td>
+                          <td><?php echo $items['mc_model']; ?></td>
+                          <td><?php echo $items['stocks']; ?></td>
+                          <td><?php echo $items['available']; ?></td>
+                        </tr>
+                      </tbody>
+                      <?php
+                          } 
+                        } 
+                      ?>
+                    </table>
                     </div>
                 </div>
                 </div>
