@@ -117,7 +117,7 @@ $row3 = mysqli_fetch_assoc($result3);
                                     <div class="col text-muted">
                                         SUPPLIER ID
                                     </div>
-                                    <div class="col-3 text-muted">
+                                    <div class="col-2 text-muted">
                                         BRAND
                                     </div>
                                     <div class="col-3 text-muted">
