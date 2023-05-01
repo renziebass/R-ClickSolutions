@@ -149,7 +149,7 @@ $row3 = mysqli_fetch_assoc($result3);
                    foreach($result as $items)
                    {
                 ?>
-                            <div class="col-12 mt-3">
+                            <div class="col-12">
                                 <div class="row">
                                     <div class="col">
                                     <?php echo $items['id']; ?>
