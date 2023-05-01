@@ -28,7 +28,7 @@ $row3 = mysqli_fetch_assoc($result3);
 <style>
 @media print {
   div {
-    break-inside: avoid-column;
+    break-inside: avoid-region;
   }
 }
 </style>
