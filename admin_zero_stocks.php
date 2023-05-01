@@ -152,7 +152,7 @@ $row3 = mysqli_fetch_assoc($result3);
                    *
                    FROM tb_products
                    WHERE tb_products.available='0'
-                   ORDER BY tb_products.date DESC";
+                   ORDER BY tb_products.category ASC";
                                                        
                    $result = mysqli_query($db,$sql);
        
