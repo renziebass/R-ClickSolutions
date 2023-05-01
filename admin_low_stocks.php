@@ -21,7 +21,7 @@ $row3 = mysqli_fetch_assoc($result3);
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>PRODUCTS</title>
+    <title>LOW STOCKS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="sidebars.css" rel="stylesheet">
 </head>
@@ -84,11 +84,11 @@ $row3 = mysqli_fetch_assoc($result3);
                     <div class="col-6 d-flex flex-row">
                       <div class="dropdown">
                         <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                          All Inventory
+                          Low Stocks
                         </button>
                         <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" href="admin_inventory.php">All Inventory</a></li>
                           <li><a class="dropdown-item" href="admin_zero_stocks.php">Zero Stocks</a></li>
-                          <li><a class="dropdown-item" href="admin_low_stocks.php">Low Stocks</a></li>
                         </ul>
                       </div>
                     </div>
@@ -114,10 +114,7 @@ $row3 = mysqli_fetch_assoc($result3);
                 <div class="row align-items-start overflow-auto mt-3" id="page" style="height: 620px;">
                     <div class="col-12" id="">
                         <div class="col text-danger fw-bold">
-                        INVENTORY REPORT :  <?php echo date("Y-m-d H:i") ?>
-                        </div>
-                        <div class="col fw-bold">
-                           Product Categories: <?php echo $row2['category']; ?>, Total Products: <?php echo $row1['products']; ?>, Amount Salable: <?php echo $row3['amount']; ?>
+                        LOW STOCKS as of <?php echo date("Y-m-d H:i") ?>
                         </div>
                         <div class="row">
                             <div class="col-12 mt-3">
@@ -151,7 +148,9 @@ $row3 = mysqli_fetch_assoc($result3);
                    $sql="SELECT
                    *
                    FROM tb_products
-                   ORDER BY tb_products.date DESC";
+                   WHERE tb_products.available <= 5 AND tb_products.available
+                   NOT IN (SELECT tb_products.available FROM tb_products WHERE tb_products.available='0') 
+                   ORDER BY tb_products.category ASC";
                                                        
                    $result = mysqli_query($db,$sql);
        

@@ -116,9 +116,6 @@ $row3 = mysqli_fetch_assoc($result3);
                         <div class="col text-danger fw-bold">
                         ZERO STOCKS as of <?php echo date("Y-m-d H:i") ?>
                         </div>
-                        <div class="col fw-bold">
-                           Product Categories: <?php echo $row2['category']; ?>, Total Products: <?php echo $row1['products']; ?>
-                        </div>
                         <div class="row">
                             <div class="col-12 mt-3">
                                 <div class="row">
