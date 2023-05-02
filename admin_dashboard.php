@@ -1,14 +1,14 @@
 <?php
 include('user_session.php');
 $sql1="SELECT
-SUM(tb_payments.total) AS paid
+CONCAT(FORMAT(SUM(tb_payments.total), 2)) AS paid
 FROM tb_payments
 WHERE tb_payments.date='".date("Y-m-d")."'";
 $result1=mysqli_query($db,$sql1);
 $row1 = mysqli_fetch_assoc($result1);
 
 $sql2="SELECT
-SUM(tb_cart.price) AS unpaid
+CONCAT(FORMAT(SUM(tb_cart.price), 2)) AS unpaid
 FROM tb_transactions
 LEFT JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
 WHERE tb_transactions.status='unpaid' AND tb_transactions.date='".date("Y-m-d")."'";
@@ -33,7 +33,7 @@ $row4 = mysqli_fetch_assoc($result4);
 $currentcustomers=$row3['paidcustomers']+$row4['unpaidcustomers'];
 
 $sql5="SELECT DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date,
-SUM(tb_cart.price*tb_cart.quantity) AS sales
+CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS sales
 FROM tb_payments 
 JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
 WHERE tb_payments.date NOT IN ('".date("Y-m-d")."')
@@ -50,13 +50,13 @@ $result6=mysqli_query($db,$sql6);
 $row6 = mysqli_fetch_assoc($result6);
 
 $sql7="SELECT
-SUM(tb_payments.total) AS paid
+CONCAT(FORMAT(SUM(tb_payments.total), 2)) AS paid
 FROM tb_payments";
 $result7=mysqli_query($db,$sql7);
 $row7 = mysqli_fetch_assoc($result7);
 
 $sql8="SELECT
-SUM(tb_cart.total) AS receivable
+CONCAT(FORMAT(SUM(tb_cart.total), 2)) AS receivable
 FROM tb_transactions
 JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
 WHERE tb_transactions.status='unpaid'";
