@@ -133,7 +133,7 @@ $row1 = mysqli_fetch_assoc($result1);
                                 <?php
                  $sql="SELECT
                  tb_transactions.id,
-                 tb_transactions.date,
+                 DATE_FORMAT(tb_transactions.date,'%M %d,%Y') AS date,
                  SUM(tb_cart.quantity) AS quantity,
                  SUM(tb_products.price) AS total
                  FROM tb_products 
