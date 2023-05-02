@@ -4,7 +4,7 @@ require('config_app.php');
 $DateNow = $_GET['datenow'];
  
 $sql = "SELECT
-CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS income_today,
+CONCAT(FORMAT(SUM(tb_payments.total), 2)) AS income_today,
 (SELECT COUNT(tb_payments.id)
 FROM tb_payments WHERE tb_payments.date='$DateNow') AS customers,
 SUM(tb_cart.quantity) AS items
