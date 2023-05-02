@@ -92,6 +92,7 @@ $row8 = mysqli_fetch_assoc($result8);
 
                        var options = {
         title: "PREVIOUS SALES",
+        height: 300,
         bar: {groupWidth: "95%"},
         legend: { position: "none" },
       };
