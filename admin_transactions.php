@@ -9,6 +9,7 @@ GROUP BY tb_payments.date DESC";
 $result1=mysqli_query($db,$sql1);
 
 $sql2 = "SELECT
+DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date1,
 CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS sales_total,
 (SELECT COUNT(tb_payments.id)
 FROM tb_payments WHERE tb_payments.date='".$_GET['date']."') AS paidcustomers,
@@ -125,7 +126,7 @@ $row3 = mysqli_fetch_assoc($result3);
                 <div class="row align-items-start overflow-auto mt-3" id="page" style="height: 620px;">
                     <div class="col-12" id="">
                         <div class="col text-danger fw-bold">
-                            SALES REPORT: <?php echo $_GET['date'];?>
+                            SALES REPORT: <?php echo $row2['date1'];?>
                         </div>
                         <div class="col fw-bold">
                             Paid Customers: <?php echo $row2['paidcustomers'] ?>,  Paid Items: <?php echo $row2['paiditems'] ?>,  Sales Total: P <?php echo $row2['sales_total'] ?>
