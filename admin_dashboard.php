@@ -18,7 +18,7 @@ $row2 = mysqli_fetch_assoc($result2);
 $currentsales=$row1['paid']+$row2['unpaid'];
 
 $sql3="SELECT 
-COUNT(tb_payments.id) AS paicustomers
+COUNT(tb_payments.id) AS paidcustomers
 FROM tb_payments WHERE tb_payments.date='".$_GET['date']."'";
 $result3=mysqli_query($db,$sql3);
 $row3 = mysqli_fetch_assoc($result3);
