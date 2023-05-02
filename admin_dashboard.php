@@ -32,16 +32,12 @@ $row4 = mysqli_fetch_assoc($result4);
 
 $currentcustomers=$row3['paidcustomers']+$row4['unpaidcustomers'];
 
-$sql5="SELECT
-DATE_FORMAT(tb_transactions.date,'%M %d,%Y') AS date,
-SUM(tb_cart.price*tb_cart.quantity) AS sales,
-SUM(tb_cart.price) AS unpaid
-FROM tb_transactions
-JOIN tb_payments ON tb_transactions.id=tb_payments.id
-JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
-WHERE tb_transactions.date NOT IN (SELECT tb_transactions.date FROM tb_transactions WHERE tb_transactions.date='".date("Y-m-d")."')
-GROUP BY tb_transactions.date
-ORDER BY tb_transactions.date DESC
+$sql5="SELECT DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date,
+tb_payments.date,
+SUM(tb_cart.price*tb_cart.quantity) AS sales
+FROM tb_payments 
+JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
+GROUP BY tb_payments.date DESC
 LIMIT 7";
 $result5=mysqli_query($db,$sql5);
 
@@ -82,7 +78,7 @@ $row8 = mysqli_fetch_assoc($result8);
       var data = google.visualization.arrayToDataTable([
         ["Element", "Sales", { role: "style" } ],
         <?php while($row5 = mysqli_fetch_array($result5)):;?>
-          ['<?php echo $row5['date'];?>', <?php echo $row5['sales'];?>, <?php echo $row5['unpaid'];?>],
+          ['<?php echo $row5['date'];?>', <?php echo $row5['sales'];?>, ],
           <?php endwhile; ?>
       ]);
 
