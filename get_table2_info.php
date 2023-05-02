@@ -13,7 +13,7 @@ FROM (SELECT
         GROUP BY tb_transactions.date) AS A
 JOIN (SELECT
       tb_cart.date,
-      DATE_FORMAT(tb_cart.date,'%M %d,%Y') AS date1
+      DATE_FORMAT(tb_cart.date,'%M %d,%Y') AS date1,
     COUNT(tb_cart.transaction_id) as items,
 	SUM(tb_cart.price*tb_cart.quantity) AS amount
      FROM tb_cart
