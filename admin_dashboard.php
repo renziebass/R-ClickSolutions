@@ -214,7 +214,7 @@ $row8 = mysqli_fetch_assoc($result8);
                     </div>
                     <div class="row">
                         <div class="col-lg-7 col-xl-6">
-                            <div class="card shadow mb-4 " style="height: 350px;">
+                            <div class="card shadow mb-4 " style="height: 400px;">
                                 <div class="card-body">
                                     <div id="chart_div"></div>
                                 </div>
