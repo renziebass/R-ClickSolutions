@@ -78,7 +78,7 @@ $row8 = mysqli_fetch_assoc($result8);
       var data = google.visualization.arrayToDataTable([
         ["Element", "Sales", { role: "style" } ],
         <?php while($row5 = mysqli_fetch_array($result5)):;?>
-          ['<?php echo $row5['date'];?>', <?php echo $row5['sales'];?>, ],
+          ['<?php echo $row5['date'];?>', <?php echo $row5['sales'];?>, 0],
           <?php endwhile; ?>
       ]);
 
