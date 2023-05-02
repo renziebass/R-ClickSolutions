@@ -19,7 +19,8 @@ JOIN (SELECT
      WHERE tb_cart.date NOT IN ('$except')
      GROUP BY tb_cart.date) AS B
 ON A.date=B.date
-GROUP BY B.date";
+GROUP BY B.date
+ORDER BY B.date DESC";
 
 $result = mysqli_query($con,$sql);
 
