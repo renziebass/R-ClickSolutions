@@ -10,10 +10,10 @@ $result1=mysqli_query($db,$sql1);
 
 $sql2 = "SELECT
 DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date1,
-CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS income_today,
+CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS sales_total,
 (SELECT COUNT(tb_payments.id)
-FROM tb_payments WHERE tb_payments.date='".$_GET['date']."') AS customers,
-SUM(tb_cart.quantity) AS items
+FROM tb_payments WHERE tb_payments.date='".$_GET['date']."') AS paidcustomers,
+SUM(tb_cart.quantity) AS paiditems
 FROM tb_payments
 JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
 WHERE tb_payments.date='".$_GET['date']."'";
