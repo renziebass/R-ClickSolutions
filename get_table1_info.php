@@ -6,11 +6,11 @@ $DateNow = $_GET['datenow'];
 $sql = "SELECT
 CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS income_today,
 (SELECT COUNT(tb_payments.id)
-FROM tb_payments WHERE tb_payments.date='".$_GET['date']."') AS customers,
+FROM tb_payments WHERE tb_payments.date='$DateNow') AS customers,
 SUM(tb_cart.quantity) AS items
 FROM tb_payments
 JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
-WHERE tb_payments.date='".$_GET['date']."'";
+WHERE tb_payments.date='$DateNow'";
 
  
 $res = mysqli_query($con,$sql);
