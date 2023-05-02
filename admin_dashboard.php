@@ -186,7 +186,7 @@ $row8 = mysqli_fetch_assoc($result8);
                             </div>
                         </div>
                         <div class="col-md-6 col-xl-3 mb-4">
-                            <div class="card shadow border-start-primary py-2">
+                            <div class="card shadow border-start-primary">
                                 <div class="card-body">
                                     <div class="row align-items-center no-gutters">
                                         <div class="col me-2">
