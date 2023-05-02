@@ -10,7 +10,7 @@ $result1=mysqli_query($db,$sql1);
 
 $sql2 = "SELECT
 DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date1,
-CONCAT(FORMAT(SUM(tb_payments.total)), 2)) AS sales_total,
+CONCAT(FORMAT(SUM(tb_payments.total), 2)) AS sales_total,
 (SELECT COUNT(tb_payments.id)
 FROM tb_payments WHERE tb_payments.date='".$_GET['date']."') AS paidcustomers,
 (SELECT COUNT(tb_cart.product_id)) AS paiditems
