@@ -33,10 +33,10 @@ $row4 = mysqli_fetch_assoc($result4);
 $currentcustomers=$row3['paidcustomers']+$row4['unpaidcustomers'];
 
 $sql5="SELECT DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date,
-tb_payments.date,
 SUM(tb_cart.price*tb_cart.quantity) AS sales
 FROM tb_payments 
 JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
+WHERE tb_payments.date NOT IN (".date("Y-m-d").")
 GROUP BY tb_payments.date DESC
 LIMIT 7";
 $result5=mysqli_query($db,$sql5);
