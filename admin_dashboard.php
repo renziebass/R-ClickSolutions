@@ -34,7 +34,7 @@ $row4 = mysqli_fetch_assoc($result4);
 $currentcustomers=$row3['paidcustomers']+$row4['unpaidcustomers'];
 
 $sql5="SELECT
-tb_transactions.date,
+DATE_FORMAT(tb_transactions.date,'%M %d,%Y') AS date,
 SUM(tb_cart.price*tb_cart.quantity) AS sales,
 SUM(tb_cart.price) AS unpaid
 FROM tb_transactions
