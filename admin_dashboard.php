@@ -92,8 +92,8 @@ $row8 = mysqli_fetch_assoc($result8);
 
                        var options = {
         title: "PREVIOUS SALES",
-        width: 780,
-        height: 370,
+        width: 600,
+        height: 300,
         bar: {groupWidth: "95%"},
         legend: { position: "none" },
       };
@@ -220,105 +220,105 @@ $row8 = mysqli_fetch_assoc($result8);
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-5 col-xl-4">
+                        <div class="col-lg-5 col-xl-6">
                             <div class="card shadow mb-4 px-3" style="height: 187px;">
                             <table style="width:100%;">
                 
-                <thead>
-                <div class="text-uppercase text-muted">Recent Paid Transactions</div> 
-                  <tr>
-                    <th scope="col text-muted">Time</th>
-                    <th scope="col text-muted">Items</th>
-                    <th scope="col text-muted">Total</th>
-                    <th scope="col text-muted">Change</th>
-                  </tr>
-                </thead>
-                <tbody>
-                <?php
-                  $sql="SELECT *
-                  FROM (SELECT
-                          tb_transactions.id,
-                          tb_transactions.time,
-                          tb_transactions.date
-                          FROM tb_transactions WHERE tb_transactions.status='paid') AS A
-                  JOIN (SELECT
-                          tb_payments.id,
-                          COUNT(tb_cart.transaction_id) as items,
-                            SUM(tb_cart.price) AS total,
-                            tb_payments.change1
-                          FROM tb_payments
-                        JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
-                        WHERE tb_payments.date='".date("Y-m-d")."'
-                          GROUP BY tb_payments.id) AS B
-                  ON A.id=B.id
-                  GROUP BY A.id
-                  ORDER BY A.time DESC
-                  LIMIT 4";
-                                                      
-                  $result = mysqli_query($db,$sql);
-      
-                  if (mysqli_num_rows($result) > 0) 
-                  {
-                  foreach($result as $items)
-                  {
-                ?>
-                      <tr>  
-                      <td><?php echo $items['time']; ?></td>
-                      <td><?php echo $items['items']; ?></td>
-                      <td><?php echo $items['total']; ?></td>
-                      <td><?php echo $items['change1']; ?></td>
-                      </tr>
-                <?php
-                  } 
-                } 
-                  ?>
-                </tbody>
-              </table> 
+                                <thead>
+                                <div class="text-uppercase text-muted">Recent Paid Transactions</div> 
+                                  <tr>
+                                    <th scope="col text-muted">Time</th>
+                                    <th scope="col text-muted">Items</th>
+                                    <th scope="col text-muted">Total</th>
+                                    <th scope="col text-muted">Change</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                <?php
+                                  $sql="SELECT *
+                                  FROM (SELECT
+                                          tb_transactions.id,
+                                          tb_transactions.time,
+                                          tb_transactions.date
+                                          FROM tb_transactions WHERE tb_transactions.status='paid') AS A
+                                  JOIN (SELECT
+                                          tb_payments.id,
+                                          COUNT(tb_cart.transaction_id) as items,
+                                            SUM(tb_cart.price) AS total,
+                                            tb_payments.change1
+                                          FROM tb_payments
+                                        JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
+                                        WHERE tb_payments.date='".date("Y-m-d")."'
+                                          GROUP BY tb_payments.id) AS B
+                                  ON A.id=B.id
+                                  GROUP BY A.id
+                                  ORDER BY A.time DESC
+                                  LIMIT 4";
+                                                                      
+                                  $result = mysqli_query($db,$sql);
+                      
+                                  if (mysqli_num_rows($result) > 0) 
+                                  {
+                                  foreach($result as $items)
+                                  {
+                                ?>
+                                      <tr>  
+                                      <td><?php echo $items['time']; ?></td>
+                                      <td><?php echo $items['items']; ?></td>
+                                      <td><?php echo $items['total']; ?></td>
+                                      <td><?php echo $items['change1']; ?></td>
+                                      </tr>
+                                <?php
+                                  } 
+                                } 
+                                  ?>
+                                </tbody>
+                              </table> 
                           </div>
                             <div class="card shadow mb-4 px-3" style="height: 187px;">
                             <table>
-                
-                <thead>
-                <div class="text-uppercase text-muted">Recent Unpaid Transactions</div>
-                  <tr>
-                    <th scope="col">LastName</th>
-                    <th scope="col">Time</th>
-                    <th scope="col">Items</th>
-                    <th scope="col">Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                <?php
-                  $sql="SELECT
-                  tb_transactions.name,
-                  tb_transactions.time,
-                  SUM(tb_cart.quantity) AS items,
-                  SUM(tb_cart.total) AS total
-                  FROM tb_transactions
-                  INNER JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
-                  WHERE tb_transactions.status='unpaid'
-                  AND tb_cart.date='".date("Y-m-d")."'
-                  LIMIT 3;";
-                                                      
-                  $result = mysqli_query($db,$sql);
-      
-                  if (mysqli_num_rows($result) > 0) 
-                  {
-                  foreach($result as $items)
-                  {
-                ?>
-                      <tr>  
-                      <td><?php echo $items['name']; ?></td>
-                      <td><?php echo $items['time']; ?></td>
-                      <td><?php echo $items['items']; ?></td>
-                      <td><?php echo $items['total']; ?></td>
-                      </tr>
-                <?php
-                  } 
-                } 
-                  ?>
-                </tbody>
-              </table> 
+              
+                                  <thead>
+                                  <div class="text-uppercase text-muted">Recent Unpaid Transactions</div>
+                                    <tr>
+                                      <th scope="col">LastName</th>
+                                      <th scope="col">Time</th>
+                                      <th scope="col">Items</th>
+                                      <th scope="col">Total</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                  <?php
+                                    $sql="SELECT
+                                    tb_transactions.name,
+                                    tb_transactions.time,
+                                    SUM(tb_cart.quantity) AS items,
+                                    SUM(tb_cart.total) AS total
+                                    FROM tb_transactions
+                                    INNER JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
+                                    WHERE tb_transactions.status='unpaid'
+                                    AND tb_cart.date='".date("Y-m-d")."'
+                                    LIMIT 3;";
+                                                                        
+                                    $result = mysqli_query($db,$sql);
+                        
+                                    if (mysqli_num_rows($result) > 0) 
+                                    {
+                                    foreach($result as $items)
+                                    {
+                                  ?>
+                                        <tr>  
+                                        <td><?php echo $items['name']; ?></td>
+                                        <td><?php echo $items['time']; ?></td>
+                                        <td><?php echo $items['items']; ?></td>
+                                        <td><?php echo $items['total']; ?></td>
+                                        </tr>
+                                  <?php
+                                    } 
+                                  } 
+                                    ?>
+                                  </tbody>
+                                </table> 
                             </div>
                         </div>
                     </div>
