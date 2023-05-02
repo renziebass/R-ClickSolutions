@@ -26,7 +26,7 @@ CONCAT(FORMAT(SUM(tb_cart.price), 2)) AS total_receivables,
 COUNT(tb_cart.product_id) AS unpaid_items
 FROM tb_transactions
 JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
-WHERE tb_transactions.status='unpaid' AND tb_transactions.date='".$_GET['date']."';";
+WHERE tb_transactions.status='unpaid' AND tb_transactions.date='".$_GET['date']."'";
 $result3=mysqli_query($db,$sql3);
 $row3 = mysqli_fetch_assoc($result3);
 
