@@ -17,10 +17,9 @@ $row2 = mysqli_fetch_assoc($result2);
 
 $currentsales=$row1['paid']+$row2['unpaid'];
 
-$sql3="SELECT
-COUNT(tb_transactions.id) as paidcustomers
-FROM tb_transactions
-WHERE tb_transactions.status='paid' AND tb_transactions.date='".date("Y-m-d")."'";
+$sql3="SELECT 
+COUNT(tb_payments.id) AS paicustomers
+FROM tb_payments WHERE tb_payments.date='".$_GET['date']."'";
 $result3=mysqli_query($db,$sql3);
 $row3 = mysqli_fetch_assoc($result3);
 
@@ -48,9 +47,9 @@ $result5=mysqli_query($db,$sql5);
 
 $sql6="SELECT
 SUM(tb_cart.quantity) AS items
-FROM tb_transactions
-JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
-WHERE tb_transactions.status='paid' AND tb_transactions.date='".date("Y-m-d")."'";
+FROM tb_payments
+JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
+WHERE tb_payments.date='".$_GET['date']."'";
 $result6=mysqli_query($db,$sql6);
 $row6 = mysqli_fetch_assoc($result6);
 
