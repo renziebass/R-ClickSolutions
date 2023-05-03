@@ -6,7 +6,7 @@ $sql="SELECT *
 FROM (SELECT
         tb_payments.date,
         COUNT(tb_payments.id) AS customers,
-		SUM(tb_payments.total) AS amount
+        CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS amount
         FROM tb_transactions
         LEFT JOIN tb_payments ON tb_transactions.id=tb_payments.id
         WHERE tb_transactions.status='paid'
