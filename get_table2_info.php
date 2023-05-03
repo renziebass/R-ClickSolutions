@@ -5,8 +5,7 @@ $except= $_GET['except'];
 $sql="SELECT *
 FROM (SELECT
         tb_payments.date,
-        COUNT(tb_payments.id) AS customers,
-        CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS amount
+        COUNT(tb_payments.id) AS customers
         FROM tb_transactions
         LEFT JOIN tb_payments ON tb_transactions.id=tb_payments.id
         WHERE tb_transactions.status='paid'
@@ -14,6 +13,7 @@ FROM (SELECT
         GROUP BY tb_transactions.date) AS A
 JOIN (SELECT
       tb_cart.date,
+      CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS amount,
       DATE_FORMAT(tb_cart.date,'%M %d,%Y') AS date1,
     COUNT(tb_cart.transaction_id) as items
      FROM tb_transactions
