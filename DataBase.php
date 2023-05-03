@@ -201,17 +201,6 @@ class DataBase
             return true;
         } else return false;
     }
-    function Paid_Transaction($id)
-    {
-        $id = $this->prepareData($id);
-        $this->sql =
-            "UPDATE tb_transactions
-            SET tb_transactions.status='paid'
-            WHERE tb_transactions.id='$id'";
-        if (mysqli_query($this->connect, $this->sql)) {
-            return true;
-        } else return false;
-    }
     function delete_product($Tid, $Pid, $quantity)
     {
         $Tid = $this->prepareData($Tid);

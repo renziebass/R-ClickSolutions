@@ -8,5 +8,4 @@ if (isset($_POST['userid']) && isset($_POST['password'])) {
         } else echo "userid or Password wrong";
     } else echo "Error: Database connection";
 } else echo "All fields are required";
-
 ?>
