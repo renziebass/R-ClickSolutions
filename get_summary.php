@@ -11,7 +11,7 @@ FROM tb_payments WHERE tb_payments.date='$DateNow') AS customers,
 FROM tb_transactions
 LEFT JOIN tb_payments ON tb_transactions.id=tb_payments.id
 RIGHT JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
-WHERE tb_transactions.status='paid' AND tb_transactions.date='$DateNow'";
+WHERE  tb_payments.date='$DateNow'";
 
  
 $res = mysqli_query($con,$sql);
