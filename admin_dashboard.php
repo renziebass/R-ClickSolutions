@@ -15,7 +15,6 @@ WHERE tb_transactions.status='unpaid' AND tb_transactions.date='".date("Y-m-d").
 $result2=mysqli_query($db,$sql2);
 $row2 = mysqli_fetch_assoc($result2);
 
-$currentsales=$row1['paid']+$row2['unpaid'];
 
 $sql3="SELECT 
 COUNT(tb_payments.id) AS paidcustomers
@@ -91,8 +90,8 @@ $row8 = mysqli_fetch_assoc($result8);
                        2]);
 
                        var options = {
-        title: "PREVIOUS SALES",
-        height: 300,
+        title: "PREVIOUS DAYS SALES",
+        height:400,
         bar: {groupWidth: "95%"},
         legend: { position: "none" },
       };
@@ -214,8 +213,7 @@ $row8 = mysqli_fetch_assoc($result8);
                     <div class="row">
                         <div class="col-lg-7 col-xl-6">
                             <div class="card shadow mb-4 " style="height: 400px;">
-                                <div class="card-body">
-                                    <div id="chart_div"></div>
+                                <div id="chart_div">
                                 </div>
                             </div>
                         </div>
