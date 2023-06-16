@@ -8,7 +8,7 @@ SUM(tb_cart.quantity) AS items,
 SUM(tb_cart.price*tb_cart.quantity) AS total,
 tb_transactions.name
 FROM tb_cart
-JOIN tb_transactions ON tb_cart.transaction_id=tb_transactions.id
+LEFT JOIN tb_transactions ON tb_cart.transaction_id=tb_transactions.id
 WHERE tb_cart.transaction_id='$transaction_id'
 GROUP BY tb_cart.transaction_id";
 
