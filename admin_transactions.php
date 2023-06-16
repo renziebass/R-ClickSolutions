@@ -36,7 +36,7 @@ $row3 = mysqli_fetch_assoc($result3);
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TRANASCTIONS</title>
+    <title>TRANSACTIONS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="sidebars.css" rel="stylesheet">
 </head>
@@ -240,7 +240,7 @@ $row3 = mysqli_fetch_assoc($result3);
                                 tb_transactions.name,
                                 tb_transactions.time,
                                 SUM(tb_cart.quantity) as items,
-                                SUM(tb_cart.total) AS total
+                                CONCAT(FORMAT(SUM(tb_cart.price), 2)) AS total
                                 FROM tb_transactions
                                 INNER JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
                                 WHERE tb_transactions.status='unpaid'
