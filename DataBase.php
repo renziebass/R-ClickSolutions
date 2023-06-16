@@ -215,18 +215,6 @@ class DataBase
         } else return false;
         
     }
-    function Save_Transaction($id, $name)
-    {
-        $id = $this->prepareData($id);
-        $name = $this->prepareData($name);
-        
-        $this->sql ="UPDATE tb_transactions
-        SET tb_transactions.name='" . $name . "'
-        WHERE tb_transactions.id='" . $id . "'";
-        if (mysqli_query($this->connect, $this->sql)) {
-            return true;
-        } else return false;
-    }
     function Create_Cart($table, $transaction_id, $date, $product_id, $quantity, $price)
     {
         $transaction_id = $this->prepareData($transaction_id);
