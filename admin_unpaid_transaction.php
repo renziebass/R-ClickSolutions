@@ -181,7 +181,6 @@ if ($db->query($sql4) === TRUE) {
                             $total = $row1['total'];
                           }
                           echo $total;
-                          ?>:
                       ?>
                         </div>
                         <div class="row">
