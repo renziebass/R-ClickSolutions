@@ -152,7 +152,7 @@ $row1 = mysqli_fetch_assoc($result1);
                     </script>
                     </div>
                 </div>
-                <div class="row align-items-start overflow-auto mt-3" id="page" style="height: 320px;">
+                <div class="row align-items-start overflow-auto mt-3" id="page" style="height: 620px;">
                     <div class="col-12" id="">
                         <div class="col text-danger fw-bold">
                             TRANSACTION ID # : <?php echo $_GET['id']; ?>
