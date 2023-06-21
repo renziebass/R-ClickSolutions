@@ -258,6 +258,111 @@ $row1 = mysqli_fetch_assoc($result1);
                             
                         </div>
                     </div>
+                    <div class="col-12" id="">
+                        <div class="col text-danger fw-bold">
+                            TRANSACTION ID # : <?php echo $_GET['id']; ?>
+                        </div>
+                        <div class="col fw-bold">
+                           Date & Time : <?php
+                      if(empty($row1['date_time'])) {
+                        $date_time ="N/A";
+                      } else {
+                        $date_time = $row1['date_time'];
+                      }
+                      echo $date_time;
+                      ?>, Total Items : <?php
+                      if(empty($row1['items'])) {
+                        $items ="0";
+                      } else {
+                        $items = $row1['items'];
+                      }
+                      echo $items;
+                      ?>, Total Amount : <?php
+                      if(empty($row1['total'])) {
+                        $total ="0";
+                      } else {
+                        $total = $row1['total'];
+                      }
+                      echo $total;
+                      ?>, Payment : P <?php
+                      if(empty($row1['payment'])) {
+                        $payment ="0";
+                      } else {
+                        $payment = $row1['payment'];
+                      }
+                      echo $payment;
+                      ?>, Change : P <?php
+                      if(empty($row1['change1'])) {
+                        $change1 ="0";
+                      } else {
+                        $change1 = $row1['change1'];
+                      }
+                      echo $change1;
+                      ?>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 mt-3">
+                                <div class="row">
+                                    <div class="col">
+                                    </div>
+                                    <div class="col text-muted">
+                                        PRODUCT ID
+                                    </div>
+                                    <div class="col text-muted">
+                                        BRAND
+                                    </div>
+                                    <div class="col text-muted">
+                                        SPECIFICATION
+                                    </div>
+                                    <div class="col text-muted">
+                                        QTY
+                                    </div>
+                                    <div class="col text-muted">
+                                        PRICE
+                                    </div>
+                                    <div class="col text-muted">
+                                        TOTAL
+                                    </div>
+                                </div>
+                                <?php
+                  if (mysqli_num_rows($result) > 0) 
+                  {
+                  foreach($result as $items)
+                  {
+                ?>
+                                <div class="row">
+                                    <div class="col">
+                                    <svg onclick="location.href='admin_transaction.php?id=<?php echo $_GET['id']?>&DeleteProduct=<?php echo $items['id'];?>&QTY=<?php echo $items['quantity'];?>'" class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
+                                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
+                                    </svg>
+                                    </div>
+                                    <div class="col">
+                                    <a class="link-offset-2 link-underline link-underline-opacity-0" onclick="location.href='admin_product.php?id=<?php echo $items['product_id'];?>'"><?php echo $items['product_id'];?></a>
+                                    </div>
+                                    <div class="col">
+                                    <?php echo $items['product_brand']; ?>
+                                    </div>
+                                    <div class="col">
+                                    <?php echo $items['specification']; ?>
+                                    </div>
+                                    <div class="col">
+                                    <?php echo $items['quantity']; ?>
+                                    </div>
+                                    <div class="col">
+                                    <?php echo $items['price']; ?>
+                                    </div>
+                                    <div class="col">
+                                    <?php echo $items['total']; ?>
+                                    </div>
+                                </div>
+                                <?php
+                                } 
+                                } 
+                            ?>
+                            </div>
+                            
+                        </div>
+                    </div>
                 </div>
                 </div>
             </div>
