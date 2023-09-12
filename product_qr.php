@@ -63,18 +63,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="input-group">
         <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Quantity</button>
               <div class="dropdown-menu">
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=1" value="">3</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=2" value="">6</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=3" value="">9</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=4" value="">12</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=5" value="">15</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=6" value="">18</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=7" value="">21</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=8" value="">24</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=9" value="">27</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=10" value="">30</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=11" value="">33</a>
-                  <a class="dropdown-item" href="product_qr.php?product_id=<?php echo $row1['id'];?>&line=12" value="">36</a>
+                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=1" value="">3</a>
+                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=2" value="">6</a>
+                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=3" value="">9</a>
+                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=4" value="">12</a>
+                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=5" value="">15</a>
+                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=6" value="">18</a>
+                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=7" value="">21</a>
+                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=8" value="">24</a>
+                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=9" value="">27</a>
+                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=10" value="">30</a>
+                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=11" value="">33</a>
+                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=12" value="">36</a>
               </div>
           
           <input type="text" name="product_id" class="form-control" placeholder="<?php echo $_GET['product_id']; ?>">

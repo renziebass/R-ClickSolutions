@@ -83,17 +83,22 @@ include("config.php");
     </style>
     <link href="sign-in.css" rel="stylesheet">
 </head>
-  <body>
+  <body class="bg-image" 
+     style="background-image: url('http://localhost/KG/assets/img/BG.jpg');
+            height: 100vh">
   
       
     <main class="form-signin w-100 m-auto">
+    <div class="container text-center">
+    <img src="assets/img/R-ClickLogo.png" alt="" width="100" height="100">
+    <img src="assets/img/KGLogo.png" alt="" width="110" height="60">
+    </div>
     <form method="post">
-    <img class="mb-4" src="../assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
     <h1 class="h3 mb-3 fw-normal text-center">P-Click POS Sign-in</h1>
 
     <div class="form-floating">
       <input type="text" class="form-control" name="id" placeholder="name@example.com">
-      <label for="floatingInput">Email address</label>
+      <label for="floatingInput">User ID</label>
     </div>
     <div class="form-floating">
       <input type="password" class="form-control" name="password" placeholder="Password">
@@ -113,6 +118,9 @@ include("config.php");
         if($check_user>0){
           $user_data = mysqli_fetch_assoc($run_user);
           $_SESSION['id'] = $id;
+          $sql2 = "INSERT INTO `tb_login_history` (`id`, `date`, `time`)
+          VALUES ('$id','".date("Y-m-d")."','".date("H:i:s")."')";
+          $recordSession = mysqli_query($db, $sql2);
           header("location: admin_dashboard.php");
         } else {
           echo $error = "Login Credentials is invalid";
@@ -126,7 +134,7 @@ include("config.php");
         <input type="checkbox" value="remember-me"> Remember me
       </label>
     </div>
-    <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+    <button class="w-100 btn btn-sm btn-outline-primary" type="submit">Sign in</button>
     <p class="mt-5 mb-3 text-body-secondary text-center">&copy; R-Click Solutions PH 2023</p>
   </form>
 </main>
