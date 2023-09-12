@@ -336,7 +336,7 @@ include('user_session.php');
                           tb_payments.change1
                         FROM tb_payments
                       JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
-                      WHERE tb_payments.date='2023-08-08'
+                      WHERE tb_payments.date='".date("Y-m-d")."'
                         GROUP BY tb_payments.id) AS B
                 ON A.id=B.id
                 GROUP BY A.id
