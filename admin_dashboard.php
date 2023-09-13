@@ -1,6 +1,77 @@
 
 <?php
 include('user_session.php');
+$sql1="SELECT
+CONCAT(FORMAT(SUM(tb_payments.total), 2)) AS paid
+FROM tb_payments";
+$result1=mysqli_query($db,$sql1);
+$row1 = mysqli_fetch_assoc($result1);
+
+$sql2="SELECT
+DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date1,
+CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS sales,
+(SELECT COUNT(tb_payments.id)
+FROM tb_payments WHERE tb_payments.date='".date("Y-m-d")."') AS paidcustomers,
+SUM(tb_cart.quantity) AS paiditems
+FROM tb_payments
+JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
+WHERE tb_payments.date='".date("Y-m-d")."'";
+$result2=mysqli_query($db,$sql2);
+$row2 = mysqli_fetch_assoc($result2);
+
+$sql3="SELECT
+COUNT(tb_transactions.id)AS transactions
+FROM tb_transactions
+WHERE tb_transactions.status='unpaid'";
+$result3=mysqli_query($db,$sql3);
+$row3 = mysqli_fetch_assoc($result3);
+
+$sql4="SELECT
+CONCAT(FORMAT(SUM(tb_cart.total), 2)) AS unpaid
+FROM tb_transactions
+JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
+WHERE tb_transactions.status='unpaid'";
+$result4=mysqli_query($db,$sql4);
+$row4 = mysqli_fetch_assoc($result4);
+
+$sql5 = "SELECT 
+CONCAT(FORMAT(SUM(tb_products.available*tb_products.price), 2)) AS amount
+FROM tb_products";
+$result5=mysqli_query($db,$sql5);
+$row5 = mysqli_fetch_assoc($result5);
+
+$sql6 = "SELECT
+COUNT(tb_products.id)AS products
+FROM tb_products
+WHERE tb_products.available <= 5 AND tb_products.available
+NOT IN (SELECT tb_products.available FROM tb_products WHERE tb_products.available='0')";
+$result6=mysqli_query($db,$sql6);
+$row6 = mysqli_fetch_assoc($result6);
+
+$sql7 = "SELECT
+COUNT(tb_products.id)AS products
+FROM tb_products
+WHERE tb_products.available='0'";
+$result7=mysqli_query($db,$sql7);
+$row7 = mysqli_fetch_assoc($result7);
+
+$sql8="SELECT DATE_FORMAT(tb_payments.date,'%M %d') AS date,
+SUM(tb_cart.price*tb_cart.quantity) AS sales
+FROM tb_payments 
+JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
+WHERE tb_payments.date NOT IN ('".date("Y-m-d")."')
+GROUP BY tb_payments.date DESC
+LIMIT 7";
+$result8=mysqli_query($db,$sql8);
+
+$sql9="SELECT DATE_FORMAT(tb_payments.date,'%M %d') AS date,
+SUM(tb_cart.price*tb_cart.quantity) AS sales
+FROM tb_payments 
+JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
+WHERE tb_payments.date NOT IN ('".date("Y-m-d")."')
+GROUP BY tb_payments.date DESC
+LIMIT 7";
+$result9=mysqli_query($db,$sql9);
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -303,11 +374,53 @@ include('user_session.php');
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h5>Dashboard</h5>
-        
       </div>
-
+      <div class="container text-center border p-2">
+        <div class="row">
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary">P <?php echo $row2['sales'];?></p>
+            <p class="m-0 p-0 text-muted">Sales Today</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['paidcustomers'];?></p>
+            <p class="m-0 p-0 text-muted">Transactions Today</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['paiditems'];?></p>
+            <p class="m-0 p-0 text-muted">Items Sold Today</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col" onclick="location.href='admin_transactions_history.php'">
+            <p class="m-0 p-0 fw-bold text-primary">P <?php echo $row1['paid'];?></p>
+            <p class="m-0 p-0 text-muted">Overall Sales</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row3['transactions'];?></p>
+            <p class="m-0 p-0 text-muted">Unpaid Transactions</p>
+          </div>
+          <div class="col" onclick="location.href='admin_unpaid_transactions.php'">
+            <p class="m-0 p-0 fw-bold text-primary">P <?php echo $row4['unpaid'];?></p>
+            <p class="m-0 p-0 text-muted">Unpaid Amount</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary">P <?php echo $row5['amount']; ?></p>
+            <p class="m-0 p-0 text-muted">Amount Salable</p>
+          </div>
+          <div class="col" onclick="location.href='admin_low_stocks.php'">
+            <p class="m-0 p-0 fw-bold text-danger"><?php echo $row6['products']; ?></p>
+            <p class="m-0 p-0 text-muted">Low Stocks</p>
+          </div>
+          <div class="col" onclick="location.href='admin_zero_stocks.php'">
+            <p class="m-0 p-0 fw-bold text-danger"><?php echo $row7['products']; ?></p>
+            <p class="m-0 p-0 text-muted">Zero Stocks</p>
+          </div>
+        </div>
+      </div>
+      <h6 class="mt-5">Previous Sales Chart</h6>
       <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
-
       <h6>Recent Paid Transactions</h6>
       <div class="table-responsive">
         <table class="table table-hover table-sm">
@@ -371,6 +484,52 @@ include('user_session.php');
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-</script><script src="dashboard.js"></script>
+</script>
+<script>
+  /* globals Chart:false, feather:false */
+
+(() => {
+  'use strict'
+
+  feather.replace({ 'aria-hidden': 'true' })
+
+  // Graphs
+  const ctx = document.getElementById('myChart')
+  // eslint-disable-next-line no-unused-vars
+  const myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [
+        <?php while($row8 = mysqli_fetch_array($result8)):;?>
+          ['<?php echo $row8['date'];?>'],
+          <?php endwhile; ?>
+      ],
+      datasets: [{
+        data: [
+          <?php while($row9 = mysqli_fetch_array($result9)):;?>
+          <?php echo $row9['sales'];?>,
+          <?php endwhile; ?>
+        ],
+        lineTension: 0,
+        backgroundColor: 'transparent',
+        borderColor: '#007bff',
+        borderWidth: 4,
+        pointBackgroundColor: '#007bff'
+      }]
+    },
+    options: {
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          boxPadding: 3
+        }
+      }
+    }
+  })
+})()
+
+</script>
   </body>
 </html>

@@ -326,7 +326,7 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
         </h6>
         <ul class="nav flex-column mb-5">
           <li class="nav-item">
-            <a class="nav-link" href="admin_productqr.php">
+            <a class="nav-link" href="admin_productqr.php?product_id=20230419234321&line=1">
               <span data-feather="file-text" class="align-text-bottom"></span>
               QR Generator
             </a>
@@ -393,7 +393,7 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
         <div class="input-group input-group-sm mb-3">
-          <input type="text" name="mb" class="form-control" placeholder="New Motorcycle Brand" aria-label="Recipient's username" aria-describedby="button-addon2">
+          <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="mb" class="form-control" placeholder="New Motorcycle Brand" aria-label="Recipient's username" aria-describedby="button-addon2">
           <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Add</button>
         </div>
         <div class="input-group input-group-sm mb-3">
@@ -403,12 +403,12 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
             <?php echo $row3['brand'];?></option>
           <?php endwhile; ?>
           </select>
-          <input type="text" name="mcmodel" class="form-control" placeholder="New Motorcycle Model" aria-label="Recipient's username" aria-describedby="button-addon2">
+          <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="mcmodel" class="form-control" placeholder="New Motorcycle Model" aria-label="Recipient's username" aria-describedby="button-addon2">
           <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Add</button>
         </div>
       </form>
       </div>
-      <div class="table-responsive" id="page">
+      <div class="table" id="page">
       <h6>Recently added motorcycle brand and model</h6>
         <table class="table table-hover table-sm">
           <thead>
@@ -435,9 +435,30 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
             <tr>
                 <td><?php echo "".$items['brand']."-".$items['model'].""; ?></td>
                 <td>
-                <svg onclick="location.href='admin_add_mc.php?xmcbrand=<?php echo $items['brand'];?>&xmcmodel=<?php echo $items['model'];?>'" class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
-                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"></svg>
+        
+                  <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <span>
+                      <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
+                      <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
+                      </svg>
+                    </span>
+                  </button>
+
+                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h6 class="modal-title" id="exampleModalLabel">Delete Motorcycle Model</h6>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                          <button onclick="location.href='admin_add_mc.php?xmcbrand=<?php echo $items['brand'];?>&xmcmodel=<?php echo $items['model'];?>'" type="button" class="btn btn-sm btn-danger">Delete</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </td>
+              
             </tr>
             <?php
             } 

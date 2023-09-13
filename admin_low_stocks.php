@@ -339,9 +339,20 @@ $row1 = mysqli_fetch_assoc($result1);
         </div>
       </div>
       
-      <div class="table-responsive" id="page">
-      <h6>Low stocks as of <?php echo date("F d,Y H:i") ?></h6>
-      <h6><?php echo $row1['products']; ?> Products</h6>
+      <div class="table" id="page">
+      <div class="container text-center border p-2">
+        <div class="row">
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo date("F d,Y H:i") ?></p>
+            <p class="m-0 p-0 text-muted">Date & Time</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row1['products']; ?></p>
+            <p class="m-0 p-0 text-muted">Products</p>
+          </div>
+        </div>
+      </div>
+      <h6 class="mt-5">Low Stocks Products</h6>
         <table class="table table-hover table-sm">
           <thead>
             <tr>

@@ -8,6 +8,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $search = $_POST["search"];
   }
 }
+
+$sql1="SELECT
+COUNT(tb_users.userid)AS admins
+FROM tb_users
+JOIN tb_accounts ON tb_users.userid=tb_accounts.userid
+WHERE tb_accounts.acc_type='ADMIN'";
+$result1=mysqli_query($db,$sql1);
+$row1 = mysqli_fetch_assoc($result1);
+
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -326,8 +335,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
       </div>
       
-      <div class="table-responsive" id="page">
-      <h6>All system users</h6>
+      <div class="table" id="page">
+      <div class="container text-center border p-2">
+        <div class="row">
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row1['admins'];?></p>
+            <p class="m-0 p-0 text-muted">Admins</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary">Code here</p>
+            <p class="m-0 p-0 text-muted">Other Users</p>
+          </div>
+        </div>
+      </div>
+      <h6 class="mt-5">All system users</h6>
         <table class="table table-hover table-sm">
           <thead>
             <tr>

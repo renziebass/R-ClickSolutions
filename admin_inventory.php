@@ -1,7 +1,7 @@
 <?php
 include('user_session.php');
 $sql1 = "SELECT
-SUM(tb_products.available)AS products
+SUM(tb_products.stocks)AS products
 FROM tb_products";
 $result1=mysqli_query($db,$sql1);
 $row1 = mysqli_fetch_assoc($result1);
@@ -15,6 +15,24 @@ CONCAT(FORMAT(SUM(tb_products.available*tb_products.price), 2)) AS amount
 FROM tb_products";
 $result3=mysqli_query($db,$sql3);
 $row3 = mysqli_fetch_assoc($result3);
+
+$sql4="SELECT
+SUM(tb_cart.quantity) AS items
+FROM tb_cart";
+$result4=mysqli_query($db,$sql4);
+$row4 = mysqli_fetch_assoc($result4);
+
+$sql5="SELECT
+COUNT(tb_product_category.category)AS category
+FROM tb_product_category";
+$result5=mysqli_query($db,$sql5);
+$row5 = mysqli_fetch_assoc($result5);
+
+$sql6 = "SELECT
+SUM(tb_products.available)AS products2
+FROM tb_products";
+$result6=mysqli_query($db,$sql6);
+$row6 = mysqli_fetch_assoc($result6);
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -346,11 +364,38 @@ $row3 = mysqli_fetch_assoc($result3);
         </div>
       </div>
       
-      <div class="table-responsive" id="page">
-      <h6>Inventory as of <?php echo date("F d,Y H:i") ?></h6>
-      <h6><?php echo $row2['category']; ?> Product Categories</h6>
-      <h6><?php echo $row1['products']; ?> Total Products</h6>
-      <h6>P<?php echo $row3['amount']; ?> Amount Salable</h6>
+      <div class="table" id="page">
+      <div class="container text-center border">
+        <div class="row">
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo date("F d,Y H:i") ?></p>
+            <p class="m-0 p-0 text-muted">Inventory Date Time</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary">P<?php echo $row3['amount']; ?></p>
+            <p class="m-0 p-0 text-muted">Amount Salable</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row5['category'];?></p>
+            <p class="m-0 p-0 text-muted">Category</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row1['products']; ?></p>
+            <p class="m-0 p-0 text-muted">Products</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row4['items'];?></p>
+            <p class="m-0 p-0 text-muted">Products Sold</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row6['products2']; ?></p>
+            <p class="m-0 p-0 text-muted">Remaining Products</p>
+          </div>
+        </div>
+      </div>
+      <h6 class="mt-5">Inventory of All Products</h6>
         <table class="table table-hover table-sm">
           <thead>
             <tr>

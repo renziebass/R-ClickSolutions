@@ -6,10 +6,15 @@ CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_bra
 AS specification
 FROM tb_products";
 $search = null;
+
+
 $result1=mysqli_query($db,$sql1);
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   if (!empty($_POST["search"])) {
     $search = $_POST["search"];
+    header("Cache-Control: no cache");
+  } else {
+    $search = null;
   }
 }
 $sql2="SELECT
@@ -17,6 +22,27 @@ SUM(tb_products.available)AS products
 FROM tb_products";
 $result2=mysqli_query($db,$sql2);
 $row2 = mysqli_fetch_assoc($result2);
+
+$sql3="SELECT
+COUNT(tb_products.id)AS lowstocks
+FROM tb_products
+WHERE tb_products.available <= 5 AND tb_products.available
+NOT IN (SELECT tb_products.available FROM tb_products WHERE tb_products.available='0')";
+$result3=mysqli_query($db,$sql3);
+$row3 = mysqli_fetch_assoc($result3);
+
+$sql4="SELECT
+COUNT(tb_products.id)AS zerostocks
+FROM tb_products
+WHERE tb_products.available='0'";
+$result4=mysqli_query($db,$sql4);
+$row4 = mysqli_fetch_assoc($result4);
+
+$sql5="SELECT
+COUNT(tb_product_category.category)AS category
+FROM tb_product_category";
+$result5=mysqli_query($db,$sql5);
+$row5 = mysqli_fetch_assoc($result5);
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -334,10 +360,10 @@ $row2 = mysqli_fetch_assoc($result2);
             </script>
         </div>
       </div>
-      <form method="post" action="<?php echo $_SERVER['PHP_SELF'];?>">
+      <form method="post" enctype="multipart/form-data">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3">
           <div class="input-group">
-            <input id="search" name="search" class="form-control" list="datalistOptions" id="exampleDataList" value="" placeholder="Type to search product...">
+            <input id="search" name="search" class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Type to search product...">
             <script>
               window.onload = init;
               function init(){
@@ -353,8 +379,37 @@ $row2 = mysqli_fetch_assoc($result2);
           </div>
       </div>
       </form>
-      <div class="table-responsive" id="page">
-      <h6><?php echo $row2['products'];?> Items</h6>
+      <div class="table" id="page">
+      <div class="container text-center border p-2">
+        <div class="row">
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['products'];?></p>
+            <p class="m-0 p-0 text-muted">Total Items</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row5['category'];?></p>
+            <p class="m-0 p-0 text-muted">Total Category</p>
+          </div>
+          <div class="col" onclick="location.href='admin_low_stocks.php'">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row3['lowstocks'];?></p>
+            <p class="m-0 p-0 text-muted">Low Stocks</p>
+          </div>
+          <div class="col" onclick="location.href='admin_zero_stocks.php'">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row4['zerostocks'];?></p>
+            <p class="m-0 p-0 text-muted">Zero Stocks</p>
+          </div>
+        </div>
+      </div>
+      <h6 class="mt-5">
+        <?php
+         if(empty($_POST["search"])) {
+          $text ="All Products";
+          } else {
+          $text = "Result for the keyword ' ".$search." '";
+          }
+          echo $text;
+        ?>
+      </h6>
         <table class="table table-hover table-sm">
           <thead>
             <tr>

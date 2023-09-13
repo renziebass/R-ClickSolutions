@@ -1,6 +1,28 @@
 
 <?php
 include('user_session.php');
+$sql1="SELECT
+COUNT(tb_transactions.id)AS transactions
+FROM tb_transactions
+WHERE tb_transactions.status='unpaid'";
+$result1=mysqli_query($db,$sql1);
+$row1 = mysqli_fetch_assoc($result1);
+
+$sql2="SELECT
+SUM(tb_cart.quantity) AS items
+FROM tb_transactions
+JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
+WHERE tb_transactions.status='unpaid';";
+$result2=mysqli_query($db,$sql2);
+$row2 = mysqli_fetch_assoc($result2);
+
+$sql3="SELECT
+CONCAT(FORMAT(SUM(tb_cart.total), 2)) AS unpaid
+FROM tb_transactions
+JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
+WHERE tb_transactions.status='unpaid'";
+$result3=mysqli_query($db,$sql3);
+$row3 = mysqli_fetch_assoc($result3);
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -324,8 +346,24 @@ include('user_session.php');
 
   
       
-      <div class="table-responsive" id="page">
-      <h6>Unpaid Accounts</h6>
+      <div class="table" id="page">
+      <div class="container text-center border p-2">
+        <div class="row">
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row1['transactions'];?></p>
+            <p class="m-0 p-0 text-muted">Unpaid Transactions</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['items'];?></p>
+            <p class="m-0 p-0 text-muted">Unpaid Items</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary">P <?php echo $row3['unpaid'];?></p>
+            <p class="m-0 p-0 text-muted">Unpaid Amount</p>
+          </div>
+        </div>
+      </div>
+      <h6 class="mt-5">Unpaid Accounts</h6>
         <table class="table table-hover table-sm">
           <thead>
             <tr>

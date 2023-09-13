@@ -383,64 +383,96 @@ if (mysqli_num_rows($result) > 0) {
               location.reload();
               } 
             </script>
-            <button type="button" onclick="location.href='admin_transaction.php?VoidID=<?php echo $_GET['id']?>'" class="btn btn-sm btn-outline-secondary" <?php echo $voidButton; ?>><span data-feather="trash"></span></button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal" <?php echo $voidButton; ?>>
+              <span data-feather="trash"></span>
+            </button>
+
+                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h6 class="modal-title" id="exampleModalLabel">Void & Delete Transaction</h6>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                          <button onclick="location.href='admin_transaction.php?VoidID=<?php echo $_GET['id']?>'" type="button" class="btn btn-sm btn-danger">Void</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
           </div>
         </div>
       </div>
 
   
       
-      <div class="table-responsive" id="page">
-      <h6><?php echo $_GET['id']; ?></h6>
-      <h6><?php
-        if(empty($row1['date_time'])) {
-        $date_time ="N/A";
-        } else {
-        $date_time = $row1['date_time'];
-        }
-        echo $date_time;
-        ?></h6>
-        <h6>
-        <?php
-          if(empty($row1['items'])) {
-          $items ="0";
-          } else {
-          $items = $row1['items'];
-          }
-          echo $items;
-          ?>
-          Items
-        </h6>
-        <h6>
-        <?php
-        if(empty($row1['total'])) {
-        $total ="0";
-        } else {
-        $total = $row1['total'];
-        }
-        echo $total;
-        ?>
-        Total
-        </h6>
-        <h6>
-        <?php
-        if(empty($row1['payment'])) {
-        $payment ="0";
-        } else {
-        $payment = $row1['payment'];
-        }
-        echo $payment;
-        ?>
-        Payment, 
-        <?php
-        if(empty($row1['change1'])) {
-        $change1 ="0";
-        } else {
-        $change1 = $row1['change1'];
-        }
-        echo $change1;
-        ?> Change
-        </h6>
+      <div class="table" id="page">
+      <div class="container text-center border">
+        <div class="row">
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $_GET['id'];?></p>
+            <p class="m-0 p-0 text-muted">TR #</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php
+            if(empty($row1['date_time'])) {
+            $date_time ="N/A";
+            } else {
+            $date_time = $row1['date_time'];
+            }
+            echo $date_time;
+            ?></p>
+            <p class="m-0 p-0 text-muted">Date & Time</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php
+            if(empty($row1['items'])) {
+            $items ="0";
+            } else {
+            $items = $row1['items'];
+            }
+            echo $items;
+            ?></p>
+            <p class="m-0 p-0 text-muted">Items</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary">P <?php
+            if(empty($row1['total'])) {
+            $total ="0";
+            } else {
+            $total = $row1['total'];
+            }
+            echo $total;
+            ?></p>
+            <p class="m-0 p-0 text-muted">Total</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary">P <?php
+            if(empty($row1['payment'])) {
+            $payment ="0";
+            } else {
+            $payment = $row1['payment'];
+            }
+            echo $payment;
+            ?></p>
+            <p class="m-0 p-0 text-muted">Payment</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php
+            if(empty($row1['change1'])) {
+            $change1 ="0";
+            } else {
+            $change1 = $row1['change1'];
+            }
+            echo $change1;
+            ?></p>
+            <p class="m-0 p-0 text-muted">Change</p>
+          </div>
+        </div>
+      </div>
+      <h6 class="mt-5">Products</h6>
         <table class="table table-hover table-sm">
           <thead>
             <tr>
@@ -459,7 +491,7 @@ if (mysqli_num_rows($result) > 0) {
                       tb_products.id,
                       tb_products.product_brand,
                       tb_products.category,
-                      CONCAT(tb_products.mc_brand,'-',tb_products.mc_model,'-',tb_products.category) AS specification,
+                      CONCAT(tb_products.mc_brand,' ',tb_products.mc_model,' ',tb_products.category) AS specification,
                       tb_products.price
                       FROM tb_cart LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id) AS A
                 JOIN (SELECT
@@ -484,15 +516,39 @@ if (mysqli_num_rows($result) > 0) {
                 <td><?php echo $items['quantity']; ?></td>
                 <td><?php echo $items['price']; ?></td>
                 <td><?php echo $items['total']; ?></td>
-                <td><svg onclick="location.href='admin_transaction.php?id=<?php echo $_GET['id']?>&DeleteProduct=<?php echo $items['id'];?>&QTY=<?php echo $items['quantity'];?>'" class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
-                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
-                </svg></td>
+                <td>
+        
+                  <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal2">
+                    <span>
+                      <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
+                      <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
+                      </svg>
+                    </span>
+                  </button>
+
+                  <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h6 class="modal-title" id="exampleModalLabel">Delete & Return Product(s)</h6>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                          <button onclick="location.href='admin_transaction.php?id=<?php echo $_GET['id']?>&DeleteProduct=<?php echo $items['id'];?>&QTY=<?php echo $items['quantity'];?>'" type="button" class="btn btn-sm btn-danger">Confirm</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </td>
             </tr>
+            
             <?php
             } 
             } 
             ?>
           </tbody>
+          
         </table>
       </div>
     </main>
@@ -506,3 +562,4 @@ if (mysqli_num_rows($result) > 0) {
 </script><script src="dashboard.js"></script>
   </body>
 </html>
+

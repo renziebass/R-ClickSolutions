@@ -376,36 +376,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
       </div>
       <form method="get" action="<?php echo $_SERVER['PHP_SELF'];?>">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3">
-          <div class="input-group">
-            <input id="search" name="id" class="form-control" list="datalistOptions" id="exampleDataList" value="" placeholder="Type to search product...">
-            <script>
-              window.onload = init;
-              function init(){
-              document.getElementById("search").focus();
-              }
-            </script>
-            <datalist id="datalistOptions">
-              <?php while($row1 = mysqli_fetch_array($result1)):;?>
-              <option value="<?php echo $row1['id'];?>"><?php echo $row1['specification'];?></option>
-              <?php endwhile; ?>
-            </datalist>
-            <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><span data-feather="search"></button>
-          </div>
-      </div>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3">
+            <div class="input-group">
+              <input id="search" name="id" class="form-control" list="datalistOptions" id="exampleDataList" value="" placeholder="Type to search product...">
+              <script>
+                window.onload = init;
+                function init(){
+                document.getElementById("search").focus();
+                }
+              </script>
+              <datalist id="datalistOptions">
+                <?php while($row1 = mysqli_fetch_array($result1)):;?>
+                <option value="<?php echo $row1['id'];?>"><?php echo $row1['specification'];?></option>
+                <?php endwhile; ?>
+              </datalist>
+              <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><span data-feather="search"></button>
+            </div>
+        </div>
       </form>
       <form method="post" enctype="multipart/form-data">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3">
-          <div class="input-group">
-          <input name="qty" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="Type quantity">
-            <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><span data-feather="plus"></button>
-          </div>
-      </div>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3">
+            <div class="input-group">
+              <input name="qty" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="Type quantity">
+              <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><span data-feather="plus"></button>
+            </div>
+        </div>
       </form>
-      <div class="table-responsive" id="page">
-      <h6><?php echo $row2['specification'];?></h6>
-      <h6><?php echo $row2['stocks'];?> Stocks</h6>
-      <h6 class="mt-5">Re-stock history</h6>
+      <div class="table" id="page">
+      <div class="container text-center border p-2">
+        <div class="row">
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['specification'];?></p>
+            <p class="m-0 p-0 text-muted">Product Specification</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['stocks'];?></p>
+            <p class="m-0 p-0 text-muted">Current Stocks</p>
+          </div>
+        </div>
+      </div>
+      <h6 class="mt-5">Re-stock history</h6>  
         <table class="table table-hover table-sm">
           <thead>
             <tr>

@@ -4,7 +4,7 @@ $sql1="SELECT
 tb_products.id,
 tb_products.product_brand,
 tb_products.category,
-CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model,' - ',tb_products.price) AS specification,
+CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model,' - P ',tb_products.price) AS specification,
 CONCAT(tb_products.available,'/',tb_products.stocks) AS stocks
 FROM tb_products
 WHERE tb_products.id='" .$_GET['id']. "'";
@@ -305,7 +305,7 @@ $row1 = mysqli_fetch_assoc($result1);
     </nav>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 border-bottom">
       <h5>SALES HISTORY</h5>
         <div class="btn-toolbar mb-2 mb-md-0">
             <button type="button" onclick="printDiv();" class="btn btn-sm btn-outline-secondary"><span data-feather="printer"></span></button>
@@ -323,10 +323,21 @@ $row1 = mysqli_fetch_assoc($result1);
             </script>
         </div>
       </div>
-      <img onclick="location.href='admin_productqr.php?product_id=<?php echo $_GET['id'];?>&line=1'" src="https://chart.googleapis.com/chart?chs=140x140&cht=qr&chl=<?php echo $_GET['id']; ?>">
-      <div class="table-responsive" id="page">
-      <h6><?php echo $row1['specification'];?></h6>
-      <h6><?php echo $row1['stocks'];?></h6>
+      <img class="p-0 m-0 mx-auto d-block" onclick="location.href='admin_productqr.php?product_id=<?php echo $_GET['id'];?>&line=1'" src="https://chart.googleapis.com/chart?chs=140x140&cht=qr&chl=<?php echo $_GET['id']; ?>">
+      <div class="table" id="page">
+      <div class="container text-center border p-2">
+        <div class="row">
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row1['specification'];?></p>
+            <p class="m-0 p-0 text-muted">Description</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row1['stocks'];?></p>
+            <p class="m-0 p-0 text-muted">Stocks</p>
+          </div>
+        </div>
+      </div>
+      <h6 class="mt-5">Product Sales History</h6>
         <table class="table table-hover table-sm">
           <thead>
             <tr>

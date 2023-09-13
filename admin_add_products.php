@@ -395,7 +395,7 @@ $result4=mysqli_query($db,$sql4);
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
       <h5>Add New Product</h5>
       </div>
-      <div class=" align-items-center ">
+      <div class="align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
                       <div class="input-group mb-2">
                           <select name="supplier" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
@@ -431,7 +431,7 @@ $result4=mysqli_query($db,$sql4);
                       </div>
                     </form>
       </div>
-      <div class="table-responsive" id="page">
+      <div class="table" id="page">
       <h6>Recently added products</h6>
         <table class="table table-hover table-sm">
           <thead>
@@ -468,9 +468,30 @@ $result4=mysqli_query($db,$sql4);
                 <td><?php echo $items['stocks']; ?></td>
                 <td><?php echo $items['price']; ?></td>
                 <td>
-                  <svg onclick="location.href='admin_add_products.php?xid=<?php echo $items['id'];?>'" class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
-                  <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"></svg>
+        
+                  <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <span>
+                      <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
+                      <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
+                      </svg>
+                    </span>
+                  </button>
+
+                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h6 class="modal-title" id="exampleModalLabel">Remove Selected Product</h6>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                          <button onclick="location.href='admin_add_products.php?xid=<?php echo $items['id'];?>'" type="button" class="btn btn-sm btn-danger">Remove</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </td>
+               
             </tr>
             <?php
             } 

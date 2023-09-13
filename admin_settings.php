@@ -357,10 +357,26 @@ if(!empty($_POST["password"]))
           }
           }
           </script>
-          <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Update</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+          Update
+            </button>
+
+                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h6 class="modal-title" id="exampleModalLabel">Update Account Password</h6>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                          <button type="submit" class="btn btn-sm btn-danger" >Update</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
         </div>
       </form> 
-      <div class="table-responsive" id="page">
+      <div class="table" id="page">
       <h6>Login History</h6>
         <table class="table table-hover table-sm">
           <thead>

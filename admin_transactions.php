@@ -335,9 +335,29 @@ $row2 = mysqli_fetch_assoc($result2);
 
   
       
-      <div class="table-responsive" id="page">
-      <h6><?php echo $row2['date1'];?></h6>
-      <h6><?php echo $row2['paidcustomers'] ?> Customers, <?php echo $row2['paiditems'] ?> Items, P<?php echo $row2['sales_total'] ?> Total Sales</h6>
+      <div class="table" id="page">
+      <div class="container text-center border p-2">
+        <div class="row">
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['date1'];?></p>
+            <p class="m-0 p-0 text-muted">Date</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['paidcustomers'] ?></p>
+            <p class="m-0 p-0 text-muted">Transactions</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['paiditems'] ?></p>
+            <p class="m-0 p-0 text-muted">Items</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary">P <?php echo $row2['sales_total'] ?></p>
+            <p class="m-0 p-0 text-muted">Sales</p>
+          </div>
+        </div>
+      </div>
+      <h6 class="mt-5">Transactions</h6>
+     
         <table class="table table-hover table-sm">
           <thead>
             <tr>
@@ -359,7 +379,7 @@ $row2 = mysqli_fetch_assoc($result2);
                 JOIN (SELECT
                         tb_payments.id,
                         COUNT(tb_cart.transaction_id) as items,
-                        CONCAT(FORMAT(SUM(tb_cart.price), 2)) AS total,
+                        CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS total,
                         CONCAT(FORMAT(tb_payments.payment, 2)) AS payment,
                           tb_payments.change1
                         FROM tb_payments
