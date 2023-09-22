@@ -276,7 +276,7 @@ if(!empty($_POST["password"]))
         </h6>
         <ul class="nav flex-column mb-5">
           <li class="nav-item">
-            <a class="nav-link" href="admin_productqr.php">
+            <a class="nav-link" href="admin_generateqr.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
               QR Generator
             </a>
@@ -390,7 +390,8 @@ if(!empty($_POST["password"]))
                 DATE_FORMAT(tb_login_history.date,'%M %d,%Y') AS date1,
                 tb_login_history.time
                 FROM tb_login_history
-                WHERE tb_login_history.id='$login_session'";
+                WHERE tb_login_history.id='$login_session'
+                ORDER BY tb_login_history.date DESC";
                                                                                     
                 $result = mysqli_query($db,$sql);
 

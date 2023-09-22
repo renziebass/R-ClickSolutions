@@ -1,71 +1,61 @@
 <?php
 include('user_session.php');
-if((empty($_GET['id']))) {
-  header("Location: admin_unpaid_transactions.php");
-}
-if((empty($_GET['DeleteProduct'])) && (empty($_GET['QTY']))) {
-} else {
-$sql2="DELETE FROM tb_cart WHERE tb_cart.product_id='" .$_GET['DeleteProduct']. "' AND tb_cart.transaction_id='" .$_GET['id']. "'";
-$sql3="UPDATE tb_products
-SET tb_products.available=tb_products.available+'" .$_GET['QTY']. "'
-WHERE tb_products.id='" .$_GET['DeleteProduct']. "'";
-if (($db->query($sql2)) && ($db->query($sql3)) === TRUE) {
-  echo "Record updated successfully";
-  header("Location: admin_unpaid_transaction.php?id=".$_GET['id']."");
-} else {
-  echo "Error updating record: " . $db->error;
-}
-}
-if((empty($_GET['VoidID']))) {
-} else {
-$sql4="DELETE FROM tb_transactions WHERE tb_transactions.id='" .$_GET['VoidID']. "'";
-$sql5="DELETE FROM tb_payments
-WHERE tb_payments.id='" .$_GET['VoidID']. "'";
-if (($db->query($sql4)) && ($db->query($sql5)) === TRUE) {
-  echo "Transaction Void Successfully";
-  header("Location: admin_unpaid_transactions.php");
-} else {
-  echo "Error Voiding Transaction: " . $db->error;
-}
-}
-
-$sql1="SELECT   
-tb_transactions.name,
-(SELECT COUNT(tb_cart.transaction_id)
-FROM tb_cart
-WHERE tb_cart.transaction_id='" .$_GET['id']. "') AS items,
-SUM(tb_cart.price*tb_cart.quantity) AS total,
-CONCAT(DATE_FORMAT(tb_transactions.date,'%M %d,%Y'),'  ',tb_transactions.time) AS date_time
-FROM tb_cart LEFT JOIN tb_transactions ON tb_cart.transaction_id=tb_transactions.id
-WHERE tb_cart.transaction_id='" .$_GET['id']. "'
-GROUP BY tb_cart.transaction_id";
+$sql1 = "SELECT
+tb_products.id,
+CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)
+AS specification
+FROM tb_products";
+$id = null;
 $result1=mysqli_query($db,$sql1);
-$row1 = mysqli_fetch_assoc($result1);
 
-$sql="SELECT *
-FROM (SELECT
-      tb_products.id,
-      tb_products.product_brand,
-      tb_products.category,
-      CONCAT(tb_products.mc_brand,'-',tb_products.mc_model,'-',tb_products.category) AS specification,
-      tb_products.price
-      FROM tb_cart LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id) AS A
-JOIN (SELECT
-      tb_cart.product_id,
-      SUM(tb_cart.quantity) as quantity,
-      SUM(tb_cart.price*tb_cart.quantity) AS total
-      FROM tb_cart WHERE tb_cart.transaction_id='" .$_GET['id']. "'
-GROUP BY tb_cart.product_id) AS B
-ON A.id=B.product_id
-GROUP BY B.product_id";
-                                                      
-$result = mysqli_query($db,$sql);
+if(!empty($_GET['xid'])) {
+  $sql7="DELETE FROM tb_product_qr WHERE tb_product_qr.id='" .$_GET['xid']. "'";
 
-if (mysqli_num_rows($result) > 0) {
-  $voidButton = "disabled";
-} else {
-  $voidButton = null;
+  if (($db->query($sql7)) === TRUE) {
+    echo "Category Deleted";
+    header("Location: admin_generateqr.php");
+  } else {
+    echo "Error updating record: " . $db->error;
+  }
 }
+
+function validateInput($data) {
+  $data = trim($data);
+  $data = stripslashes($data);
+  $data = htmlspecialchars($data);
+  return $data;
+}
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  if (empty($_POST["id"])) {
+    $id_err = "* ";
+  } else {
+    $id = validateInput($_POST["id"]);
+  }
+  if (empty($_POST["size"])) {
+    $size_err = "* ";
+  } else {
+    $size = validateInput($_POST["size"]);
+  }
+}
+
+if(!empty($_POST["id"]) && !empty($_POST["size"]))
+  {
+    try {
+      
+        $sql6 = "INSERT INTO tb_product_qr (id,size) VALUES ('$id','$size')";
+        $Addmc = mysqli_query($db, $sql6);
+        header("Refresh:0");
+      
+
+    }
+    catch(PDOException $e)
+      {
+        echo $sql1 . "<br>" . $e->getMessage();
+      }
+    $db=null;
+}
+
+
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -76,11 +66,14 @@ if (mysqli_num_rows($result) > 0) {
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.111.3">
-    <title>TR# : <?php echo $_GET['id']; ?> </title>
+    <title>ALL PRODUCT QR GENERATOR</title>
  
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 
     <style>
+      .datalistOptions {
+        width: 100%;
+      }
       .bd-placeholder-img {
         font-size: 1.125rem;
         text-anchor: middle;
@@ -242,13 +235,9 @@ if (mysqli_num_rows($result) > 0) {
 
   </style>
 
-  
   </head>
   <body>
   
-  
-
-    
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
   <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">R-Click POS: Karaang Garahe</a>
   <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -275,7 +264,7 @@ if (mysqli_num_rows($result) > 0) {
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="admin_unpaid_transactions.php">
+            <a class="nav-link" href="admin_unpaid_transactions.php">
               <span data-feather="file" class="align-text-bottom"></span>
               Unpaid Transactions
             </a>
@@ -305,25 +294,25 @@ if (mysqli_num_rows($result) > 0) {
         </h6>
         <ul class="nav flex-column mb-5">
           <li class="nav-item">
-            <a class="nav-link" href="admin_generateqr.php">
+            <a class="nav-link active" href="admin_productqr.php?product_id=20230419234321&line=1">
               <span data-feather="file-text" class="align-text-bottom"></span>
               QR Generator
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_add_products.php">
+            <a class="nav-link" href="admin_add_products.php?id=20230419234321">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Add new product
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_product_restock.php">
+            <a class="nav-link" href="admin_product_restock.php?id=20230419234321">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Re-stock product
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_add_category.php">
+            <a class="nav-link" href="admin_add_category.php?id=20230419234321">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Add new category
             </a>
@@ -367,122 +356,53 @@ if (mysqli_num_rows($result) > 0) {
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h5>Transaction</h5>
-        <div class="btn-toolbar mb-2 mb-md-0">
-          <div class="btn-group">
-            <button type="button" onclick="printDiv();" class="btn btn-sm btn-outline-secondary"><span data-feather="printer"></span></button>
-            <script>
-              function printDiv() {
-              var printContents = document.getElementById("page").innerHTML;
-              var originalContents = document.body.innerHTML;
-              document.body.innerHTML = printContents;
-              window.print();
-              document.body.innerHTML = originalContents;
-              }
-              function refreshDiv() {
-              location.reload();
-              } 
-            </script>
-            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal2" <?php echo $voidButton; ?>>
-              <span data-feather="trash"></span>
-            </button>
-
-                  <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h6 class="modal-title" id="exampleModalLabel">Void & Delete Transaction</h6>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button onclick="location.href='admin_unpaid_transaction.php?VoidID=<?php echo $_GET['id']?>'" type="button" class="btn btn-sm btn-danger" >Void</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-          </div>
-        </div>
+      <h5>CREATE QR IMAGE LIST</h5>
       </div>
+      <div class=" align-items-center ">
+      <form method="post" action="" enctype="multipart/form-data">
+        <div class="input-group input-group-sm">
+        <select class="btn btn-outline-secondary" name="size">
+          <option value="80x80">80</option>
+          <option value="90x90">90</option>
+          <option value="100x100">100</option>
+          <option value="110x110">110</option>
+          <option value="120x120">120</option>
+          <option value="130x130">130</option>
+        </select>
+        <input id="search" name="id" class="form-control" list="datalistOptions" id="exampleDataList" value="" placeholder="Type to search product...">
+        <datalist id="datalistOptions">
+                <?php while($row1 = mysqli_fetch_array($result1)):;?>
+                <option value="<?php echo $row1['id'];?>"><?php echo $row1['specification'];?></option>
+                <?php endwhile; ?>
+        </datalist>
+          <button class="btn btn-outline-secondary" type="submit"><span data-feather="check"></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.location.href='admin_productqr_print.php';"><span data-feather="printer"></span></button>
+        </div>
+        </form>
 
-  
+      </div>
+      <h6 class="mt-5">
+        List of Products to print QR Images
+      </h6>
+      <div class="mt-3" id="page">
       
-      <div class="table" id="page">
-      <div class="container text-center border">
-        <div class="row">
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php
-                        if(empty($row1['name']) && ($_GET['id'])) {
-                          echo "No Products, Please VOID this TRANSACTION";
-                        } else {
-                          echo "".$row1['name']." ".$_GET['id']."";
-                        }
-                        ?></p>
-            <p class="m-0 p-0 text-muted">Name & TR#</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php
-            if(empty($row1['date_time'])) {
-            $date_time ="N/A";
-            } else {
-            $date_time = $row1['date_time'];
-            }
-            echo $date_time;
-            ?></p>
-            <p class="m-0 p-0 text-muted">Date & Time</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php
-            if(empty($row1['items'])) {
-            $items ="0";
-            } else {
-            $items = $row1['items'];
-            }
-            echo $items;
-            ?></p>
-            <p class="m-0 p-0 text-muted">Items</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary">P <?php
-            if(empty($row1['total'])) {
-            $total ="0";
-            } else {
-            $total = $row1['total'];
-            }
-            echo $total;
-            ?></p>
-            <p class="m-0 p-0 text-muted">Total</p>
-          </div>
-        </div>
-      </div>
-      <h6 class="mt-5">Products</h6>
-        <table class="table table-hover table-sm">
+      <table class="table table-hover table-sm">
           <thead>
             <tr>
               <th scope="col">Specification</th>
-              <th scope="col">QTY</th>
-              <th scope="col">SRP</th>
-              <th scope="col">Total</th>
+              <th scope="col">QR Size</th>
               <th scope="col"></th>
+             
             </tr>
           </thead>
           <tbody>
             <?php
-                $sql="SELECT *
-                FROM (SELECT
-                      tb_products.id,
-                      tb_products.product_brand,
-                      tb_products.category,
-                      CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification,
-                      tb_products.price
-                      FROM tb_cart LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id) AS A
-                JOIN (SELECT
-                      tb_cart.product_id,
-                      SUM(tb_cart.quantity) as quantity,
-                      SUM(tb_cart.price*tb_cart.quantity) AS total
-                      FROM tb_cart WHERE tb_cart.transaction_id='" .$_GET['id']. "'
-                GROUP BY tb_cart.product_id) AS B
-                ON A.id=B.product_id
-                GROUP BY B.product_id";
+                $sql="SELECT
+                CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)AS specification,
+                tb_product_qr.id,
+                tb_product_qr.size
+                FROM tb_product_qr
+                JOIN tb_products ON tb_product_qr.id=tb_products.id";
                                                                                     
                 $result = mysqli_query($db,$sql);
 
@@ -492,14 +412,10 @@ if (mysqli_num_rows($result) > 0) {
                 {
             ?>
             <tr>
-                
                 <td><?php echo $items['specification']; ?></td>
-                <td><?php echo $items['quantity']; ?></td>
-                <td><?php echo $items['price']; ?></td>
-                <td><?php echo $items['total']; ?></td>
+                <td><?php echo $items['size']; ?></td>
                 <td>
-        
-                  <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs1="<?php echo $items['product_id']; ?>" data-bs2="<?php echo $items['specification']; ?>" data-bs3="<?php echo $items['quantity']; ?>">
+                <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs1="<?php echo $items['id']; ?>" data-bs2="<?php echo $items['specification']; ?>">
                     <span>
                       <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
                       <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
@@ -511,21 +427,20 @@ if (mysqli_num_rows($result) > 0) {
                     <div class="modal-dialog modal-dialog-centered">
                       <div class="modal-content">
                         <div class="modal-header">
-                          <h6 class="modal-title" id="exampleModalLabel">Delete & Return Product(s)</h6>
+                          <h6 class="modal-title" id="exampleModalLabel"></h6>
                         </div>
                         <div class="modal-body">
                             <form method="get" enctype="multipart/form-data">
                               <div class="mb-3">
-                                <input type="hidden" id="id" name="id" value="<?php echo $_GET['id']?>" class="form-control">
-                                <input type="hidden" id="DeleteProduct" name="DeleteProduct" class="form-control">
-                                <input type="hidden" id="QTY" name="QTY" class="form-control">
+                        
+                                <input type="hidden" id="xid" name="xid" class="form-control">
                               
                               </div>
                           </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button type="submit" class="btn btn-sm btn-danger">Confirm</button>
-                          </form>
+                          <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
                         </div>
                       </div>
                     </div>
@@ -546,23 +461,23 @@ if (mysqli_num_rows($result) > 0) {
                 // Extract info from data-bs-* attributes
                 const recipient = button.getAttribute('data-bs1')
                 const recipient2 = button.getAttribute('data-bs2')
-                const recipient3 = button.getAttribute('data-bs3')
+              
                 // If necessary, you could initiate an Ajax request here
                 // and then do the updating in a callback.
 
                 // Update the modal's content.
          
-                const modalBodyInput1 = document.getElementById('DeleteProduct')
-                const modalBodyInput2 = document.getElementById('QTY')
+                const modalBodyInput1 = document.getElementById('xid')
                 const modalTitle = exampleModal.querySelector('.modal-title')
             
                 modalBodyInput1.value = recipient
-                modalBodyInput2.value = recipient3
-                modalTitle.textContent = `Delete & Return Product(s) ${recipient2}`
+                modalTitle.textContent = `Delete Product ${recipient2}`
+
               })
             }
           </script>
         </table>
+
       </div>
     </main>
   </div>
@@ -573,5 +488,6 @@ if (mysqli_num_rows($result) > 0) {
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </script><script src="dashboard.js"></script>
+
   </body>
 </html>

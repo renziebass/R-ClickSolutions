@@ -2,8 +2,7 @@
 include('user_session.php');
 $sql1 = "SELECT
 tb_products.id,
-CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)
-AS specification
+CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)AS specification
 FROM tb_products";
 $search = null;
 
@@ -281,7 +280,7 @@ $row5 = mysqli_fetch_assoc($result5);
         </h6>
         <ul class="nav flex-column mb-5">
           <li class="nav-item">
-            <a class="nav-link" href="admin_productqr.php?product_id=20230419234321&line=1">
+            <a class="nav-link" href="admin_generateqr.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
               QR Generator
             </a>
@@ -372,7 +371,7 @@ $row5 = mysqli_fetch_assoc($result5);
             </script>
             <datalist id="datalistOptions">
               <?php while($row1 = mysqli_fetch_array($result1)):;?>
-              <option value="<?php echo $row1['specification'];?>">
+              <option value="<?php echo $row1['id'];?>"><?php echo $row1['specification'];?></option>
               <?php endwhile; ?>
             </datalist>
             <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><span data-feather="search"></button>
@@ -405,7 +404,7 @@ $row5 = mysqli_fetch_assoc($result5);
          if(empty($_POST["search"])) {
           $text ="All Products";
           } else {
-          $text = "Result for the keyword ' ".$search." '";
+          $text = "Result for the keyword '".$search."'";
           }
           echo $text;
         ?>
@@ -432,7 +431,8 @@ $row5 = mysqli_fetch_assoc($result5);
                 WHERE tb_products.category LIKE '%".$search."%' 
                 OR tb_products.mc_brand LIKE '%".$search."%' 
                 OR tb_products.mc_model LIKE '%".$search."%' 
-                OR tb_products.product_brand LIKE '%".$search."%'";
+                OR tb_products.product_brand LIKE '%".$search."%'
+                OR tb_products.id LIKE '%".$search."%'";
                                                                                     
                 $result = mysqli_query($db,$sql);
 

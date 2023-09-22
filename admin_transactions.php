@@ -22,7 +22,7 @@ $row2 = mysqli_fetch_assoc($result2);
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.111.3">
-    <title>DASHBOARD</title>
+    <title>TRANSACTIONS</title>
  
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 
@@ -251,7 +251,7 @@ $row2 = mysqli_fetch_assoc($result2);
         </h6>
         <ul class="nav flex-column mb-5">
           <li class="nav-item">
-            <a class="nav-link" href="admin_productqr.php?product_id=20230419234321&line=1">
+            <a class="nav-link" href="admin_generateqr.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
               QR Generator
             </a>
@@ -378,7 +378,7 @@ $row2 = mysqli_fetch_assoc($result2);
                         FROM tb_transactions WHERE tb_transactions.status='paid') AS A
                 JOIN (SELECT
                         tb_payments.id,
-                        COUNT(tb_cart.transaction_id) as items,
+                        SUM(tb_cart.quantity) as items,
                         CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS total,
                         CONCAT(FORMAT(tb_payments.payment, 2)) AS payment,
                           tb_payments.change1

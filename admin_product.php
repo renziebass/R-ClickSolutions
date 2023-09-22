@@ -244,7 +244,7 @@ $row1 = mysqli_fetch_assoc($result1);
         </h6>
         <ul class="nav flex-column mb-5">
           <li class="nav-item">
-            <a class="nav-link" href="admin_productqr.php?product_id=20230419234321&line=1">
+            <a class="nav-link" href="admin_generateqr.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
               QR Generator
             </a>

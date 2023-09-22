@@ -286,7 +286,7 @@ if(!empty($_GET['xcategory'])) {
         </h6>
         <ul class="nav flex-column mb-5">
           <li class="nav-item">
-            <a class="nav-link" href="admin_productqr.php?product_id=20230419234321&line=1">
+            <a class="nav-link" href="admin_generateqr.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
               QR Generator
             </a>
@@ -353,8 +353,8 @@ if(!empty($_GET['xcategory'])) {
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
         <div class="input-group input-group-sm mb-3">
-          <input type="text" onkeyup="this.value = this.value.toUpperCase();" name="category" class="form-control" placeholder="New Product Category" aria-label="Recipient's username" aria-describedby="button-addon2">
-          <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Add</button>
+          <input type="text" onkeyup="this.value = this.value.toUpperCase();" name="category" class="form-control" placeholder="New Product Category" aria-label="Recipient's username" aria-describedby="button-addon2" required>
+          <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><span data-feather="plus"></button>
         </div>
       </form>
       </div>
@@ -385,7 +385,7 @@ if(!empty($_GET['xcategory'])) {
                 <td><?php echo $items['category']; ?></td>
                 <td>
         
-                  <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                  <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs1="<?php echo $items['category']; ?>">
                     <span>
                       <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
                       <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
@@ -397,11 +397,20 @@ if(!empty($_GET['xcategory'])) {
                     <div class="modal-dialog modal-dialog-centered">
                       <div class="modal-content">
                         <div class="modal-header">
-                          <h6 class="modal-title" id="exampleModalLabel">Delete Category</h6>
+                          <h6 class="modal-title" id="exampleModalLabel"></h6>
                         </div>
+                        <div class="modal-body">
+                            <form method="get" enctype="multipart/form-data">
+                              <div class="mb-3">
+                        
+                                <input type="hidden" id="xcategory" name="xcategory" class="form-control">
+                              
+                              </div>
+                          </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button onclick="location.href='admin_add_category.php?xcategory=<?php echo $items['category'];?>'" type="button" class="btn btn-sm btn-danger">Delete</button>
+                          <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
                         </div>
                       </div>
                     </div>
@@ -414,6 +423,29 @@ if(!empty($_GET['xcategory'])) {
             } 
             ?>
           </tbody>
+          <script>
+            const exampleModal = document.getElementById('exampleModal')
+            if (exampleModal) {
+              exampleModal.addEventListener('show.bs.modal', event => {
+                // Button that triggered the modal
+                const button = event.relatedTarget
+                // Extract info from data-bs-* attributes
+                const recipient = button.getAttribute('data-bs1')
+              
+                // If necessary, you could initiate an Ajax request here
+                // and then do the updating in a callback.
+
+                // Update the modal's content.
+         
+                const modalBodyInput1 = document.getElementById('xcategory')
+                const modalTitle = exampleModal.querySelector('.modal-title')
+            
+                modalBodyInput1.value = recipient
+                modalTitle.textContent = `Delete Category ${recipient}`
+
+              })
+            }
+          </script>
         </table>
       </div>
     </main>

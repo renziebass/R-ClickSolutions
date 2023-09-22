@@ -309,7 +309,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </h6>
         <ul class="nav flex-column mb-5">
           <li class="nav-item">
-            <a class="nav-link" href="admin_productqr.php?product_id=20230419234321&line=1">
+            <a class="nav-link" href="admin_generateqr.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
               QR Generator
             </a>
@@ -380,13 +380,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <option class="dropdown-item" value="ADMIN">ADMIN</option>
           <option class="dropdown-item" value="CASHIER">CASHIER</option>
           </select>
-          <input type="text" name="userid" class="form-control" placeholder="User #"   aria-describedby="button-addon2">
-          <input type="text" name="phone" class="form-control" placeholder="Phone Number"  aria-describedby="button-addon2">
+          <input type="text" name="userid" class="form-control" placeholder="User #"   aria-describedby="button-addon2" required>
+          <input type="text" name="phone" class="form-control" placeholder="Phone Number"  aria-describedby="button-addon2" required>
         </div>
         <div class="input-group input-group-sm mb-3">
-          <input type="text" name="first_name" class="form-control" placeholder="First Name" onkeyup="this.value = this.value.toUpperCase();"  aria-describedby="button-addon2">
-          <input type="text" name="middle_name" class="form-control" placeholder="Middle Name" onkeyup="this.value = this.value.toUpperCase();" aria-describedby="button-addon2">
-          <input type="text" name="last_name" class="form-control" placeholder="Last Name" onkeyup="this.value = this.value.toUpperCase();" aria-describedby="button-addon2">
+          <input type="text" name="first_name" class="form-control" placeholder="First Name" onkeyup="this.value = this.value.toUpperCase();"  aria-describedby="button-addon2" required>
+          <input type="text" name="middle_name" class="form-control" placeholder="Middle Name" onkeyup="this.value = this.value.toUpperCase();" aria-describedby="button-addon2" required>
+          <input type="text" name="last_name" class="form-control" placeholder="Last Name" onkeyup="this.value = this.value.toUpperCase();" aria-describedby="button-addon2" required>
           <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Add</button>
         </div>
       </form>

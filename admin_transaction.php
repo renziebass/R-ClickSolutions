@@ -305,7 +305,7 @@ if (mysqli_num_rows($result) > 0) {
         </h6>
         <ul class="nav flex-column mb-5">
           <li class="nav-item">
-            <a class="nav-link" href="admin_productqr.php?product_id=20230419234321&line=1">
+            <a class="nav-link" href="admin_generateqr.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
               QR Generator
             </a>
@@ -476,8 +476,8 @@ if (mysqli_num_rows($result) > 0) {
         <table class="table table-hover table-sm">
           <thead>
             <tr>
-              <th scope="col">Description</th>
-              <th scope="col">Category</th>
+              <th scope="col">Specification</th>
+    
               <th scope="col">QTY</th>
               <th scope="col">SRP</th>
               <th scope="col">Total</th>
@@ -491,7 +491,7 @@ if (mysqli_num_rows($result) > 0) {
                       tb_products.id,
                       tb_products.product_brand,
                       tb_products.category,
-                      CONCAT(tb_products.mc_brand,' ',tb_products.mc_model,' ',tb_products.category) AS specification,
+                      CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification,
                       tb_products.price
                       FROM tb_cart LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id) AS A
                 JOIN (SELECT
@@ -511,14 +511,13 @@ if (mysqli_num_rows($result) > 0) {
                 {
             ?>
             <tr>
-                <td><?php echo $items['product_brand']; ?></td>
                 <td><?php echo $items['specification']; ?></td>
                 <td><?php echo $items['quantity']; ?></td>
                 <td><?php echo $items['price']; ?></td>
                 <td><?php echo $items['total']; ?></td>
                 <td>
         
-                  <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal2">
+                  <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal2" data-bs1="<?php echo $items['id']; ?>" data-bs2="<?php echo $items['specification']; ?>" data-bs3="<?php echo $items['quantity']; ?>">
                     <span>
                       <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
                       <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
@@ -530,11 +529,21 @@ if (mysqli_num_rows($result) > 0) {
                     <div class="modal-dialog modal-dialog-centered">
                       <div class="modal-content">
                         <div class="modal-header">
-                          <h6 class="modal-title" id="exampleModalLabel">Delete & Return Product(s)</h6>
+                          <h6 class="modal-title" id="exampleModalLabel"></h6>
                         </div>
+                        <div class="modal-body">
+                            <form method="get" enctype="multipart/form-data">
+                              <div class="mb-3">
+                                <input type="hidden" id="id" name="id" value="<?php echo $_GET['id']?>" class="form-control">
+                                <input type="hidden" id="DeleteProduct" name="DeleteProduct" class="form-control">
+                                <input type="hidden" id="QTY" name="QTY" class="form-control">
+                              
+                              </div>
+                          </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button onclick="location.href='admin_transaction.php?id=<?php echo $_GET['id']?>&DeleteProduct=<?php echo $items['id'];?>&QTY=<?php echo $items['quantity'];?>'" type="button" class="btn btn-sm btn-danger">Confirm</button>
+                          <button type="submit" class="btn btn-sm btn-danger">Confirm</button>
+                          </form>
                         </div>
                       </div>
                     </div>
@@ -548,7 +557,31 @@ if (mysqli_num_rows($result) > 0) {
             } 
             ?>
           </tbody>
-          
+          <script>
+            const exampleModal = document.getElementById('exampleModal2')
+            if (exampleModal) {
+              exampleModal.addEventListener('show.bs.modal', event => {
+                // Button that triggered the modal
+                const button = event.relatedTarget
+                // Extract info from data-bs-* attributes
+                const recipient = button.getAttribute('data-bs1')
+                const recipient2 = button.getAttribute('data-bs2')
+                const recipient3 = button.getAttribute('data-bs3')
+                // If necessary, you could initiate an Ajax request here
+                // and then do the updating in a callback.
+
+                // Update the modal's content.
+         
+                const modalBodyInput1 = document.getElementById('DeleteProduct')
+                const modalBodyInput2 = document.getElementById('QTY')
+                const modalTitle = exampleModal.querySelector('.modal-title')
+            
+                modalBodyInput1.value = recipient
+                modalBodyInput2.value = recipient3
+                modalTitle.textContent = `Delete & Return Product(s) ${recipient2}`
+              })
+            }
+          </script>
         </table>
       </div>
     </main>

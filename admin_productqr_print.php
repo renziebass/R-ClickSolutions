@@ -1,28 +1,6 @@
-
 <?php
 include('user_session.php');
-$sql1="SELECT
-COUNT(tb_transactions.id)AS transactions
-FROM tb_transactions
-WHERE tb_transactions.status='unpaid'";
-$result1=mysqli_query($db,$sql1);
-$row1 = mysqli_fetch_assoc($result1);
 
-$sql2="SELECT
-SUM(tb_cart.quantity) AS items
-FROM tb_transactions
-JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
-WHERE tb_transactions.status='unpaid';";
-$result2=mysqli_query($db,$sql2);
-$row2 = mysqli_fetch_assoc($result2);
-
-$sql3="SELECT
-CONCAT(FORMAT(SUM(tb_cart.total), 2)) AS unpaid
-FROM tb_transactions
-JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
-WHERE tb_transactions.status='unpaid'";
-$result3=mysqli_query($db,$sql3);
-$row3 = mysqli_fetch_assoc($result3);
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -33,11 +11,14 @@ $row3 = mysqli_fetch_assoc($result3);
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.111.3">
-    <title>UNPAID TRANSANCTIONS</title>
+    <title>PRODUCTS PRINT QR</title>
  
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 
     <style>
+      .datalistOptions {
+        width: 100%;
+      }
       .bd-placeholder-img {
         font-size: 1.125rem;
         text-anchor: middle;
@@ -199,13 +180,9 @@ $row3 = mysqli_fetch_assoc($result3);
 
   </style>
 
-  
   </head>
   <body>
   
-  
-
-    
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
   <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">R-Click POS: Karaang Garahe</a>
   <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -232,7 +209,7 @@ $row3 = mysqli_fetch_assoc($result3);
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="admin_unpaid_transactions.php">
+            <a class="nav-link" href="admin_unpaid_transactions.php">
               <span data-feather="file" class="align-text-bottom"></span>
               Unpaid Transactions
             </a>
@@ -262,25 +239,25 @@ $row3 = mysqli_fetch_assoc($result3);
         </h6>
         <ul class="nav flex-column mb-5">
           <li class="nav-item">
-            <a class="nav-link" href="admin_generateqr.php">
+            <a class="nav-link active" href="admin_productqr.php?product_id=20230419234321&line=1">
               <span data-feather="file-text" class="align-text-bottom"></span>
               QR Generator
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_add_products.php">
+            <a class="nav-link" href="admin_add_products.php?id=20230419234321">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Add new product
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_product_restock.php">
+            <a class="nav-link" href="admin_product_restock.php?id=20230419234321">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Re-stock product
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_add_category.php">
+            <a class="nav-link" href="admin_add_category.php?id=20230419234321">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Add new category
             </a>
@@ -323,10 +300,9 @@ $row3 = mysqli_fetch_assoc($result3);
     </nav>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h5>Unpaid Transactions</h5>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <h5>PRINT PRODUCTS QR IMAGE</h5>
         <div class="btn-toolbar mb-2 mb-md-0">
-          <div class="btn me-2">
             <button type="button" onclick="printDiv();" class="btn btn-sm btn-outline-secondary"><span data-feather="printer"></span></button>
             <script>
               function printDiv() {
@@ -340,55 +316,22 @@ $row3 = mysqli_fetch_assoc($result3);
               location.reload();
               } 
             </script>
-          </div>
         </div>
       </div>
 
-  
+      <div class="mt-3" id="page">
+              
+      <div class="container-fluid text-center">
       
-      <div class="table" id="page">
-      <div class="container text-center border p-2">
-        <div class="row">
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row1['transactions'];?></p>
-            <p class="m-0 p-0 text-muted">Unpaid Transactions</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['items'];?></p>
-            <p class="m-0 p-0 text-muted">Unpaid Items</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary">P <?php echo $row3['unpaid'];?></p>
-            <p class="m-0 p-0 text-muted">Unpaid Amount</p>
-          </div>
-        </div>
-      </div>
-      <h6 class="mt-5">Unpaid Accounts</h6>
-        <table class="table table-hover table-sm">
-          <thead>
-            <tr>
-              <th scope="col">Name</th>
-              <th scope="col">Date Time</th>
-              <th scope="col">Items</th>
-              <th scope="col">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
+            <div class="row">
             <?php
-                $sql="SELECT *
-                FROM (SELECT
-                    tb_transactions.id,
-                    tb_transactions.name,
-                    tb_transactions.date
-                    FROM tb_transactions WHERE tb_transactions.status='unpaid') AS A
-                JOIN (SELECT
-                    tb_cart.transaction_id,
-                    SUM(tb_cart.quantity) as items,
-                    SUM(tb_cart.price*tb_cart.quantity) AS total
-                        FROM tb_cart
-                    GROUP BY tb_cart.transaction_id) AS B
-                ON A.id=B.transaction_id
-                GROUP BY A.id";
+                $sql="SELECT
+                CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)AS specification,
+                tb_product_qr.id,
+                tb_product_qr.size,
+                tb_products.price
+                FROM tb_product_qr
+                JOIN tb_products ON tb_product_qr.id=tb_products.id";
                                                                                     
                 $result = mysqli_query($db,$sql);
 
@@ -397,18 +340,22 @@ $row3 = mysqli_fetch_assoc($result3);
                 foreach($result as $items)
                 {
             ?>
-            <tr onclick="location.href='admin_unpaid_transaction.php?id=<?php echo $items['id'];?>'">  
-                <td><?php echo $items['name']; ?></td>
-                <td><?php echo $items['date']; ?></td>
-                <td><?php echo $items['items']; ?></td>
-                <td><?php echo $items['total']; ?></td>
-            </tr>
-            <?php
+              <div class="col-sm d-flex flex-row border">
+                <div class="p-1">
+                  <img class="m-0" src="https://chart.googleapis.com/chart?chs=<?php echo $items['size']; ?>&cht=qr&chl=<?php echo $items['id']; ?>">
+                  <p class="m-0 p-0"><?php echo $items['specification']; ?></p>
+                  <p class="m-0 p-0 text-danger" style="font-weight: bold;"><?php echo $items['price']; ?></p>
+                </div>
+          
+              </div>
+              <?php
             } 
             } 
-            ?>
-          </tbody>
-        </table>
+            ?> 
+            </div>
+               
+      </div>
+
       </div>
     </main>
   </div>
@@ -419,5 +366,6 @@ $row3 = mysqli_fetch_assoc($result3);
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </script><script src="dashboard.js"></script>
+
   </body>
 </html>

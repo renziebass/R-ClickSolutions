@@ -296,7 +296,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </h6>
         <ul class="nav flex-column mb-5">
           <li class="nav-item">
-            <a class="nav-link" href="admin_productqr.php?product_id=20230419234321&line=1">
+            <a class="nav-link" href="admin_generateqr.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
               QR Generator
             </a>
@@ -397,8 +397,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <form method="post" enctype="multipart/form-data">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3">
             <div class="input-group">
-              <input name="qty" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="Type quantity">
-              <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><span data-feather="plus"></button>
+              <input name="qty" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="Type quantity" required>
+              <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><span data-feather="plus"></button> 
             </div>
         </div>
       </form>

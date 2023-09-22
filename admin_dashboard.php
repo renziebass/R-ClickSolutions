@@ -72,6 +72,16 @@ WHERE tb_payments.date NOT IN ('".date("Y-m-d")."')
 GROUP BY tb_payments.date DESC
 LIMIT 7";
 $result9=mysqli_query($db,$sql9);
+
+
+if(!empty($_GET['selecteddate'])) {
+
+  $dateS=date_create($_GET['selecteddate']);
+  $TR = $_SESSION['id']."-".date_format($dateS,"Ymd")."-".date("His");
+  header("location: admin_new_transaction.php?id=".$TR);
+}
+
+  //$TR = $_SESSION['id']."-".date("Ymd")."-".date("His");
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -251,6 +261,49 @@ $result9=mysqli_query($db,$sql9);
     
   </head>
   <body>
+
+
+    <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3">
+      <button class="btn btn-bd-primary d-flex align-items-center"
+              type="button"
+              data-bs-toggle="dropdown">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+              </svg>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
+        <li>
+          <button type="button" class="dropdown-item d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-theme-value="light" aria-pressed="false">
+           New Transaction
+          </button>
+                  
+        </li>
+      </ul>
+    </div>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                          <h6 class="modal-title" id="exampleModalLabel">CREATE TRANSACTION</h6>
+                          </div>
+                          <div class="modal-body">
+                            <form method="get" enctype="multipart/form-data">
+                              <div class="mb-3">
+                                
+                              <input id="startDate" type="date" name="selecteddate" class="form-control" id="validationDefault01" required>
+                                
+                              </div>
+                            
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-sm btn-danger">Create</button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
   
   
 
@@ -311,7 +364,7 @@ $result9=mysqli_query($db,$sql9);
         </h6>
         <ul class="nav flex-column mb-5">
           <li class="nav-item">
-            <a class="nav-link" href="admin_productqr.php?product_id=20230419234321&line=1">
+            <a class="nav-link" href="admin_generateqr.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
               QR Generator
             </a>

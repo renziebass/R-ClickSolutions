@@ -331,7 +331,7 @@ $result4=mysqli_query($db,$sql4);
         </h6>
         <ul class="nav flex-column mb-5">
           <li class="nav-item">
-            <a class="nav-link" href="admin_productqr.php?product_id=20230419234321&line=1">
+            <a class="nav-link" href="admin_generateqr.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
               QR Generator
             </a>
@@ -398,13 +398,15 @@ $result4=mysqli_query($db,$sql4);
       <div class="align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
                       <div class="input-group mb-2">
-                          <select name="supplier" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
+                          <select name="supplier" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon" required>
+                          <option selected disabled value="">Select Supplier...</option>
                             <?php while($row4 = mysqli_fetch_array($result4)):;?> 
                             <option class="dropdown-item" value="<?php echo $row4['id'];?>">
                             <?php echo $row4['name'];?></option>
                             <?php endwhile; ?>
                           </select>
-                          <select name="category" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
+                          <select name="category" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon" required>
+                          <option selected disabled value="">Select Product Category...</option>
                             <?php while($row1 = mysqli_fetch_array($result1)):;?> 
                             <option class="dropdown-item" value="<?php echo $row1['category'];?>">
                             <?php echo $row1['category'];?></option>
@@ -413,20 +415,22 @@ $result4=mysqli_query($db,$sql4);
                       </div>
                       <div class="input-group mb-3">
                           <select name="mcbrand" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
+                          <option selected disabled value="">No Brand</option>
                             <?php while($row2 = mysqli_fetch_array($result2)):;?> 
                             <option class="dropdown-item" value="<?php echo $row2['brand'];?>">
                             <?php echo $row2['brand'];?></option>
                             <?php endwhile; ?>
                           </select>
                           <select name="mcmodel" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
+                          <option selected disabled value="">No Model</option>
                             <?php while($row3 = mysqli_fetch_array($result3)):;?> 
                             <option class="dropdown-item" value="<?php echo $row3['model'];?>">
                             <?php echo $row3['model'];?></option>
                             <?php endwhile; ?>
                           </select>
-                          <input class="col-4" name="pbrand" type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" aria-label="Text input with dropdown button" placeholder="Product Brand">
-                          <input name="qty" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="QTY">
-                          <input name="price" type="decimal" class="form-control" aria-label="Text input with dropdown button" placeholder="SRP">
+                          <input class="col-4" name="pbrand" type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" aria-label="Text input with dropdown button" placeholder="Product Brand" required>
+                          <input name="qty" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="QTY" required>
+                          <input name="price" type="decimal" class="form-control" aria-label="Text input with dropdown button" placeholder="SRP" required>
                         <button class="btn btn-outline-secondary" type="submit">Add</button>
                       </div>
                     </form>
@@ -469,7 +473,7 @@ $result4=mysqli_query($db,$sql4);
                 <td><?php echo $items['price']; ?></td>
                 <td>
         
-                  <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                  <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs1="<?php echo $items['id']; ?>" data-bs2="<?php echo $items['specification']; ?>">
                     <span>
                       <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
                       <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
@@ -481,11 +485,20 @@ $result4=mysqli_query($db,$sql4);
                     <div class="modal-dialog modal-dialog-centered">
                       <div class="modal-content">
                         <div class="modal-header">
-                          <h6 class="modal-title" id="exampleModalLabel">Remove Selected Product</h6>
+                          <h6 class="modal-title" id="exampleModalLabel"></h6>
                         </div>
+                        <div class="modal-body">
+                            <form method="get" enctype="multipart/form-data">
+                              <div class="mb-3">
+                        
+                                <input type="hidden" id="xid" name="xid" class="form-control">
+                              
+                              </div>
+                          </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button onclick="location.href='admin_add_products.php?xid=<?php echo $items['id'];?>'" type="button" class="btn btn-sm btn-danger">Remove</button>
+                          <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                        </form>
                         </div>
                       </div>
                     </div>
@@ -498,6 +511,30 @@ $result4=mysqli_query($db,$sql4);
             } 
             ?>
           </tbody>
+          <script>
+            const exampleModal = document.getElementById('exampleModal')
+            if (exampleModal) {
+              exampleModal.addEventListener('show.bs.modal', event => {
+                // Button that triggered the modal
+                const button = event.relatedTarget
+                // Extract info from data-bs-* attributes
+                const recipient = button.getAttribute('data-bs1')
+                const recipient2 = button.getAttribute('data-bs2')
+              
+                // If necessary, you could initiate an Ajax request here
+                // and then do the updating in a callback.
+
+                // Update the modal's content.
+         
+                const modalBodyInput1 = document.getElementById('xid')
+                const modalTitle = exampleModal.querySelector('.modal-title')
+            
+                modalBodyInput1.value = recipient
+                modalTitle.textContent = `Remove ${recipient2}`
+
+              })
+            }
+          </script>
         </table>
       </div>
     </main>
