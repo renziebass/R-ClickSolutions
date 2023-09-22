@@ -93,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         function function_sound() {
         echo "<script>
-              var audio = new Audio('http://localhost/KG/beep.wav');
+              var audio = new Audio('https://rclickpos.com/beep.wav');
               audio.play();
               </script>";
         header("Refresh:0");
