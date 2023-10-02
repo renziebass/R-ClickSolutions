@@ -117,11 +117,22 @@ include("config.php");
         $check_user = mysqli_num_rows($run_user);
         if($check_user>0){
           $user_data = mysqli_fetch_assoc($run_user);
-          $_SESSION['id'] = $id;
+         
           $sql2 = "INSERT INTO `tb_login_history` (`id`, `date`, `time`)
           VALUES ('$id','".date("Y-m-d")."','".date("H:i:s")."')";
-          $recordSession = mysqli_query($db, $sql2);
-          header("location: admin_dashboard.php");
+
+          if ($user_data["acc_type"] == 'CASHIER') {
+            //redirect somehwere
+            $_SESSION['id'] = $id;
+            $recordSession = mysqli_query($db, $sql2);
+            header("location: cashier_dashboard.php");
+          }
+          if ($user_data["acc_type"] == 'ADMIN') {
+            //redirect somehwere
+            $_SESSION['id'] = $id;
+            $recordSession = mysqli_query($db, $sql2);
+            header("location: admin_dashboard.php");
+          }
         } else {
           echo $error = "Login Credentials is invalid";
       }
