@@ -94,7 +94,7 @@ include("config.php");
     <img src="assets/img/KGLogo.png" alt="" width="110" height="60">
     </div>
     <form method="post">
-    <h1 class="h3 mb-3 fw-normal text-center">P-Click POS Sign-in</h1>
+    <h1 class="h3 mb-3 fw-normal text-center">R-Click POS Sign-in</h1>
 
     <div class="form-floating">
       <input type="text" class="form-control" name="id" placeholder="name@example.com">
