@@ -55,7 +55,7 @@ WHERE tb_products.available='0'";
 $result7=mysqli_query($db,$sql7);
 $row7 = mysqli_fetch_assoc($result7);
 
-$sql8="SELECT DATE_FORMAT(tb_payments.date,'%M %d') AS date,
+$sql8="SELECT DATE_FORMAT(tb_payments.date,'%b %d') AS date,
 SUM(tb_cart.price*tb_cart.quantity) AS sales
 FROM tb_payments 
 JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
@@ -64,21 +64,29 @@ GROUP BY tb_payments.date DESC
 LIMIT 7";
 $result8=mysqli_query($db,$sql8);
 
-$sql9="SELECT DATE_FORMAT(tb_payments.date,'%M %d') AS date,
-SUM(tb_cart.price*tb_cart.quantity) AS sales
-FROM tb_payments 
-JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
-WHERE tb_payments.date NOT IN ('".date("Y-m-d")."')
-GROUP BY tb_payments.date DESC
-LIMIT 7";
+$sql9="SELECT
+date_format(tb_payments.date,'%M')AS month,
+SUM(tb_payments.total)AS amount
+FROM tb_payments
+GROUP BY year(tb_payments.date),month(tb_payments.date)
+ORDER BY year(tb_payments.date),month(tb_payments.date)
+DESC LIMIT 12";
 $result9=mysqli_query($db,$sql9);
 
+$sql10="SELECT
+date_format(tb_payments.date,'%b')AS month,
+SUM(tb_payments.total)AS amount
+FROM tb_payments
+GROUP BY year(tb_payments.date),month(tb_payments.date)
+ORDER BY year(tb_payments.date),month(tb_payments.date)
+DESC LIMIT 12";
+$result10=mysqli_query($db,$sql10);
 
 if(!empty($_GET['selecteddate'])) {
 
   $dateS=date_create($_GET['selecteddate']);
   $TR = $_SESSION['id']."-".date_format($dateS,"Ymd")."-".date("His");
-  header("location: admin_new_transaction.php?id=".$TR);
+  header("location: admin_new_transaction.php?id=".$TR."&date=".date_format($dateS,"Y-m-d"));
 }
 
   //$TR = $_SESSION['id']."-".date("Ymd")."-".date("His");
@@ -428,7 +436,7 @@ if(!empty($_GET['selecteddate'])) {
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h5>Dashboard</h5>
       </div>
-      <div class="container text-center border p-2">
+      <div class="container text-center p-2">
         <div class="row">
           <div class="col">
             <p class="m-0 p-0 fw-bold text-primary">P <?php echo $row2['sales'];?></p>
@@ -472,7 +480,7 @@ if(!empty($_GET['selecteddate'])) {
           </div>
         </div>
       </div>
-      <h6 class="mt-5">Previous Sales Chart</h6>
+      <h6 class="mt-2">Monthly Sales Chart</h6>
       <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
       <h6>Recent Paid Transactions</h6>
       <div class="table-responsive">
@@ -550,21 +558,21 @@ if(!empty($_GET['selecteddate'])) {
   const ctx = document.getElementById('myChart')
   // eslint-disable-next-line no-unused-vars
   const myChart = new Chart(ctx, {
-    type: 'line',
+    type: 'bar',
     data: {
       labels: [
-        <?php while($row8 = mysqli_fetch_array($result8)):;?>
-          ['<?php echo $row8['date'];?>'],
+        <?php while($row10 = mysqli_fetch_array($result10)):;?>
+          ['<?php echo $row10['month'];?>'],
           <?php endwhile; ?>
       ],
       datasets: [{
         data: [
           <?php while($row9 = mysqli_fetch_array($result9)):;?>
-          <?php echo $row9['sales'];?>,
+          <?php echo $row9['amount'];?>,
           <?php endwhile; ?>
         ],
         lineTension: 0,
-        backgroundColor: 'transparent',
+        backgroundColor: 'colorize(true)',
         borderColor: '#007bff',
         borderWidth: 4,
         pointBackgroundColor: '#007bff'
@@ -581,8 +589,11 @@ if(!empty($_GET['selecteddate'])) {
       }
     }
   })
-})()
+}
+
+)()
 
 </script>
+
   </body>
 </html>

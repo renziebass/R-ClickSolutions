@@ -85,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $itemResult = mysqli_fetch_assoc($resultcheck);
 
         $sql4 = "INSERT INTO `tb_cart` (`transaction_id`, `date`, `product_id`, `quantity`, `price`, `total`)
-        VALUES ('" .$_GET['id']. "', '".date("Y-m-d")."', '$product_id', '$quantity', '$price', '$total')";
+        VALUES ('" .$_GET['id']. "', '".$_GET['date']."', '$product_id', '$quantity', '$price', '$total')";
 
         $sql4b = "UPDATE tb_products
         SET tb_products.available=tb_products.available-'$quantity'
@@ -153,7 +153,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
 
         $sql8 = "INSERT INTO tb_transactions (id, date,time, name, status) VALUES
-        ('" .$_GET['id']. "','".date("Y-m-d")."','".date("H:i:s")."','" . $name . "','unpaid')";
+        ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','" . $name . "','unpaid')";
 
         $SaveTR = mysqli_query($db, $sql8);
 
@@ -173,42 +173,93 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     try {
 
-      $sql9="INSERT INTO tb_payments (id, date,time, total, payment, change1)
-      VALUES ('" .$_GET['id']. "','".date("Y-m-d")."','".date("H:i:s")."','" . $row2['total'] . "','" . $_POST["payment"] . "','" . $_POST["payment"]-$row2['total'] . "')";
+      $sqlcheck = "SELECT * FROM tb_transactions
+      WHERE tb_transactions.id='" .$_GET['id']. "'";
+      $TRcheck = mysqli_query($db, $sqlcheck);
+      $resultCheck = mysqli_fetch_assoc($TRcheck);
 
-      $sql10 = "INSERT INTO tb_transactions (id, date,time, name, status) VALUES
-      ('" .$_GET['id']. "','".date("Y-m-d")."','".date("H:i:s")."','','paid')";
+      if(empty($resultCheck)) {
+
+        $sql9="INSERT INTO tb_payments (id, date,time, total, payment, change1)
+        VALUES ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','" . $row2['total'] . "','" . $_POST["payment"] . "','" . $_POST["payment"]-$row2['total'] . "')";
+
+        $sql10 = "INSERT INTO tb_transactions (id, date,time, name, status) VALUES
+        ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','','paid')";
 
 
-      if ($_POST["payment"] > $row2['total']) {
+        if ($_POST["payment"] > $row2['total']) {
 
-      $change=$_POST["payment"]-$row2['total'];
-      $SaveTR2a = mysqli_query($db, $sql9);
-      $SaveTR2b = mysqli_query($db, $sql10);
-      function function_alert($message) {
-      echo "<script>alert('Change is P $message');</script>";
-      }
-      function_alert($change);
-      header( "refresh:0.5;url=admin_dashboard.php" );
-      } elseif ($_POST["payment"] >= $row2['total']) {
+        $change=$_POST["payment"]-$row2['total'];
+        $SaveTR2a = mysqli_query($db, $sql9);
+        $SaveTR2b = mysqli_query($db, $sql10);
+        function function_alert($message) {
+        echo "<script>alert('Change is P $message');</script>";
+        }
+        function_alert($change);
+        header( "refresh:0.5;url=admin_dashboard.php" );
+        } elseif ($_POST["payment"] >= $row2['total']) {
 
-      $change="NO CHANGE";
-      $SaveTR2a = mysqli_query($db, $sql9);
-      $SaveTR2b = mysqli_query($db, $sql10);
-      function function_alert($message) {
-      echo "<script>alert('$message');</script>";
-      }
-      function_alert($change);
-      header( "refresh:0.5;url=admin_dashboard.php" );
+        $change="NO CHANGE";
+        $SaveTR2a = mysqli_query($db, $sql9);
+        $SaveTR2b = mysqli_query($db, $sql10);
+        function function_alert($message) {
+        echo "<script>alert('$message');</script>";
+        }
+        function_alert($change);
+        header( "refresh:0.5;url=admin_dashboard.php" );
+        } else {
+
+        function function_alert($message) {
+        echo "<script>alert('Payment not enought! Total is $message');</script>";
+        }
+        function_alert($row2['total']);
+        header("Refresh:0");
+
+        }
+        
       } else {
 
-      function function_alert($message) {
-      echo "<script>alert('Payment not enought! Total is $message');</script>";
-      }
-      function_alert($row2['total']);
-      header("Refresh:0");
+        $sql9="INSERT INTO tb_payments (id, date,time, total, payment, change1)
+        VALUES ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','" . $row2['total'] . "','" . $_POST["payment"] . "','" . $_POST["payment"]-$row2['total'] . "')";
+
+        $sql10 = "UPDATE tb_transactions
+        SET tb_transactions.status='paid',tb_transactions.date='".$_GET['date']."'
+        WHERE tb_transactions.id='" .$_GET['id']. "'";
+
+
+        if ($_POST["payment"] > $row2['total']) {
+
+        $change=$_POST["payment"]-$row2['total'];
+        $SaveTR2a = mysqli_query($db, $sql9);
+        $SaveTR2b = mysqli_query($db, $sql10);
+        function function_alert($message) {
+        echo "<script>alert('Change is P $message');</script>";
+        }
+        function_alert($change);
+        header( "refresh:0.5;url=admin_dashboard.php" );
+        } elseif ($_POST["payment"] >= $row2['total']) {
+
+        $change="NO CHANGE";
+        $SaveTR2a = mysqli_query($db, $sql9);
+        $SaveTR2b = mysqli_query($db, $sql10);
+        function function_alert($message) {
+        echo "<script>alert('$message');</script>";
+        }
+        function_alert($change);
+        header( "refresh:0.5;url=admin_dashboard.php" );
+        } else {
+
+        function function_alert($message) {
+        echo "<script>alert('Payment not enought! Total is $message');</script>";
+        }
+        function_alert($row2['total']);
+        header("Refresh:0");
+
+        }
 
       }
+
+      
  
     }
     catch(PDOException $e)
@@ -748,7 +799,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </script>
             <datalist id="datalistOptions">
               <?php while($row1 = mysqli_fetch_array($result1)):;?>
-              <option value="<?php echo $row1['specification'];?>">
+              <option value="<?php echo $row1['id'];?>"><?php echo $row1['specification'];?></option>
               <?php endwhile; ?>
             </datalist>
             <script>
@@ -793,7 +844,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 WHERE tb_products.category LIKE '%".$search."%' 
                 OR tb_products.mc_brand LIKE '%".$search."%' 
                 OR tb_products.mc_model LIKE '%".$search."%' 
-                OR tb_products.product_brand LIKE '%".$search."%'";
+                OR tb_products.product_brand LIKE '%".$search."%'
+                OR tb_products.id LIKE '%".$search."%'";
                                                                                     
                 $resultb = mysqli_query($db,$sqlb);
 

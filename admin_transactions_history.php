@@ -28,7 +28,7 @@ $row3 = mysqli_fetch_assoc($result3);
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.111.3">
-    <title>DASHBOARD</title>
+    <title>TRANSACTIONS SUMMARY</title>
  
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 
@@ -377,11 +377,12 @@ $row3 = mysqli_fetch_assoc($result3);
                        GROUP BY tb_payments.date) AS A
                 JOIN (SELECT
                       SUM(tb_cart.quantity) AS items,
-                      DATE_FORMAT(tb_cart.date,'%M %d,%Y') AS date1
-                      FROM tb_cart
-                      GROUP BY tb_cart.date) AS B
+                      DATE_FORMAT(tb_transactions.date,'%M %d,%Y') AS date1
+                      FROM tb_transactions
+                      JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
+                      GROUP BY tb_transactions.date) AS B
                 ON A.date1=B.date1
-                ORDER BY A.date DESC;";
+                ORDER BY A.date DESC";
                                                                                     
                 $result = mysqli_query($db,$sql);
 

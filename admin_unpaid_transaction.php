@@ -367,7 +367,7 @@ if (mysqli_num_rows($result) > 0) {
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h5>Transaction</h5>
+      <h5>Unpaid Transaction</h5>
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group">
             <button type="button" onclick="printDiv();" class="btn btn-sm btn-outline-secondary"><span data-feather="printer"></span></button>
@@ -383,7 +383,29 @@ if (mysqli_num_rows($result) > 0) {
               location.reload();
               } 
             </script>
-            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal2" <?php echo $voidButton; ?>>
+            <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal0" data-bs5="<?php echo $_GET['id']?>" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal2">
+              <span data-feather="edit"></span>
+            </button>
+
+                  <div class="modal fade" id="exampleModal0" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h6 class="modal-title" id="exampleModalLabel">Modify Transaction: <?php echo $_GET['id'];?></h6>
+                        </div>
+                
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                          <button type="button" onclick="location.href='admin_new_transaction.php?id=<?php echo $_GET['id'];?>&date=<?php echo date('Y-m-d')?>'" class="btn btn-sm btn-danger" >Modify</button>
+                         
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+  
+
+                  
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal2" data-bs5="<?php echo $_GET['id']?>" <?php echo $voidButton; ?>>
               <span data-feather="trash"></span>
             </button>
 
@@ -391,15 +413,45 @@ if (mysqli_num_rows($result) > 0) {
                     <div class="modal-dialog modal-dialog-centered">
                       <div class="modal-content">
                         <div class="modal-header">
-                          <h6 class="modal-title" id="exampleModalLabel">Void & Delete Transaction</h6>
+                          <h6 class="modal-title" id="exampleModalLabel"></h6>
+                        </div>
+                        <div class="modal-body">
+                            <form method="get" enctype="multipart/form-data">
+                              <div class="mb-3">
+                                <input type="hidden" id="VoidID" name="VoidID" class="form-control">
+                              </div>
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button onclick="location.href='admin_unpaid_transaction.php?VoidID=<?php echo $_GET['id']?>'" type="button" class="btn btn-sm btn-danger" >Void</button>
+                          <button type="submit" class="btn btn-sm btn-danger" >Void</button>
+                            </form>
                         </div>
                       </div>
                     </div>
                   </div>
+                  <script>
+                    const exampleModal0 = document.getElementById('exampleModal2')
+                    if (exampleModal0) {
+                      exampleModal0.addEventListener('show.bs.modal', event => {
+                        // Button that triggered the modal
+                        const button = event.relatedTarget
+                        // Extract info from data-bs-* attributes
+                        const recipient5 = button.getAttribute('data-bs5')
+                    
+                        // If necessary, you could initiate an Ajax request here
+                        // and then do the updating in a callback.
+
+                        // Update the modal's content.
+                
+                        const modalBodyInput5 = document.getElementById('VoidID')
+                    
+                        const modalTitle5 = exampleModal0.querySelector('.modal-title')
+                    
+                        modalBodyInput5.value = recipient5
+                        modalTitle5.textContent = `Void & Delete Transaction ${recipient5}`
+                      })
+                    }
+                  </script>
           </div>
         </div>
       </div>
