@@ -103,7 +103,7 @@ if(!empty($_GET['selecteddate'])) {
     <title>DASHBOARD</title>
  
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
       .bd-placeholder-img {
         font-size: 1.125rem;
@@ -436,51 +436,51 @@ if(!empty($_GET['selecteddate'])) {
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h5>Dashboard</h5>
       </div>
-      <div class="container text-center p-2">
-        <div class="row">
+      <div class="container text-start">
+        <div class="row mb-2">
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary">P <?php echo $row2['sales'];?></p>
-            <p class="m-0 p-0 text-muted">Sales Today</p>
+            <p class="m-0 p-0 fw-bold text-primary fs-5">P <?php echo $row2['sales'];?></p>
+            <p class="m-0 p-0 text-muted"><?php echo date("M j,Y");?></p>
           </div>
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['paidcustomers'];?></p>
-            <p class="m-0 p-0 text-muted">Transactions Today</p>
+            <p class="m-0 p-0 fw-bold text-primary fs-5"><?php echo $row2['paidcustomers'];?></p>
+            <p class="m-0 p-0 text-muted">Transactions</p>
           </div>
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['paiditems'];?></p>
-            <p class="m-0 p-0 text-muted">Items Sold Today</p>
+            <p class="m-0 p-0 fw-bold text-primary fs-5"><?php echo $row2['paiditems'];?></p>
+            <p class="m-0 p-0 text-muted">Items</p>
           </div>
         </div>
-        <div class="row">
+        <div class="row mb-2">
           <div class="col" onclick="location.href='admin_transactions_history.php'">
-            <p class="m-0 p-0 fw-bold text-primary">P <?php echo $row1['paid'];?></p>
-            <p class="m-0 p-0 text-muted">Overall Sales</p>
+            <p class="m-0 p-0 fw-bold fs-6">P <?php echo $row1['paid'];?></p>
+            <p class="m-0 p-0 text-muted">Sales</p>
           </div>
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row3['transactions'];?></p>
-            <p class="m-0 p-0 text-muted">Unpaid Transactions</p>
+            <p class="m-0 p-0 fw-bold fs-6"><?php echo $row3['transactions'];?></p>
+            <p class="m-0 p-0 text-muted">Unpaid</p>
           </div>
           <div class="col" onclick="location.href='admin_unpaid_transactions.php'">
-            <p class="m-0 p-0 fw-bold text-primary">P <?php echo $row4['unpaid'];?></p>
-            <p class="m-0 p-0 text-muted">Unpaid Amount</p>
+            <p class="m-0 p-0 fw-bold fs-6">P <?php echo $row4['unpaid'];?></p>
+            <p class="m-0 p-0 text-muted">Amount</p>
           </div>
         </div>
-        <div class="row">
+        <div class="row mb-2">
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary">P <?php echo $row5['amount']; ?></p>
-            <p class="m-0 p-0 text-muted">Amount Salable</p>
+            <p class="m-0 p-0 fw-bold fs-6">P <?php echo $row5['amount']; ?></p>
+            <p class="m-0 p-0 text-muted">Salable</p>
           </div>
           <div class="col" onclick="location.href='admin_low_stocks.php'">
-            <p class="m-0 p-0 fw-bold text-danger"><?php echo $row6['products']; ?></p>
-            <p class="m-0 p-0 text-muted">Low Stocks</p>
+            <p class="m-0 p-0 fw-bold text-danger fs-6"><?php echo $row6['products']; ?></p>
+            <p class="m-0 p-0 text-danger">Low Stocks</p>
           </div>
           <div class="col" onclick="location.href='admin_zero_stocks.php'">
-            <p class="m-0 p-0 fw-bold text-danger"><?php echo $row7['products']; ?></p>
-            <p class="m-0 p-0 text-muted">Zero Stocks</p>
+            <p class="m-0 p-0 fw-bold text-danger fs-6"><?php echo $row7['products']; ?></p>
+            <p class="m-0 p-0 text-danger">Zero Stocks</p>
           </div>
         </div>
       </div>
-      <h6 class="mt-2">Monthly Sales Chart</h6>
+      <h6 class="mt-5">Monthly Sales Chart</h6>
       <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
       <h6>Recent Paid Transactions</h6>
       <div class="table-responsive">

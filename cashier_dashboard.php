@@ -314,30 +314,30 @@ $TR = $_SESSION['id']."-".date_format($dateS,"Ymd")."-".date("His");
       <div class="container text-center p-2">
         <div class="row">
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary">P <?php echo $row2['sales'];?></p>
-            <p class="m-0 p-0 text-muted">Sales Today</p>
+            <p class="m-0 p-0 fw-bold text-primary fs-4">P <?php echo $row2['sales'];?></p>
+            <p class="m-0 p-0 text-muted"><?php echo date("M j,Y");?></p>
           </div>
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['paidcustomers'];?></p>
-            <p class="m-0 p-0 text-muted">Transactions Today</p>
+            <p class="m-0 p-0 fw-bold text-primary fs-4"><?php echo $row2['paidcustomers'];?></p>
+            <p class="m-0 p-0 text-muted">Transactions</p>
           </div>
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['paiditems'];?></p>
-            <p class="m-0 p-0 text-muted">Items Sold Today</p>
+            <p class="m-0 p-0 fw-bold text-primary fs-4"><?php echo $row2['paiditems'];?></p>
+            <p class="m-0 p-0 text-muted">Items</p>
           </div>
         </div>
         <div class="row">
           <div class="col" onclick="location.href='cashier_unpaid_transactions.php'">
-            <p class="m-0 p-0 fw-bold text-primary">P <?php echo $row4['unpaid'];?></p>
-            <p class="m-0 p-0 text-muted">Unpaid Total</p>
+            <p class="m-0 p-0 fw-bold text-danger fs-4">P <?php echo $row4['unpaid'];?></p>
+            <p class="m-0 p-0 text-danger">Unpaid</p>
           </div>
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-danger"><?php echo $row6['products']; ?></p>
-            <p class="m-0 p-0 text-muted">Low Stocks</p>
+            <p class="m-0 p-0 fw-bold text-danger fs-4"><?php echo $row6['products']; ?></p>
+            <p class="m-0 p-0 text-danger">Low Stocks</p>
           </div>
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-danger"><?php echo $row7['products']; ?></p>
-            <p class="m-0 p-0 text-muted">Zero Stocks</p>
+            <p class="m-0 p-0 fw-bold text-danger fs-4"><?php echo $row7['products']; ?></p>
+            <p class="m-0 p-0 text-danger">Zero Stocks</p>
           </div>
         </div>
       </div>
