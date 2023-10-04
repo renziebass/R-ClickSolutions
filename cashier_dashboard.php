@@ -311,22 +311,22 @@ $TR = $_SESSION['id']."-".date_format($dateS,"Ymd")."-".date("His");
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h5>Dashboard</h5>
       </div>
-      <div class="container text-center p-2">
-        <div class="row">
+      <div class="container text-center">
+        <div class="row mb-2">
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary fs-4">P <?php echo $row2['sales'];?></p>
+            <p class="m-0 p-0 fw-bold text-primary fs-5">P <?php echo $row2['sales'];?></p>
             <p class="m-0 p-0 text-muted"><?php echo date("M j,Y");?></p>
           </div>
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary fs-4"><?php echo $row2['paidcustomers'];?></p>
+            <p class="m-0 p-0 fw-bold text-primary fs-5"><?php echo $row2['paidcustomers'];?></p>
             <p class="m-0 p-0 text-muted">Transactions</p>
           </div>
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary fs-4"><?php echo $row2['paiditems'];?></p>
+            <p class="m-0 p-0 fw-bold text-primary fs-5"><?php echo $row2['paiditems'];?></p>
             <p class="m-0 p-0 text-muted">Items</p>
           </div>
         </div>
-        <div class="row">
+        <div class="row mb-2">
           <div class="col" onclick="location.href='cashier_unpaid_transactions.php'">
             <p class="m-0 p-0 fw-bold text-danger fs-6">P <?php echo $row4['unpaid'];?></p>
             <p class="m-0 p-0 text-danger">Unpaid</p>
@@ -342,7 +342,7 @@ $TR = $_SESSION['id']."-".date_format($dateS,"Ymd")."-".date("His");
         </div>
       </div>
 
-      <h6>Recent Paid Transactions</h6>
+      <h6 class="mt-5">Recent Paid Transactions</h6>
       <div class="table-responsive">
         <table class="table table-hover table-sm">
           <thead>
