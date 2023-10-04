@@ -328,15 +328,15 @@ $TR = $_SESSION['id']."-".date_format($dateS,"Ymd")."-".date("His");
         </div>
         <div class="row">
           <div class="col" onclick="location.href='cashier_unpaid_transactions.php'">
-            <p class="m-0 p-0 fw-bold text-danger fs-4">P <?php echo $row4['unpaid'];?></p>
+            <p class="m-0 p-0 fw-bold text-danger fs-6">P <?php echo $row4['unpaid'];?></p>
             <p class="m-0 p-0 text-danger">Unpaid</p>
           </div>
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-danger fs-4"><?php echo $row6['products']; ?></p>
+            <p class="m-0 p-0 fw-bold text-danger fs-6"><?php echo $row6['products']; ?></p>
             <p class="m-0 p-0 text-danger">Low Stocks</p>
           </div>
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-danger fs-4"><?php echo $row7['products']; ?></p>
+            <p class="m-0 p-0 fw-bold text-danger fs-6"><?php echo $row7['products']; ?></p>
             <p class="m-0 p-0 text-danger">Zero Stocks</p>
           </div>
         </div>
