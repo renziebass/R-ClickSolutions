@@ -837,7 +837,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 tb_products.product_brand,
                 CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification,
                 CONCAT(tb_products.available,'/',tb_products.stocks) AS stocks,
-                CONCAT(FORMAT(tb_products.price, 2)) AS price,
+                CONCAT(tb_products.price) AS price,
                 CASE WHEN tb_products.available=0
                 THEN 'text-danger' ELSE null END AS textcolor
                 FROM tb_products
