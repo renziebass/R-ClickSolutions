@@ -393,7 +393,7 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
         <div class="input-group input-group-sm mb-3">
-          <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="mb" class="form-control" placeholder="New Motorcycle Brand" aria-label="Recipient's username" aria-describedby="button-addon2" required>
+          <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="mb" class="form-control" placeholder="New Motorcycle Brand" aria-label="Recipient's username" aria-describedby="button-addon2">
           <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><span data-feather="plus"></button>
         </div>
         <div class="input-group input-group-sm mb-3">
@@ -404,7 +404,7 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
             <?php echo $row3['brand'];?></option>
           <?php endwhile; ?>
           </select>
-          <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="mcmodel" class="form-control" placeholder="New Motorcycle Model" aria-label="Recipient's username" aria-describedby="button-addon2" required>
+          <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="mcmodel" class="form-control" placeholder="New Motorcycle Model" aria-label="Recipient's username" aria-describedby="button-addon2">
           <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><span data-feather="plus"></button>
         </div>
       </form>
