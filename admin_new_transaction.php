@@ -9,7 +9,7 @@ $search = "renzie";
 
 $sql2="SELECT
 SUM(tb_cart.quantity) AS items,
-SUM(tb_cart.price*tb_cart.quantity) AS total,
+FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2) AS total,
 tb_transactions.name
 FROM tb_cart
 LEFT JOIN tb_transactions ON tb_cart.transaction_id=tb_transactions.id
@@ -633,12 +633,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 FROM (SELECT
                     tb_products.id,
                     CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)AS specification,
-                      tb_products.price
+                    FORMAT(tb_products.price, 2) AS price
                     FROM tb_cart LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id) AS A
                 JOIN (SELECT
                     tb_cart.product_id,
                     SUM(tb_cart.quantity) AS quantity,
-                    SUM(tb_cart.price*tb_cart.quantity) AS total
+                    FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2) AS total
                     FROM tb_cart WHERE tb_cart.transaction_id='".$_GET['id']."'
                     GROUP BY tb_cart.product_id) AS B
                 ON A.id=B.product_id
