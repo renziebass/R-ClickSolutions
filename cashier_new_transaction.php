@@ -9,6 +9,7 @@ $search = "renzie";
 
 $sql2="SELECT
 SUM(tb_cart.quantity) AS items,
+SUM(tb_cart.price*tb_cart.quantity) AS total2,
 FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2) AS total,
 tb_transactions.name
 FROM tb_cart
@@ -181,15 +182,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       if(empty($resultCheck)) {
 
         $sql9="INSERT INTO tb_payments (id, date,time, total, payment, change1)
-        VALUES ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','" . $row2['total'] . "','" . $_POST["payment"] . "','" . $_POST["payment"]-$row2['total'] . "')";
+        VALUES ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','" . $row2['total'] . "','" . $_POST["payment"] . "','" . $_POST["payment"]-$row2['total2'] . "')";
 
         $sql10 = "INSERT INTO tb_transactions (id, date,time, name, status) VALUES
         ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','','paid')";
 
 
-        if ($_POST["payment"] > $row2['total']) {
+        if ($_POST["payment"] > $row2['total2']) {
 
-        $change=$_POST["payment"]-$row2['total'];
+        $change=$_POST["payment"]-$row2['total2'];
         $SaveTR2a = mysqli_query($db, $sql9);
         $SaveTR2b = mysqli_query($db, $sql10);
         function function_alert($message) {
@@ -197,7 +198,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         function_alert($change);
         header( "refresh:0.5;url=cashier_dashboard.php" );
-        } elseif ($_POST["payment"] >= $row2['total']) {
+        } elseif ($_POST["payment"] >= $row2['total2']) {
 
         $change="NO CHANGE";
         $SaveTR2a = mysqli_query($db, $sql9);
@@ -212,7 +213,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         function function_alert($message) {
         echo "<script>alert('Payment not enought! Total is $message');</script>";
         }
-        function_alert($row2['total']);
+        function_alert($row2['total2']);
         header("Refresh:0");
 
         }
@@ -220,16 +221,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       } else {
 
         $sql9="INSERT INTO tb_payments (id, date,time, total, payment, change1)
-        VALUES ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','" . $row2['total'] . "','" . $_POST["payment"] . "','" . $_POST["payment"]-$row2['total'] . "')";
+        VALUES ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','" . $row2['total'] . "','" . $_POST["payment"] . "','" . $_POST["payment"]-$row2['total2'] . "')";
 
         $sql10 = "UPDATE tb_transactions
         SET tb_transactions.status='paid',tb_transactions.date='".$_GET['date']."'
         WHERE tb_transactions.id='" .$_GET['id']. "'";
 
 
-        if ($_POST["payment"] > $row2['total']) {
+        if ($_POST["payment"] > $row2['total2']) {
 
-        $change=$_POST["payment"]-$row2['total'];
+        $change=$_POST["payment"]-$row2['total2'];
         $SaveTR2a = mysqli_query($db, $sql9);
         $SaveTR2b = mysqli_query($db, $sql10);
         function function_alert($message) {
@@ -252,7 +253,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         function function_alert($message) {
         echo "<script>alert('Payment not enought! Total is $message');</script>";
         }
-        function_alert($row2['total']);
+        function_alert($row2['total2']);
         header("Refresh:0");
 
         }
