@@ -840,7 +840,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 CONCAT(tb_products.available,'/',tb_products.stocks) AS stocks,
                 CONCAT(tb_products.price) AS price,
                 CASE WHEN tb_products.available=0
-                THEN 'text-danger' ELSE null END AS textcolor
+                THEN 'text-danger' ELSE null END AS textcolor,
+                CASE WHEN tb_products.available=0
+                THEN 'disabled' ELSE null END AS clickable
                 FROM tb_products
                 WHERE tb_products.category LIKE '%".$search."%' 
                 OR tb_products.mc_brand LIKE '%".$search."%' 
@@ -855,7 +857,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 foreach($resultb as $itemsb)
                 {
             ?>
-            <tr class="<?php echo $itemsb['textcolor']; ?>" data-bs-toggle="modal" data-bs-target="#exampleModal3" data-bs-whatever="<?php echo $itemsb['specification']; ?>" data-bs-whatever2="<?php echo $itemsb['id']; ?>" data-bs-whatever3="<?php echo $itemsb['price']; ?>"> 
+            <tr class="<?php echo $itemsb['textcolor']; ?>" data-bs-toggle="modal" data-bs-target="#exampleModal3" data-bs-whatever="<?php echo $itemsb['specification']; ?>" data-bs-whatever2="<?php echo $itemsb['id']; ?>" data-bs-whatever3="<?php echo $itemsb['price']; ?>" <?php echo $itemsb['clickable']; ?>> 
             <span>
                   <div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
                       <div class="modal-dialog modal-dialog-centered">
