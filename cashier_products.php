@@ -330,12 +330,12 @@ $row5 = mysqli_fetch_assoc($result5);
             <p class="m-0 p-0 text-muted">Total Category</p>
           </div>
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row3['lowstocks'];?></p>
-            <p class="m-0 p-0 text-muted">Low Stocks</p>
+            <p class="m-0 p-0 fw-bold text-danger"><?php echo $row3['lowstocks'];?></p>
+            <p class="m-0 p-0 text-danger">Low Stocks</p>
           </div>
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row4['zerostocks'];?></p>
-            <p class="m-0 p-0 text-muted">Zero Stocks</p>
+            <p class="m-0 p-0 fw-bold text-danger"><?php echo $row4['zerostocks'];?></p>
+            <p class="m-0 p-0 text-danger">Zero Stocks</p>
           </div>
         </div>
       </div>
