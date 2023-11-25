@@ -290,16 +290,16 @@ $row3 = mysqli_fetch_assoc($result3);
       <div class="container text-center border p-2">
         <div class="row">
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row1['transactions'];?></p>
-            <p class="m-0 p-0 text-muted">Unpaid Transactions</p>
+            <p class="m-0 p-0 fw-bold text-danger"><?php echo $row1['transactions'];?></p>
+            <p class="m-0 p-0 text-danger">Unpaid Transactions</p>
           </div>
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['items'];?></p>
-            <p class="m-0 p-0 text-muted">Unpaid Items</p>
+            <p class="m-0 p-0 fw-bold text-danger"><?php echo $row2['items'];?></p>
+            <p class="m-0 p-0 text-danger">Unpaid Items</p>
           </div>
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary">P <?php echo $row3['unpaid'];?></p>
-            <p class="m-0 p-0 text-muted">Unpaid Amount</p>
+            <p class="m-0 p-0 fw-bold text-danger">P <?php echo $row3['unpaid'];?></p>
+            <p class="m-0 p-0 text-danger">Unpaid Amount</p>
           </div>
         </div>
       </div>
