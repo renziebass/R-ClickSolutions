@@ -1,4 +1,3 @@
-
 <?php
 include('user_session.php');
 $sql1="SELECT
@@ -24,7 +23,7 @@ $row2 = mysqli_fetch_assoc($result2);
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.111.3">
     <title>TRANSACTIONS SUMMARY</title>
- 
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 
     <style>
@@ -189,19 +188,19 @@ $row2 = mysqli_fetch_assoc($result2);
 
   </style>
 
-  
+
   </head>
   <body>
-  
-  
 
-    
+
+
+
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
   <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">R-Click POS: Karaang Garahe</a>
   <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
- 
+
 </header>
 
 <div class="container-fluid">
@@ -303,18 +302,18 @@ $row2 = mysqli_fetch_assoc($result2);
                         tb_payments.date,
                         DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date1,
                         COUNT(tb_payments.payment) AS customers,
+                        CONCAT(FORMAT(SUM(tb_payments.total), 2)) AS amount
                         FROM tb_payments
                        GROUP BY tb_payments.date) AS A
                 JOIN (SELECT
                       SUM(tb_cart.quantity) AS items,
-                      CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS amount,
                       DATE_FORMAT(tb_transactions.date,'%M %d,%Y') AS date1
                       FROM tb_transactions
                       JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
                       GROUP BY tb_transactions.date) AS B
                 ON A.date1=B.date1
                 ORDER BY A.date DESC LIMIT 7";
-                                                                                    
+
                 $result = mysqli_query($db,$sql);
 
                 if (mysqli_num_rows($result) > 0) 
