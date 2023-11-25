@@ -357,7 +357,8 @@ $row1 = mysqli_fetch_assoc($result1);
                 LEFT JOIN tb_cart ON tb_products.id=tb_cart.product_id
                 RIGHT JOIN tb_transactions ON tb_cart.transaction_id=tb_transactions.id
                 WHERE tb_products.id='" .$_GET['id']. "'
-                GROUP BY tb_transactions.id";
+                GROUP BY tb_transactions.id
+                ORDER BY tb_transactions.date DESC";
                                                                                     
                 $result = mysqli_query($db,$sql);
 
