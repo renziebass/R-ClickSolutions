@@ -375,8 +375,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </script>
         </div>
       </div>
-      <form method="get" action="<?php echo $_SERVER['PHP_SELF'];?>">
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3">
+      <div class="row">
+        <div class="col">
+        <form method="get" action="<?php echo $_SERVER['PHP_SELF'];?>">
+        <div class="mb-3">
             <div class="input-group">
               <input id="search" name="id" class="form-control" list="datalistOptions" id="exampleDataList" value="" placeholder="Type to search product...">
               <script>
@@ -390,18 +392,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <option value="<?php echo $row1['id'];?>"><?php echo $row1['specification'];?></option>
                 <?php endwhile; ?>
               </datalist>
-              <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><span data-feather="search"></button>
+              <button class="btn btn-secondary" type="submit" id="button-addon2">SEARCH <span data-feather="search" class="align-text-end"></button>
             </div>
         </div>
       </form>
-      <form method="post" enctype="multipart/form-data">
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3">
-            <div class="input-group">
+        </div>
+        <div class="col">
+        <form method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <div class="input-group d-grid d-md-flex justify-content-md-end">
               <input name="qty" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="Type quantity" required>
-              <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><span data-feather="plus"></button> 
+              <button class="btn btn-success" type="submit" id="button-addon2">RE-STOCK <span data-feather="upload-cloud" class="align-text-end"></button> 
             </div>
         </div>
       </form>
+        </div>
+      </div>
+     
+      
       <div class="table" id="page">
       <div class="container text-center border p-2">
         <div class="row">

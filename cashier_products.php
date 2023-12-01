@@ -314,7 +314,7 @@ $row5 = mysqli_fetch_assoc($result5);
               <option value="<?php echo $row1['id'];?>"><?php echo $row1['specification'];?></option>
               <?php endwhile; ?>
             </datalist>
-            <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><span data-feather="search"></button>
+            <button class="btn btn-secondary" type="submit" id="button-addon2">SEARCH <span data-feather="search" class="align-text-end"></button>
           </div>
       </div>
       </form>

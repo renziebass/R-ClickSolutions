@@ -493,7 +493,7 @@ $result17=mysqli_query($db,$sql17);
       </div>
       <div class="text-center">
         <div class="row">
-          <div class="col-md rounded p-1 m-1" style="background-color: #D9FBD0;">
+          <div class="col-md rounded p-1 m-1" style="background-color: #dcdcdc;">
             <div class="row mb-2">
               <p class="mb-2 p-0 text-muted">Today <?php echo date("M j,Y");?></p>
               <div class="col">
@@ -510,7 +510,7 @@ $result17=mysqli_query($db,$sql17);
               </div>
             </div>
           </div>
-          <div class="col-md rounded p-1 m-1" style="background-color: #FFEFCA;">
+          <div class="col-md rounded p-1 m-1" style="background-color: #dcdcdc;">
             <div class="row mb-2">
               <p class="mb-2 p-0 text-muted">Inventory</p>
               <div class="col">
@@ -527,7 +527,7 @@ $result17=mysqli_query($db,$sql17);
               </div>
             </div>
           </div>
-          <div class="col-md rounded p-1 m-1" style="background-color: #FFE0DB;">
+          <div class="col-md rounded p-1 m-1" style="background-color: #d3d3d3;">
             <div class="row mb-2">
               <p class="mb-2 p-0 text-muted">Unpaid</p>
               <div class="col">
@@ -548,7 +548,7 @@ $result17=mysqli_query($db,$sql17);
       </div>
       <div class="text-center">
         <div class="row">
-          <div class="col-md rounded p-1 m-1" style="background-color: #E9F7FF;">
+          <div class="col-md rounded p-1 m-1" style="background-color: #c0c0c0;">
             <div class="row mb-2">
               <p class="mb-2 p-0 text-muted">Overall</p>
               <div class="col">
@@ -565,7 +565,7 @@ $result17=mysqli_query($db,$sql17);
               </div>
             </div>
           </div>
-          <div class="col-md rounded p-1 m-1" style="background-color: #FDFFBA;">
+          <div class="col-md rounded p-1 m-1" style="background-color: #a9a9a9;">
             <div class="row mb-2">
               <p class="mb-2 p-0 text-muted">Average Sales</p>
               <div class="col">
@@ -686,10 +686,7 @@ $result17=mysqli_query($db,$sql17);
           <?php endwhile; ?>
         ],
         lineTension: 0,
-        backgroundColor: '#6480FD',
-        borderColor: '#007bff',
-        borderWidth: 4,
-        pointBackgroundColor: '#007bff'
+        backgroundColor: '#708090'
       }]
     },
     options: {
@@ -733,7 +730,7 @@ $result17=mysqli_query($db,$sql17);
           <?php echo $row17['pcs'];?>,
           <?php endwhile; ?>],
     backgroundColor: [
-      '#F995F8','#D195F7','#AE95F9','#96A8FA','#95D3F8'
+      '#F8BDAD','#bed0db','#FFF4B2','#CCFFFA','#dcc894'
     ],
     hoverOffset: 4
   }]

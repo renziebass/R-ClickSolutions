@@ -730,10 +730,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
           </script>
         </table>
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center">
-      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal4" <?php echo $button;?>>
-        <span class="text-danger" data-feather="save"></span>
-      </button>
+      
+      </div>
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center m-2">
+      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal4" <?php echo $button;?>>SAVE</button>
       <div class="modal fade" id="exampleModal4" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
                       <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
@@ -758,7 +758,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                       </div>
                     </div>
-      <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal5" <?php echo $button;?>><span class="text-success" data-feather="check-circle"></span></button>
+      <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal5" <?php echo $button;?>>PAY</button>
       <div class="modal fade" id="exampleModal5" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
                       <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
@@ -785,7 +785,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
            
       </div>
-      </div>
      
       <h6 class="mt-5">Add Products</h6>
       <form method="post" enctype="multipart/form-data">
@@ -809,7 +808,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               document.getElementById("search").focus();
               }
             </script>
-            <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><span data-feather="search"></button>
+            <button class="btn btn-secondary" type="submit" id="button-addon2">SEARCH <span data-feather="search" class="align-text-end"></button>
           </div>
       </div>
       </form>

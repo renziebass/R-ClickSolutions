@@ -374,7 +374,7 @@ $row5 = mysqli_fetch_assoc($result5);
               <option value="<?php echo $row1['id'];?>"><?php echo $row1['specification'];?></option>
               <?php endwhile; ?>
             </datalist>
-            <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><span data-feather="search"></button>
+            <button class="btn btn-secondary" type="submit" id="button-addon2">SEARCH <span data-feather="search" class="align-text-end"></button>
           </div>
       </div>
       </form>
@@ -390,12 +390,12 @@ $row5 = mysqli_fetch_assoc($result5);
             <p class="m-0 p-0 text-muted">Total Category</p>
           </div>
           <div class="col" onclick="location.href='admin_low_stocks.php'">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row3['lowstocks'];?></p>
-            <p class="m-0 p-0 text-muted">Low Stocks</p>
+            <p class="m-0 p-0 fw-bold text-danger"><?php echo $row3['lowstocks'];?></p>
+            <p class="m-0 p-0 text-danger">Low Stocks</p>
           </div>
           <div class="col" onclick="location.href='admin_zero_stocks.php'">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row4['zerostocks'];?></p>
-            <p class="m-0 p-0 text-muted">Zero Stocks</p>
+            <p class="m-0 p-0 fw-bold text-danger"><?php echo $row4['zerostocks'];?></p>
+            <p class="m-0 p-0 text-danger">Zero Stocks</p>
           </div>
         </div>
       </div>
