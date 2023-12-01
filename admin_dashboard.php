@@ -491,9 +491,9 @@ $result17=mysqli_query($db,$sql17);
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h5>Dashboard</h5>
       </div>
-      <div class="container-fluid text-center">
-        <div class="row m-1">
-          <div class="col-md rounded p-2 m-2" style="background-color: #D9FBD0;">
+      <div class="text-center">
+        <div class="row">
+          <div class="col-md rounded p-1 m-1" style="background-color: #D9FBD0;">
             <div class="row mb-2">
               <p class="mb-2 p-0 text-muted">Today <?php echo date("M j,Y");?></p>
               <div class="col">
@@ -510,7 +510,7 @@ $result17=mysqli_query($db,$sql17);
               </div>
             </div>
           </div>
-          <div class="col-md rounded p-2 m-2" style="background-color: #FFEFCA;">
+          <div class="col-md rounded p-1 m-1" style="background-color: #FFEFCA;">
             <div class="row mb-2">
               <p class="mb-2 p-0 text-muted">Inventory</p>
               <div class="col">
@@ -527,7 +527,7 @@ $result17=mysqli_query($db,$sql17);
               </div>
             </div>
           </div>
-          <div class="col-md rounded p-2 m-2" style="background-color: #FFE0DB;">
+          <div class="col-md rounded p-1 m-1" style="background-color: #FFE0DB;">
             <div class="row mb-2">
               <p class="mb-2 p-0 text-muted">Unpaid</p>
               <div class="col">
@@ -546,9 +546,9 @@ $result17=mysqli_query($db,$sql17);
           </div>
         </div>
       </div>
-      <div class="container-fluid text-center">
-        <div class="row m-1">
-          <div class="col-md rounded p-2 m-2" style="background-color: #E9F7FF;">
+      <div class="text-center">
+        <div class="row">
+          <div class="col-md rounded p-1 m-1" style="background-color: #E9F7FF;">
             <div class="row mb-2">
               <p class="mb-2 p-0 text-muted">Overall</p>
               <div class="col">
@@ -565,7 +565,7 @@ $result17=mysqli_query($db,$sql17);
               </div>
             </div>
           </div>
-          <div class="col-md rounded p-2 m-2" style="background-color: #FDFFBA;">
+          <div class="col-md rounded p-1 m-1" style="background-color: #FDFFBA;">
             <div class="row mb-2">
               <p class="mb-2 p-0 text-muted">Average Sales</p>
               <div class="col">
