@@ -89,7 +89,62 @@ if(!empty($_GET['selecteddate'])) {
   header("location: admin_new_transaction.php?id=".$TR."&date=".date_format($dateS,"Y-m-d"));
 }
 
-  //$TR = $_SESSION['id']."-".date("Ymd")."-".date("His");
+$sql11="SELECT
+SUM(tb_cart.quantity) AS items
+FROM tb_cart";
+$result11=mysqli_query($db,$sql11);
+$row11 = mysqli_fetch_assoc($result11);
+
+$sql12="SELECT
+COUNT(tb_payments.id)AS transactions
+FROM tb_payments";
+$result12=mysqli_query($db,$sql12);
+$row12 = mysqli_fetch_assoc($result12);
+
+$sql13="SELECT
+SUM(tb_cart.quantity) AS items
+FROM tb_transactions
+JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
+WHERE tb_transactions.status='unpaid';";
+$result13=mysqli_query($db,$sql13);
+$row13 = mysqli_fetch_assoc($result13);
+
+$sql14="SELECT 
+FORMAT(AVG(tb_payments.total), 2) AS daily
+FROM tb_payments";
+$result14=mysqli_query($db,$sql14);
+$row14 = mysqli_fetch_assoc($result14);
+
+$sql15="SELECT
+FORMAT(SUM(tb_payments.total) / 12, 2) AS monthly
+FROM tb_payments
+WHERE YEAR(tb_payments.date) = year(curdate())";
+$result15=mysqli_query($db,$sql15);
+$row15 = mysqli_fetch_assoc($result15);
+
+$sql16="SELECT
+tb_products.category,
+SUM(tb_cart.quantity) AS pcs
+FROM tb_cart
+JOIN tb_products ON tb_cart.product_id=tb_products.id
+GROUP BY tb_products.category
+ORDER BY pcs DESC
+LIMIT 5";
+$result16=mysqli_query($db,$sql16);
+
+$sql17="SELECT
+tb_products.category,
+SUM(tb_cart.quantity) AS pcs
+FROM tb_cart
+JOIN tb_products ON tb_cart.product_id=tb_products.id
+GROUP BY tb_products.category
+ORDER BY pcs DESC
+LIMIT 5";
+$result17=mysqli_query($db,$sql17);
+
+
+
+
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -436,52 +491,111 @@ if(!empty($_GET['selecteddate'])) {
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h5>Dashboard</h5>
       </div>
-      <div class="container text-start">
-        <div class="row mb-2">
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary fs-5">P <?php echo $row2['sales'];?></p>
-            <p class="m-0 p-0 text-muted"><?php echo date("M j,Y");?></p>
+      <div class="container-fluid text-center">
+        <div class="row">
+          <div class="col-md rounded p-2 m-2" style="background-color: #D9FBD0;">
+            <div class="row mb-2">
+              <p class="mb-2 p-0 text-muted">Today <?php echo date("M j,Y");?></p>
+              <div class="col">
+                  <p class="m-0 p-0 text-muted">Sales <span data-feather="dollar-sign" class="align-text-bottom"></p>
+                  <p class="m-0 p-0 fw-bold fs-5">P <?php echo $row2['sales'];?> </p>
+              </div>
+              <div class="col">
+                <p class="m-0 p-0 text-muted">Transactions <span data-feather="users" class="align-text-bottom"></p>
+                <p class="m-0 p-0 fw-bold fs-5"><?php echo $row2['paidcustomers'];?></p>
+              </div>
+              <div class="col">
+                <p class="m-0 p-0 text-muted">Items <span data-feather="list" class="align-text-bottom"></p>
+                <p class="m-0 p-0 fw-bold fs-5"><?php echo $row2['paiditems'];?></p>
+              </div>
+            </div>
           </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary fs-5"><?php echo $row2['paidcustomers'];?></p>
-            <p class="m-0 p-0 text-muted">Transactions</p>
+          <div class="col-md rounded p-2 m-2" style="background-color: #FFEFCA;">
+            <div class="row mb-2">
+              <p class="mb-2 p-0 text-muted">Inventory</p>
+              <div class="col">
+                  <p class="m-0 p-0 text-muted">Amount <span data-feather="dollar-sign" class="align-text-bottom"></p>
+                  <p class="m-0 p-0 fw-bold">P <?php echo $row5['amount']; ?> </p>
+              </div>
+              <div class="col" onclick="location.href='admin_low_stocks.php'">
+                <p class="m-0 p-0 text-danger">Low Stocks <span data-feather="alert-triangle" class="align-text-bottom"></p>
+                <p class="m-0 p-0 fw-bold text-danger"><?php echo $row6['products']; ?></p>
+              </div>
+              <div class="col" onclick="location.href='admin_zero_stocks.php'">
+                <p class="m-0 p-0 text-danger">Zero Stocks <span data-feather="x-octagon" class="align-text-bottom"></p>
+                <p class="m-0 p-0 fw-bold text-danger"><?php echo $row7['products']; ?></p>
+              </div>
+            </div>
           </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary fs-5"><?php echo $row2['paiditems'];?></p>
-            <p class="m-0 p-0 text-muted">Items</p>
-          </div>
-        </div>
-        <div class="row mb-2">
-          <div class="col" onclick="location.href='admin_transactions_history.php'">
-            <p class="m-0 p-0 fw-bold fs-6">P <?php echo $row1['paid'];?></p>
-            <p class="m-0 p-0 text-muted">Sales</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold fs-6"><?php echo $row3['transactions'];?></p>
-            <p class="m-0 p-0 text-muted">Unpaid</p>
-          </div>
-          <div class="col" onclick="location.href='admin_unpaid_transactions.php'">
-            <p class="m-0 p-0 fw-bold fs-6">P <?php echo $row4['unpaid'];?></p>
-            <p class="m-0 p-0 text-muted">Amount</p>
-          </div>
-        </div>
-        <div class="row mb-2">
-          <div class="col">
-            <p class="m-0 p-0 fw-bold fs-6">P <?php echo $row5['amount']; ?></p>
-            <p class="m-0 p-0 text-muted">Salable</p>
-          </div>
-          <div class="col" onclick="location.href='admin_low_stocks.php'">
-            <p class="m-0 p-0 fw-bold text-danger fs-6"><?php echo $row6['products']; ?></p>
-            <p class="m-0 p-0 text-danger">Low Stocks</p>
-          </div>
-          <div class="col" onclick="location.href='admin_zero_stocks.php'">
-            <p class="m-0 p-0 fw-bold text-danger fs-6"><?php echo $row7['products']; ?></p>
-            <p class="m-0 p-0 text-danger">Zero Stocks</p>
+          <div class="col-md rounded p-2 m-2" style="background-color: #FFE0DB;">
+            <div class="row mb-2">
+              <p class="mb-2 p-0 text-muted">Unpaid</p>
+              <div class="col">
+                  <p class="m-0 p-0 text-muted">Amount <span data-feather="dollar-sign" class="align-text-bottom"></p>
+                  <p class="m-0 p-0 fw-bold">P <?php echo $row4['unpaid'];?> </p>
+              </div>
+              <div class="col">
+                <p class="m-0 p-0 text-muted">Accounts <span data-feather="users" class="align-text-bottom"></p>
+                <p class="m-0 p-0 fw-bold"><?php echo $row3['transactions'];?></p>
+              </div>
+              <div class="col">
+                <p class="m-0 p-0 text-muted">Items <span data-feather="list" class="align-text-bottom"></p>
+                <p class="m-0 p-0 fw-bold"><?php echo $row13['items'];?></p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <h6 class="mt-5">Monthly Sales Chart</h6>
-      <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+      <div class="container-fluid text-center">
+        <div class="row">
+          <div class="col-md rounded p-2 m-2" style="background-color: #E9F7FF;">
+            <div class="row mb-2">
+              <p class="mb-2 p-0 text-muted">Overall</p>
+              <div class="col">
+                  <p class="m-0 p-0 text-muted">Sales <span data-feather="dollar-sign" class="align-text-bottom"></p>
+                  <p class="m-0 p-0 fw-bold fs-5">P <?php echo $row1['paid'];?></p>
+              </div>
+              <div class="col">
+                <p class="m-0 p-0 text-muted">Transactions <span data-feather="users" class="align-text-bottom"></p>
+                <p class="m-0 p-0 fw-bold fs-5"><?php echo $row12['transactions'];?></p>
+              </div>
+              <div class="col">
+                <p class="m-0 p-0 text-muted">Items <span data-feather="list" class="align-text-bottom"></p>
+                <p class="m-0 p-0 fw-bold fs-5"><?php echo $row11['items'];?></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md rounded p-2 m-2" style="background-color: #FDFFBA;">
+            <div class="row mb-2">
+              <p class="mb-2 p-0 text-muted">Average Sales</p>
+              <div class="col">
+                  <p class="m-0 p-0 text-muted">Daily <span data-feather="dollar-sign" class="align-text-bottom"></p>
+                  <p class="m-0 p-0 fw-bold fs-5">P <?php echo $row14['daily'];?></p>
+              </div>
+              <div class="col">
+                <p class="m-0 p-0 text-muted">Monthly <span data-feather="dollar-sign" class="align-text-bottom"></p>
+                <p class="m-0 p-0 fw-bold fs-5">P <?php echo $row15['monthly'];?></p>
+              </div>
+              <div class="col">
+                <p class="m-0 p-0 text-muted">Yearly <span data-feather="dollar-sign" class="align-text-bottom"></p>
+                <p class="m-0 p-0 fw-bold fs-5"></p>
+              </div>
+            </div>
+          </div>
+  
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md">
+          <h6 class="mt-2">Monthly Sales Chart</h6>
+          <canvas class="my-4 w-100" id="myChart" width="200" height="100"></canvas>
+        </div>
+        <div class="col-md">
+          <h6 class="mt-2">Top 5 Selling Categories</h6>
+          <canvas class="my-4 w-100" id="myChart2" width="200" height="100"></canvas>
+        </div>
+      </div>
+      
       <h6>Recent Paid Transactions</h6>
       <div class="table-responsive">
         <table class="table table-hover table-sm">
@@ -572,7 +686,7 @@ if(!empty($_GET['selecteddate'])) {
           <?php endwhile; ?>
         ],
         lineTension: 0,
-        backgroundColor: 'colorize(true)',
+        backgroundColor: '#6480FD',
         borderColor: '#007bff',
         borderWidth: 4,
         pointBackgroundColor: '#007bff'
@@ -591,6 +705,50 @@ if(!empty($_GET['selecteddate'])) {
   })
 }
 
+)()
+
+</script>
+<script>
+  /* globals Chart:false, feather:false */
+
+(() => {
+  'use strict'
+
+  feather.replace({ 'aria-hidden': 'true' })
+
+  // Graphs
+  const ctx = document.getElementById('myChart2')
+  // eslint-disable-next-line no-unused-vars
+  const myChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: [
+        <?php while($row16 = mysqli_fetch_array($result16)):;?>
+          ['<?php echo $row16['category'];?>'],
+          <?php endwhile; ?>
+  ],
+      datasets:  [{
+    label: 'My First Dataset',
+    data: [<?php while($row17 = mysqli_fetch_array($result17)):;?>
+          <?php echo $row17['pcs'];?>,
+          <?php endwhile; ?>],
+    backgroundColor: [
+      '#F995F8','#D195F7','#AE95F9','#96A8FA','#95D3F8'
+    ],
+    hoverOffset: 4
+  }]
+    },
+    options: {
+      aspectRatio: 2,
+      plugins: {
+        legend: {
+          display: true
+        }
+        
+      }
+    }
+  })
+}
 )()
 
 </script>
