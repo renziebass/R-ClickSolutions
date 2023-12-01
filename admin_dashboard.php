@@ -553,15 +553,15 @@ $result17=mysqli_query($db,$sql17);
               <p class="mb-2 p-0 text-muted">Overall</p>
               <div class="col">
                   <p class="m-0 p-0 text-muted">Sales <span data-feather="dollar-sign" class="align-text-bottom"></p>
-                  <p class="m-0 p-0 fw-bold fs-5">P <?php echo $row1['paid'];?></p>
+                  <p class="m-0 p-0 fw-bold">P <?php echo $row1['paid'];?></p>
               </div>
               <div class="col">
                 <p class="m-0 p-0 text-muted">Transactions <span data-feather="users" class="align-text-bottom"></p>
-                <p class="m-0 p-0 fw-bold fs-5"><?php echo $row12['transactions'];?></p>
+                <p class="m-0 p-0 fw-bold"><?php echo $row12['transactions'];?></p>
               </div>
               <div class="col">
                 <p class="m-0 p-0 text-muted">Items <span data-feather="list" class="align-text-bottom"></p>
-                <p class="m-0 p-0 fw-bold fs-5"><?php echo $row11['items'];?></p>
+                <p class="m-0 p-0 fw-bold"><?php echo $row11['items'];?></p>
               </div>
             </div>
           </div>
@@ -570,15 +570,15 @@ $result17=mysqli_query($db,$sql17);
               <p class="mb-2 p-0 text-muted">Average Sales</p>
               <div class="col">
                   <p class="m-0 p-0 text-muted">Daily <span data-feather="dollar-sign" class="align-text-bottom"></p>
-                  <p class="m-0 p-0 fw-bold fs-5">P <?php echo $row14['daily'];?></p>
+                  <p class="m-0 p-0 fw-bold">P <?php echo $row14['daily'];?></p>
               </div>
               <div class="col">
                 <p class="m-0 p-0 text-muted">Monthly <span data-feather="dollar-sign" class="align-text-bottom"></p>
-                <p class="m-0 p-0 fw-bold fs-5">P <?php echo $row15['monthly'];?></p>
+                <p class="m-0 p-0 fw-bold">P <?php echo $row15['monthly'];?></p>
               </div>
               <div class="col">
                 <p class="m-0 p-0 text-muted">Yearly <span data-feather="dollar-sign" class="align-text-bottom"></p>
-                <p class="m-0 p-0 fw-bold fs-5"></p>
+                <p class="m-0 p-0 fw-bold"></p>
               </div>
             </div>
           </div>
