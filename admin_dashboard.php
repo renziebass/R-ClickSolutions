@@ -492,7 +492,7 @@ $result17=mysqli_query($db,$sql17);
         <h5>Dashboard</h5>
       </div>
       <div class="container-fluid text-center">
-        <div class="row">
+        <div class="row m-1">
           <div class="col-md rounded p-2 m-2" style="background-color: #D9FBD0;">
             <div class="row mb-2">
               <p class="mb-2 p-0 text-muted">Today <?php echo date("M j,Y");?></p>
@@ -547,7 +547,7 @@ $result17=mysqli_query($db,$sql17);
         </div>
       </div>
       <div class="container-fluid text-center">
-        <div class="row">
+        <div class="row m-1">
           <div class="col-md rounded p-2 m-2" style="background-color: #E9F7FF;">
             <div class="row mb-2">
               <p class="mb-2 p-0 text-muted">Overall</p>
