@@ -377,17 +377,44 @@ $result4=mysqli_query($db,$sql4);
       </div>
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
-        <div class="input-group input-group-sm mb-3">
-          <input type="text" name="id" class="form-control" placeholder="ID" aria-label="Recipient's username" aria-describedby="button-addon2" required>
-          <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="name" class="form-control" placeholder="Company/Name" aria-label="Recipient's username" aria-describedby="button-addon2" required>
+        <div class="row mb-3">
+            <div class="col-md">
+              <div class="form-floating">
+                <input type="text" name="id" class="form-control" placeholder="ID" aria-label="Recipient's username" aria-describedby="button-addon2" required>
+                <label for="floatingInputGrid">ID</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating">
+              <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="name" class="form-control" placeholder="Company/Name" aria-label="Recipient's username" aria-describedby="button-addon2" required>
+              <label for="floatingInputGrid">SUPPLIER NAME</label>
+            </div>
+            </div>
         </div>
-        <div class="input-group input-group-sm mb-3">
-          <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="address" class="form-control" placeholder="Location" aria-label="Recipient's username" aria-describedby="button-addon2" required>
-          <input type="text" name="number" class="form-control" placeholder="Mobile" aria-label="Recipient's username" aria-describedby="button-addon2" required>
+        <div class="row mb-3">
+            <div class="col-md">
+              <div class="form-floating">
+              <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="address" class="form-control" placeholder="Location" aria-label="Recipient's username" aria-describedby="button-addon2" required>
+                <label for="floatingInputGrid">ADDRESS</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating">
+              <input type="text" name="number" class="form-control" placeholder="Mobile" aria-label="Recipient's username" aria-describedby="button-addon2" required>
+              <label for="floatingInputGrid">CONTACT NUMBER</label>
+            </div>
+            </div>
         </div>
-        <div class="input-group input-group-sm mb-3">
-          <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="notes" class="form-control" placeholder="Notes" aria-label="Recipient's username" aria-describedby="button-addon2" required>
-          <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><span data-feather="plus"></button>
+        <div class="row mb-3">
+            <div class="col-md">
+              <div class="form-floating">
+              <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="notes" class="form-control" placeholder="Notes" aria-label="Recipient's username" aria-describedby="button-addon2" required>
+                <label for="floatingInputGrid">NOTES</label>
+              </div>
+            </div>
+        </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button class="btn btn-success" type="submit">SAVE <span data-feather="upload-cloud" class="align-text-end"></button>
         </div>
       </form>
       </div>

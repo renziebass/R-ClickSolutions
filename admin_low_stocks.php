@@ -295,7 +295,7 @@ $row1 = mysqli_fetch_assoc($result1);
           <li class="nav-item">
             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
               <span data-feather="user" class="align-text-bottom"></span>
-              <strong>Renzie</strong>
+              <strong><?php echo $name; ?></strong>
             </a>
             <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
                 <li><a class="dropdown-item" href="admin_settings.php">Settings</a></li>
@@ -323,7 +323,8 @@ $row1 = mysqli_fetch_assoc($result1);
             </div>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
-            <button type="button" onclick="printDiv();" class="btn btn-sm btn-outline-secondary"><span data-feather="printer"></span></button>
+        <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
+            <script>
             <script>
               function printDiv() {
               var printContents = document.getElementById("page").innerHTML;

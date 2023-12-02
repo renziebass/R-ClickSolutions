@@ -316,7 +316,7 @@ $row2 = mysqli_fetch_assoc($result2);
       <h5>Paid Transactions</h5>
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn me-2">
-            <button type="button" onclick="printDiv();" class="btn btn-sm btn-outline-secondary"><span data-feather="printer"></span></button>
+          <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
             <script>
               function printDiv() {
               var printContents = document.getElementById("page").innerHTML;

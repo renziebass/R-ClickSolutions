@@ -725,7 +725,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
            
       </div>
      
-      <h6 class="mt-5">Add Products</h6>
+      <h6 class="mt-3">Add Products</h6>
       <form method="post" enctype="multipart/form-data">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mt-3">
           <div class="input-group">

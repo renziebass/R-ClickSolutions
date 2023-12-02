@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo '<script>alert("Product Doesnt Exist Exist!")</script>';
         header("Refresh:0");
       } else {
-        header("Location: product_qr.php?product_id=$product_id&line=1");
+        header("Location: admin_productqr.php?product_id=$product_id&line=1");
         
       }
     }
@@ -348,7 +348,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </div>
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
-        <div class="input-group input-group-sm">
+        <div class="input-group input-group">
         <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">3 PCS</button>
               <div class="dropdown-menu">
                   <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=1" value="">3</a>
@@ -365,8 +365,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=12" value="">36</a>
               </div>
           <input type="text" name="product_id" class="form-control" placeholder="<?php echo $_GET['product_id']; ?>">
-          <button class="btn btn-outline-secondary" type="submit"><span data-feather="search"></button>
-          <button type="button" onclick="printDiv();" class="btn btn-sm btn-outline-secondary"><span data-feather="printer"></span></button>
+          <button class="btn btn-secondary" type="submit">SEARCH <span data-feather="search" class="align-text-end"></button>
+          <button type="button" onclick="printDiv();" class="btn btn btn-secondary">PRINT <span data-feather="printer" class="align-text-bottom"></button>
         </div>
         </form>
         <script>

@@ -294,7 +294,7 @@ if(!empty($_POST["id"]) && !empty($_POST["size"]))
         </h6>
         <ul class="nav flex-column mb-5">
           <li class="nav-item">
-            <a class="nav-link active" href="admin_productqr.php?product_id=20230419234321&line=1">
+            <a class="nav-link active" href="admin_generateqr.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
               QR Generator
             </a>
@@ -360,7 +360,7 @@ if(!empty($_POST["id"]) && !empty($_POST["size"]))
       </div>
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
-        <div class="input-group input-group-sm">
+        <div class="input-group input-group">
         <select class="btn btn-outline-secondary" name="size">
           <option value="80x80">80</option>
           <option value="90x90">90</option>
@@ -375,8 +375,8 @@ if(!empty($_POST["id"]) && !empty($_POST["size"]))
                 <option value="<?php echo $row1['id'];?>"><?php echo $row1['specification'];?></option>
                 <?php endwhile; ?>
         </datalist>
-          <button class="btn btn-outline-secondary" type="submit"><span data-feather="check"></button>
-          <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.location.href='admin_productqr_print.php';"><span data-feather="printer"></span></button>
+          <button class="btn btn-success" type="submit">ADD <span data-feather="plus" class="align-text-end"></button>
+          <button type="button" class="btn btn-secondary" onclick="window.location.href='admin_productqr_print.php';">PRINT <span data-feather="printer" class="align-text-bottom"></button>
         </div>
         </form>
 

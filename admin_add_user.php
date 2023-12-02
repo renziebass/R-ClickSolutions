@@ -375,20 +375,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </div>
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
-        <div class="input-group input-group-sm mb-3">
-          <select name="type" class="form-select" aria-label="Example select with button addon">
-          <option class="dropdown-item" value="ADMIN">ADMIN</option>
-          <option class="dropdown-item" value="CASHIER">CASHIER</option>
-          </select>
-          <input type="text" name="userid" class="form-control" placeholder="User #"   aria-describedby="button-addon2" required>
-          <input type="text" name="phone" class="form-control" placeholder="Phone Number"  aria-describedby="button-addon2" required>
+      <div class="row mb-3">
+            <div class="col-md">
+              <div class="form-floating">
+                <select name="type" class="form-select" aria-label="Example select with button addon">
+                  <option class="dropdown-item" value="ADMIN">ADMIN</option>
+                  <option class="dropdown-item" value="CASHIER">CASHIER</option>
+                </select>
+                <label for="floatingInputGrid">ACCOUNT TYPE</label>
+              </div>
+            </div>
+      </div>
+      <div class="row mb-3">
+            <div class="col-md">
+              <div class="form-floating">
+                <input type="text" name="userid" class="form-control" placeholder="User #"   aria-describedby="button-addon2" required>
+                <label for="floatingInputGrid">USER ID</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating">
+              <input type="text" name="phone" class="form-control" placeholder="Phone Number"  aria-describedby="button-addon2" required>
+                <label for="floatingInputGrid">MOBILE NUMBER</label>
+              </div>
+            </div>
+      </div>
+      <div class="row mb-3">
+            <div class="col-md">
+              <div class="form-floating">
+              <input type="text" name="first_name" class="form-control" placeholder="First Name" onkeyup="this.value = this.value.toUpperCase();"  aria-describedby="button-addon2" required>
+                <label for="floatingInputGrid">FIRST NAME</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating">
+              <input type="text" name="middle_name" class="form-control" placeholder="Middle Name" onkeyup="this.value = this.value.toUpperCase();" aria-describedby="button-addon2" required>
+                <label for="floatingInputGrid">MIDDLE NAME</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating">
+              <input type="text" name="last_name" class="form-control" placeholder="Last Name" onkeyup="this.value = this.value.toUpperCase();" aria-describedby="button-addon2" required>
+                <label for="floatingInputGrid">LAST NAME</label>
+              </div>
+            </div>
+      </div>
+      <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button class="btn btn-success" type="submit">SAVE <span data-feather="upload-cloud" class="align-text-end"></button>
         </div>
-        <div class="input-group input-group-sm mb-3">
-          <input type="text" name="first_name" class="form-control" placeholder="First Name" onkeyup="this.value = this.value.toUpperCase();"  aria-describedby="button-addon2" required>
-          <input type="text" name="middle_name" class="form-control" placeholder="Middle Name" onkeyup="this.value = this.value.toUpperCase();" aria-describedby="button-addon2" required>
-          <input type="text" name="last_name" class="form-control" placeholder="Last Name" onkeyup="this.value = this.value.toUpperCase();" aria-describedby="button-addon2" required>
-          <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Add</button>
-        </div>
+    
       </form>
       </div>
       <div class="table" id="page">

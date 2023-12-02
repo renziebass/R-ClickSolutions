@@ -15,6 +15,13 @@ WHERE tb_payments.date='".date("Y-m-d")."'";
 $result2=mysqli_query($db,$sql2);
 $row2 = mysqli_fetch_assoc($result2);
 
+$sql3="SELECT
+COUNT(tb_transactions.id)AS transactions
+FROM tb_transactions
+WHERE tb_transactions.status='unpaid'";
+$result3=mysqli_query($db,$sql3);
+$row3 = mysqli_fetch_assoc($result3);
+
 $sql4="SELECT
 CONCAT(FORMAT(SUM(tb_cart.total), 2)) AS unpaid
 FROM tb_transactions
@@ -46,6 +53,14 @@ $row7 = mysqli_fetch_assoc($result7);
 
 $dateS=date_create(date("Y-m-d"));
 $TR = $_SESSION['id']."-".date_format($dateS,"Ymd")."-".date("His");
+
+$sql13="SELECT
+SUM(tb_cart.quantity) AS items
+FROM tb_transactions
+JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
+WHERE tb_transactions.status='unpaid';";
+$result13=mysqli_query($db,$sql13);
+$row13 = mysqli_fetch_assoc($result13);
 
   //$TR = $_SESSION['id']."-".date("Ymd")."-".date("His");
 ?>
@@ -311,38 +326,60 @@ $TR = $_SESSION['id']."-".date_format($dateS,"Ymd")."-".date("His");
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h5>Dashboard</h5>
       </div>
-      <div class="container text-center">
-        <div class="row mb-2">
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary fs-5">P <?php echo $row2['sales'];?></p>
-            <p class="m-0 p-0 text-muted"><?php echo date("M j,Y");?></p>
+      <div class="text-center">
+        <div class="row">
+          <div class="col-md rounded p-1 m-1" style="background-color: #dcdcdc;">
+            <div class="row mb-2">
+              <p class="mb-2 p-0 text-muted">Today <?php echo date("M j,Y");?></p>
+              <div class="col">
+                  <p class="m-0 p-0 text-muted">Sales <span data-feather="dollar-sign" class="align-text-bottom"></p>
+                  <p class="m-0 p-0 fw-bold fs-5">P <?php echo $row2['sales'];?> </p>
+              </div>
+              <div class="col">
+                <p class="m-0 p-0 text-muted">Transactions <span data-feather="users" class="align-text-bottom"></p>
+                <p class="m-0 p-0 fw-bold fs-5"><?php echo $row2['paidcustomers'];?></p>
+              </div>
+              <div class="col">
+                <p class="m-0 p-0 text-muted">Items <span data-feather="list" class="align-text-bottom"></p>
+                <p class="m-0 p-0 fw-bold fs-5"><?php echo $row2['paiditems'];?></p>
+              </div>
+            </div>
           </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary fs-5"><?php echo $row2['paidcustomers'];?></p>
-            <p class="m-0 p-0 text-muted">Transactions</p>
+          <div class="col-md rounded p-1 m-1" style="background-color: #d3d3d3;">
+            <div class="row mb-2">
+              <p class="mb-2 p-0 text-muted">Unpaid</p>
+              <div class="col">
+                  <p class="m-0 p-0 text-muted">Amount <span data-feather="dollar-sign" class="align-text-bottom"></p>
+                  <p class="m-0 p-0 fw-bold">P <?php echo $row4['unpaid'];?> </p>
+              </div>
+              <div class="col">
+                <p class="m-0 p-0 text-muted">Accounts <span data-feather="users" class="align-text-bottom"></p>
+                <p class="m-0 p-0 fw-bold"><?php echo $row3['transactions'];?></p>
+              </div>
+              <div class="col">
+                <p class="m-0 p-0 text-muted">Items <span data-feather="list" class="align-text-bottom"></p>
+                <p class="m-0 p-0 fw-bold"><?php echo $row13['items'];?></p>
+              </div>
+            </div>
           </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary fs-5"><?php echo $row2['paiditems'];?></p>
-            <p class="m-0 p-0 text-muted">Items</p>
-          </div>
-        </div>
-        <div class="row mb-2">
-          <div class="col" onclick="location.href='cashier_unpaid_transactions.php'">
-            <p class="m-0 p-0 fw-bold text-danger fs-6">P <?php echo $row4['unpaid'];?></p>
-            <p class="m-0 p-0 text-danger">Unpaid</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-danger fs-6"><?php echo $row6['products']; ?></p>
-            <p class="m-0 p-0 text-danger">Low Stocks</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-danger fs-6"><?php echo $row7['products']; ?></p>
-            <p class="m-0 p-0 text-danger">Zero Stocks</p>
+          <div class="col-md rounded p-1 m-1" style="background-color: #c0c0c0;">
+            <div class="row mb-2">
+              <p class="mb-2 p-0 text-muted">Inventory</p>
+              <div class="col" onclick="location.href='admin_low_stocks.php'">
+                <p class="m-0 p-0 text-danger">Low Stocks <span data-feather="alert-triangle" class="align-text-bottom"></p>
+                <p class="m-0 p-0 fw-bold text-danger"><?php echo $row6['products']; ?></p>
+              </div>
+              <div class="col" onclick="location.href='admin_zero_stocks.php'">
+                <p class="m-0 p-0 text-danger">Zero Stocks <span data-feather="x-octagon" class="align-text-bottom"></p>
+                <p class="m-0 p-0 fw-bold text-danger"><?php echo $row7['products']; ?></p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+    
 
-      <h6 class="mt-5">Recent Paid Transactions</h6>
+      <h6 class="mt-3">Recent Paid Transactions</h6>
       <div class="table-responsive">
         <table class="table table-hover table-sm">
           <thead>

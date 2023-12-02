@@ -13,10 +13,14 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
   }
 }
 $sql2="SELECT
+tb_supplier.name,
+tb_products.price,
 CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)
 AS specification,
 CONCAT(tb_products.available,'/',tb_products.stocks) AS stocks
 FROM tb_products
+JOIN tb_supplier
+ON tb_products.supplier_id=tb_supplier.id
 WHERE tb_products.id='".$id."'";
 $result2=mysqli_query($db,$sql2);
 $row2 = mysqli_fetch_assoc($result2);
@@ -360,7 +364,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
       <h5>Re-stock Product</h5>
         <div class="btn-toolbar mb-2 mb-md-0">
-            <button type="button" onclick="printDiv();" class="btn btn-sm btn-outline-secondary"><span data-feather="printer"></span></button>
+        <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
             <script>
               function printDiv() {
               var printContents = document.getElementById("page").innerHTML;
@@ -376,7 +380,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
       </div>
       <div class="row">
-        <div class="col">
+        <div class="col-md">
         <form method="get" action="<?php echo $_SERVER['PHP_SELF'];?>">
         <div class="mb-3">
             <div class="input-group">
@@ -397,10 +401,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
       </form>
         </div>
-        <div class="col">
+        <div class="col-md">
         <form method="post" enctype="multipart/form-data">
         <div class="mb-3">
-            <div class="input-group d-grid d-md-flex justify-content-md-end">
+            <div class="input-group">
               <input name="qty" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="Type quantity" required>
               <button class="btn btn-success" type="submit" id="button-addon2">RE-STOCK <span data-feather="upload-cloud" class="align-text-end"></button> 
             </div>
@@ -413,9 +417,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <div class="table" id="page">
       <div class="container text-center border p-2">
         <div class="row">
+        <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['name'];?></p>
+            <p class="m-0 p-0 text-muted">Supplier</p>
+          </div>
           <div class="col">
             <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['specification'];?></p>
             <p class="m-0 p-0 text-muted">Product Specification</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['price'];?></p>
+            <p class="m-0 p-0 text-muted">SRP</p>
           </div>
           <div class="col">
             <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['stocks'];?></p>

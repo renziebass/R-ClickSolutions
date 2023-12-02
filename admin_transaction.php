@@ -369,8 +369,8 @@ if (mysqli_num_rows($result) > 0) {
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
       <h5>Transaction</h5>
         <div class="btn-toolbar mb-2 mb-md-0">
-          <div class="btn-group">
-            <button type="button" onclick="printDiv();" class="btn btn-sm btn-outline-secondary"><span data-feather="printer"></span></button>
+        <div class="d-grid gap-1 d-md-flex justify-content-md-end">
+          <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
             <script>
               function printDiv() {
               var printContents = document.getElementById("page").innerHTML;
@@ -383,11 +383,9 @@ if (mysqli_num_rows($result) > 0) {
               location.reload();
               } 
             </script>
-            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal" <?php echo $voidButton; ?>>
-              <span data-feather="trash"></span>
-            </button>
-
-                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         
+          <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" <?php echo $voidButton; ?>>VOID <span data-feather="trash" class="align-text-bottom"></span></button>
+          <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                       <div class="modal-content">
                         <div class="modal-header">

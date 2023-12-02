@@ -452,7 +452,7 @@ $result4=mysqli_query($db,$sql4);
           <div class="row mb-3">
             <div class="col-md">
               <div class="form-floating">
-              <input class="form-control" name="pbrand" type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" aria-label="Text input with dropdown button" placeholder="Product Brand" required>
+                <input class="form-control" name="pbrand" type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" aria-label="Text input with dropdown button" placeholder="Product Brand" required>
                 <label for="floatingInputGrid">PRODUCT BRAND & DESCRIPTION</label>
               </div>
             </div>

@@ -369,8 +369,8 @@ if (mysqli_num_rows($result) > 0) {
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
       <h5>Unpaid Transaction</h5>
         <div class="btn-toolbar mb-2 mb-md-0">
-          <div class="btn-group">
-            <button type="button" onclick="printDiv();" class="btn btn-sm btn-outline-secondary"><span data-feather="printer"></span></button>
+        <div class="d-grid gap-1 d-md-flex justify-content-md-end">
+          <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
             <script>
               function printDiv() {
               var printContents = document.getElementById("page").innerHTML;
@@ -383,34 +383,23 @@ if (mysqli_num_rows($result) > 0) {
               location.reload();
               } 
             </script>
-            <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal0" data-bs5="<?php echo $_GET['id']?>" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal2">
-              <span data-feather="edit"></span>
-            </button>
-
-                  <div class="modal fade" id="exampleModal0" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h6 class="modal-title" id="exampleModalLabel">Modify Transaction: <?php echo $_GET['id'];?></h6>
-                        </div>
-                
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button type="button" onclick="location.href='admin_new_transaction.php?id=<?php echo $_GET['id'];?>&date=<?php echo date('Y-m-d')?>'" class="btn btn-sm btn-danger" >Modify</button>
-                         
-                        </div>
-                      </div>
-                    </div>
+          <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal0" data-bs5="<?php echo $_GET['id']?>" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal2">EDIT <span data-feather="edit" class="align-text-bottom"></button>
+          <div class="modal fade" id="exampleModal0" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                  <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel">Modify Transaction: <?php echo $_GET['id'];?></h6>
                   </div>
-  
-
-                  
-            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal2" data-bs5="<?php echo $_GET['id']?>" <?php echo $voidButton; ?>>
-              <span data-feather="trash"></span>
-            </button>
-
-                  <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" onclick="location.href='admin_new_transaction.php?id=<?php echo $_GET['id'];?>&date=<?php echo date('Y-m-d')?>'" class="btn btn-sm btn-danger" >Modify</button>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal2" data-bs5="<?php echo $_GET['id']?>" <?php echo $voidButton; ?>>VOID <span data-feather="trash" class="align-text-bottom"></span></button>
+          <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
                       <div class="modal-content">
                         <div class="modal-header">
                           <h6 class="modal-title" id="exampleModalLabel"></h6>
@@ -427,9 +416,9 @@ if (mysqli_num_rows($result) > 0) {
                             </form>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  <script>
+            </div>
+          </div>
+          <script>
                     const exampleModal0 = document.getElementById('exampleModal2')
                     if (exampleModal0) {
                       exampleModal0.addEventListener('show.bs.modal', event => {
@@ -452,7 +441,7 @@ if (mysqli_num_rows($result) > 0) {
                       })
                     }
                   </script>
-          </div>
+        </div>
         </div>
       </div>
 
