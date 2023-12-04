@@ -402,7 +402,7 @@ $row13 = mysqli_fetch_assoc($result13);
                 JOIN (SELECT
                         tb_payments.id,
                         COUNT(tb_cart.transaction_id) as items,
-                          SUM(tb_cart.price) AS total,
+                        CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS total,
                           tb_payments.payment,
                           tb_payments.change1
                         FROM tb_payments
