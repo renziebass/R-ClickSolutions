@@ -1,38 +1,30 @@
+
 <?php
 include('user_session.php');
-$sql1 = "SELECT
-SUM(tb_products.stocks)AS products
-FROM tb_products";
+$sql1="SELECT
+COUNT(tb_payments.id)AS transactions
+FROM tb_payments";
 $result1=mysqli_query($db,$sql1);
 $row1 = mysqli_fetch_assoc($result1);
 
-$sql2 = "SELECT COUNT(tb_product_category.category) AS category FROM tb_product_category";
+$sql2="SELECT
+SUM(tb_cart.quantity) AS items
+FROM tb_cart";
 $result2=mysqli_query($db,$sql2);
 $row2 = mysqli_fetch_assoc($result2);
 
-$sql3 = "SELECT 
-CONCAT(FORMAT(SUM(tb_products.available*tb_products.price), 2)) AS amount
-FROM tb_products";
+$sql3="SELECT
+CONCAT(FORMAT(SUM(tb_payments.total), 2)) AS paid
+FROM tb_payments";
 $result3=mysqli_query($db,$sql3);
 $row3 = mysqli_fetch_assoc($result3);
 
 $sql4="SELECT
-SUM(tb_cart.quantity) AS items
-FROM tb_cart";
+FORMAT(SUM(tb_payments.total) / 12, 2) AS monthly
+FROM tb_payments
+WHERE YEAR(tb_payments.date) = year(curdate())";
 $result4=mysqli_query($db,$sql4);
 $row4 = mysqli_fetch_assoc($result4);
-
-$sql5="SELECT
-COUNT(tb_product_category.category)AS category
-FROM tb_product_category";
-$result5=mysqli_query($db,$sql5);
-$row5 = mysqli_fetch_assoc($result5);
-
-$sql6 = "SELECT
-SUM(tb_products.available)AS products2
-FROM tb_products";
-$result6=mysqli_query($db,$sql6);
-$row6 = mysqli_fetch_assoc($result6);
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -43,14 +35,11 @@ $row6 = mysqli_fetch_assoc($result6);
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.111.3">
-    <title>INVENTORY</title>
+    <title>TRANSACTIONS SUMMARY</title>
  
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 
     <style>
-      .datalistOptions {
-        width: 100%;
-      }
       .bd-placeholder-img {
         font-size: 1.125rem;
         text-anchor: middle;
@@ -212,9 +201,13 @@ $row6 = mysqli_fetch_assoc($result6);
 
   </style>
 
+  
   </head>
   <body>
   
+  
+
+    
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
   <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">R-Click POS: Karaang Garahe</a>
   <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -235,7 +228,7 @@ $row6 = mysqli_fetch_assoc($result6);
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_monthly_history.php">
+            <a class="nav-link active" href="admin_monthly_history.php">
               <span data-feather="file" class="align-text-bottom"></span>
               Paid Transactions
             </a>
@@ -253,7 +246,7 @@ $row6 = mysqli_fetch_assoc($result6);
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="admin_inventory.php">
+            <a class="nav-link" href="admin_inventory.php">
               <span data-feather="bar-chart-2" class="align-text-bottom"></span>
               Inventory
             </a>
@@ -283,7 +276,7 @@ $row6 = mysqli_fetch_assoc($result6);
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_product_restock.php">
+            <a class="nav-link" href="admin_product_restock.php?id=20230419234321">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Re-stock product
             </a>
@@ -331,24 +324,12 @@ $row6 = mysqli_fetch_assoc($result6);
       </div>
     </nav>
 
-    <main class="col-md-9 ms-sm-auto col-lg-10">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3">
-      <h5>Inventory</h5>
-      </div>
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3  pb-2 mb-3 border-bottom">
-      <div class="col-6 d-flex flex-row">
-            <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  All Inventory
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="admin_zero_stocks.php">Zero Stocks</a></li>
-                    <li><a class="dropdown-item" href="admin_low_stocks.php">Low Stocks</a></li>
-                </ul>
-            </div>
-        </div>
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <h5>Paid Transactions</h5>
         <div class="btn-toolbar mb-2 mb-md-0">
-        <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
+          <div class="btn me-2">
+          <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
             <script>
               function printDiv() {
               var printContents = document.getElementById("page").innerHTML;
@@ -359,59 +340,51 @@ $row6 = mysqli_fetch_assoc($result6);
               }
               function refreshDiv() {
               location.reload();
-              } 
+              }
             </script>
+          </div>
         </div>
       </div>
-      
       <div class="table" id="page">
-      <div class="container text-center border">
+      <div class="container text-center border p-2">
         <div class="row">
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo date("F d,Y H:i") ?></p>
-            <p class="m-0 p-0 text-muted">Inventory Date Time</p>
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row1['transactions'];?></p>
+            <p class="m-0 p-0 text-muted">Transactions</p>
           </div>
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary">P<?php echo $row3['amount']; ?></p>
-            <p class="m-0 p-0 text-muted">Amount Salable</p>
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['items'];?></p>
+            <p class="m-0 p-0 text-muted">Items Sold</p>
           </div>
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row5['category'];?></p>
-            <p class="m-0 p-0 text-muted">Category</p>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row1['products']; ?></p>
-            <p class="m-0 p-0 text-muted">Products</p>
+            <p class="m-0 p-0 fw-bold text-primary">P <?php echo $row3['paid'];?></p>
+            <p class="m-0 p-0 text-muted">Sales Amount</p>
           </div>
           <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row4['items'];?></p>
-            <p class="m-0 p-0 text-muted">Products Sold</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row6['products2']; ?></p>
-            <p class="m-0 p-0 text-muted">Remaining Products</p>
+            <p class="m-0 p-0 fw-bold text-primary">P <?php echo $row4['monthly'];?></p>
+            <p class="m-0 p-0 text-muted">Avergae</p>
           </div>
         </div>
       </div>
-      <h6 class="mt-5">Inventory of All Products</h6>
+      <h6 class="mt-5">Sales Report</h6>
         <table class="table table-hover table-sm">
           <thead>
             <tr>
-              <th scope="col">Specification</th>
-              <th scope="col">Stocks</th>
+              <th scope="col">Month</th>
+              <th scope="col">Sales</th>
             </tr>
           </thead>
           <tbody>
             <?php
                 $sql="SELECT
-                tb_products.id,
-                CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification,
-                CONCAT(tb_products.available,'/',tb_products.stocks) AS stocks,
-                CASE WHEN tb_products.available=0
-                THEN 'text-danger' ELSE null END AS textcolor
-                FROM tb_products";
+                date_format(tb_payments.date,'%M %Y')AS month,
+                date_format(tb_payments.date,'%m')AS m,
+                date_format(tb_payments.date,'%Y')AS y,
+                CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS amount
+                FROM tb_payments
+                LEFT JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
+                GROUP BY year(tb_payments.date),month(tb_payments.date)
+                ORDER BY year(tb_payments.date),month(tb_payments.date) DESC";
                                                                                     
                 $result = mysqli_query($db,$sql);
 
@@ -420,9 +393,9 @@ $row6 = mysqli_fetch_assoc($result6);
                 foreach($result as $items)
                 {
             ?>
-            <tr class="<?php echo $items['textcolor']; ?>" onclick="location.href='admin_product.php?id=<?php echo $items['id'];?>'">
-                <td><?php echo $items['specification']; ?></td>
-                <td><?php echo $items['stocks']; ?></td>
+            <tr onclick="location.href='admin_transactions_history.php?m=<?php echo $items['m']; ?>&y=<?php echo $items['y']; ?>'">  
+                <td><?php echo $items['month']; ?></td>
+                <td><?php echo $items['amount']; ?></td>
             </tr>
             <?php
             } 
@@ -440,6 +413,5 @@ $row6 = mysqli_fetch_assoc($result6);
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </script><script src="dashboard.js"></script>
-
   </body>
 </html>

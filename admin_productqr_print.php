@@ -203,7 +203,7 @@ include('user_session.php');
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_transactions_history.php">
+            <a class="nav-link" href="admin_monthly_history.php">
               <span data-feather="file" class="align-text-bottom"></span>
               Paid Transactions
             </a>

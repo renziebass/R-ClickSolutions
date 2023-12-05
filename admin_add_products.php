@@ -52,6 +52,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   } else {
     $price = validateInput($_POST["price"]);
   }
+  if (empty($_POST["cap"])) {
+    $cap_err = "* ";
+  } else {
+    $cap = validateInput($_POST["cap"]);
+  }
   
   if(!empty($_POST["pbrand"]) && !empty($_POST["qty"] && !empty($_POST["price"])))
   {
@@ -64,8 +69,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       $CategoryCheck5 = mysqli_query($db, $sql5check);
       $result5 = mysqli_fetch_assoc($CategoryCheck5);
       if(empty($result5)) {
-        $sql4 = "INSERT INTO `tb_products` (`id`, `supplier_id`, `product_brand`, `category`, `mc_brand`, `mc_model`, `stocks`, `available`, `price`,`date`)
-        VALUES ('".date("YmdHis")."', '$supplier', '$pbrand', '$category', '$mcbrand', '$mcmodel', '$qty', '$qty', '$price','".date("Y-m-d H:i:s")."')";
+        $sql4 = "INSERT INTO `tb_products` (`id`, `supplier_id`, `product_brand`, `category`, `mc_brand`, `mc_model`, `stocks`, `available`, `capital` ,`price`,`date`)
+        VALUES ('".date("YmdHis")."', '$supplier', '$pbrand', '$category', '$mcbrand', '$mcmodel', '$qty', '$qty', '$cap' ,'$price','".date("Y-m-d H:i:s")."')";
         $AddCategory = mysqli_query($db, $sql4);
         
         header("Location: admin_add_products.php");
@@ -460,7 +465,7 @@ $result4=mysqli_query($db,$sql4);
           <div class="row mb-3">
             <div class="col-md">
               <div class="form-floating">
-                <input name="cap" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="CAP" >
+                <input name="cap" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="CAP" required>
                 <label for="floatingInputGrid">CAPITAL</label>
               </div>
             </div>

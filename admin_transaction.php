@@ -32,11 +32,15 @@ if (($db->query($sql4)) && ($db->query($sql5)) === TRUE) {
 $sql1="SELECT 
 SUM(tb_cart.quantity) AS items,
 CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS total,
+SUM(tb_cart.price*tb_cart.quantity - tb_products.capital*tb_cart.quantity) AS profit,
+SUM(tb_products.capital*tb_cart.quantity) AS capital,
 CONCAT(DATE_FORMAT(tb_transactions.date,'%M %d,%Y'),'  ',tb_transactions.time) AS date_time,
 CONCAT(FORMAT(tb_payments.payment, 2)) AS payment,
 tb_payments.change1
-FROM tb_cart LEFT JOIN tb_transactions ON tb_cart.transaction_id=tb_transactions.id
+FROM tb_cart
+LEFT JOIN tb_transactions ON tb_cart.transaction_id=tb_transactions.id
 RIGHT JOIN tb_payments ON tb_transactions.id=tb_payments.id 
+INNER JOIN tb_products ON tb_cart.product_id=tb_products.id
 WHERE tb_cart.transaction_id='" .$_GET['id']. "'
 GROUP BY tb_cart.transaction_id";
 $result1=mysqli_query($db,$sql1);
@@ -437,15 +441,40 @@ if (mysqli_num_rows($result) > 0) {
         <div class="row">
           <div class="col">
             <p class="m-0 p-0 fw-bold text-primary">P <?php
-            if(empty($row1['total'])) {
+            if(empty($row1['capital'])) {
             $total ="0";
             } else {
-            $total = $row1['total'];
+            $total = $row1['capital'];
             }
             echo $total;
             ?></p>
+            <p class="m-0 p-0 text-muted">Capital</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary">P <?php
+            if(empty($row1['total'])) {
+            $payment ="0";
+            } else {
+            $payment = $row1['total'];
+            }
+            echo $payment;
+            ?></p>
             <p class="m-0 p-0 text-muted">Total</p>
           </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php
+            if(empty($row1['profit'])) {
+            $change1 ="0";
+            } else {
+            $change1 = $row1['profit'];
+            }
+            echo $change1;
+            ?></p>
+            <p class="m-0 p-0 text-muted">Profit</p>
+          </div>
+        </div>
+        <div class="row">
+
           <div class="col">
             <p class="m-0 p-0 fw-bold text-primary">P <?php
             if(empty($row1['payment'])) {
@@ -478,28 +507,28 @@ if (mysqli_num_rows($result) > 0) {
     
               <th scope="col">QTY</th>
               <th scope="col">SRP</th>
+              <th scope="col">Capital</th>
               <th scope="col">Total</th>
+              <th scope="col">Profit</th>
               <th scope="col"></th>
+              
             </tr>
           </thead>
           <tbody>
             <?php
-                $sql="SELECT *
-                FROM (SELECT
-                      tb_products.id,
-                      tb_products.product_brand,
-                      tb_products.category,
-                      CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification,
-                      tb_products.price
-                      FROM tb_cart LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id) AS A
-                JOIN (SELECT
-                      tb_cart.product_id,
-                      SUM(tb_cart.quantity) as quantity,
-                      SUM(tb_cart.price*tb_cart.quantity) AS total
-                      FROM tb_cart WHERE tb_cart.transaction_id='" .$_GET['id']. "'
-                GROUP BY tb_cart.product_id) AS B
-                ON A.id=B.product_id
-                GROUP BY B.product_id";
+                $sql="SELECT
+                tb_products.id,
+                tb_products.product_brand,
+                tb_products.category,
+                (tb_products.capital*tb_cart.quantity) AS capital,
+                SUM(tb_cart.quantity) as quantity,
+                SUM(tb_cart.price*tb_cart.quantity) AS total,
+                (tb_cart.price*tb_cart.quantity - tb_products.capital*tb_cart.quantity) AS profit,
+                CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification,
+                tb_products.price
+                FROM tb_cart LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id
+                WHERE tb_cart.transaction_id='" .$_GET['id']. "'
+                GROUP BY tb_cart.product_id";
                                                                                     
                 $result = mysqli_query($db,$sql);
 
@@ -512,7 +541,9 @@ if (mysqli_num_rows($result) > 0) {
                 <td><?php echo $items['specification']; ?></td>
                 <td><?php echo $items['quantity']; ?></td>
                 <td><?php echo $items['price']; ?></td>
+                <td><?php echo $items['capital']; ?></td>
                 <td><?php echo $items['total']; ?></td>
+                <td><?php echo $items['profit']; ?></td>
                 <td>
         
                   <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal2" data-bs1="<?php echo $items['id']; ?>" data-bs2="<?php echo $items['specification']; ?>" data-bs3="<?php echo $items['quantity']; ?>">

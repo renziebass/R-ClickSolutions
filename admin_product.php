@@ -2,9 +2,11 @@
 include('user_session.php');
 $sql1="SELECT
 tb_products.id,
+tb_products.supplier_id,
+CONCAT(tb_products.price,' - ',tb_products.capital,' = ',tb_products.price - tb_products.capital) AS price,
 tb_products.product_brand,
 tb_products.category,
-CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model,' - P ',tb_products.price) AS specification,
+CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification,
 CONCAT(tb_products.available,'/',tb_products.stocks) AS stocks
 FROM tb_products
 WHERE tb_products.id='" .$_GET['id']. "'";
@@ -327,6 +329,14 @@ $row1 = mysqli_fetch_assoc($result1);
       <div class="table" id="page">
       <div class="container text-center border p-2">
         <div class="row">
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row1['supplier_id'];?></p>
+            <p class="m-0 p-0 text-muted">Supplier Code</p>
+          </div>
+          <div class="col">
+            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row1['price'];?></p>
+            <p class="m-0 p-0 text-muted">Price - Capital = Profit</p>
+          </div>
           <div class="col">
             <p class="m-0 p-0 fw-bold text-primary"><?php echo $row1['specification'];?></p>
             <p class="m-0 p-0 text-muted">Description</p>

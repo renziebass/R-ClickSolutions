@@ -3,19 +3,28 @@
 include('user_session.php');
 $sql1="SELECT
 COUNT(tb_payments.id)AS transactions
-FROM tb_payments";
+FROM tb_payments
+WHERE MONTH(tb_payments.date)='".$_GET['m']."' AND YEAR(tb_payments.date)='".$_GET['y']."'";
 $result1=mysqli_query($db,$sql1);
 $row1 = mysqli_fetch_assoc($result1);
 
 $sql2="SELECT
-SUM(tb_cart.quantity) AS items
-FROM tb_cart";
+SUM(tb_cart.quantity)AS items
+FROM tb_payments
+LEFT JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
+WHERE MONTH(tb_payments.date)='".$_GET['m']."' AND YEAR(tb_payments.date)='".$_GET['y']."'
+GROUP BY year(tb_payments.date),month(tb_payments.date)
+ORDER BY year(tb_payments.date),month(tb_payments.date) DESC";
 $result2=mysqli_query($db,$sql2);
 $row2 = mysqli_fetch_assoc($result2);
 
 $sql3="SELECT
-CONCAT(FORMAT(SUM(tb_payments.total), 2)) AS paid
-FROM tb_payments";
+CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS paid
+FROM tb_payments
+LEFT JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
+WHERE MONTH(tb_payments.date)='".$_GET['m']."' AND YEAR(tb_payments.date)='".$_GET['y']."'
+GROUP BY year(tb_payments.date),month(tb_payments.date)
+ORDER BY year(tb_payments.date),month(tb_payments.date) DESC";
 $result3=mysqli_query($db,$sql3);
 $row3 = mysqli_fetch_assoc($result3);
 ?>
@@ -221,7 +230,7 @@ $row3 = mysqli_fetch_assoc($result3);
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="admin_transactions_history.php">
+            <a class="nav-link active" href="admin_monthly_history.php">
               <span data-feather="file" class="align-text-bottom"></span>
               Paid Transactions
             </a>
@@ -373,6 +382,7 @@ $row3 = mysqli_fetch_assoc($result3);
                         DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date1,
                         COUNT(tb_payments.payment) AS customers
                         FROM tb_payments
+                        WHERE MONTH(tb_payments.date)='".$_GET['m']."' AND YEAR(tb_payments.date)='".$_GET['y']."'
                        GROUP BY tb_payments.date) AS A
                 JOIN (SELECT
                       SUM(tb_cart.quantity) AS items,
@@ -382,7 +392,7 @@ $row3 = mysqli_fetch_assoc($result3);
                       JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
                       GROUP BY tb_transactions.date) AS B
                 ON A.date1=B.date1
-                ORDER BY A.date DESC;";
+                ORDER BY A.date DESC";
                                                                                     
                 $result = mysqli_query($db,$sql);
 

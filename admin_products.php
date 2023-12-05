@@ -415,6 +415,8 @@ $row5 = mysqli_fetch_assoc($result5);
               <th scope="col">Specification</th>
               <th scope="col">Stocks</th>
               <th scope="col">SRP</th>
+              <th scope="col">Capital</th>
+              <th scope="col">Profit</th>
             </tr>
           </thead>
           <tbody>
@@ -424,7 +426,9 @@ $row5 = mysqli_fetch_assoc($result5);
                 tb_products.product_brand,
                 CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification,
                 CONCAT(tb_products.available,'/',tb_products.stocks) AS stocks,
+                CONCAT(FORMAT(tb_products.capital, 2)) AS capital,
                 CONCAT(FORMAT(tb_products.price, 2)) AS price,
+                (tb_products.price - tb_products.capital) AS profit,
                 CASE WHEN tb_products.available=0
                 THEN 'text-danger' ELSE null END AS textcolor
                 FROM tb_products
@@ -445,6 +449,8 @@ $row5 = mysqli_fetch_assoc($result5);
                 <td><?php echo $items['specification']; ?></td>
                 <td><?php echo $items['stocks']; ?></td>
                 <td><?php echo $items['price']; ?></td>
+                <td><?php echo $items['capital']; ?></td>
+                <td><?php echo $items['profit']; ?></td>
             </tr>
             <?php
             } 

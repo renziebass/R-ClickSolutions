@@ -65,21 +65,23 @@ LIMIT 7";
 $result8=mysqli_query($db,$sql8);
 
 $sql9="SELECT
-date_format(tb_payments.date,'%M')AS month,
-SUM(tb_payments.total)AS amount
+date_format(tb_payments.date,'%b')AS month,
+SUM(tb_cart.price*tb_cart.quantity)AS amount
 FROM tb_payments
+LEFT JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
 GROUP BY year(tb_payments.date),month(tb_payments.date)
-ORDER BY year(tb_payments.date),month(tb_payments.date)
-DESC LIMIT 12";
+ORDER BY year(tb_payments.date),month(tb_payments.date) DESC
+LIMIT 12";
 $result9=mysqli_query($db,$sql9);
 
 $sql10="SELECT
 date_format(tb_payments.date,'%b')AS month,
-SUM(tb_payments.total)AS amount
+SUM(tb_cart.price*tb_cart.quantity)AS amount
 FROM tb_payments
+LEFT JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
 GROUP BY year(tb_payments.date),month(tb_payments.date)
-ORDER BY year(tb_payments.date),month(tb_payments.date)
-DESC LIMIT 12";
+ORDER BY year(tb_payments.date),month(tb_payments.date) DESC
+LIMIT 12";
 $result10=mysqli_query($db,$sql10);
 
 if(!empty($_GET['selecteddate'])) {
@@ -391,7 +393,7 @@ $result17=mysqli_query($db,$sql17);
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_transactions_history.php">
+            <a class="nav-link" href="admin_monthly_history.php">
               <span data-feather="file" class="align-text-bottom"></span>
               Paid Transactions
             </a>
