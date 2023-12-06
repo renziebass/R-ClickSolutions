@@ -282,7 +282,7 @@ if(!empty($_POST["password"]))
       </div>
       <h6><?php echo $row1['acc_type'];?> <?php echo $row1['userid'];?> - <?php echo $row1['name'];?></h6>
       <form method="post" action="" enctype="multipart/form-data">
-        <div class="input-group input-group mb-3">
+        <div class="input-group input-group mb-3 shadow">
           <div class="input-group-text">
           <input class="form-check-input mt-0" onclick="showpw()" type="checkbox" value="" aria-label="Checkbox for following text input"> Show Password
           </div>

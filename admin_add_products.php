@@ -404,7 +404,7 @@ $result4=mysqli_query($db,$sql4);
       <form method="post" action="" enctype="multipart/form-data">
           <div class="row mb-3">
             <div class="col-md">
-              <div class="form-floating">
+              <div class="form-floating shadow">
                   <select name="supplier" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon" required>
                     <option selected disabled value=""></option>
                     <?php while($row4 = mysqli_fetch_array($result4)):;?> 
@@ -416,7 +416,7 @@ $result4=mysqli_query($db,$sql4);
               </div>
             </div>
             <div class="col-md">
-              <div class="form-floating">
+              <div class="form-floating shadow">
                   <select name="category" class="form-select" id="inputGroupSelect05" aria-label="Example select with button addon" required>
                     <option selected disabled value=""></option>
                     <?php while($row1 = mysqli_fetch_array($result1)):;?> 
@@ -430,7 +430,7 @@ $result4=mysqli_query($db,$sql4);
           </div>
           <div class="row mb-3">
             <div class="col-md">
-              <div class="form-floating">
+              <div class="form-floating shadow">
                 <select name="mcbrand" class="form-select" id="inputGroupSelect06" aria-label="Example select with button addon">
                   <option selected disabled value="">N/A</option>
                   <?php while($row2 = mysqli_fetch_array($result2)):;?> 
@@ -442,7 +442,7 @@ $result4=mysqli_query($db,$sql4);
               </div>
             </div>
             <div class="col-md">
-              <div class="form-floating">
+              <div class="form-floating shadow">
                 <select name="mcmodel" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
                   <option selected disabled value="">N/A</option>
                   <?php while($row3 = mysqli_fetch_array($result3)):;?> 
@@ -456,7 +456,7 @@ $result4=mysqli_query($db,$sql4);
           </div>
           <div class="row mb-3">
             <div class="col-md">
-              <div class="form-floating">
+              <div class="form-floating shadow">
                 <input class="form-control" name="pbrand" type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" aria-label="Text input with dropdown button" placeholder="Product Brand" required>
                 <label for="floatingInputGrid">PRODUCT BRAND & DESCRIPTION</label>
               </div>
@@ -464,19 +464,19 @@ $result4=mysqli_query($db,$sql4);
           </div>
           <div class="row mb-3">
             <div class="col-md">
-              <div class="form-floating">
+              <div class="form-floating shadow">
                 <input name="cap" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="CAP" required>
                 <label for="floatingInputGrid">CAPITAL</label>
               </div>
             </div>
             <div class="col-md">
-              <div class="form-floating">
+              <div class="form-floating shadow">
                 <input name="qty" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="QTY" required>
                 <label for="floatingInputGrid">QUANTITY</label>
               </div>
             </div>
             <div class="col-md">
-              <div class="form-floating">
+              <div class="form-floating shadow">
                 <input name="price" type="decimal" class="form-control" aria-label="Text input with dropdown button" placeholder="SRP" required>
                 <label for="floatingInputGrid">SRP</label>
               </div>

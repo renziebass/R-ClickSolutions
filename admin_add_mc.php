@@ -392,11 +392,11 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
       </div>
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
-        <div class="input-group input-group mb-3">
+        <div class="input-group input-group mb-3 shadow">
           <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="mb" class="form-control" placeholder="New Motorcycle Brand" aria-label="Recipient's username" aria-describedby="button-addon2">
           <button class="btn btn-success" type="submit">ADD <span data-feather="upload-cloud" class="align-text-end"></button>
         </div>
-        <div class="input-group input-group mb-3">
+        <div class="input-group input-group mb-3 shadow">
         <select name="mcbrand" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
         <option selected disabled value="">No Brand</option>
           <?php while($row3 = mysqli_fetch_array($result3)):;?> 

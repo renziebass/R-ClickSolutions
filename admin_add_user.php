@@ -377,7 +377,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <form method="post" action="" enctype="multipart/form-data">
       <div class="row mb-3">
             <div class="col-md">
-              <div class="form-floating">
+              <div class="form-floating shadow">
                 <select name="type" class="form-select" aria-label="Example select with button addon">
                   <option class="dropdown-item" value="ADMIN">ADMIN</option>
                   <option class="dropdown-item" value="CASHIER">CASHIER</option>
@@ -388,13 +388,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </div>
       <div class="row mb-3">
             <div class="col-md">
-              <div class="form-floating">
+              <div class="form-floating shadow">
                 <input type="text" name="userid" class="form-control" placeholder="User #"   aria-describedby="button-addon2" required>
                 <label for="floatingInputGrid">USER ID</label>
               </div>
             </div>
             <div class="col-md">
-              <div class="form-floating">
+              <div class="form-floating shadow">
               <input type="text" name="phone" class="form-control" placeholder="Phone Number"  aria-describedby="button-addon2" required>
                 <label for="floatingInputGrid">MOBILE NUMBER</label>
               </div>
@@ -402,19 +402,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </div>
       <div class="row mb-3">
             <div class="col-md">
-              <div class="form-floating">
+              <div class="form-floating shadow">
               <input type="text" name="first_name" class="form-control" placeholder="First Name" onkeyup="this.value = this.value.toUpperCase();"  aria-describedby="button-addon2" required>
                 <label for="floatingInputGrid">FIRST NAME</label>
               </div>
             </div>
             <div class="col-md">
-              <div class="form-floating">
+              <div class="form-floating shadow">
               <input type="text" name="middle_name" class="form-control" placeholder="Middle Name" onkeyup="this.value = this.value.toUpperCase();" aria-describedby="button-addon2" required>
                 <label for="floatingInputGrid">MIDDLE NAME</label>
               </div>
             </div>
             <div class="col-md">
-              <div class="form-floating">
+              <div class="form-floating shadow">
               <input type="text" name="last_name" class="form-control" placeholder="Last Name" onkeyup="this.value = this.value.toUpperCase();" aria-describedby="button-addon2" required>
                 <label for="floatingInputGrid">LAST NAME</label>
               </div>

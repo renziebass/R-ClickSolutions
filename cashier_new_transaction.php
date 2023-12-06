@@ -514,8 +514,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
        
       </div>
       <div class="table">
-        <div class="text-center border-top border-end border-start bg-body-secondary">
-            <div class="row">
+        <div class="text-center border-top border-end border-start" style="background-color: #CCEEBC">
+            <div class="row ">
               <div class="col">
                 <p class="m-0 p-0 fw-bold text-primary"><?php
                   if(empty($row2['name'])) {
@@ -555,7 +555,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               </div>
             </div>
         </div>
-      <div class="text-start border-bottom border-end border-start p-2 bg-body-secondary">
+      <div class="text-start border-bottom border-end border-start p-2" style="background-color: #CCEEBC">
         
       <table class="table table-hover table-sm">
           <thead>
@@ -724,7 +724,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
            
       </div>
-     
+
+
+      
+            
       <h6 class="mt-3">Add Products</h6>
       <form method="post" enctype="multipart/form-data">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mt-3">

@@ -301,7 +301,7 @@ $row5 = mysqli_fetch_assoc($result5);
       </div>
       <form method="post" enctype="multipart/form-data">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3">
-          <div class="input-group">
+          <div class="input-group shadow">
             <input id="search" name="search" class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Type to search product...">
             <script>
               window.onload = init;
@@ -319,7 +319,7 @@ $row5 = mysqli_fetch_assoc($result5);
       </div>
       </form>
       <div class="table" id="page">
-      <div class="container text-center border p-2">
+      <div class="container text-center border p-2 rounded shadow">
         <div class="row">
           <div class="col">
             <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['products'];?></p>

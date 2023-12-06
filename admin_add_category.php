@@ -352,7 +352,7 @@ if(!empty($_GET['xcategory'])) {
       </div>
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
-        <div class="input-group input-group mb-3">
+        <div class="input-group input-group mb-3 shadow">
           <input type="text" onkeyup="this.value = this.value.toUpperCase();" name="category" class="form-control" placeholder="New Product Category" aria-label="Recipient's username" aria-describedby="button-addon2" required>
           <button class="btn btn-success" type="submit">SAVE <span data-feather="upload-cloud" class="align-text-end"></button>
         </div>

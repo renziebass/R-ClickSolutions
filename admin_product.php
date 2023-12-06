@@ -327,7 +327,7 @@ $row1 = mysqli_fetch_assoc($result1);
       </div>
       <img class="p-0 m-0 mx-auto d-block" onclick="location.href='admin_productqr.php?product_id=<?php echo $_GET['id'];?>&line=1'" src="https://chart.googleapis.com/chart?chs=140x140&cht=qr&chl=<?php echo $_GET['id']; ?>">
       <div class="table" id="page">
-      <div class="container text-center border p-2">
+      <div class="container text-center border p-2 rounded shadow">
         <div class="row">
           <div class="col">
             <p class="m-0 p-0 fw-bold text-primary"><?php echo $row1['supplier_id'];?></p>

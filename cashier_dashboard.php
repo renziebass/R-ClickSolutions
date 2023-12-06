@@ -328,9 +328,9 @@ $row13 = mysqli_fetch_assoc($result13);
       </div>
       <div class="text-center">
         <div class="row">
-          <div class="col-md rounded p-1 m-1" style="background-color: #dcdcdc;">
+          <div class="col-md rounded p-2 m-1 shadow">
             <div class="row mb-2">
-              <p class="mb-2 p-0 text-muted">Today <?php echo date("M j,Y");?></p>
+              <h6 class="mb-2 p-0 text-muted">Today <?php echo date("M j,Y");?></h6>
               <div class="col">
                   <p class="m-0 p-0 text-muted">Sales <span data-feather="dollar-sign" class="align-text-bottom"></p>
                   <p class="m-0 p-0 fw-bold fs-5">P <?php echo $row2['sales'];?> </p>
@@ -345,9 +345,9 @@ $row13 = mysqli_fetch_assoc($result13);
               </div>
             </div>
           </div>
-          <div class="col-md rounded p-1 m-1" style="background-color: #d3d3d3;">
+          <div class="col-md rounded p-2 m-1 shadow">
             <div class="row mb-2">
-              <p class="mb-2 p-0 text-muted">Unpaid</p>
+              <h6 class="mb-2 p-0 text-muted">Unpaid</h6>
               <div class="col">
                   <p class="m-0 p-0 text-muted">Amount <span data-feather="dollar-sign" class="align-text-bottom"></p>
                   <p class="m-0 p-0 fw-bold">P <?php echo $row4['unpaid'];?> </p>
@@ -362,9 +362,9 @@ $row13 = mysqli_fetch_assoc($result13);
               </div>
             </div>
           </div>
-          <div class="col-md rounded p-1 m-1" style="background-color: #c0c0c0;">
+          <div class="col-md rounded p-2 m-1 shadow" >
             <div class="row mb-2">
-              <p class="mb-2 p-0 text-muted">Inventory</p>
+              <h6 class="mb-2 p-0 text-muted">Inventory</h6>
               <div class="col" onclick="location.href='admin_low_stocks.php'">
                 <p class="m-0 p-0 text-danger">Low Stocks <span data-feather="alert-triangle" class="align-text-bottom"></p>
                 <p class="m-0 p-0 fw-bold text-danger"><?php echo $row6['products']; ?></p>

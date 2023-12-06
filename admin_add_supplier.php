@@ -379,13 +379,13 @@ $result4=mysqli_query($db,$sql4);
       <form method="post" action="" enctype="multipart/form-data">
         <div class="row mb-3">
             <div class="col-md">
-              <div class="form-floating">
+              <div class="form-floating shadow">
                 <input type="text" name="id" class="form-control" placeholder="ID" aria-label="Recipient's username" aria-describedby="button-addon2" required>
                 <label for="floatingInputGrid">ID</label>
               </div>
             </div>
             <div class="col-md">
-              <div class="form-floating">
+              <div class="form-floating shadow">
               <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="name" class="form-control" placeholder="Company/Name" aria-label="Recipient's username" aria-describedby="button-addon2" required>
               <label for="floatingInputGrid">SUPPLIER NAME</label>
             </div>
@@ -393,13 +393,13 @@ $result4=mysqli_query($db,$sql4);
         </div>
         <div class="row mb-3">
             <div class="col-md">
-              <div class="form-floating">
+              <div class="form-floating shadow">
               <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="address" class="form-control" placeholder="Location" aria-label="Recipient's username" aria-describedby="button-addon2" required>
                 <label for="floatingInputGrid">ADDRESS</label>
               </div>
             </div>
             <div class="col-md">
-              <div class="form-floating">
+              <div class="form-floating shadow">
               <input type="text" name="number" class="form-control" placeholder="Mobile" aria-label="Recipient's username" aria-describedby="button-addon2" required>
               <label for="floatingInputGrid">CONTACT NUMBER</label>
             </div>
@@ -407,7 +407,7 @@ $result4=mysqli_query($db,$sql4);
         </div>
         <div class="row mb-3">
             <div class="col-md">
-              <div class="form-floating">
+              <div class="form-floating shadow">
               <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="notes" class="form-control" placeholder="Notes" aria-label="Recipient's username" aria-describedby="button-addon2" required>
                 <label for="floatingInputGrid">NOTES</label>
               </div>

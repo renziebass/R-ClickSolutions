@@ -346,7 +346,7 @@ $row4 = mysqli_fetch_assoc($result4);
         </div>
       </div>
       <div class="table" id="page">
-      <div class="container text-center border p-2">
+      <div class="container text-center p-2 rounded shadow">
         <div class="row">
           <div class="col">
             <p class="m-0 p-0 fw-bold text-primary"><?php echo $row1['transactions'];?></p>

@@ -495,9 +495,9 @@ $result17=mysqli_query($db,$sql17);
       </div>
       <div class="text-center">
         <div class="row">
-          <div class="col-md rounded p-1 m-1" style="background-color: #dcdcdc;">
-            <div class="row mb-2">
-              <p class="mb-2 p-0 text-muted">Today <?php echo date("M j,Y");?></p>
+          <div class="col-md rounded p-1 m-1 shadow" >
+            <div class="row">
+              <h6 class="mb-2 p-0 text-muted">Today <?php echo date("M j,Y");?></h6>
               <div class="col">
                   <p class="m-0 p-0 text-muted">Sales <span data-feather="dollar-sign" class="align-text-bottom"></p>
                   <p class="m-0 p-0 fw-bold fs-5">P <?php echo $row2['sales'];?> </p>
@@ -512,9 +512,9 @@ $result17=mysqli_query($db,$sql17);
               </div>
             </div>
           </div>
-          <div class="col-md rounded p-1 m-1" style="background-color: #dcdcdc;">
-            <div class="row mb-2">
-              <p class="mb-2 p-0 text-muted">Inventory</p>
+          <div class="col-md rounded p-1 m-1 shadow">
+            <div class="row">
+              <h6 class="mb-2 p-0 text-muted">Inventory</h6>
               <div class="col">
                   <p class="m-0 p-0 text-muted">Amount <span data-feather="dollar-sign" class="align-text-bottom"></p>
                   <p class="m-0 p-0 fw-bold">P <?php echo $row5['amount']; ?> </p>
@@ -529,9 +529,9 @@ $result17=mysqli_query($db,$sql17);
               </div>
             </div>
           </div>
-          <div class="col-md rounded p-1 m-1" style="background-color: #d3d3d3;">
-            <div class="row mb-2">
-              <p class="mb-2 p-0 text-muted">Unpaid</p>
+          <div class="col-md rounded p-1 m-1 shadow">
+            <div class="row">
+              <h6 class="mb-2 p-0 text-muted">Unpaid</h6>
               <div class="col">
                   <p class="m-0 p-0 text-muted">Amount <span data-feather="dollar-sign" class="align-text-bottom"></p>
                   <p class="m-0 p-0 fw-bold">P <?php echo $row4['unpaid'];?> </p>
@@ -550,9 +550,9 @@ $result17=mysqli_query($db,$sql17);
       </div>
       <div class="text-center">
         <div class="row">
-          <div class="col-md rounded p-1 m-1" style="background-color: #c0c0c0;">
-            <div class="row mb-2">
-              <p class="mb-2 p-0 text-muted">Overall</p>
+          <div class="col-md rounded p-1 m-1 shadow">
+            <div class="row">
+              <h6 class="mb-2 p-0 text-muted">Overall</h6>
               <div class="col">
                   <p class="m-0 p-0 text-muted">Sales <span data-feather="dollar-sign" class="align-text-bottom"></p>
                   <p class="m-0 p-0 fw-bold">P <?php echo $row1['paid'];?></p>
@@ -567,9 +567,9 @@ $result17=mysqli_query($db,$sql17);
               </div>
             </div>
           </div>
-          <div class="col-md rounded p-1 m-1" style="background-color: #a9a9a9;">
-            <div class="row mb-2">
-              <p class="mb-2 p-0 text-muted">Average Sales</p>
+          <div class="col-md rounded p-1 m-1 shadow">
+            <div class="row">
+              <h6 class="mb-2 p-0 text-muted">Average Sales</h6>
               <div class="col">
                   <p class="m-0 p-0 text-muted">Daily <span data-feather="dollar-sign" class="align-text-bottom"></p>
                   <p class="m-0 p-0 fw-bold">P <?php echo $row14['daily'];?></p>
@@ -688,7 +688,7 @@ $result17=mysqli_query($db,$sql17);
           <?php endwhile; ?>
         ],
         lineTension: 0,
-        backgroundColor: '#708090'
+        backgroundColor: '#610C9F'
       }]
     },
     options: {
@@ -732,7 +732,7 @@ $result17=mysqli_query($db,$sql17);
           <?php echo $row17['pcs'];?>,
           <?php endwhile; ?>],
     backgroundColor: [
-      '#F8BDAD','#bed0db','#FFF4B2','#CCFFFA','#dcc894'
+      '#610C9F','#DA0C81','#F05941','#FFB000','#279EFF'
     ],
     hoverOffset: 4
   }]

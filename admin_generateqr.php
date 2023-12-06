@@ -360,7 +360,7 @@ if(!empty($_POST["id"]) && !empty($_POST["size"]))
       </div>
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
-        <div class="input-group input-group">
+        <div class="input-group input-group shadow">
         <select class="btn btn-outline-secondary" name="size">
           <option value="80x80">80</option>
           <option value="90x90">90</option>
