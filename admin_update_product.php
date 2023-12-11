@@ -1,47 +1,103 @@
 <?php
 include('user_session.php');
-$sql1 = "SELECT
+$sql0="SELECT
 tb_products.id,
-CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)AS specification
-FROM tb_products";
-$search = null;
+tb_products.supplier_id,
+tb_products.price,
+tb_products.capital,
+tb_products.product_brand,
+tb_products.category,
+tb_products.mc_brand,
+tb_products.mc_model
+FROM tb_products
+WHERE tb_products.id='" .$_GET['id']. "'";
+$result0=mysqli_query($db,$sql0);
+$row0 = mysqli_fetch_assoc($result0);
 
-
-$result1=mysqli_query($db,$sql1);
+function validateInput($data) {
+  $data = trim($data);
+  $data = stripslashes($data);
+  $data = htmlspecialchars($data);
+  return $data;
+}
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if (!empty($_POST["search"])) {
-    $search = $_POST["search"];
-    header("Cache-Control: no cache");
+  if (empty($_POST["supplier"])) {
+    $supplier_err = "* ";
   } else {
-    $search = null;
+    $supplier = validateInput($_POST["supplier"]);
+  }
+  if (empty($_POST["category"])) {
+    $category_err = "* ";
+  } else {
+    $category = validateInput($_POST["category"]);
+  }
+  if (empty($_POST["mcbrand"])) {
+    $mcbrand_err = "* ";
+  } else {
+    $mcbrand = validateInput($_POST["mcbrand"]);
+  }
+  if (empty($_POST["mcmodel"])) {
+    $mcmodel_err = "* ";
+  } else {
+    $mcmodel = validateInput($_POST["mcmodel"]);
+  }
+  if (empty($_POST["pbrand"])) {
+    $pbrand_err = "* ";
+  } else {
+    $pbrand = validateInput($_POST["pbrand"]);
+  }
+
+  if (empty($_POST["price"])) {
+    $price_err = "* ";
+  } else {
+    $price = validateInput($_POST["price"]);
+  }
+  if (empty($_POST["cap"])) {
+    $cap_err = "* ";
+  } else {
+    $cap = validateInput($_POST["cap"]);
+  }
+  
+  if(!empty($_POST["pbrand"]) && !empty($_POST["price"]))
+  {
+    try {
+
+      $sql4 = "UPDATE `tb_products` 
+      SET 
+      tb_products.supplier_id='$supplier',
+      tb_products.product_brand='$pbrand',
+      tb_products.category='$category',
+      tb_products.mc_brand='$mcbrand',
+      tb_products.mc_model='$mcmodel',
+      tb_products.capital='$cap',
+      tb_products.price='$price'
+      WHERE tb_products.id='" .$_GET['id']. "'";
+      $update = mysqli_query($db, $sql4);
+        
+      echo '<script>if(confirm("Updated Successfuly")) {
+        window.location.href = "admin_products.php"
+    }</script>';
+
+
+    }
+    catch(PDOException $e)
+      {
+        echo $sql1 . "<br>" . $e->getMessage();
+      }
+    $db=null;
   }
 }
-$sql2="SELECT
-SUM(tb_products.available)AS products
-FROM tb_products";
+$sql1 = "SELECT * FROM tb_product_category";
+$result1=mysqli_query($db,$sql1);
+
+$sql2 = "SELECT * FROM tb_mc_brand ORDER BY tb_mc_brand.brand ASC";
 $result2=mysqli_query($db,$sql2);
-$row2 = mysqli_fetch_assoc($result2);
 
-$sql3="SELECT
-COUNT(tb_products.id)AS lowstocks
-FROM tb_products
-WHERE tb_products.available <= 5 AND tb_products.available
-NOT IN (SELECT tb_products.available FROM tb_products WHERE tb_products.available='0')";
+$sql3 = "SELECT * FROM tb_mc_model ORDER BY tb_mc_model.model ASC";
 $result3=mysqli_query($db,$sql3);
-$row3 = mysqli_fetch_assoc($result3);
 
-$sql4="SELECT
-COUNT(tb_products.id)AS zerostocks
-FROM tb_products
-WHERE tb_products.available='0'";
+$sql4 = "SELECT * FROM `tb_supplier`";
 $result4=mysqli_query($db,$sql4);
-$row4 = mysqli_fetch_assoc($result4);
-
-$sql5="SELECT
-COUNT(tb_product_category.category)AS category
-FROM tb_product_category";
-$result5=mysqli_query($db,$sql5);
-$row5 = mysqli_fetch_assoc($result5);
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -52,7 +108,7 @@ $row5 = mysqli_fetch_assoc($result5);
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.111.3">
-    <title>PRODUCTS</title>
+    <title>UPDATE PRODUCT</title>
  
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 
@@ -256,7 +312,7 @@ $row5 = mysqli_fetch_assoc($result5);
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="admin_products.php">
+            <a class="nav-link" href="admin_products.php">
               <span data-feather="shopping-cart" class="align-text-bottom"></span>
               Products
             </a>
@@ -286,7 +342,7 @@ $row5 = mysqli_fetch_assoc($result5);
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_add_products.php">
+            <a class="nav-link active" href="admin_add_products.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Add new product
             </a>
@@ -342,123 +398,91 @@ $row5 = mysqli_fetch_assoc($result5);
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h5>Products</h5>
-        <div class="btn-toolbar mb-2 mb-md-0">
-        <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
-            <script>
-              function printDiv() {
-              var printContents = document.getElementById("page").innerHTML;
-              var originalContents = document.body.innerHTML;
-              document.body.innerHTML = printContents;
-              window.print();
-              document.body.innerHTML = originalContents;
-              }
-              function refreshDiv() {
-              location.reload();
-              } 
-            </script>
-        </div>
+      <h5>Update Product</h5>
       </div>
-      <form method="post" enctype="multipart/form-data">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3">
-          <div class="input-group">
-            <input id="search" name="search" class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Type to search product...">
-            <script>
-              window.onload = init;
-              function init(){
-              document.getElementById("search").focus();
-              }
-            </script>
-            <datalist id="datalistOptions">
-              <?php while($row1 = mysqli_fetch_array($result1)):;?>
-              <option value="<?php echo $row1['id'];?>"><?php echo $row1['specification'];?></option>
-              <?php endwhile; ?>
-            </datalist>
-            <button class="btn btn-secondary" type="submit" id="button-addon2">SEARCH <span data-feather="search" class="align-text-end"></button>
+      <div class="align-items-center ">
+      <form method="post" action="" enctype="multipart/form-data">
+          <div class="row mb-3">
+            <div class="col-md">
+              <div class="form-floating shadow">
+                  <select name="supplier" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
+                    <option selected disabled value=""><?php echo $row0['supplier_id'];?></option>
+                    <?php while($row4 = mysqli_fetch_array($result4)):;?> 
+                    <option class="dropdown-item" value="<?php echo $row4['id'];?>">
+                    <?php echo $row4['name'];?></option>
+                    <?php endwhile; ?>
+                  </select>
+                <label for="inputGroupSelect04">SUPPLIER</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating shadow">
+                  <select name="category" class="form-select" id="inputGroupSelect05" aria-label="Example select with button addon">
+                    <option selected disabled><?php echo $row0['category'];?></option>
+                    <?php while($row1 = mysqli_fetch_array($result1)):;?> 
+                    <option class="dropdown-item" value="<?php echo $row1['category'];?>">
+                    <?php echo $row1['category'];?></option>
+                    <?php endwhile; ?>
+                  </select>
+                <label for="inputGroupSelect05">PRODUCT CATEGORY</label>
+              </div>
+            </div>
           </div>
+          <div class="row mb-3">
+            <div class="col-md">
+              <div class="form-floating shadow">
+                <select name="mcbrand" class="form-select" id="inputGroupSelect06" aria-label="Example select with button addon">
+                  <option selected disabled value=""><?php echo $row0['mc_brand'];?></option>
+                  <?php while($row2 = mysqli_fetch_array($result2)):;?> 
+                  <option class="dropdown-item" value="<?php echo $row2['brand'];?>">
+                  <?php echo $row2['brand'];?></option>
+                  <?php endwhile; ?>
+                </select>
+                <label for="inputGroupSelect06">BRAND</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating shadow">
+                <select name="mcmodel" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
+                  <option selected disabled value=""><?php echo $row0['mc_model'];?></option>
+                  <?php while($row3 = mysqli_fetch_array($result3)):;?> 
+                  <option class="dropdown-item" value="<?php echo $row3['model'];?>">
+                  <?php echo $row3['model'];?></option>
+                  <?php endwhile; ?>
+                </select>
+                <label for="inputGroupSelect07">MODEL</label>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md">
+              <div class="form-floating shadow">
+                <input class="form-control" name="pbrand" type="text" onkeyup="this.value = this.value.toUpperCase();" value="<?php echo $row0['product_brand'];?>" class="form-control" aria-label="Text input with dropdown button" placeholder="Product Brand" required>
+                <label for="floatingInputGrid">PRODUCT BRAND & DESCRIPTION</label>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md">
+              <div class="form-floating shadow">
+                <input name="cap" type="number" value="<?php echo $row0['capital'];?>" class="form-control" aria-label="Text input with dropdown button" placeholder="CAP" required>
+                <label for="floatingInputGrid">CAPITAL</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating shadow">
+                <input name="price" type="decimal" value="<?php echo $row0['price'];?>" class="form-control" aria-label="Text input with dropdown button" placeholder="SRP" required>
+                <label for="floatingInputGrid">SRP</label>
+              </div>
+            </div>
+          </div>      
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button class="btn btn-success" type="submit">UPDATE <span data-feather="upload-cloud" class="align-text-end"></button>
+          </div>
+        </form>
       </div>
-      </form>
       <div class="table" id="page">
-      <div class="container text-center border p-2 rounded shadow">
-        <div class="row">
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['products'];?></p>
-            <p class="m-0 p-0 text-muted">Total Items</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row5['category'];?></p>
-            <p class="m-0 p-0 text-muted">Total Category</p>
-          </div>
-          <div class="col" onclick="location.href='admin_low_stocks.php'">
-            <p class="m-0 p-0 fw-bold text-danger"><?php echo $row3['lowstocks'];?></p>
-            <p class="m-0 p-0 text-danger">Low Stocks</p>
-          </div>
-          <div class="col" onclick="location.href='admin_zero_stocks.php'">
-            <p class="m-0 p-0 fw-bold text-danger"><?php echo $row4['zerostocks'];?></p>
-            <p class="m-0 p-0 text-danger">Zero Stocks</p>
-          </div>
-        </div>
-      </div>
-      <h6 class="mt-5">
-        <?php
-         if(empty($_POST["search"])) {
-          $text ="All Products";
-          } else {
-          $text = "Result for the keyword '".$search."'";
-          }
-          echo $text;
-        ?>
-      </h6>
-        <table class="table table-hover table-sm">
-          <thead>
-            <tr>
-              <th scope="col">Specification</th>
-              <th scope="col">Stocks</th>
-              <th scope="col">SRP</th>
-              <th scope="col">Capital</th>
-              <th scope="col">Profit</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php
-                $sql="SELECT
-                tb_products.id,
-                tb_products.product_brand,
-                CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification,
-                CONCAT(tb_products.available,'/',tb_products.stocks) AS stocks,
-                CONCAT(FORMAT(tb_products.capital, 2)) AS capital,
-                CONCAT(FORMAT(tb_products.price, 2)) AS price,
-                (tb_products.price - tb_products.capital) AS profit,
-                CASE WHEN tb_products.available=0
-                THEN 'text-danger' ELSE null END AS textcolor
-                FROM tb_products
-                WHERE tb_products.category LIKE '%".$search."%' 
-                OR tb_products.mc_brand LIKE '%".$search."%' 
-                OR tb_products.mc_model LIKE '%".$search."%' 
-                OR tb_products.product_brand LIKE '%".$search."%'
-                OR tb_products.id LIKE '%".$search."%'";
-                                                                                    
-                $result = mysqli_query($db,$sql);
-
-                if (mysqli_num_rows($result) > 0) 
-                {
-                foreach($result as $items)
-                {
-            ?>
-            <tr class="<?php echo $items['textcolor']; ?>" onclick="location.href='admin_product.php?id=<?php echo $items['id'];?>'">
-                <td><?php echo $items['specification']; ?></td>
-                <td><?php echo $items['stocks']; ?></td>
-                <td><?php echo $items['price']; ?></td>
-                <td><?php echo $items['capital']; ?></td>
-                <td><?php echo $items['profit']; ?></td>
-            </tr>
-            <?php
-            } 
-            } 
-            ?>
-          </tbody>
-        </table>
-      </div>
+      
     </main>
   </div>
 </div>

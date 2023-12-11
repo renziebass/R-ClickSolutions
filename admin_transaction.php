@@ -525,7 +525,7 @@ if (mysqli_num_rows($result) > 0) {
                 SUM(tb_cart.price*tb_cart.quantity) AS total,
                 (tb_cart.price*tb_cart.quantity - tb_products.capital*tb_cart.quantity) AS profit,
                 CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification,
-                tb_products.price
+                tb_cart.price
                 FROM tb_cart LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id
                 WHERE tb_cart.transaction_id='" .$_GET['id']. "'
                 GROUP BY tb_cart.product_id";

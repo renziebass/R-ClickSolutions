@@ -362,11 +362,11 @@ $row4 = mysqli_fetch_assoc($result4);
           </div>
           <div class="col">
             <p class="m-0 p-0 fw-bold text-primary">P <?php echo $row4['monthly'];?></p>
-            <p class="m-0 p-0 text-muted">Avergae</p>
+            <p class="m-0 p-0 text-muted">Average</p>
           </div>
         </div>
       </div>
-      <h6 class="mt-5">Sales Report</h6>
+      <h6 class="mt-5">Sales Monthly Report</h6>
         <table class="table table-hover table-sm">
           <thead>
             <tr>

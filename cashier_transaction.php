@@ -430,13 +430,13 @@ if (mysqli_num_rows($result) > 0) {
                       tb_products.id,
                       tb_products.product_brand,
                       tb_products.category,
-                      CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification,
-                      tb_products.price
+                      CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification
                       FROM tb_cart LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id) AS A
                 JOIN (SELECT
                       tb_cart.product_id,
                       SUM(tb_cart.quantity) as quantity,
-                      SUM(tb_cart.price*tb_cart.quantity) AS total
+                      SUM(tb_cart.price*tb_cart.quantity) AS total,
+                      tb_cart.price
                       FROM tb_cart WHERE tb_cart.transaction_id='" .$_GET['id']. "'
                 GROUP BY tb_cart.product_id) AS B
                 ON A.id=B.product_id

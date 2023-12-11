@@ -292,7 +292,7 @@ $row1 = mysqli_fetch_assoc($result1);
                 tb_transactions.id,
                 DATE_FORMAT(tb_transactions.date,'%M %d,%Y') AS date,
                 SUM(tb_cart.quantity) AS quantity,
-                SUM(tb_products.price) AS total
+                SUM(tb_cart.price) AS total
                 FROM tb_products 
                 LEFT JOIN tb_cart ON tb_products.id=tb_cart.product_id
                 RIGHT JOIN tb_transactions ON tb_cart.transaction_id=tb_transactions.id

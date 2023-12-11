@@ -210,7 +210,7 @@ $row1 = mysqli_fetch_assoc($result1);
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_transactions_history.php">
+            <a class="nav-link" href="admin_monthly_history.php">
               <span data-feather="file" class="align-text-bottom"></span>
               Paid Transactions
             </a>
@@ -310,20 +310,36 @@ $row1 = mysqli_fetch_assoc($result1);
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 border-bottom">
       <h5>SALES HISTORY</h5>
         <div class="btn-toolbar mb-2 mb-md-0">
-        <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
-            <script>
-              function printDiv() {
-              var printContents = document.getElementById("page").innerHTML;
-              var originalContents = document.body.innerHTML;
-              document.body.innerHTML = printContents;
-              window.print();
-              document.body.innerHTML = originalContents;
-              }
-              function refreshDiv() {
-              location.reload();
-              } 
-            </script>
-        </div>
+        <div class="d-grid gap-1 d-md-flex justify-content-md-end">
+        <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal0" data-bs5="<?php echo $_GET['id']?>" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal2">EDIT <span data-feather="edit" class="align-text-bottom"></button>
+          <div class="modal fade" id="exampleModal0" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                  <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel">Modify Product: <?php echo $_GET['id'];?></h6>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" onclick="location.href='admin_update_product.php?id=<?php echo $_GET['id'];?>&date=<?php echo date('Y-m-d')?>'" class="btn btn-sm btn-danger" >Modify</button>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
+              <script>
+                function printDiv() {
+                var printContents = document.getElementById("page").innerHTML;
+                var originalContents = document.body.innerHTML;
+                document.body.innerHTML = printContents;
+                window.print();
+                document.body.innerHTML = originalContents;
+                }
+                function refreshDiv() {
+                location.reload();
+                } 
+              </script>
+              </div>
+           </div>
       </div>
       <img class="p-0 m-0 mx-auto d-block" onclick="location.href='admin_productqr.php?product_id=<?php echo $_GET['id'];?>&line=1'" src="https://chart.googleapis.com/chart?chs=140x140&cht=qr&chl=<?php echo $_GET['id']; ?>">
       <div class="table" id="page">
@@ -362,7 +378,7 @@ $row1 = mysqli_fetch_assoc($result1);
                 tb_transactions.id,
                 DATE_FORMAT(tb_transactions.date,'%M %d,%Y') AS date,
                 SUM(tb_cart.quantity) AS quantity,
-                SUM(tb_products.price) AS total
+                SUM(tb_cart.price) AS total
                 FROM tb_products 
                 LEFT JOIN tb_cart ON tb_products.id=tb_cart.product_id
                 RIGHT JOIN tb_transactions ON tb_cart.transaction_id=tb_transactions.id

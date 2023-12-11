@@ -587,14 +587,14 @@ $result17=mysqli_query($db,$sql17);
   
         </div>
       </div>
-      <div class="row">
+      <div class="row mt-3">
         <div class="col-md">
           <h6 class="mt-2">Monthly Sales Chart</h6>
-          <canvas class="my-4 w-100" id="myChart" width="200" height="100"></canvas>
+          <canvas class="my-4 w-100" id="myChart" width="200" height="120"></canvas>
         </div>
         <div class="col-md">
           <h6 class="mt-2">Top 5 Selling Categories</h6>
-          <canvas class="my-4 w-100" id="myChart2" width="200" height="100"></canvas>
+          <canvas class="my-4 w-100" id="myChart2" width="200" height="120"></canvas>
         </div>
       </div>
       

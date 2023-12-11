@@ -300,7 +300,7 @@ $result4=mysqli_query($db,$sql4);
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_transactions_history.php">
+            <a class="nav-link" href="admin_monthly_history.php">
               <span data-feather="file" class="align-text-bottom"></span>
               Paid Transactions
             </a>
@@ -496,6 +496,8 @@ $result4=mysqli_query($db,$sql4);
               <th scope="col">Specification</th>
               <th scope="col">Stocks</th>
               <th scope="col">SRP</th>
+              <th scope="col">Capital</th>
+              <th scope="col">Profit</th>
               <th scope="col"></th>
             </tr>
           </thead>
@@ -507,7 +509,9 @@ $result4=mysqli_query($db,$sql4);
                 CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification,
                 tb_products.product_brand,
                 tb_products.stocks,
-                tb_products.price
+                CONCAT(FORMAT(tb_products.capital, 2)) AS capital,
+                CONCAT(FORMAT(tb_products.price, 2)) AS price,
+                (tb_products.price - tb_products.capital) AS profit
                 FROM tb_products
                 ORDER BY tb_products.date DESC";
                                                                                     
@@ -523,6 +527,8 @@ $result4=mysqli_query($db,$sql4);
                 <td><?php echo $items['specification']; ?></td>
                 <td><?php echo $items['stocks']; ?></td>
                 <td><?php echo $items['price']; ?></td>
+                <td><?php echo $items['capital']; ?></td>
+                <td><?php echo $items['profit']; ?></td>
                 <td>
         
                   <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs1="<?php echo $items['id']; ?>" data-bs2="<?php echo $items['specification']; ?>">
