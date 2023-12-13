@@ -585,8 +585,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <p class="m-0 p-0 fw-bold text-primary"><?php
                   if(empty($row2['name'])) {
                   $name ="N/A";
+                  $SaveButton = null;
                   } else {
                   $name = $row2['name'];
+                  $SaveButton = "disabled";
                   }
                   echo $name;
                   ?></p>
@@ -738,7 +740,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       
       </div>
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center m-2">
-      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal4" <?php echo $button;?>>SAVE</button>
+      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal4" <?php echo $button;?><?php echo $SaveButton;?>>SAVE</button>
       <div class="modal fade" id="exampleModal4" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
                       <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
