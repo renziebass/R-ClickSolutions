@@ -158,7 +158,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $SaveTR = mysqli_query($db, $sql8);
 
-        header("Refresh:0");
+        header("refresh:0.5;url=cashier_dashboard.php");
       
         
     }
