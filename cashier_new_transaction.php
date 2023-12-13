@@ -174,12 +174,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     try {
 
-      $sqlcheck = "SELECT * FROM tb_transactions
+      $sqlcheck1 = "SELECT * FROM tb_transactions
       WHERE tb_transactions.id='" .$_GET['id']. "'";
-      $TRcheck = mysqli_query($db, $sqlcheck);
-      $resultCheck = mysqli_fetch_assoc($TRcheck);
+      $TRcheck = mysqli_query($db, $sqlcheck1);
+      $resultCheck1 = mysqli_fetch_assoc($TRcheck);
 
-      if(empty($resultCheck)) {
+      $sqlcheck2 = "SELECT * FROM tb_payments
+      WHERE tb_payments.id='" .$_GET['id']. "'";
+      $Paymentcheck = mysqli_query($db, $sqlcheck2);
+      $resultCheck2 = mysqli_fetch_assoc($Paymentcheck);
+
+      if(empty($resultCheck1) && empty($resultCheck2))  {
 
         $sql9="INSERT INTO tb_payments (id, date,time, total, payment, change1)
         VALUES ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','" . $row2['total'] . "','" . $_POST["payment"] . "','" . $_POST["payment"]-$row2['total2'] . "')";
