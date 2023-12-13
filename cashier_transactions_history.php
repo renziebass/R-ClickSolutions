@@ -301,7 +301,7 @@ $row2 = mysqli_fetch_assoc($result2);
                 FROM (SELECT
                         tb_payments.date,
                         DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date1,
-                        COUNT(tb_payments.payment) AS customers,
+                        COUNT(tb_payments.payment) AS customers
                         FROM tb_payments
                        GROUP BY tb_payments.date) AS A
                 JOIN (SELECT
