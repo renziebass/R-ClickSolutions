@@ -31,13 +31,12 @@ if (($db->query($sql4)) && ($db->query($sql5)) === TRUE) {
 
 $sql1="SELECT   
 tb_transactions.name,
-(SELECT COUNT(tb_cart.transaction_id)
-FROM tb_cart
-WHERE tb_cart.transaction_id='" .$_GET['id']. "') AS items,
-SUM(tb_cart.price*tb_cart.quantity) AS total,
+SUM(tb_cart.quantity) AS items,
+SUM(tb_cart.total) AS total,
 CONCAT(DATE_FORMAT(tb_transactions.date,'%M %d,%Y'),'  ',tb_transactions.time) AS date_time
-FROM tb_cart LEFT JOIN tb_transactions ON tb_cart.transaction_id=tb_transactions.id
-WHERE tb_cart.transaction_id='" .$_GET['id']. "'
+FROM tb_cart 
+JOIN tb_transactions ON tb_cart.transaction_id=tb_transactions.id
+WHERE tb_transactions.id='" .$_GET['id']. "'
 GROUP BY tb_cart.transaction_id";
 $result1=mysqli_query($db,$sql1);
 $row1 = mysqli_fetch_assoc($result1);
