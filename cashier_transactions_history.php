@@ -310,6 +310,7 @@ $row2 = mysqli_fetch_assoc($result2);
                       DATE_FORMAT(tb_transactions.date,'%M %d,%Y') AS date1
                       FROM tb_transactions
                       JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
+                      WHERE tb_transactions.status='paid'
                       GROUP BY tb_transactions.date) AS B
                 ON A.date1=B.date1
                 ORDER BY A.date DESC LIMIT 7";
