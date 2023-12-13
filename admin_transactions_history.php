@@ -380,13 +380,14 @@ $row3 = mysqli_fetch_assoc($result3);
                 FROM (SELECT
                         tb_payments.date,
                         DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date1,
-                        COUNT(tb_payments.payment) AS customers
+                        COUNT(tb_payments.payment) AS customers,
+                        SUM(tb_payments.total) AS amount
                         FROM tb_payments
                         WHERE MONTH(tb_payments.date)='".$_GET['m']."' AND YEAR(tb_payments.date)='".$_GET['y']."'
                        GROUP BY tb_payments.date) AS A
                 JOIN (SELECT
                       SUM(tb_cart.quantity) AS items,
-                      CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS amount,
+                      CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS amount2,
                       DATE_FORMAT(tb_transactions.date,'%M %d,%Y') AS date1
                       FROM tb_transactions
                       JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
