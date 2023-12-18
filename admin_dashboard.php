@@ -144,8 +144,11 @@ ORDER BY pcs DESC
 LIMIT 5";
 $result17=mysqli_query($db,$sql17);
 
-
-
+$sql18 = "SELECT 
+CONCAT(FORMAT(SUM(tb_products.stocks*tb_products.price), 2)) AS amount
+FROM tb_products";
+$result18=mysqli_query($db,$sql18);
+$row18 = mysqli_fetch_assoc($result18);
 
 ?>
 <!doctype html>
@@ -490,103 +493,129 @@ $result17=mysqli_query($db,$sql17);
     </nav>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h5>Dashboard</h5>
-      </div>
-      <div class="text-center">
+
+      <div class="container pt-3">
         <div class="row">
-          <div class="col-md rounded p-1 m-1 shadow" >
-            <div class="row">
-              <h6 class="mb-2 p-0 text-muted">Today <?php echo date("M j,Y");?></h6>
-              <div class="col">
-                  <p class="m-0 p-0 text-muted">Sales <span data-feather="dollar-sign" class="align-text-bottom"></p>
-                  <p class="m-0 p-0 fw-bold fs-5">P <?php echo $row2['sales'];?> </p>
+          
+          <div class="col border rounded shadow m-1">
+            <div class="card-body p-2">
+              <div class="float-end">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-currency-dollar" viewBox="0 0 16 16">
+                  <path d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z"/>
+                </svg>
               </div>
-              <div class="col">
-                <p class="m-0 p-0 text-muted">Transactions <span data-feather="users" class="align-text-bottom"></p>
-                <p class="m-0 p-0 fw-bold fs-5"><?php echo $row2['paidcustomers'];?></p>
-              </div>
-              <div class="col">
-                <p class="m-0 p-0 text-muted">Items <span data-feather="list" class="align-text-bottom"></p>
-                <p class="m-0 p-0 fw-bold fs-5"><?php echo $row2['paiditems'];?></p>
-              </div>
+                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Revenue</h6>
+                <h3 class=""><?php echo $row1['paid'];?></h3>
+                <p class="mb-0 text-muted">
+                <span class="text-primary fw-bold"><?php echo $row12['transactions'];?></span>
+                <span class="text-nowrap me-2">Receipts</span>
+                <span class="text-primary fw-bold"><?php echo $row11['items'];?></span>
+                <span class="text-nowrap me-2">Products Sold</span>
+                </p>
             </div>
           </div>
-          <div class="col-md rounded p-1 m-1 shadow">
-            <div class="row">
-              <h6 class="mb-2 p-0 text-muted">Inventory</h6>
-              <div class="col">
-                  <p class="m-0 p-0 text-muted">Amount <span data-feather="dollar-sign" class="align-text-bottom"></p>
-                  <p class="m-0 p-0 fw-bold">P <?php echo $row5['amount']; ?> </p>
+
+          <div class="col border rounded shadow m-1">
+            <div class="card-body p-2">
+              <div class="float-end">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-currency-dollar" viewBox="0 0 16 16">
+                  <path d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z"/>
+                </svg>
               </div>
-              <div class="col" onclick="location.href='admin_low_stocks.php'">
-                <p class="m-0 p-0 text-danger">Low Stocks <span data-feather="alert-triangle" class="align-text-bottom"></p>
-                <p class="m-0 p-0 fw-bold text-danger"><?php echo $row6['products']; ?></p>
-              </div>
-              <div class="col" onclick="location.href='admin_zero_stocks.php'">
-                <p class="m-0 p-0 text-danger">Zero Stocks <span data-feather="x-octagon" class="align-text-bottom"></p>
-                <p class="m-0 p-0 fw-bold text-danger"><?php echo $row7['products']; ?></p>
-              </div>
+                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Net Profit</h6>
+                <h3 class=""><?php echo $row1['paid'];?></h3>
+                <p class="mb-0 text-muted">
+                <span class="text-primary fw-bold"><?php echo $row12['transactions'];?></span>
+                <span class="text-nowrap me-2">Receipts</span>
+                <span class="text-primary fw-bold"><?php echo $row11['items'];?></span>
+                <span class="text-nowrap me-2">Products Sold</span>
+                </p>
             </div>
           </div>
-          <div class="col-md rounded p-1 m-1 shadow">
-            <div class="row">
-              <h6 class="mb-2 p-0 text-muted">Unpaid</h6>
-              <div class="col">
-                  <p class="m-0 p-0 text-muted">Amount <span data-feather="dollar-sign" class="align-text-bottom"></p>
-                  <p class="m-0 p-0 fw-bold">P <?php echo $row4['unpaid'];?> </p>
+
+          <div class="col border rounded shadow m-1">
+            <div class="card-body p-2">
+              <div class="float-end">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-currency-dollar" viewBox="0 0 16 16">
+                  <path d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z"/>
+                </svg>
               </div>
-              <div class="col">
-                <p class="m-0 p-0 text-muted">Accounts <span data-feather="users" class="align-text-bottom"></p>
-                <p class="m-0 p-0 fw-bold"><?php echo $row3['transactions'];?></p>
-              </div>
-              <div class="col">
-                <p class="m-0 p-0 text-muted">Items <span data-feather="list" class="align-text-bottom"></p>
-                <p class="m-0 p-0 fw-bold"><?php echo $row13['items'];?></p>
-              </div>
+                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Receivable</h6>
+                <h3 class=""><?php echo $row4['unpaid'];?></h3>
+                <p class="mb-0 text-muted">
+                <span class="text-primary fw-bold"><?php echo $row3['transactions'];?></span>
+                <span class="text-nowrap me-2">Accounts</span>
+                <span class="text-primary fw-bold"><?php echo $row13['items'];?></span>
+                <span class="text-nowrap me-2">Products</span>
+                </p>
             </div>
           </div>
+          
         </div>
       </div>
-      <div class="text-center">
+      <div class="container pt-3">
         <div class="row">
-          <div class="col-md rounded p-1 m-1 shadow">
-            <div class="row">
-              <h6 class="mb-2 p-0 text-muted">Overall</h6>
-              <div class="col">
-                  <p class="m-0 p-0 text-muted">Sales <span data-feather="dollar-sign" class="align-text-bottom"></p>
-                  <p class="m-0 p-0 fw-bold">P <?php echo $row1['paid'];?></p>
+          
+          <div class="col border rounded shadow m-1">
+            <div class="card-body p-2">
+              <div class="float-end">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-list-ol" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5"/>
+                  <path d="M1.713 11.865v-.474H2c.217 0 .363-.137.363-.317 0-.185-.158-.31-.361-.31-.223 0-.367.152-.373.31h-.59c.016-.467.373-.787.986-.787.588-.002.954.291.957.703a.595.595 0 0 1-.492.594v.033a.615.615 0 0 1 .569.631c.003.533-.502.8-1.051.8-.656 0-1-.37-1.008-.794h.582c.008.178.186.306.422.309.254 0 .424-.145.422-.35-.002-.195-.155-.348-.414-.348h-.3zm-.004-4.699h-.604v-.035c0-.408.295-.844.958-.844.583 0 .96.326.96.756 0 .389-.257.617-.476.848l-.537.572v.03h1.054V9H1.143v-.395l.957-.99c.138-.142.293-.304.293-.508 0-.18-.147-.32-.342-.32a.33.33 0 0 0-.342.338zM2.564 5h-.635V2.924h-.031l-.598.42v-.567l.629-.443h.635z"/>
+                </svg>
               </div>
-              <div class="col">
-                <p class="m-0 p-0 text-muted">Transactions <span data-feather="users" class="align-text-bottom"></p>
-                <p class="m-0 p-0 fw-bold"><?php echo $row12['transactions'];?></p>
-              </div>
-              <div class="col">
-                <p class="m-0 p-0 text-muted">Items <span data-feather="list" class="align-text-bottom"></p>
-                <p class="m-0 p-0 fw-bold"><?php echo $row11['items'];?></p>
-              </div>
+                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Inventory</h6>
+                <h3 class=""><?php echo $row5['amount']; ?></h3>
+                <p class="mb-0 text-muted">
+                <span class="text-primary fw-bold"><?php echo $row18['amount']; ?></span>
+                <span class="text-nowrap me-2">Total</span>
+                <span class="text-primary fw-bold"><?php echo $row6['products']; ?></span>
+                <span class="text-nowrap me-2">Low Stocks</span> 
+                <span class="text-primary fw-bold"><?php echo $row7['products']; ?></span>
+                <span class="text-nowrap me-2">Zero Stocks</span>
+                </p>
             </div>
           </div>
-          <div class="col-md rounded p-1 m-1 shadow">
-            <div class="row">
-              <h6 class="mb-2 p-0 text-muted">Average Sales</h6>
-              <div class="col">
-                  <p class="m-0 p-0 text-muted">Daily <span data-feather="dollar-sign" class="align-text-bottom"></p>
-                  <p class="m-0 p-0 fw-bold">P <?php echo $row14['daily'];?></p>
+
+          <div class="col border rounded shadow m-1">
+            <div class="card-body p-2">
+              <div class="float-end">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-list-ol" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5"/>
+                  <path d="M1.713 11.865v-.474H2c.217 0 .363-.137.363-.317 0-.185-.158-.31-.361-.31-.223 0-.367.152-.373.31h-.59c.016-.467.373-.787.986-.787.588-.002.954.291.957.703a.595.595 0 0 1-.492.594v.033a.615.615 0 0 1 .569.631c.003.533-.502.8-1.051.8-.656 0-1-.37-1.008-.794h.582c.008.178.186.306.422.309.254 0 .424-.145.422-.35-.002-.195-.155-.348-.414-.348h-.3zm-.004-4.699h-.604v-.035c0-.408.295-.844.958-.844.583 0 .96.326.96.756 0 .389-.257.617-.476.848l-.537.572v.03h1.054V9H1.143v-.395l.957-.99c.138-.142.293-.304.293-.508 0-.18-.147-.32-.342-.32a.33.33 0 0 0-.342.338zM2.564 5h-.635V2.924h-.031l-.598.42v-.567l.629-.443h.635z"/>
+                </svg>
               </div>
-              <div class="col">
-                <p class="m-0 p-0 text-muted">Monthly <span data-feather="dollar-sign" class="align-text-bottom"></p>
-                <p class="m-0 p-0 fw-bold">P <?php echo $row15['monthly'];?></p>
-              </div>
-              <div class="col">
-                <p class="m-0 p-0 text-muted">Yearly <span data-feather="dollar-sign" class="align-text-bottom"></p>
-                <p class="m-0 p-0 fw-bold"></p>
-              </div>
+                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Monthly Avg</h6>
+                <h3 class=""><?php echo $row15['monthly'];?></h3>
+                <p class="mb-0 text-muted">
+                <span class="text-primary fw-bold"><?php echo $row14['daily'];?></span>
+                <span class="text-nowrap me-2">Daily</span>
+                </p>
             </div>
           </div>
-  
+
+          <div class="col border rounded shadow m-1">
+            <div class="card-body p-2">
+              <div class="float-end">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-list-ol" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5"/>
+                  <path d="M1.713 11.865v-.474H2c.217 0 .363-.137.363-.317 0-.185-.158-.31-.361-.31-.223 0-.367.152-.373.31h-.59c.016-.467.373-.787.986-.787.588-.002.954.291.957.703a.595.595 0 0 1-.492.594v.033a.615.615 0 0 1 .569.631c.003.533-.502.8-1.051.8-.656 0-1-.37-1.008-.794h.582c.008.178.186.306.422.309.254 0 .424-.145.422-.35-.002-.195-.155-.348-.414-.348h-.3zm-.004-4.699h-.604v-.035c0-.408.295-.844.958-.844.583 0 .96.326.96.756 0 .389-.257.617-.476.848l-.537.572v.03h1.054V9H1.143v-.395l.957-.99c.138-.142.293-.304.293-.508 0-.18-.147-.32-.342-.32a.33.33 0 0 0-.342.338zM2.564 5h-.635V2.924h-.031l-.598.42v-.567l.629-.443h.635z"/>
+                </svg>
+              </div>
+                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Today <?php echo date("M j,Y");?></h6>
+                <h3 class=""><?php echo $row2['sales'];?></h3>
+                <p class="mb-0 text-muted">
+                <span class="text-primary fw-bold"><?php echo $row2['paidcustomers'];?></span>
+                <span class="text-nowrap me-2">Receipts</span>
+                <span class="text-primary fw-bold"><?php echo $row2['paiditems'];?></span>
+                <span class="text-nowrap me-2">Products Sold</span> 
+                </p>
+            </div>
+          </div>
+          
         </div>
       </div>
+
       <div class="row mt-3">
         <div class="col-md">
           <h6 class="mt-2">Monthly Sales Chart</h6>

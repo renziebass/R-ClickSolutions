@@ -574,59 +574,69 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </nav>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h5>New Transaction</h5>
-       
-      </div>
-      <div class="table">
-        <div class="text-center border-top border-end border-start p-2" style="background-color: #CCEEBC">
-            <div class="row">
-              <div class="col">
-                <p class="m-0 p-0 fw-bold text-primary"><?php
+      
+      <div class="text-center pt-3 ">
+      <h5><?php
                   if(empty($row2['name'])) {
-                  $name ="N/A";
+                  $name ="New Transaction";
                   $SaveButton = null;
                   } else {
                   $name = $row2['name'];
                   $SaveButton = "disabled";
                   }
                   echo $name;
-                  ?></p>
-                <p class="m-0 p-0 text-muted">Name</p>
-              </div>
-              <div class="col" class="trigger">
-                <p class="m-0 p-0 fw-bold text-primary"><?php echo $_GET['id'];?></p>
-                <p class="m-0 p-0 text-muted">TR #</p>
+                  ?></h5>
+       
+      </div>
+      <div class="container">
+        <div class="row">
+          
+          <div class="container border rounded shadow m-1">
+            <div class="row  border-bottom">
+              <div class="col">
+                <div class="card-body p-2">
+                  <div class="float-end">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-receipt-cutoff" viewBox="0 0 16 16">
+                      <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5M11.5 4a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
+                      <path d="M2.354.646a.5.5 0 0 0-.801.13l-.5 1A.5.5 0 0 0 1 2v13H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H15V2a.5.5 0 0 0-.053-.224l-.5-1a.5.5 0 0 0-.8-.13L13 1.293l-.646-.647a.5.5 0 0 0-.708 0L11 1.293l-.646-.647a.5.5 0 0 0-.708 0L9 1.293 8.354.646a.5.5 0 0 0-.708 0L7 1.293 6.354.646a.5.5 0 0 0-.708 0L5 1.293 4.354.646a.5.5 0 0 0-.708 0L3 1.293zm-.217 1.198.51.51a.5.5 0 0 0 .707 0L4 1.707l.646.647a.5.5 0 0 0 .708 0L6 1.707l.646.647a.5.5 0 0 0 .708 0L8 1.707l.646.647a.5.5 0 0 0 .708 0L10 1.707l.646.647a.5.5 0 0 0 .708 0L12 1.707l.646.647a.5.5 0 0 0 .708 0l.509-.51.137.274V15H2V2.118l.137-.274z"/>
+                    </svg>
+                  </div>
+                    <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Items</h6>
+                    <h3 class=""><?php
+                      if(empty($row2['items'])) {
+                      $items ="0";
+                      } else {
+                      $items = $row2['items'];
+                      }
+                      echo $items;
+                      ?></h3>
+                    <p class="mb-0 text-muted">
+                </div>
               </div>
               <div class="col">
-                <p class="m-0 p-0 fw-bold text-primary"><?php
-                  if(empty($row2['items'])) {
-                  $items ="0";
-                  } else {
-                  $items = $row2['items'];
-                  }
-                  echo $items;
-                  ?></p>
-                <p class="m-0 p-0 text-muted">Total Items</p>
-              </div>
-              <div class="col">
-                <p class="m-0 p-0 fw-bold text-primary">P <?php
-                  if(empty($row2['total'])) {
-                  $total ="0";
-                  } else {
-                  $total = $row2['total'];
-                  }
-                  echo $total;
-                  ?></p>
-                <p class="m-0 p-0 text-muted">Total Amount</p>
+                <div class="card-body p-2">
+                  <div class="float-end">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-receipt-cutoff" viewBox="0 0 16 16">
+                      <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5M11.5 4a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
+                      <path d="M2.354.646a.5.5 0 0 0-.801.13l-.5 1A.5.5 0 0 0 1 2v13H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H15V2a.5.5 0 0 0-.053-.224l-.5-1a.5.5 0 0 0-.8-.13L13 1.293l-.646-.647a.5.5 0 0 0-.708 0L11 1.293l-.646-.647a.5.5 0 0 0-.708 0L9 1.293 8.354.646a.5.5 0 0 0-.708 0L7 1.293 6.354.646a.5.5 0 0 0-.708 0L5 1.293 4.354.646a.5.5 0 0 0-.708 0L3 1.293zm-.217 1.198.51.51a.5.5 0 0 0 .707 0L4 1.707l.646.647a.5.5 0 0 0 .708 0L6 1.707l.646.647a.5.5 0 0 0 .708 0L8 1.707l.646.647a.5.5 0 0 0 .708 0L10 1.707l.646.647a.5.5 0 0 0 .708 0L12 1.707l.646.647a.5.5 0 0 0 .708 0l.509-.51.137.274V15H2V2.118l.137-.274z"/>
+                    </svg>
+                  </div>
+                    <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Total</h6>
+                    <h3 class=""><?php
+                      if(empty($row2['total'])) {
+                      $total ="0";
+                      } else {
+                      $total = $row2['total'];
+                      }
+                      echo $total;
+                      ?></h3>
+                  </div>
               </div>
             </div>
-        </div>
-      <div class="text-start border-bottom border-end border-start p-2" style="background-color: #CCEEBC">
-        
-      <table class="table table-hover table-sm">
+            <div class="row">
+          <table class="table table-hover table-sm table-borderless m-3">
           <thead>
-            <tr>
+            <tr class="text-muted">
               <th scope="col">Specification</th>
               <th scope="col">QTY</th>
               <th scope="col">SRP</th>
@@ -737,8 +747,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
           </script>
         </table>
-      
+             
+               
+            </div>
+           
+            
+          </div>
+             
+        </div>
       </div>
+
+    
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center m-2">
       <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal4" <?php echo $button;?><?php echo $SaveButton;?>>SAVE</button>
       <div class="modal fade" id="exampleModal4" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
