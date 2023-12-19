@@ -406,7 +406,7 @@ $result4=mysqli_query($db,$sql4);
             <div class="col-md">
               <div class="form-floating shadow">
                   <select name="supplier" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
-                    <option selected disabled value=""><?php echo $row0['supplier_id'];?></option>
+                    <option selected disabled value="<?php echo $row0['supplier_id'];?>"><?php echo $row0['supplier_id'];?></option>
                     <?php while($row4 = mysqli_fetch_array($result4)):;?> 
                     <option class="dropdown-item" value="<?php echo $row4['id'];?>">
                     <?php echo $row4['name'];?></option>
@@ -418,7 +418,7 @@ $result4=mysqli_query($db,$sql4);
             <div class="col-md">
               <div class="form-floating shadow">
                   <select name="category" class="form-select" id="inputGroupSelect05" aria-label="Example select with button addon">
-                    <option selected disabled><?php echo $row0['category'];?></option>
+                    <option selected disabled value="<?php echo $row0['category'];?>"><?php echo $row0['category'];?></option>
                     <?php while($row1 = mysqli_fetch_array($result1)):;?> 
                     <option class="dropdown-item" value="<?php echo $row1['category'];?>">
                     <?php echo $row1['category'];?></option>
