@@ -345,7 +345,7 @@ $row4 = mysqli_fetch_assoc($result4);
       <div class="table" id="page">
       <h6 class="text-center mb-3">Monthly Summary Report</h6>
 
-      <div class="container">
+      <div class="">
         <div class="row">
           
           <div class="col border rounded shadow m-1">

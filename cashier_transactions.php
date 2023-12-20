@@ -252,11 +252,8 @@ $row2 = mysqli_fetch_assoc($result2);
     </nav>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h5>Paid Transactions</h5>
-        <div class="btn-toolbar mb-2 mb-md-0">
-          <div class="btn me-2">
-          <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
+    <div class="d-flex justify-content-end mt-3 mb-3">
+    <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
             <script>
               function printDiv() {
               var printContents = document.getElementById("page").innerHTML;
@@ -267,40 +264,45 @@ $row2 = mysqli_fetch_assoc($result2);
               }
               function refreshDiv() {
               location.reload();
-              } 
+              }
             </script>
-          </div>
-        </div>
-      </div>
+    </div>
 
   
       
       <div class="table" id="page">
-      <div class="container text-center border p-2 rounded shadow">
+      <h6 class="text-center mb-3"><?php echo $row2['date1'];?></h6>
+      <div class="">
         <div class="row">
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['date1'];?></p>
-            <p class="m-0 p-0 text-muted">Date</p>
+          
+          <div class="col border rounded shadow m-1">
+            <div class="card-body p-2">
+              <div class="float-end">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-receipt-cutoff" viewBox="0 0 16 16">
+                  <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5M11.5 4a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
+                  <path d="M2.354.646a.5.5 0 0 0-.801.13l-.5 1A.5.5 0 0 0 1 2v13H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H15V2a.5.5 0 0 0-.053-.224l-.5-1a.5.5 0 0 0-.8-.13L13 1.293l-.646-.647a.5.5 0 0 0-.708 0L11 1.293l-.646-.647a.5.5 0 0 0-.708 0L9 1.293 8.354.646a.5.5 0 0 0-.708 0L7 1.293 6.354.646a.5.5 0 0 0-.708 0L5 1.293 4.354.646a.5.5 0 0 0-.708 0L3 1.293zm-.217 1.198.51.51a.5.5 0 0 0 .707 0L4 1.707l.646.647a.5.5 0 0 0 .708 0L6 1.707l.646.647a.5.5 0 0 0 .708 0L8 1.707l.646.647a.5.5 0 0 0 .708 0L10 1.707l.646.647a.5.5 0 0 0 .708 0L12 1.707l.646.647a.5.5 0 0 0 .708 0l.509-.51.137.274V15H2V2.118l.137-.274z"/>
+                </svg>
+              </div>
+                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Sales</h6>
+                <h3 class=""><?php echo $row2['sales_total'] ?></h3>
+                <p class="mb-0 text-muted">
+                <span class="text-primary fw-bold"><?php echo $row2['paidcustomers'] ?></span>
+                <span class="text-nowrap me-2">Receipts</span>
+                <span class="text-primary fw-bold"><?php echo $row2['paiditems'] ?></span>
+                <span class="text-nowrap me-2">Products Sold</span>
+                
+                </p>
+            </div>
           </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['paidcustomers'] ?></p>
-            <p class="m-0 p-0 text-muted">Transactions</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row2['paiditems'] ?></p>
-            <p class="m-0 p-0 text-muted">Items</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary">P <?php echo $row2['sales_total'] ?></p>
-            <p class="m-0 p-0 text-muted">Sales</p>
-          </div>
+
         </div>
       </div>
-      <h6 class="mt-5">Transactions</h6>
+  
+      <h6 class="mt-3 text-center text-muted">Transactions</h6>
      
         <table class="table table-hover table-sm">
           <thead>
-            <tr>
+            <tr class="text-muted">
               <th scope="col">Time</th>
               <th scope="col">Items</th>
               <th scope="col">Total</th>

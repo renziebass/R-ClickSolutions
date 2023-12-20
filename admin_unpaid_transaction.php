@@ -365,11 +365,8 @@ if (mysqli_num_rows($result) > 0) {
     </nav>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h5>Unpaid Transaction</h5>
-        <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="d-grid gap-1 d-md-flex justify-content-md-end">
-          <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
+    <div class="d-flex justify-content-end mt-3 mb-3">
+            <button class="btn btn-secondary me-1" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
             <script>
               function printDiv() {
               var printContents = document.getElementById("page").innerHTML;
@@ -380,9 +377,9 @@ if (mysqli_num_rows($result) > 0) {
               }
               function refreshDiv() {
               location.reload();
-              } 
+              }
             </script>
-          <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal0" data-bs5="<?php echo $_GET['id']?>" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal2">EDIT <span data-feather="edit" class="align-text-bottom"></button>
+             <button class="btn btn-success me-1" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal0" data-bs5="<?php echo $_GET['id']?>" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal2">EDIT <span data-feather="edit" class="align-text-bottom"></button>
           <div class="modal fade" id="exampleModal0" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content">
@@ -440,64 +437,63 @@ if (mysqli_num_rows($result) > 0) {
                       })
                     }
                   </script>
-        </div>
-        </div>
-      </div>
+        
+    </div>
+
 
   
       
       <div class="table" id="page">
-      <div class="container text-center border p-2 rounded shadow">
+      <h6 class="text-center mb-3">
+      <?php
+      if(empty($row1['date_time'])) {
+      $date_time ="N/A";
+      } else {
+      $date_time = $row1['date_time'];
+      }
+
+      if(empty($row1['name']) && ($_GET['id'])) {
+        echo "No Products, Please VOID this TRANSACTION";
+      } else {
+        echo "".$row1['name']." -".$_GET['id']." (".$date_time.")";
+      } 
+      ?></h6>
+      <div class="">
         <div class="row">
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php
-                        if(empty($row1['name']) && ($_GET['id'])) {
-                          echo "No Products, Please VOID this TRANSACTION";
-                        } else {
-                          echo "".$row1['name']." ".$_GET['id']."";
-                        }
-                        ?></p>
-            <p class="m-0 p-0 text-muted">Name & TR#</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php
-            if(empty($row1['date_time'])) {
-            $date_time ="N/A";
+
+          <div class="col m-1">
+            <div class="card-body p-2">
+ 
+                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Total</h6>
+                <h3 class=""><?php
+            if(empty($row1['total'])) {
+            $payment ="0";
             } else {
-            $date_time = $row1['date_time'];
+            $payment = $row1['total'];
             }
-            echo $date_time;
-            ?></p>
-            <p class="m-0 p-0 text-muted">Date & Time</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php
+            echo $payment;
+            ?></h3>
+                <p class="mb-0 text-muted">
+                <span class="text-primary me-2 fw-bold"><?php
             if(empty($row1['items'])) {
             $items ="0";
             } else {
             $items = $row1['items'];
             }
             echo $items;
-            ?></p>
-            <p class="m-0 p-0 text-muted">Items</p>
+            ?></span>
+                <span class="text-nowrap">Items</span>  
+                </p>
+            </div>
           </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary">P <?php
-            if(empty($row1['total'])) {
-            $total ="0";
-            } else {
-            $total = $row1['total'];
-            }
-            echo $total;
-            ?></p>
-            <p class="m-0 p-0 text-muted">Total</p>
-          </div>
+
         </div>
       </div>
-      <h6 class="mt-5">Products</h6>
-        <table class="table table-hover table-sm">
+
+      <h6 class="mt-3 text-center text-muted">Products</h6>
+        <table class="table table-hover table-sm table-borderless">
           <thead>
-            <tr>
+          <tr class="text-muted">
               <th scope="col">Specification</th>
               <th scope="col">QTY</th>
               <th scope="col">SRP</th>

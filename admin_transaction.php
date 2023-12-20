@@ -370,11 +370,8 @@ if (mysqli_num_rows($result) > 0) {
     </nav>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h5>Transaction</h5>
-        <div class="btn-toolbar mb-2 mb-md-0">
-        <div class="d-grid gap-1 d-md-flex justify-content-md-end">
-          <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
+    <div class="d-flex justify-content-end mt-3 mb-3">
+    <button class="btn btn-secondary me-1" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
             <script>
               function printDiv() {
               var printContents = document.getElementById("page").innerHTML;
@@ -385,10 +382,9 @@ if (mysqli_num_rows($result) > 0) {
               }
               function refreshDiv() {
               location.reload();
-              } 
+              }
             </script>
-         
-          <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" <?php echo $voidButton; ?>>VOID <span data-feather="trash" class="align-text-bottom"></span></button>
+            <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" <?php echo $voidButton; ?>>VOID <span data-feather="trash" class="align-text-bottom"></span></button>
           <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                       <div class="modal-content">
@@ -401,110 +397,108 @@ if (mysqli_num_rows($result) > 0) {
                         </div>
                       </div>
                     </div>
-                  </div>
           </div>
-        </div>
-      </div>
-
-  
+    </div>
       
       <div class="table" id="page">
-      <div class="container text-center p-2 border rounded shadow">
+      <h6 class="text-center mb-3">
+      <?php
+      if(empty($row1['date_time'])) {
+      $date_time ="N/A";
+      } else {
+      $date_time = $row1['date_time'];
+      }
+      $det =$_GET['id'];
+      echo "$det ($date_time)" ;
+      ?></h6>
+      <div class="">
         <div class="row">
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $_GET['id'];?></p>
-            <p class="m-0 p-0 text-muted">TR #</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php
-            if(empty($row1['date_time'])) {
-            $date_time ="N/A";
-            } else {
-            $date_time = $row1['date_time'];
-            }
-            echo $date_time;
-            ?></p>
-            <p class="m-0 p-0 text-muted">Date & Time</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php
-            if(empty($row1['items'])) {
-            $items ="0";
-            } else {
-            $items = $row1['items'];
-            }
-            echo $items;
-            ?></p>
-            <p class="m-0 p-0 text-muted">Items</p>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary">P <?php
-            if(empty($row1['capital'])) {
-            $total ="0";
-            } else {
-            $total = $row1['capital'];
-            }
-            echo $total;
-            ?></p>
-            <p class="m-0 p-0 text-muted">Capital</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary">P <?php
-            if(empty($row1['total'])) {
-            $payment ="0";
-            } else {
-            $payment = $row1['total'];
-            }
-            echo $payment;
-            ?></p>
-            <p class="m-0 p-0 text-muted">Total</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php
+          
+          <div class="col m-1">
+            <div class="card-body p-2">
+        
+                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Capital</h6>
+                <h3 class=""><?php
+                  if(empty($row1['capital'])) {
+                  $total ="0";
+                  } else {
+                  $total = $row1['capital'];
+                  }
+                  echo $total;
+                  ?></h3>
+                <p class="mb-0 text-muted">
+                <span class="text-primary me-2 fw-bold"><?php
             if(empty($row1['profit'])) {
             $change1 ="0";
             } else {
             $change1 = $row1['profit'];
             }
             echo $change1;
-            ?></p>
-            <p class="m-0 p-0 text-muted">Profit</p>
+            ?></span>
+                <span class="text-nowrap">Profit</span>  
+                </p>
+            </div>
           </div>
-        </div>
-        <div class="row">
 
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary">P <?php
-            if(empty($row1['payment'])) {
+          <div class="col m-1">
+            <div class="card-body p-2">
+ 
+                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Total</h6>
+                <h3 class=""><?php
+            if(empty($row1['total'])) {
             $payment ="0";
             } else {
-            $payment = $row1['payment'];
+            $payment = $row1['total'];
             }
             echo $payment;
-            ?></p>
-            <p class="m-0 p-0 text-muted">Payment</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php
-            if(empty($row1['change1'])) {
-            $change1 ="0";
+            ?></h3>
+                <p class="mb-0 text-muted">
+                <span class="text-primary me-2 fw-bold"><?php
+            if(empty($row1['items'])) {
+            $items ="0";
             } else {
-            $change1 = $row1['change1'];
+            $items = $row1['items'];
             }
-            echo $change1;
-            ?></p>
-            <p class="m-0 p-0 text-muted">Change</p>
+            echo $items;
+            ?></span>
+                <span class="text-nowrap">Items</span>  
+                </p>
+            </div>
           </div>
+
+          <div class="col m-1">
+            <div class="card-body p-2">
+
+                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Payment</h6>
+                <h3 class=""><?php
+                if(empty($row1['payment'])) {
+                $payment ="0";
+                } else {
+                $payment = $row1['payment'];
+                }
+                echo $payment;
+                ?></h3>
+                <p class="mb-0 text-muted">
+                <span class="text-primary me-2 fw-bold"> <?php
+                if(empty($row1['change1'])) {
+                $change1 ="0";
+                } else {
+                $change1 = $row1['change1'];
+                }
+                echo $change1;
+                ?></span>
+                <span class="text-nowrap">Change</span>  
+                </p>
+            </div>
+          </div>
+          
         </div>
       </div>
-      <h6 class="mt-5">Products</h6>
-        <table class="table table-hover table-sm">
+      <h6 class="mt-3 text-center text-muted">Products</h6>
+        <table class="table table-hover table-sm table-borderless">
           <thead>
-            <tr>
+            <tr class="text-muted">
               <th scope="col">Specification</th>
-    
               <th scope="col">QTY</th>
               <th scope="col">SRP</th>
               <th scope="col">Capital</th>
