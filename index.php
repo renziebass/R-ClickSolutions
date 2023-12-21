@@ -96,13 +96,13 @@ include("config.php");
     <form method="post">
     <h1 class="h3 mb-3 fw-normal text-center">R-Click POS Sign-in</h1>
 
-    <div class="form-floating">
-      <input type="text" class="form-control" name="id" placeholder="name@example.com">
-      <label for="floatingInput">User ID</label>
+    <div class="form-floating py-1">
+      <input type="text" class="form-control" name="id" id="id">
+      <label for="id">User ID</label>
     </div>
-    <div class="form-floating">
-      <input type="password" class="form-control" name="password" placeholder="Password">
-      <label for="floatingPassword">Password</label>
+    <div class="form-floating py-1">
+      <input type="password" class="form-control" name="password" id="password">
+      <label for="password">Password</label>
       <p class="text-danger mt-3 text-center">
     <?php
         session_start();
@@ -145,7 +145,7 @@ include("config.php");
         <input type="checkbox" value="remember-me"> Remember me
       </label>
     </div>
-    <button class="w-100 btn btn-sm btn-outline-primary" type="submit">Sign in</button>
+    <button class="w-100 btn btn-sm btn-primary" type="submit">Sign in</button>
     <p class="mt-5 mb-3 text-body-secondary text-center">&copy; R-Click Solutions PH 2023</p>
   </form>
 </main>

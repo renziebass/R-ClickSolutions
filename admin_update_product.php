@@ -430,7 +430,7 @@ $result4=mysqli_query($db,$sql4);
         <form method="get" action="<?php echo $_SERVER['PHP_SELF'];?>">
         <div class="mb-3">
             <div class="input-group">
-              <input id="search" name="id" class="form-control" list="datalistOptions" id="exampleDataList" value="" placeholder="<?php echo $row0['id'];?>">
+              <input id="search" onkeyup="this.value = this.value.toUpperCase();" name="id" class="form-control" list="datalistOptions" id="exampleDataList" value="" placeholder="<?php echo $row0['id'];?>">
               <script>
                 window.onload = init;
                 function init(){
@@ -448,9 +448,9 @@ $result4=mysqli_query($db,$sql4);
       </form>
         </div>
         <div class="mb-3">
-        <div class="row">
+        <div class="row border rounded shadow m-1">
           
-          <div class="col border rounded shadow m-1">
+          <div class="col m-1">
             <div class="card-body p-2">
               <div class="float-end">
                 <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-receipt-cutoff" viewBox="0 0 16 16">
@@ -458,17 +458,17 @@ $result4=mysqli_query($db,$sql4);
                   <path d="M2.354.646a.5.5 0 0 0-.801.13l-.5 1A.5.5 0 0 0 1 2v13H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H15V2a.5.5 0 0 0-.053-.224l-.5-1a.5.5 0 0 0-.8-.13L13 1.293l-.646-.647a.5.5 0 0 0-.708 0L11 1.293l-.646-.647a.5.5 0 0 0-.708 0L9 1.293 8.354.646a.5.5 0 0 0-.708 0L7 1.293 6.354.646a.5.5 0 0 0-.708 0L5 1.293 4.354.646a.5.5 0 0 0-.708 0L3 1.293zm-.217 1.198.51.51a.5.5 0 0 0 .707 0L4 1.707l.646.647a.5.5 0 0 0 .708 0L6 1.707l.646.647a.5.5 0 0 0 .708 0L8 1.707l.646.647a.5.5 0 0 0 .708 0L10 1.707l.646.647a.5.5 0 0 0 .708 0L12 1.707l.646.647a.5.5 0 0 0 .708 0l.509-.51.137.274V15H2V2.118l.137-.274z"/>
                 </svg>
               </div>
-                <h6 class="fw-normal mt-0" title="Number of Customers"><?php echo $row1b['specification'];?></h6>
-                <h3 class=""><?php echo $row1b['stocks'];?></h3>
+                <h6 class="fw-normal mt-0"><?php echo $row1b['supplier_id'];?></h6>
+                <h3 class=""><?php echo $row1b['specification'];?></h3>
                 <p class="mb-0 text-muted">
                 <p class="mb-0 text-muted">
-                <span class="text-primary me-2 fw-bold"><?php echo $row1b['supplier_id'];?></span>
-                <span class="text-nowrap">Supplier</span>  
+                <span class="text-primary fw-bold"><?php echo $row1b['stocks'];?></span>
+                <span class="text-nowrap me-2">Stocks</span> 
                 </p>
                 </p>
             </div>
           </div>
-          <div class="col border rounded shadow m-1">
+          <div class="col m-1">
             <div class="card-body p-2">
               <div class="float-end">
                 <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-receipt-cutoff" viewBox="0 0 16 16">
@@ -480,7 +480,7 @@ $result4=mysqli_query($db,$sql4);
                 <h3 class=""><?php echo $row1b['price'];?></h3>
                 <p class="mb-0 text-muted">
                 <p class="mb-0 text-muted">
-                <span class="text-primary fw-bold"><?php echo $row1b['capital'];?></span>
+                <span class="text-danger fw-bold"><?php echo $row1b['capital'];?></span>
                 <span class="text-nowrap me-2">Capital</span>  
                 <span class="text-primary fw-bold"><?php echo $row1b['profit'];?></span>
                 <span class="text-nowrap">Profit</span>  

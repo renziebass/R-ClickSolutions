@@ -359,7 +359,7 @@ $row5 = mysqli_fetch_assoc($result5);
       <form method="post" enctype="multipart/form-data">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3">
           <div class="input-group">
-            <input id="search" name="search" class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Type to search product...">
+            <input id="search" onkeyup="this.value = this.value.toUpperCase();" name="search" class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Type to search product...">
             <script>
               window.onload = init;
               function init(){

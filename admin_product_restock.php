@@ -382,7 +382,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <form method="get" action="<?php echo $_SERVER['PHP_SELF'];?>">
         <div class="mb-3">
             <div class="input-group">
-              <input id="search" name="id" class="form-control" list="datalistOptions" id="exampleDataList" value="" placeholder="Type to search product...">
+              <input id="search" onkeyup="this.value = this.value.toUpperCase();" name="id" class="form-control" list="datalistOptions" id="exampleDataList" value="" placeholder="Type to search product...">
               <script>
                 window.onload = init;
                 function init(){

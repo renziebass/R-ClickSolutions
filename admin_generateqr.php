@@ -367,7 +367,7 @@ if(!empty($_POST["id"]) && !empty($_POST["size"]))
           <option value="120x120">120x120 PX</option>
           <option value="130x130">130x130 PX</option>
         </select>
-        <input id="search" name="id" class="form-control" list="datalistOptions" id="exampleDataList" value="" placeholder="Type to search product...">
+        <input id="search" onkeyup="this.value = this.value.toUpperCase();" name="id" class="form-control" list="datalistOptions" id="exampleDataList" value="" placeholder="Type to search product...">
         <datalist id="datalistOptions">
                 <?php while($row1 = mysqli_fetch_array($result1)):;?>
                 <option value="<?php echo $row1['id'];?>"><?php echo $row1['specification'];?></option>
