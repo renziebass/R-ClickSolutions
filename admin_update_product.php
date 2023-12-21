@@ -99,6 +99,20 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     $id = $_GET["id"];
   }
 }
+$sql1b="SELECT
+tb_products.id,
+tb_products.supplier_id,
+tb_products.price,
+tb_products.capital,
+CONCAT(tb_products.price - tb_products.capital) AS profit,
+tb_products.product_brand,
+tb_products.category,
+CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification,
+CONCAT(tb_products.available,'/',tb_products.stocks) AS stocks
+FROM tb_products
+WHERE tb_products.id='" .$_GET['id']. "'";
+$result1b=mysqli_query($db,$sql1b);
+$row1b = mysqli_fetch_assoc($result1b);
 
 $sql1 = "SELECT * FROM tb_product_category";
 $result1=mysqli_query($db,$sql1);
@@ -414,7 +428,7 @@ $result4=mysqli_query($db,$sql4);
 
     <div class="col">
         <form method="get" action="<?php echo $_SERVER['PHP_SELF'];?>">
-        <div class="mb-5">
+        <div class="mb-3">
             <div class="input-group">
               <input id="search" name="id" class="form-control" list="datalistOptions" id="exampleDataList" value="" placeholder="<?php echo $row0['id'];?>">
               <script>
@@ -433,6 +447,50 @@ $result4=mysqli_query($db,$sql4);
         </div>
       </form>
         </div>
+        <div class="mb-3">
+        <div class="row">
+          
+          <div class="col border rounded shadow m-1">
+            <div class="card-body p-2">
+              <div class="float-end">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-receipt-cutoff" viewBox="0 0 16 16">
+                  <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5M11.5 4a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
+                  <path d="M2.354.646a.5.5 0 0 0-.801.13l-.5 1A.5.5 0 0 0 1 2v13H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H15V2a.5.5 0 0 0-.053-.224l-.5-1a.5.5 0 0 0-.8-.13L13 1.293l-.646-.647a.5.5 0 0 0-.708 0L11 1.293l-.646-.647a.5.5 0 0 0-.708 0L9 1.293 8.354.646a.5.5 0 0 0-.708 0L7 1.293 6.354.646a.5.5 0 0 0-.708 0L5 1.293 4.354.646a.5.5 0 0 0-.708 0L3 1.293zm-.217 1.198.51.51a.5.5 0 0 0 .707 0L4 1.707l.646.647a.5.5 0 0 0 .708 0L6 1.707l.646.647a.5.5 0 0 0 .708 0L8 1.707l.646.647a.5.5 0 0 0 .708 0L10 1.707l.646.647a.5.5 0 0 0 .708 0L12 1.707l.646.647a.5.5 0 0 0 .708 0l.509-.51.137.274V15H2V2.118l.137-.274z"/>
+                </svg>
+              </div>
+                <h6 class="fw-normal mt-0" title="Number of Customers"><?php echo $row1b['specification'];?></h6>
+                <h3 class=""><?php echo $row1b['stocks'];?></h3>
+                <p class="mb-0 text-muted">
+                <p class="mb-0 text-muted">
+                <span class="text-primary me-2 fw-bold"><?php echo $row1b['supplier_id'];?></span>
+                <span class="text-nowrap">Supplier</span>  
+                </p>
+                </p>
+            </div>
+          </div>
+          <div class="col border rounded shadow m-1">
+            <div class="card-body p-2">
+              <div class="float-end">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-receipt-cutoff" viewBox="0 0 16 16">
+                  <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5M11.5 4a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
+                  <path d="M2.354.646a.5.5 0 0 0-.801.13l-.5 1A.5.5 0 0 0 1 2v13H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H15V2a.5.5 0 0 0-.053-.224l-.5-1a.5.5 0 0 0-.8-.13L13 1.293l-.646-.647a.5.5 0 0 0-.708 0L11 1.293l-.646-.647a.5.5 0 0 0-.708 0L9 1.293 8.354.646a.5.5 0 0 0-.708 0L7 1.293 6.354.646a.5.5 0 0 0-.708 0L5 1.293 4.354.646a.5.5 0 0 0-.708 0L3 1.293zm-.217 1.198.51.51a.5.5 0 0 0 .707 0L4 1.707l.646.647a.5.5 0 0 0 .708 0L6 1.707l.646.647a.5.5 0 0 0 .708 0L8 1.707l.646.647a.5.5 0 0 0 .708 0L10 1.707l.646.647a.5.5 0 0 0 .708 0L12 1.707l.646.647a.5.5 0 0 0 .708 0l.509-.51.137.274V15H2V2.118l.137-.274z"/>
+                </svg>
+              </div>
+                <h6 class="fw-normal mt-0" title="Number of Customers">Price</h6>
+                <h3 class=""><?php echo $row1b['price'];?></h3>
+                <p class="mb-0 text-muted">
+                <p class="mb-0 text-muted">
+                <span class="text-primary fw-bold"><?php echo $row1b['capital'];?></span>
+                <span class="text-nowrap me-2">Capital</span>  
+                <span class="text-primary fw-bold"><?php echo $row1b['profit'];?></span>
+                <span class="text-nowrap">Profit</span>  
+                </p>
+                </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
       <div class="align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
           <div class="row mb-3">
