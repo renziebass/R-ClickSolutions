@@ -74,9 +74,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       WHERE tb_products.id='" .$_GET['id']. "'";
       $update = mysqli_query($db, $sql4);
         
-      echo '<script>if(confirm("Updated Successfuly")) {
-        window.location.href = "admin_products.php"
-    }</script>';
+      echo '<script>alert("Product Updated Successfuly!")</script>';
+      header("Refresh:0");
 
 
     }
