@@ -403,7 +403,7 @@ $row4 = mysqli_fetch_assoc($result4);
 
         <table class="table table-hover table-sm mt-3">
           <thead>
-            <tr>
+            <tr class="text-muted">
               <th scope="col">Month</th>
               <th scope="col">Sales</th>
             </tr>

@@ -372,9 +372,7 @@ $result4=mysqli_query($db,$sql4);
     </nav>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h5>Add New Supplier</h5>
-      </div>
+    <h6 class="text-center mb-3 mt-5">Add New Supplier</h6>
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
         <div class="row mb-3">
@@ -419,10 +417,10 @@ $result4=mysqli_query($db,$sql4);
       </form>
       </div>
       <div class="table" id="page">
-      <h6>Recently added suppliers</h6>
+      <h6 class="mt-3 text-muted text-center">Recently added suppliers</h6>
         <table class="table table-hover table-sm">
           <thead>
-            <tr>
+          <tr class="text-muted">
               <th scope="col">Supplier</th>
               <th scope="col">Specification</th>
               <th scope="col">Address</th>

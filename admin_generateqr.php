@@ -355,19 +355,17 @@ if(!empty($_POST["id"]) && !empty($_POST["size"]))
     </nav>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h5>CREATE QR IMAGE LIST</h5>
-      </div>
+    <h6 class="text-center mb-3 mt-5">Generate QR Images</h6>
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
         <div class="input-group input-group shadow">
         <select class="btn btn-outline-secondary" name="size">
-          <option value="80x80">80</option>
-          <option value="90x90">90</option>
-          <option value="100x100">100</option>
-          <option value="110x110">110</option>
-          <option value="120x120">120</option>
-          <option value="130x130">130</option>
+          <option value="80x80">80x80 PX</option>
+          <option value="90x90">90x90 PX</option>
+          <option value="100x100">100x100 PX</option>
+          <option value="110x110">110x110 PX</option>
+          <option value="120x120">120x120 PX</option>
+          <option value="130x130">130x130 PX</option>
         </select>
         <input id="search" name="id" class="form-control" list="datalistOptions" id="exampleDataList" value="" placeholder="Type to search product...">
         <datalist id="datalistOptions">
@@ -381,14 +379,14 @@ if(!empty($_POST["id"]) && !empty($_POST["size"]))
         </form>
 
       </div>
-      <h6 class="mt-5">
+      <h6 class="mt-3 text-muted">
         List of Products to print QR Images
       </h6>
       <div class="mt-3" id="page">
       
       <table class="table table-hover table-sm">
           <thead>
-            <tr>
+            <tr class="text-muted">
               <th scope="col">Specification</th>
               <th scope="col">QR Size</th>
               <th scope="col"></th>

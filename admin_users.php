@@ -316,11 +316,8 @@ $row1 = mysqli_fetch_assoc($result1);
     </nav>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h5>USERS</h5>
-        <div class="btn-toolbar mb-2 mb-md-0">
-        <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
-            <script>
+    <div class="d-flex justify-content-end mt-3 mb-3">
+      <button class="btn btn-secondary me-1" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
             <script>
               function printDiv() {
               var printContents = document.getElementById("page").innerHTML;
@@ -331,28 +328,16 @@ $row1 = mysqli_fetch_assoc($result1);
               }
               function refreshDiv() {
               location.reload();
-              } 
+              }
             </script>
-        </div>
-      </div>
+    </div>
       
       <div class="table" id="page">
-      <div class="container text-center border p-2 rounded shadow">
-        <div class="row">
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary"><?php echo $row1['admins'];?></p>
-            <p class="m-0 p-0 text-muted">Admins</p>
-          </div>
-          <div class="col">
-            <p class="m-0 p-0 fw-bold text-primary">Code here</p>
-            <p class="m-0 p-0 text-muted">Other Users</p>
-          </div>
-        </div>
-      </div>
-      <h6 class="mt-5">All system users</h6>
+ 
+      <h6 class="mt-3 text-muted text-center">All system users</h6>
         <table class="table table-hover table-sm">
           <thead>
-            <tr>
+            <tr class="text-muted">
               <th scope="col">Account Type</th>
               <th scope="col">ID</th>
               <th scope="col">Name</th>

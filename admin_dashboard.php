@@ -494,7 +494,7 @@ $row18 = mysqli_fetch_assoc($result18);
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 
-      <div class="container pt-3">
+      <div class="pt-3">
         <div class="row">
           
           <div class="col border rounded shadow m-1">
@@ -523,7 +523,7 @@ $row18 = mysqli_fetch_assoc($result18);
                 </svg>
               </div>
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Net Profit</h6>
-                <h3 class=""><?php echo $row1['paid'];?></h3>
+                <h3 class="">CODE THIS</h3>
                 <p class="mb-0 text-muted">
                 <span class="text-primary fw-bold"><?php echo $row12['transactions'];?></span>
                 <span class="text-nowrap me-2">Receipts</span>
@@ -553,7 +553,7 @@ $row18 = mysqli_fetch_assoc($result18);
           
         </div>
       </div>
-      <div class="container pt-3">
+      <div class="pt-3">
         <div class="row">
           
           <div class="col border rounded shadow m-1">

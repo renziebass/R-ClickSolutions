@@ -87,6 +87,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $db=null;
   }
 }
+
+$sql1a = "SELECT
+tb_products.id,
+CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)
+AS specification
+FROM tb_products";
+$id = null;
+$result1a=mysqli_query($db,$sql1a);
+if ($_SERVER["REQUEST_METHOD"] == "GET") {
+  if (!empty($_GET["id"])) {
+    $id = $_GET["id"];
+  }
+}
+
 $sql1 = "SELECT * FROM tb_product_category";
 $result1=mysqli_query($db,$sql1);
 
@@ -397,9 +411,29 @@ $result4=mysqli_query($db,$sql4);
     </nav>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h5>Update Product</h5>
-      </div>
+    <h6 class="text-center mb-3 mt-5">Update Product</h6>
+
+    <div class="col">
+        <form method="get" action="<?php echo $_SERVER['PHP_SELF'];?>">
+        <div class="mb-5">
+            <div class="input-group">
+              <input id="search" name="id" class="form-control" list="datalistOptions" id="exampleDataList" value="" placeholder="<?php echo $row0['id'];?>">
+              <script>
+                window.onload = init;
+                function init(){
+                document.getElementById("search").focus();
+                }
+              </script>
+              <datalist id="datalistOptions">
+                <?php while($row1a = mysqli_fetch_array($result1a)):;?>
+                <option value="<?php echo $row1a['id'];?>"><?php echo $row1a['specification'];?></option>
+                <?php endwhile; ?>
+              </datalist>
+              <button class="btn btn-secondary" type="submit" id="button-addon2">SEARCH <span data-feather="search" class="align-text-end"></button>
+            </div>
+        </div>
+      </form>
+        </div>
       <div class="align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
           <div class="row mb-3">

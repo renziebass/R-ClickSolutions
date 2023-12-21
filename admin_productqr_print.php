@@ -300,12 +300,10 @@ include('user_session.php');
     </nav>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h5>PRINT PRODUCTS QR IMAGE</h5>
-        <div class="btn-toolbar mb-2 mb-md-0">
-        <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
-             <script>
-        function printDiv() {
+    <div class="d-flex justify-content-end mt-3 mb-3">
+    <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
+            <script>
+              function printDiv() {
               var printContents = document.getElementById("page").innerHTML;
               var originalContents = document.body.innerHTML;
               document.body.innerHTML = printContents;
@@ -314,10 +312,10 @@ include('user_session.php');
               }
               function refreshDiv() {
               location.reload();
-              } 
+              }
             </script>
-        </div>
-      </div>
+    </div>
+    <h6 class="text-center mb-3 mt-3">QR Images</h6>
 
       <div class="mt-3" id="page">
               

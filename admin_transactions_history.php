@@ -410,7 +410,7 @@ $row3 = mysqli_fetch_assoc($result3);
       </div>
         <table class="table table-hover table-sm mt-3">
           <thead>
-            <tr>
+            <tr class="text-muted">
               <th scope="col">Date</th>
               <th scope="col">Customers</th>
               <th scope="col">Items Sold</th>

@@ -387,9 +387,7 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
     </nav>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h5>Add New MC</h5>
-      </div>
+    <h6 class="text-center mb-3 mt-5">Add New Brand & Model</h6>
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
         <div class="input-group input-group mb-3 shadow">
@@ -410,10 +408,10 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
       </form>
       </div>
       <div class="table" id="page">
-      <h6>Recently added motorcycle brand and model</h6>
+      <h6 class="text-center mb-3 mt-3 text-muted">Recently added brand and model</h6>
         <table class="table table-hover table-sm">
           <thead>
-            <tr>
+            <tr class="text-muted">
               <th scope="col">MC Brand - Model</th>
               <th scope="col"></th>
             </tr>

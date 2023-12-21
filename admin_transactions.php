@@ -393,7 +393,7 @@ $row2 = mysqli_fetch_assoc($result2);
 
         <table class="table table-hover table-sm mt-3">
           <thead>
-            <tr>
+            <tr class="text-muted">
               <th scope="col">Time</th>
               <th scope="col">Items</th>
               <th scope="col">Total</th>
