@@ -226,7 +226,7 @@ $row3 = mysqli_fetch_assoc($result3);
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_monthly_history.php">
+            <a class="nav-link" href="admin_yearly_history.php">
               <span data-feather="file" class="align-text-bottom"></span>
               Paid Transactions
             </a>

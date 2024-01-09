@@ -12,6 +12,16 @@ JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
 WHERE tb_payments.date='".$_GET['date']."'";
 $result2=mysqli_query($db,$sql2);
 $row2 = mysqli_fetch_assoc($result2);
+
+$sql5="SELECT
+FORMAT(SUM(tb_products.capital*tb_cart.quantity) , 2) AS capital,
+FORMAT(SUM(tb_cart.price*tb_cart.quantity - tb_products.capital*tb_cart.quantity) , 2) AS profit
+FROM tb_transactions
+INNER JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
+LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id
+WHERE tb_transactions.status='paid' AND tb_transactions.date='".$_GET['date']."'";
+$result5=mysqli_query($db,$sql5);
+$row5 = mysqli_fetch_assoc($result5);
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -218,7 +228,7 @@ $row2 = mysqli_fetch_assoc($result2);
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="admin_monthly_history.php">
+            <a class="nav-link active" href="admin_yearly_history.php">
               <span data-feather="file" class="align-text-bottom"></span>
               Paid Transactions
             </a>
@@ -352,28 +362,12 @@ $row2 = mysqli_fetch_assoc($result2);
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Receipts</h6>
                 <h3 class=""><?php echo $row2['paidcustomers'] ?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary me-2 fw-bold">5.27%</span>
-                <span class="text-nowrap">Since last month</span>  
+                <span class="text-primary me-1 fw-bold"><?php echo $row2['paiditems'] ?></span>
+                <span class="text-nowrap">Products Sold</span>  
                 </p>
             </div>
           </div>
-          
-          <div class="col border rounded shadow m-1">
-            <div class="card-body p-2">
-              <div class="float-end">
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-card-checklist" viewBox="0 0 16 16">
-                  <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
-                  <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0M7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0"/>
-                </svg>
-              </div>
-                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Products Sold</h6>
-                <h3 class=""><?php echo $row2['paiditems'] ?></h3>
-                <p class="mb-0 text-muted">
-                <span class="text-primary me-2 fw-bold"> 5.27%</span>
-                <span class="text-nowrap">Since last month</span>  
-                </p>
-            </div>
-          </div>
+        
 
           <div class="col border rounded shadow m-1">
             <div class="card-body p-2">
@@ -385,8 +379,10 @@ $row2 = mysqli_fetch_assoc($result2);
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Revenue</h6>
                 <h3 class=""><?php echo $row2['sales_total'] ?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary me-2 fw-bold"></span>
-                <span class="text-nowrap">Monthly Avg</span>  
+                <span class="text-primary fw-bold"><?php echo $row5['capital'];?></span>
+                <span class="text-nowrap me-1">Capital</span>  
+                <span class="text-primary fw-bold"><?php echo $row5['profit'];?></span>
+                <span class="text-nowrap me-1">Net Profit</span>
                 </p>
             </div>
           </div>

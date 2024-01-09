@@ -3,28 +3,47 @@
 include('user_session.php');
 $sql1="SELECT
 COUNT(tb_payments.id)AS transactions
-FROM tb_payments";
+FROM tb_payments
+WHERE tb_payments.date LIKE '%" .$_GET['y']. "%'";
 $result1=mysqli_query($db,$sql1);
 $row1 = mysqli_fetch_assoc($result1);
 
 $sql2="SELECT
-SUM(tb_cart.quantity) AS items
-FROM tb_cart";
+SUM(tb_cart.quantity)AS items
+FROM tb_payments
+LEFT JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
+WHERE YEAR(tb_payments.date)='".$_GET['y']."'
+GROUP BY year(tb_payments.date),month(tb_payments.date)
+ORDER BY year(tb_payments.date),month(tb_payments.date) DESC";
 $result2=mysqli_query($db,$sql2);
 $row2 = mysqli_fetch_assoc($result2);
 
 $sql3="SELECT
-CONCAT(FORMAT(SUM(tb_payments.total), 2)) AS paid
-FROM tb_payments";
+CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS paid
+FROM tb_payments
+INNER JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
+WHERE YEAR(tb_payments.date)='".$_GET['y']."'";
 $result3=mysqli_query($db,$sql3);
 $row3 = mysqli_fetch_assoc($result3);
 
 $sql4="SELECT
 FORMAT(SUM(tb_payments.total) / 12, 2) AS monthly
 FROM tb_payments
-WHERE YEAR(tb_payments.date) = year(curdate())";
+WHERE YEAR(tb_payments.date)='".$_GET['y']."'";
 $result4=mysqli_query($db,$sql4);
 $row4 = mysqli_fetch_assoc($result4);
+
+$sql5="SELECT
+FORMAT(SUM(tb_products.capital*tb_cart.quantity) , 2) AS capital,
+FORMAT(SUM(tb_cart.price*tb_cart.quantity - tb_products.capital*tb_cart.quantity) , 2) AS profit
+FROM tb_transactions
+INNER JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
+LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id
+WHERE tb_transactions.status='paid' AND YEAR(tb_transactions.date)='".$_GET['y']."';";
+$result5=mysqli_query($db,$sql5);
+$row5 = mysqli_fetch_assoc($result5);
+
+
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -228,7 +247,7 @@ $row4 = mysqli_fetch_assoc($result4);
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="admin_monthly_history.php">
+            <a class="nav-link active" href="admin_yearly_history.php">
               <span data-feather="file" class="align-text-bottom"></span>
               Paid Transactions
             </a>
@@ -343,7 +362,7 @@ $row4 = mysqli_fetch_assoc($result4);
     
 
       <div class="table" id="page">
-      <h6 class="text-center mb-3">Monthly Summary Report</h6>
+      <h6 class="text-center mb-3">Monthly Summary Report of <?php echo $_GET['y']; ?></h6>
 
       <div class="">
         <div class="row">
@@ -359,8 +378,8 @@ $row4 = mysqli_fetch_assoc($result4);
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Receipts</h6>
                 <h3 class=""><?php echo $row1['transactions'];?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary me-2 fw-bold">5.27%</span>
-                <span class="text-nowrap">Since last month</span>  
+                <span class="text-primary me-1 fw-bold"><?php echo $row2['items'];?></span>
+                <span class="text-nowrap">Products Sold</span>  
                 </p>
             </div>
           </div>
@@ -373,11 +392,11 @@ $row4 = mysqli_fetch_assoc($result4);
                   <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0M7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0"/>
                 </svg>
               </div>
-                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Products Sold</h6>
-                <h3 class=""><?php echo $row2['items'];?></h3>
+                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Capital</h6>
+                <h3 class=""><?php echo $row5['capital'];?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary me-2 fw-bold"> 5.27%</span>
-                <span class="text-nowrap">Since last month</span>  
+                <span class="text-primary me-1 fw-bold"><?php echo $row5['profit'];?></span>
+                <span class="text-nowrap">Net Profit</span>  
                 </p>
             </div>
           </div>
@@ -392,7 +411,7 @@ $row4 = mysqli_fetch_assoc($result4);
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Revenue</h6>
                 <h3 class=""><?php echo $row3['paid'];?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary me-2 fw-bold"><?php echo $row4['monthly'];?></span>
+                <span class="text-primary me-1 fw-bold"><?php echo $row4['monthly'];?></span>
                 <span class="text-nowrap">Monthly Avg</span>  
                 </p>
             </div>
@@ -417,8 +436,9 @@ $row4 = mysqli_fetch_assoc($result4);
                 CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS amount
                 FROM tb_payments
                 LEFT JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
+                WHERE YEAR(tb_payments.date)='".$_GET['y']."'
                 GROUP BY year(tb_payments.date),month(tb_payments.date)
-                ORDER BY year(tb_payments.date),month(tb_payments.date) DESC";
+                ORDER BY tb_payments.date DESC;";
                                                                                     
                 $result = mysqli_query($db,$sql);
 

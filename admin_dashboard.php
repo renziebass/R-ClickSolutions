@@ -150,6 +150,16 @@ FROM tb_products";
 $result18=mysqli_query($db,$sql18);
 $row18 = mysqli_fetch_assoc($result18);
 
+$sql19 = "SELECT
+FORMAT(SUM(tb_products.capital*tb_cart.quantity) , 2) AS capital,
+FORMAT(SUM(tb_cart.price*tb_cart.quantity - tb_products.capital*tb_cart.quantity) , 2) AS profit
+FROM tb_transactions
+INNER JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
+LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id
+WHERE tb_transactions.status='paid'";
+$result19=mysqli_query($db,$sql19);
+$row19 = mysqli_fetch_assoc($result19);
+
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -396,7 +406,7 @@ $row18 = mysqli_fetch_assoc($result18);
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_monthly_history.php">
+            <a class="nav-link" href="admin_yearly_history.php">
               <span data-feather="file" class="align-text-bottom"></span>
               Paid Transactions
             </a>
@@ -523,12 +533,11 @@ $row18 = mysqli_fetch_assoc($result18);
                 </svg>
               </div>
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Net Profit</h6>
-                <h3 class="">CODE THIS</h3>
+                <h3 class=""><?php echo $row19['profit'];?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary fw-bold"><?php echo $row12['transactions'];?></span>
-                <span class="text-nowrap me-2">Receipts</span>
-                <span class="text-primary fw-bold"><?php echo $row11['items'];?></span>
-                <span class="text-nowrap me-2">Products Sold</span>
+                <span class="text-primary fw-bold"><?php echo $row19['capital'];?></span>
+                <span class="text-nowrap me-1">Capital</span>
+  
                 </p>
             </div>
           </div>
