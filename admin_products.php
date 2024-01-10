@@ -375,7 +375,6 @@ $row5 = mysqli_fetch_assoc($result5);
           </div>
       </div>
       </form>
-      <div class="table" id="page">
       <div class="">
         <div class="row">
           
@@ -415,13 +414,15 @@ $row5 = mysqli_fetch_assoc($result5);
 
         </div>
       </div>
+      <div class="table" id="page">
+      
 
       <h6 class="mt-3 text-center text-muted">
         <?php
          if(empty($_POST["search"])) {
           $text ="All Products";
           } else {
-          $text = "Result for the keyword '".$search."'";
+          $text = "' ".$search." '";
           }
           echo $text;
         ?>
