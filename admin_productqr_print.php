@@ -327,6 +327,7 @@ include('user_session.php');
                 CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)AS specification,
                 tb_product_qr.id,
                 tb_product_qr.size,
+                tb_product_qr.fsize,
                 tb_products.price
                 FROM tb_product_qr
                 JOIN tb_products ON tb_product_qr.id=tb_products.id";
@@ -338,11 +339,14 @@ include('user_session.php');
                 foreach($result as $items)
                 {
             ?>
-              <div class="col-sm d-flex flex-row border">
-                <div class="p-1">
+              <div class="col-lg d-flex flex-row border p-1">
+                <div class="">
                   <img class="m-0" src="https://chart.googleapis.com/chart?chs=<?php echo $items['size']; ?>&cht=qr&chl=<?php echo $items['id']; ?>">
-                  <p class="m-0 p-0"><?php echo $items['specification']; ?></p>
-                  <p class="m-0 p-0 text-danger" style="font-weight: bold;"><?php echo $items['price']; ?></p>
+                  
+                </div>
+                <div class="pt-3">
+                  <p class="m-0 <?php echo $items['fsize']; ?>"><?php echo $items['specification']; ?></p>
+                  <p class="m-0 text-danger <?php echo $items['fsize']; ?>" style="font-weight: bold;"><?php echo $items['price']; ?></p>
                 </div>
           
               </div>

@@ -36,13 +36,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   } else {
     $size = validateInput($_POST["size"]);
   }
+  if (empty($_POST["fsize"])) {
+    $fsize_err = "* ";
+  } else {
+    $fsize = validateInput($_POST["fsize"]);
+  }
 }
 
 if(!empty($_POST["id"]) && !empty($_POST["size"]))
   {
     try {
       
-        $sql6 = "INSERT INTO tb_product_qr (id,size) VALUES ('$id','$size')";
+        $sql6 = "INSERT INTO tb_product_qr (id,size,fsize) VALUES ('$id','$size','$fsize')";
         $Addmc = mysqli_query($db, $sql6);
         header("Refresh:0");
       
@@ -360,12 +365,20 @@ if(!empty($_POST["id"]) && !empty($_POST["size"]))
       <form method="post" action="" enctype="multipart/form-data">
         <div class="input-group input-group shadow">
         <select class="btn btn-outline-secondary" name="size">
-          <option value="80x80">80x80 PX</option>
-          <option value="90x90">90x90 PX</option>
-          <option value="100x100">100x100 PX</option>
-          <option value="110x110">110x110 PX</option>
-          <option value="120x120">120x120 PX</option>
-          <option value="130x130">130x130 PX</option>
+          <option value="80x80">80x80 QR SIZE</option>
+          <option value="90x90">90x90 QR SIZE</option>
+          <option value="100x100">100x100 QR SIZE</option>
+          <option value="110x110">110x110 QR SIZE</option>
+          <option value="120x120">120x120 QR SIZE</option>
+          <option value="130x130">130x130 QR SIZE</option>
+        </select>
+        <select class="btn btn-outline-secondary" name="fsize">
+          <option value="fs-6">FONT SIZE 1</option>
+          <option value="fs-5">FONT SIZE 2</option>
+          <option value="fs-4">FONT SIZE 3</option>
+          <option value="fs-3">FONT SIZE 4</option>
+          <option value="fs-2">FONT SIZE 5</option>
+          <option value="fs-1">FONT SIZE 6</option>
         </select>
         <input id="search" onkeyup="this.value = this.value.toUpperCase();" name="id" class="form-control" list="datalistOptions" id="exampleDataList" value="" placeholder="Type to search product...">
         <datalist id="datalistOptions">
@@ -388,7 +401,8 @@ if(!empty($_POST["id"]) && !empty($_POST["size"]))
           <thead>
             <tr class="text-muted">
               <th scope="col">Specification</th>
-              <th scope="col">QR Size</th>
+              <th scope="col">Image Size</th>
+              <th scope="col">Font Size</th>
               <th scope="col"></th>
              
             </tr>
@@ -398,7 +412,8 @@ if(!empty($_POST["id"]) && !empty($_POST["size"]))
                 $sql="SELECT
                 CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)AS specification,
                 tb_product_qr.id,
-                tb_product_qr.size
+                tb_product_qr.size,
+                tb_product_qr.fsize
                 FROM tb_product_qr
                 JOIN tb_products ON tb_product_qr.id=tb_products.id";
                                                                                     
@@ -412,6 +427,7 @@ if(!empty($_POST["id"]) && !empty($_POST["size"]))
             <tr>
                 <td><?php echo $items['specification']; ?></td>
                 <td><?php echo $items['size']; ?></td>
+                <td><?php echo $items['fsize']; ?></td>
                 <td>
                 <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs1="<?php echo $items['id']; ?>" data-bs2="<?php echo $items['specification']; ?>">
                     <span>
