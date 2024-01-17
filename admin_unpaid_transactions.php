@@ -391,7 +391,8 @@ $row3 = mysqli_fetch_assoc($result3);
                         FROM tb_cart
                     GROUP BY tb_cart.transaction_id) AS B
                 ON A.id=B.transaction_id
-                GROUP BY A.id";
+                GROUP BY A.id
+                ORDER BY A.date DESC";
                                                                                     
                 $result = mysqli_query($db,$sql);
 

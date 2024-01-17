@@ -14,7 +14,8 @@ JOIN (SELECT
         FROM tb_cart
 		GROUP BY tb_cart.transaction_id) AS B
 ON A.id=B.transaction_id
-GROUP BY A.id";
+GROUP BY A.id
+ORDER BY A.date DESC";
 
 $result = mysqli_query($con,$sql);
 

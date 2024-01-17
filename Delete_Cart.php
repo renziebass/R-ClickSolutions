@@ -1,9 +1,10 @@
 <?php
-require "DataBase.php";
-$db = new DataBase();
-if ($db->dbConnect()) {
-    if ($db->Delete_Cart($_POST['transaction_id'])){
-        echo "Transaction Deleted";
-    } else echo "Failed to Delete Transaction";
-} else echo "Error: Database connection";
+require('config_app.php');
+
+$transaction_id = $_GET['transaction_id'];
+ 
+$sql = "DELETE tb_cart FROM tb_cart WHERE tb_cart.transaction_id='$transaction_id'";
+ 
+$res = mysqli_query($db,$sql);
+
 ?>

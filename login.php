@@ -1,11 +1,19 @@
 <?php
-require "DataBase.php";
-$db = new DataBase();
-if (isset($_POST['userid']) && isset($_POST['password'])) {
-    if ($db->dbConnect()) {
-        if ($db->logIn("tb_accounts", $_POST['userid'], $_POST['password'])) {
-            echo "Login Success";
-        } else echo "userid or Password wrong";
-    } else echo "Error: Database connection";
-} else echo "All fields are required";
+require('config_app.php');
+
+$userid = $_POST['userid'];
+$password = $_POST['password'];
+
+$sql = "SELECT *
+FROM tb_accounts
+WHERE tb_accounts.userid='$userid' AND tb_accounts.password='$password'";
+
+$res = mysqli_query($con,$sql);
+ 
+if (mysqli_num_rows($res) != 0) {
+    echo "Login Success";
+} else {
+    echo "Login Failed";
+}
+
 ?>
