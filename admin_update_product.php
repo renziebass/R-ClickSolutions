@@ -2,7 +2,7 @@
 include('user_session.php');
 $sql0="SELECT
 tb_products.id,
-tb_products.supplier_id,
+tb_supplier.name,
 tb_products.price,
 tb_products.disc,
 tb_products.capital,
@@ -11,6 +11,7 @@ tb_products.category,
 tb_products.mc_brand,
 tb_products.mc_model
 FROM tb_products
+LEFT JOIN tb_supplier ON tb_products.supplier_id=tb_supplier.id
 WHERE tb_products.id='" .$_GET['id']. "'";
 $result0=mysqli_query($db,$sql0);
 $row0 = mysqli_fetch_assoc($result0);
@@ -504,7 +505,7 @@ $result4=mysqli_query($db,$sql4);
             <div class="col-md">
               <div class="form-floating shadow">
                   <select name="supplier" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
-                    <option selected value="<?php echo $row0['supplier_id'];?>"><?php echo $row0['supplier_id'];?></option>
+                    <option selected value="<?php echo $row0['name'];?>"><?php echo $row0['name'];?></option>
                     <?php while($row4 = mysqli_fetch_array($result4)):;?> 
                     <option class="dropdown-item" value="<?php echo $row4['id'];?>">
                     <?php echo $row4['name'];?></option>

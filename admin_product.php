@@ -2,7 +2,7 @@
 include('user_session.php');
 $sql1="SELECT
 tb_products.id,
-tb_products.supplier_id,
+tb_supplier.name,
 tb_products.price,
 tb_products.capital,
 CONCAT(tb_products.price - tb_products.capital) AS profit,
@@ -11,6 +11,7 @@ tb_products.category,
 CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification,
 CONCAT(tb_products.available,'/',tb_products.stocks) AS stocks
 FROM tb_products
+LEFT JOIN tb_supplier ON tb_products.supplier_id=tb_supplier.id
 WHERE tb_products.id='" .$_GET['id']. "'";
 $result1=mysqli_query($db,$sql1);
 $row1 = mysqli_fetch_assoc($result1);
@@ -362,7 +363,7 @@ $row1 = mysqli_fetch_assoc($result1);
                 <h3 class=""><?php echo $row1['stocks'];?></h3>
                 <p class="mb-0 text-muted">
                 <p class="mb-0 text-muted">
-                <span class="text-primary me-2 fw-bold"><?php echo $row1['supplier_id'];?></span>
+                <span class="text-primary me-2 fw-bold"><?php echo $row1['name'];?></span>
                 <span class="text-nowrap">Supplier</span>  
                 </p>
                 </p>
