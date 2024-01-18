@@ -85,8 +85,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $resultcheck=mysqli_query($db,$sql5check);
         $itemResult = mysqli_fetch_assoc($resultcheck);
 
+        $sql5b="SELECT tb_products.disc
+        FROM tb_products
+        WHERE tb_products.id='$product_id'";
+        $checkdisc=mysqli_query($db,$sql5b);
+        $row5 = mysqli_fetch_assoc($checkdisc);
+
+        $price2 = $price-$row5['disc'];
+   
         $sql4 = "INSERT INTO `tb_cart` (`transaction_id`, `date`, `product_id`, `quantity`, `price`, `total`)
-        VALUES ('" .$_GET['id']. "', '".$_GET['date']."', '$product_id', '$quantity', '$price', '$total')";
+        VALUES ('" .$_GET['id']. "', '".$_GET['date']."', '$product_id', '$quantity', '$price2', '$total')";
 
         $sql4b = "UPDATE tb_products
         SET tb_products.available=tb_products.available-'$quantity'
@@ -838,7 +846,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           </div>
       </div>
       </form>
-      <h6>
+      <h6 class="mt-3">
         <?php
          if(empty($_POST["search"])) {
           $text = "";
@@ -854,6 +862,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               <th scope="col">Specification</th>
               <th scope="col">Stocks</th>
               <th scope="col">SRP</th>
+              <th scope="col">Discount</th>
             </tr>
           </thead>
           <tbody>
@@ -861,6 +870,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $sqlb="SELECT
                 tb_products.id,
                 tb_products.product_brand,
+                tb_products.disc,
                 CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification,
                 CONCAT(tb_products.available,'/',tb_products.stocks) AS stocks,
                 CONCAT(tb_products.price) AS price,
@@ -911,6 +921,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <td><?php echo $itemsb['specification']; ?></td>
                 <td><?php echo $itemsb['stocks']; ?></td>
                 <td><?php echo $itemsb['price']; ?></td>
+                <td><?php echo $itemsb['disc']; ?></td>
                 <td>
                   
                 </td>

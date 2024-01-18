@@ -1,7 +1,15 @@
 <?php
 include('user_session.php');
-$sql3 = "SELECT * FROM `tb_mc_brand`";
-$result3=mysqli_query($db,$sql3);
+if(!empty($_GET['xid'])) {
+  $sql7="DELETE FROM tb_discount WHERE tb_discount.id='" .$_GET['xid']. "'";
+
+  if (($db->query($sql7)) === TRUE) {
+    echo "Product Deleted";
+    header("Location: admin_add_discount.php");
+  } else {
+    echo "Error updating record: " . $db->error;
+  }
+}
 function validateInput($data) {
   $data = trim($data);
   $data = stripslashes($data);
@@ -9,38 +17,54 @@ function validateInput($data) {
   return $data;
 }
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-  if (empty($_POST["mb"])) {
-    $mb_err = "* ";
+  if (empty($_POST["id"])) {
+    $id_err = "* ";
   } else {
-    $mb = validateInput($_POST["mb"]);
+    $id = validateInput($_POST["id"]);
   }
-  if (empty($_POST["mcbrand"])) {
-    $mcbrand_err = "* ";
+  if (empty($_POST["description"])) {
+    $description_err = "* ";
   } else {
-    $mcbrand = validateInput($_POST["mcbrand"]);
+    $description = validateInput($_POST["description"]);
   }
-  if (empty($_POST["mcmodel"])) {
-    $mcmodel_err = "* ";
+  if (empty($_POST["percent"])) {
+    $percent_err = "* ";
   } else {
-    $mcmodel = validateInput($_POST["mcmodel"]);
+    $percent = validateInput($_POST["percent"]);
+  }
+  if (empty($_POST["min"])) {
+    $min_err = "* ";
+  } else {
+    $min = validateInput($_POST["min"]);
+  }
+  if (empty($_POST["cap"])) {
+    $cap_err = "* ";
+  } else {
+    $cap = validateInput($_POST["cap"]);
   }
   
-}
-if(!empty($_POST["mb"]))
+  
+  if(!empty($_POST["id"]) && !empty($_POST["percent"] && !empty($_POST["min"])))
   {
     try {
-      $sql5check = "SELECT tb_mc_brand.brand
-      FROM tb_mc_brand
-      WHERE tb_mc_brand.brand='$mb'";
-      $Check5 = mysqli_query($db, $sql5check);
-      $result5 = mysqli_fetch_assoc($Check5);
+      $sql5check = "SELECT *
+      FROM
+      tb_discount
+      WHERE 
+      tb_discount.id='$id'
+      AND tb_discount.description='$description'
+      AND tb_discount.percent='$percent'
+      AND	tb_discount.min='$min'
+      AND tb_discount.cap='$cap'";
+      $CategoryCheck5 = mysqli_query($db, $sql5check);
+      $result5 = mysqli_fetch_assoc($CategoryCheck5);
       if(empty($result5)) {
-        $sql5 = "INSERT INTO tb_mc_brand (brand) VALUES ('$mb');";
-        $Addmb = mysqli_query($db, $sql5);
-        header("Location: admin_add_mc.php");
+        $sql4 = "INSERT INTO `tb_discount` (`id`, `description`, `percent`, `min`, `cap`)
+        VALUES ('$id', '$description', '$percent', '$min', '$cap')";
+        $AddCategory = mysqli_query($db, $sql4);
+        header("Location: admin_add_discount.php");
       } else {
-        echo '<script>alert("Motorcycle Brand Already Exist!")</script>';
+        echo '<script>alert("Discount Already Exist!")</script>';
         header("Refresh:0");
       }
 
@@ -50,44 +74,9 @@ if(!empty($_POST["mb"]))
         echo $sql1 . "<br>" . $e->getMessage();
       }
     $db=null;
-}
-if(!empty($_POST["mcbrand"]) && !empty($_POST["mcmodel"]))
-  {
-    try {
-      $sql6check = "SELECT 
-      tb_mc_model.brand,
-      tb_mc_model.model
-      FROM tb_mc_model
-      WHERE tb_mc_model.brand='$mcbrand'
-      AND tb_mc_model.model='$mcmodel'";
-      $Check6 = mysqli_query($db, $sql6check);
-      $result6 = mysqli_fetch_assoc($Check6);
-      if(empty($result6)) {
-        $sql6 = "INSERT INTO tb_mc_model (brand,model) VALUES ('$mcbrand','$mcmodel')";
-        $Addmc = mysqli_query($db, $sql6);
-        header("Location: admin_add_mc.php");
-      } else {
-        echo '<script>alert("Motorcycle Model Already Exist!")</script>';
-        header("Refresh:0");
-      }
-
-    }
-    catch(PDOException $e)
-      {
-        echo $sql1 . "<br>" . $e->getMessage();
-      }
-    $db=null;
-}
-if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
-  $sql9="DELETE FROM tb_mc_model WHERE tb_mc_model.brand='" .$_GET['xmcbrand']. "' AND tb_mc_model.model='" .$_GET['xmcmodel']. "'";
-
-  if (($db->query($sql9)) === TRUE) {
-    echo "Model Deleted";
-    header("Location: admin_add_mc.php");
-  } else {
-    echo "Error updating record: " . $db->error;
   }
 }
+
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -98,7 +87,7 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.111.3">
-    <title>ADD MC</title>
+    <title>ADD DISCOUNT</title>
  
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 
@@ -356,7 +345,7 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" href="admin_add_mc.php">
+            <a class="nav-link" href="admin_add_mc.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Add new mc brand & model
             </a>
@@ -368,7 +357,7 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_add_discount.php">
+            <a class="nav-link active" href="admin_add_discount.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Add new discounts
             </a>
@@ -393,42 +382,73 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
     </nav>
 
     <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-    <h6 class="text-center mb-3 mt-5">Add New Brand & Model</h6>
-      <div class=" align-items-center ">
+    <h6 class="text-center mb-3 mt-5">Add New Discount</h6>
+      <div class="align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
-        <div class="input-group input-group mb-3 shadow">
-          <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="mb" class="form-control" placeholder="New Motorcycle Brand" aria-label="Recipient's username" aria-describedby="button-addon2">
-          <button class="btn btn-success" type="submit">ADD <span data-feather="upload-cloud" class="align-text-end"></button>
-        </div>
-        <div class="input-group input-group mb-3 shadow">
-        <select name="mcbrand" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
-        <option selected disabled value="">No Brand</option>
-          <?php while($row3 = mysqli_fetch_array($result3)):;?> 
-            <option class="dropdown-item" href="admin_inventory_manage.php?pcategory=<?php echo $row3['brand'];?>" value="<?php echo $row3['brand'];?>">
-            <?php echo $row3['brand'];?></option>
-          <?php endwhile; ?>
-          </select>
-          <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="mcmodel" class="form-control" placeholder="New Motorcycle Model" aria-label="Recipient's username" aria-describedby="button-addon2">
-          <button class="btn btn-success" type="submit">ADD <span data-feather="upload-cloud" class="align-text-end"></button>
-        </div>
-      </form>
+          
+         
+          <div class="row mb-3">
+            <div class="col-md">
+              <div class="form-floating shadow">
+                <input class="form-control" name="id" type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" aria-label="Text input with dropdown button" placeholder="Product Brand" required>
+                <label for="floatingInputGrid">ID</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating shadow">
+                <input class="form-control" name="description" type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" aria-label="Text input with dropdown button" placeholder="Product Brand" required>
+                <label for="floatingInputGrid">DESCRIPTION</label>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md">
+              <div class="form-floating shadow">
+                <input name="percent" type="decimal" class="form-control" aria-label="Text input with dropdown button" placeholder="CAP" required>
+                <label for="floatingInputGrid">PERCENT</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating shadow">
+                <input name="min" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="QTY" required>
+                <label for="floatingInputGrid">MINIMUM AMMOUNT</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating shadow">
+                <input name="cap" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="SRP" required>
+                <label for="floatingInputGrid">MAXIMUM DISCOUNT</label>
+              </div>
+            </div>
+          </div>      
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button class="btn btn-success" type="submit">SAVE <span data-feather="upload-cloud" class="align-text-end"></button>
+          </div>
+        </form>
       </div>
       <div class="table" id="page">
-      <h6 class="text-center mb-3 mt-3 text-muted">Recently added brand and model</h6>
+      <h6 class="mt-3 text-muted text-center">Recently added discount</h6>
         <table class="table table-hover table-sm">
           <thead>
             <tr class="text-muted">
-              <th scope="col">MC Brand - Model</th>
+              <th scope="col">ID</th>
+              <th scope="col">Description</th>
+              <th scope="col">Percent</th>
+              <th scope="col">Minimum Purchase</th>
+              <th scope="col">Capped</th>
               <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
             <?php
                 $sql="SELECT
-                tb_mc_model.brand,
-                tb_mc_model.model
-                FROM `tb_mc_model`  
-                ORDER BY `tb_mc_model`.`brand` ASC";
+                tb_discount.id,
+                tb_discount.description,
+                tb_discount.percent,
+                tb_discount.min,
+                tb_discount.cap
+                FROM
+                tb_discount";
                                                                                     
                 $result = mysqli_query($db,$sql);
 
@@ -438,10 +458,14 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
                 {
             ?>
             <tr>
-                <td><?php echo "".$items['brand']."-".$items['model'].""; ?></td>
+                <td><?php echo $items['id']; ?></td>
+                <td><?php echo $items['description']; ?></td>
+                <td><?php echo $items['percent']; ?></td>
+                <td><?php echo $items['min']; ?></td>
+                <td><?php echo $items['cap']; ?></td>
                 <td>
         
-                  <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs1="<?php echo $items['brand']; ?>" data-bs2="<?php echo $items['model']; ?>">
+                  <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs1="<?php echo $items['id']; ?>" data-bs2="<?php echo $items['description']; ?>">
                     <span>
                       <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
                       <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
@@ -449,7 +473,7 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
                     </span>
                   </button>
 
-                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                       <div class="modal-content">
                         <div class="modal-header">
@@ -459,21 +483,20 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
                             <form method="get" enctype="multipart/form-data">
                               <div class="mb-3">
                         
-                                <input type="hidden" id="xmcbrand" name="xmcbrand" class="form-control">
-                                <input type="hidden" id="xmcmodel" name="xmcmodel" class="form-control">
+                                <input type="hidden" id="xid" name="xid" class="form-control">
                               
                               </div>
                           </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                          <button type="submit" class="btn btn-sm btn-danger">Remove</button>
                         </form>
                         </div>
                       </div>
                     </div>
                   </div>
                 </td>
-              
+               
             </tr>
             <?php
             } 
@@ -495,13 +518,11 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
 
                 // Update the modal's content.
          
-                const modalBodyInput1 = document.getElementById('xmcbrand')
-                const modalBodyInput2 = document.getElementById('xmcmodel')
+                const modalBodyInput1 = document.getElementById('xid')
                 const modalTitle = exampleModal.querySelector('.modal-title')
             
                 modalBodyInput1.value = recipient
-                modalBodyInput2.value = recipient2
-                modalTitle.textContent = `Delete motorcycle ${recipient} - ${recipient2}`
+                modalTitle.textContent = `Remove ${recipient2}`
 
               })
             }

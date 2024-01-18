@@ -303,6 +303,12 @@ $row3 = mysqli_fetch_assoc($result3);
               Add new user
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="admin_add_discount.php">
+              <span data-feather="file-text" class="align-text-bottom"></span>
+              Add new discounts
+            </a>
+          </li>
         </ul>
         <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
           <span>Account</span>

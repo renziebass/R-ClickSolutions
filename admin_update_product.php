@@ -4,6 +4,7 @@ $sql0="SELECT
 tb_products.id,
 tb_products.supplier_id,
 tb_products.price,
+tb_products.disc,
 tb_products.capital,
 tb_products.product_brand,
 tb_products.category,
@@ -52,6 +53,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   } else {
     $price = validateInput($_POST["price"]);
   }
+  if (empty($_POST["disc"])) {
+    $disc_err = "* ";
+  } else {
+    $disc = validateInput($_POST["disc"]);
+  }
   if (empty($_POST["cap"])) {
     $cap_err = "* ";
   } else {
@@ -70,7 +76,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       tb_products.mc_brand='$mcbrand',
       tb_products.mc_model='$mcmodel',
       tb_products.capital='$cap',
-      tb_products.price='$price'
+      tb_products.price='$price',
+      tb_products.disc='$disc'
       WHERE tb_products.id='" .$_GET['id']. "'";
       $update = mysqli_query($db, $sql4);
         
@@ -550,6 +557,12 @@ $result4=mysqli_query($db,$sql4);
               <div class="form-floating shadow">
                 <input class="form-control" name="pbrand" type="text" onkeyup="this.value = this.value.toUpperCase();" value="<?php echo $row0['product_brand'];?>" class="form-control" aria-label="Text input with dropdown button" placeholder="Product Brand" required>
                 <label for="floatingInputGrid">PRODUCT BRAND & DESCRIPTION</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating shadow">
+                <input class="form-control" name="disc" type="number" onkeyup="this.value = this.value.toUpperCase();" value="<?php echo $row0['disc'];?>" class="form-control" aria-label="Text input with dropdown button" placeholder="Product Brand" required>
+                <label for="floatingInputGrid">DISCOUNT</label>
               </div>
             </div>
           </div>
