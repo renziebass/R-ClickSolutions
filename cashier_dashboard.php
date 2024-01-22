@@ -322,8 +322,8 @@ $row13 = mysqli_fetch_assoc($result13);
       </div>
     </nav>
 
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-    <div class="mt-5">
+    <main class="col-md-9 ms-sm-auto col-lg-10">
+    <div class="">
         <div class="row">
           
           <div class="col border rounded shadow m-1">

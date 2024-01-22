@@ -431,7 +431,7 @@ $result4=mysqli_query($db,$sql4);
       </div>
     </nav>
 
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <main class="col-md-9 ms-sm-auto col-lg-10">
     <h6 class="text-center mb-3 mt-5">Update Product</h6>
 
     <div class="col">

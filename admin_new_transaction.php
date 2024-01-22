@@ -597,7 +597,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </div>
     </nav>
 
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <main class="col-md-9 ms-sm-auto col-lg-10">
       
       <div class="text-center pt-3 ">
       <h5><?php
@@ -615,7 +615,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <div class="container">
         <div class="row">
           
-          <div class="container border rounded shadow m-1">
+          <div class="container border rounded shadow">
             <div class="row  border-bottom">
               <div class="col">
                 <div class="card-body p-2">
@@ -660,7 +660,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               </div>
             </div>
             <div class="row">
-          <table class="table table-hover table-sm table-borderless m-3">
+          <table class="table table-hover table-sm table-borderless m-1">
           <thead>
             <tr class="text-muted">
               <th scope="col">Specification</th>
