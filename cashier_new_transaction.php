@@ -1,5 +1,6 @@
 <?php
 include('user_session.php');
+
 $sql1 = "SELECT
 tb_products.id,
 CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)
@@ -91,6 +92,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $checkdisc=mysqli_query($db,$sql5b);
         $row5 = mysqli_fetch_assoc($checkdisc);
 
+        $sql5ccheck = "SELECT *
+        FROM tb_transactions
+        WHERE tb_transactions.id='" .$_GET['id']. "'";
+        $checktr=mysqli_query($db,$sql5ccheck);
+        $resulttr = mysqli_fetch_assoc($checktr);
+
         $price2 = $price-$row5['disc'];
 
         $sql4 = "INSERT INTO `tb_cart` (`transaction_id`, `date`, `product_id`, `quantity`, `price`, `total`)
@@ -106,6 +113,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               audio.play();
               </script>";
         header("Refresh:0");
+        }
+
+        if(empty($resulttr['id'])) {
+
+          $sql8a = "INSERT INTO tb_transactions (id, date,time, status) VALUES
+          ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','unpaid')";
+          $SaveTRa = mysqli_query($db, $sql8a);
+
         }
 
         if ($itemResult['available'] > $quantity) {
@@ -148,6 +163,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $DeleteProduct = mysqli_query($db, $sql6a);
         $ReturnProduct = mysqli_query($db, $sql6b);
         header("Refresh:0");
+
+
       
         
     }
@@ -161,9 +178,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   {
     try {
 
-        $sql8 = "INSERT INTO tb_transactions (id, date,time, name, status) VALUES
-        ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','" . $name . "','unpaid')";
-
+        $sql8 = "UPDATE tb_transactions 
+        SET tb_transactions.name='" . $name . "'
+        WHERE tb_transactions.id='" .$_GET['id']. "'";
         $SaveTR = mysqli_query($db, $sql8);
 
         header("refresh:0.5;url=cashier_dashboard.php");
@@ -197,8 +214,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql9="INSERT INTO tb_payments (id, date,time, total, payment, change1)
         VALUES ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','" . $row2['total'] . "','" . $_POST["payment"] . "','" . $_POST["payment"]-$row2['total2'] . "')";
 
-        $sql10 = "INSERT INTO tb_transactions (id, date,time, name, status) VALUES
-        ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','','paid')";
+        $sql10 = "UPDATE tb_transactions 
+        SET tb_transactions.status='paid'
+        WHERE tb_transactions.id='".$_GET['id']."'";
 
 
         if ($_POST["payment"] > $row2['total2']) {
@@ -283,6 +301,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $db=null;
   }
 }
+
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -568,14 +587,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </svg>
                   </div>
                     <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Total</h6>
-                    <h3 class=""><?php
+                      <h3 class=""><?php
                       if(empty($row2['total'])) {
                       $total ="0";
+                      $DeleteTR = "DELETE FROM tb_transactions WHERE tb_transactions.id='" .$_GET['id']. "'";
+                      $X = mysqli_query($db, $DeleteTR);
                       } else {
-                      $total = $row2['total'];
-                      }
+                   
+                        $total = $row2['total'];
+                    }
                       echo $total;
-                      ?></h3>
+                      ?>
+                      </h3>
+                 
                   </div>
               </div>
             </div>
@@ -736,7 +760,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 
                               <label for="validationDefault01" class="form-label">Payment Amount</label>
                               <input type="number" name="payment" class="form-control" id="validationDefault01" required>
-                                
+
+                              
+
                               </div>
                             
                           </div>
