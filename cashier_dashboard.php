@@ -2,6 +2,12 @@
 <?php
 include('user_session.php');
 
+$isMob = is_numeric(strpos(strtolower($_SERVER["HTTP_USER_AGENT"]), "mobile")); 
+if($isMob){ 
+  $newTR_loc = "cashier_new_transaction";
+}else{ 
+  $newTR_loc = "cashier_new_transaction2";
+}
 
 $sql2="SELECT
 DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date1,
@@ -255,7 +261,7 @@ $row13 = mysqli_fetch_assoc($result13);
       </button>
       <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
         <li>
-          <button onclick="location.href='cashier_new_transaction.php?id=<?php echo $TR;?>&date=<?php echo date('Y-m-d')?>'" type="button" class="dropdown-item d-flex align-items-center" aria-pressed="false">
+          <button onclick="location.href='<?php echo $newTR_loc;?>.php?id=<?php echo $TR;?>&date=<?php echo date('Y-m-d')?>'" type="button" class="dropdown-item d-flex align-items-center" aria-pressed="false">
            New Transaction
           </button>
         </li>

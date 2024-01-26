@@ -1,5 +1,13 @@
 <?php
 include('user_session.php');
+
+$isMob = is_numeric(strpos(strtolower($_SERVER["HTTP_USER_AGENT"]), "mobile")); 
+if($isMob){ 
+  $newTR_loc = "cashier_new_transaction";
+}else{ 
+  $newTR_loc = "cashier_new_transaction2";
+}
+
 if((empty($_GET['id']))) {
   header("Location: cashier_unpaid_transactions.php");
 }
@@ -328,7 +336,7 @@ if (mysqli_num_rows($result) > 0) {
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" onclick="location.href='cashier_new_transaction.php?id=<?php echo $_GET['id'];?>&date=<?php echo date('Y-m-d')?>'" class="btn btn-sm btn-danger" >Modify</button>
+                    <button type="button" onclick="location.href='<?php echo $newTR_loc;?>.php?id=<?php echo $_GET['id'];?>&date=<?php echo date('Y-m-d')?>'" class="btn btn-sm btn-danger" >Modify</button>
                   </div>
               </div>
             </div>

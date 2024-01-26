@@ -6,6 +6,12 @@ CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_bra
 FROM tb_products";
 $search = null;
 
+$sql3a = "SELECT * FROM `tb_product_category`";
+$result3a=mysqli_query($db,$sql3a);
+
+$sql4a = "SELECT * FROM `tb_products`";
+$result4a=mysqli_query($db,$sql4a);
+
 
 $result1=mysqli_query($db,$sql1);
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -218,6 +224,36 @@ $row5 = mysqli_fetch_assoc($result5);
   border-color: transparent;
   box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
 }
+.autocomplete-items {
+      position: absolute;
+      border: 1px solid #d4d4d4;
+      border-bottom: none;
+      border-top: none;
+      z-index: 99;
+      /*position the autocomplete items to be the same width as the container:*/
+      top: 100%;
+      left: 0;
+      right: 0;
+    }
+    .autocomplete {
+      position: relative;
+      display: inline-block;
+    }
+    .autocomplete-items div {
+      padding: 10px;
+      cursor: pointer;
+      background-color: #fff; 
+      border-bottom: 1px solid #d4d4d4; 
+    }
+    /*when hovering an item:*/
+    .autocomplete-items div:hover {
+      background-color: #e9e9e9; 
+    }
+    /*when navigating through the items using the arrow keys:*/
+    .autocomplete-active {
+      background-color: DodgerBlue !important; 
+      color: #ffffff; 
+    }
 
   </style>
 
@@ -296,21 +332,19 @@ $row5 = mysqli_fetch_assoc($result5);
               }
             </script>
     </div>
-      <form method="post" enctype="multipart/form-data">
+      <form method="post" enctype="multipart/form-data" autocomplete=off>
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3">
             <div class="input-group shadow">
-              <input id="search" name="search" onkeyup="this.value = this.value.toUpperCase();" class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Type to search product...">
+            <div class="autocomplete col">
+            <input id="search" onkeyup="this.value = this.value.toUpperCase();" name="search" class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Type to search product...">
+            </div>
               <script>
                 window.onload = init;
                 function init(){
                 document.getElementById("search").focus();
                 }
               </script>
-              <datalist id="datalistOptions">
-                <?php while($row1 = mysqli_fetch_array($result1)):;?>
-                <option value="<?php echo $row1['id'];?>"><?php echo $row1['specification'];?></option>
-                <?php endwhile; ?>
-              </datalist>
+ 
               <button class="btn btn-secondary" type="submit" id="button-addon2">SEARCH <span data-feather="search" class="align-text-end"></button>
             </div>
         </div>
@@ -392,7 +426,8 @@ $row5 = mysqli_fetch_assoc($result5);
                 OR tb_products.mc_brand LIKE '%".$search."%' 
                 OR tb_products.mc_model LIKE '%".$search."%' 
                 OR tb_products.product_brand LIKE '%".$search."%'
-                OR tb_products.id LIKE '%".$search."%'";
+                OR tb_products.id LIKE '%".$search."%'
+                OR CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) LIKE '%".$search."%'";
                                                                                     
                 $result = mysqli_query($db,$sql);
 
@@ -418,7 +453,93 @@ $row5 = mysqli_fetch_assoc($result5);
   </div>
 </div>
 
+<script>
+  function init(){
+    document.getElementById("search").focus();
+    }
+  function autocomplete(inp, arr) {
+            var currentFocus;
+            inp.addEventListener("input", function(e) {
+                var a, b, i, val = this.value;
+                closeAllLists();
+                if (!val) { return false;}
+                currentFocus = -1;
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(a);
+                for (i = 0; i < arr.length; i++) {
+                  if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                    b = document.createElement("DIV");
+                    b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                    b.innerHTML += arr[i].substr(val.length);
+                    b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                    b.addEventListener("click", function(e) {
+                        inp.value = this.getElementsByTagName("input")[0].value;
+                        closeAllLists();
+                    });
+                    a.appendChild(b);
+                  }
+                }
+            });
+            inp.addEventListener("keydown", function(e) {
+                var x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                if (e.keyCode == 40) {
+                  currentFocus++;
+                  addActive(x);
+                } else if (e.keyCode == 38) {
+                  currentFocus--;
+                  addActive(x);
+                } else if (e.keyCode == 13) {
+                  
+                  if (currentFocus > -1) {
+                    if (x) x[currentFocus].click();
+                  }
+                }
+            });
+            function addActive(x) {
+              if (!x) return false;
+              removeActive(x);
+              if (currentFocus >= x.length) currentFocus = 0;
+              if (currentFocus < 0) currentFocus = (x.length - 1);
+              x[currentFocus].classList.add("autocomplete-active");
+            }
+            function removeActive(x) {
+              for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+              }
+            }
+            function closeAllLists(elmnt) {
+              var x = document.getElementsByClassName("autocomplete-items");
+              for (var i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != inp) {
+                  x[i].parentNode.removeChild(x[i]);
+                }
+              }
+            }
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+            });
+          }
+          var specification = [
+            <?php while($row1 = mysqli_fetch_array($result1)):;?>
+            "<?php echo $row1['specification'];?>",
+            <?php endwhile; ?>
+          ];
+          var category = [
+            <?php while($row3a = mysqli_fetch_array($result3a)):;?>
+            "<?php echo $row3a['category'];?>",
+            <?php endwhile; ?>
+          ];
+          var pb = [
+            <?php while($row4a = mysqli_fetch_array($result4a)):;?>
+            "<?php echo $row4a['product_brand'];?>",
+            <?php endwhile; ?>
+          ];
 
+          autocomplete(document.getElementById("search"), category.concat(specification, pb));
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>

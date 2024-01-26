@@ -850,7 +850,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 foreach($resultb as $itemsb)
                 {
             ?>
-            <tr class="<?php echo $itemsb['textcolor']; ?>" data-bs-toggle="modal" data-bs-target="#exampleModal3" data-bs-whatever="<?php echo $itemsb['specification']; ?>" data-bs-whatever2="<?php echo $itemsb['id']; ?>" data-bs-whatever3="<?php echo $itemsb['price']; ?>"> 
+            <tr class="<?php echo $itemsb['textcolor']; ?>" 
+            data-bs-toggle="modal" 
+            data-bs-target="#exampleModal3" 
+            data-bs-whatever="<?php echo $itemsb['specification']; ?>" 
+            data-bs-whatever2="<?php echo $itemsb['id']; ?>" 
+            data-bs-whatever3="<?php echo $itemsb['price']; ?>"> 
             <span>
                   <div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
                       <div class="modal-dialog modal-dialog-centered">
