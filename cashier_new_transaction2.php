@@ -342,7 +342,7 @@ if(!empty($_GET['payment'])){
           </div>
       </div>
       </form>
-    <table class="table table-hover table-borderless table-sm mt-3">
+    <table class="table table-hover table-borderless table-sm mt-3" id="tblFocus">
           <thead>
             <tr class="text-muted">
               <th scope="col">Specification</th>
@@ -500,26 +500,30 @@ if(!empty($_GET['payment'])){
 
 
 <div class="position-fixed bottom-0 end-0 translate-bottom p-3">
-  <button type="button" class="btn btn-danger" onclick="btn_save()" <?php echo $button;?>>SAVE (F1)</button>
-  <button type="button" class="btn btn-warning" onclick="" <?php echo $button;?>>DISCOUNT  (F9)</button>
-  <button type="button" class="btn btn-success" onclick="btn_cash()" <?php echo $button;?>>CASH  (F9)</button>
-  <button type="button" class="btn btn-primary" onclick="" <?php echo $button;?>>G-CASH  (F9)</button>
- 
+<form>
+  <button type="button" class="btn btn-danger" accesskey="m" onclick="btn_save()" <?php echo $button;?>>SAVE ( ALT+M )</button>
+  <button type="button" class="btn btn-warning" accesskey="," onclick="" <?php echo $button;?>>DISCOUNT  ( ALT+, )</button>
+  <button type="button" class="btn btn-success" accesskey="." onclick="btn_cash()" <?php echo $button;?>>CASH  ( ALT+.)</button>
+  <button type="button" class="btn btn-primary" accesskey="/" onclick="" <?php echo $button;?>>G-CASH  ( ALT+/ )</button>
+</form>
 </div>
 <div class="position-fixed bottom-0 start-0 translate-bottom p-3">
-<button type="button" class="btn btn-secondary" onclick="location.href='cashier_dashboard.php'">DASHBOARD (ESC)</button>
-  <button type="button" class="btn btn-success" onclick="window.open('cashier_new_transaction2.php?id=<?php echo $TR;?>&date=<?php echo date('Y-m-d')?>')" <?php echo $button;?>>NEW TR (F1)</button>
-  <button type="button" class="btn btn-danger" onclick="window.open('cashier_unpaid_transactions.php')"  <?php echo $button;?>>UNPAID (F9)</button>
- 
+<form>
+  <button type="button" class="btn btn-secondary" accesskey="z" onclick="location.href='cashier_dashboard.php'">DASHBOARD ( ALT+Z )</button>
+  <button type="button" class="btn btn-secondary" accesskey="x"onclick="init()">SEARCH ( ALT+X )</button>
+  <button type="button" class="btn btn-success" accesskey="c" onclick="window.open('cashier_new_transaction2.php?id=<?php echo $TR;?>&date=<?php echo date('Y-m-d')?>')" <?php echo $button;?>>NEW ( ALT+C )</button>
+  <button type="button" class="btn btn-danger" accesskey="v" onclick="window.open('cashier_unpaid_transactions.php')"  <?php echo $button;?>>UNPAID ( ALT+V )</button>
+</form>
 </div>
 <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
   <script>
-  
+    
     window.onload = init;
     function init(){
     document.getElementById("search").focus();
     }
+    
     function btn_save() {
       const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
@@ -592,7 +596,7 @@ if(!empty($_GET['payment'])){
       });
       swalWithBootstrapButtons.fire({
         title: data_1,
-        input: "number",
+        input: "text",
         footer: '<h6 class="text-white text-center">Available stocks: '+data_4+'</h6>',
         showCancelButton: true,
         confirmButtonText: "Add to Cart",
@@ -603,9 +607,9 @@ if(!empty($_GET['payment'])){
             return "Enter quantity!";
           } else {
           }
-          
-          if (result < data_4) {
-          } else if (result <= data_4) {
+          var formattedNumber = ("0" + result).slice(-2);
+          if (formattedNumber < data_4) {
+          } else if (formattedNumber <= data_4) {
           } else {
             return "stocks not enough!";
           }
@@ -621,7 +625,7 @@ if(!empty($_GET['payment'])){
         }
       });
     }
-    function btn_tr() {
+    function btn_tr(data_1,data_2,data_3,data_4) {
       const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
           confirmButton: "btn btn-success",
@@ -635,10 +639,38 @@ if(!empty($_GET['payment'])){
         confirmButtonText: "Create",
         cancelButtonText: "Cancel",
         reverseButtons: true
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.href = window.location.href+'&id=<?php echo $TR;?>';
-          
+      }).then((result1) => {
+        if (result1.isConfirmed) {
+            swalWithBootstrapButtons.fire({
+              title: data_1,
+              input: "number",
+              footer: '<h6 class="text-white text-center">Available stocks: '+data_4+'</h6>',
+              showCancelButton: true,
+              confirmButtonText: "Add to Cart",
+              cancelButtonText: "Cancel",
+              reverseButtons: true,
+              inputValidator: (result2) => {
+                if (!result2) {
+                  return "Enter quantity!";
+                } else {
+                }
+                var formattedNumber = ("0" + result2).slice(-2);
+                if (formattedNumber < data_4) {
+                } else if (formattedNumber <= data_4) {
+                } else {
+                  return "stocks not enough!";
+                }
+              },
+              inputAttributes: {
+              maxlength: "10"
+            }
+            }).then((result2) => {
+              if (result2.isConfirmed) {
+                window.location.href = window.location.href+'&price='+data_3+'&product_id='+data_2+'&quantity='+result2.value+'&id=<?php echo $TR;?>';
+              } else {
+                result.dismiss === Swal.DismissReason.cancel
+              }
+            });
         } else {
           result.dismiss === Swal.DismissReason.cancel
         }
