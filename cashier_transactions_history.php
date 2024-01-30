@@ -1,17 +1,5 @@
 <?php
 include('user_session.php');
-$sql1="SELECT
-COUNT(tb_payments.id)AS transactions
-FROM tb_payments";
-$result1=mysqli_query($db,$sql1);
-$row1 = mysqli_fetch_assoc($result1);
-
-$sql2="SELECT
-SUM(tb_cart.quantity) AS items
-FROM tb_cart";
-$result2=mysqli_query($db,$sql2);
-$row2 = mysqli_fetch_assoc($result2);
-
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -268,30 +256,8 @@ $row2 = mysqli_fetch_assoc($result2);
             </script>
     </div>
       <div class="table" id="page">
-      <h6 class="text-center mb-3">Previous Sales Report</h6>
-      <div class="">
-        <div class="row">
-          
-          <div class="col border rounded shadow m-1">
-            <div class="card-body p-2">
-              <div class="float-end">
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-receipt-cutoff" viewBox="0 0 16 16">
-                  <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5M11.5 4a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
-                  <path d="M2.354.646a.5.5 0 0 0-.801.13l-.5 1A.5.5 0 0 0 1 2v13H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H15V2a.5.5 0 0 0-.053-.224l-.5-1a.5.5 0 0 0-.8-.13L13 1.293l-.646-.647a.5.5 0 0 0-.708 0L11 1.293l-.646-.647a.5.5 0 0 0-.708 0L9 1.293 8.354.646a.5.5 0 0 0-.708 0L7 1.293 6.354.646a.5.5 0 0 0-.708 0L5 1.293 4.354.646a.5.5 0 0 0-.708 0L3 1.293zm-.217 1.198.51.51a.5.5 0 0 0 .707 0L4 1.707l.646.647a.5.5 0 0 0 .708 0L6 1.707l.646.647a.5.5 0 0 0 .708 0L8 1.707l.646.647a.5.5 0 0 0 .708 0L10 1.707l.646.647a.5.5 0 0 0 .708 0L12 1.707l.646.647a.5.5 0 0 0 .708 0l.509-.51.137.274V15H2V2.118l.137-.274z"/>
-                </svg>
-              </div>
-                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Receipts</h6>
-                <h3 class=""><?php echo $row1['transactions'];?></h3>
-                <p class="mb-0 text-muted">
-                <span class="text-primary me-2 fw-bold"><?php echo $row2['items'];?></span>
-                <span class="text-nowrap">Items Sold</span>  
-                </p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
+      <h6 class="text-center mb-3">Current Week Sales Report</h6>
+  
         <table class="table table-hover table-sm mt-3">
           <thead>
             <tr class="text-muted">
@@ -307,12 +273,14 @@ $row2 = mysqli_fetch_assoc($result2);
                 FROM (SELECT
                         tb_payments.date,
                         DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date1,
+                        FORMAT(SUM(tb_payments.total),2) AS amount,
                         COUNT(tb_payments.payment) AS customers
                         FROM tb_payments
                        GROUP BY tb_payments.date) AS A
+                       
                 JOIN (SELECT
                       SUM(tb_cart.quantity) AS items,
-                      CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS amount,
+                      CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS amount2,
                       DATE_FORMAT(tb_transactions.date,'%M %d,%Y') AS date1
                       FROM tb_transactions
                       JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id

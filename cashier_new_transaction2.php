@@ -3,6 +3,13 @@ include('user_session.php');
 $dateS=date_create(date("Y-m-d"));
 $TR = $_SESSION['id']."-".date_format($dateS,"Ymd")."-".date("His");
 
+$btn_disc = "hidden";
+$btn_save = "hidden";
+$btn_cash = "hidden";
+$btn_gcash = "hidden";
+$disc_msg = null;
+$btn_void = null;
+
 $sql1 = "SELECT
 CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)
 AS specification,
@@ -25,10 +32,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $search = "renzie";
   }
 } else {
-  $search = null;
+  $search = "renzie";
 }
 
 if(!empty($_GET['id'])) {
+
   $sql2="SELECT
   SUM(tb_cart.quantity) AS items,
   SUM(tb_cart.price*tb_cart.quantity) AS total2,
@@ -44,9 +52,6 @@ if(!empty($_GET['id'])) {
   if(empty($row2['total2'])) {
     $DeleteTR = "DELETE FROM tb_transactions WHERE tb_transactions.id='" .$_GET['id']. "'";
     $X = mysqli_query($db, $DeleteTR);
-    
-  } else {
-    
   }
 
   $cart_button = "btn_qty"; 
@@ -54,9 +59,49 @@ if(!empty($_GET['id'])) {
   $cart_button = "btn_tr";
 }
 
+if(empty($row2['total2'])) {
+  $total ="0";
+} else {
+  
+  $btn_save = null;
+  $btn_cash = null;
+  $btn_gcash = null;
+  $btn_disc = null;
+
+
+    if(!empty($_GET['disc'])){
+      $cart_button = null;
+      $btn_save = "hidden";
+      $btn_void = "hidden";
+      $btn_disc = "hidden";
+    
+      $sql2d="SELECT * FROM tb_discount WHERE tb_discount.id <= '".$_GET['disc']."'";
+      $result2d=mysqli_query($db,$sql2d);
+      $row2d = mysqli_fetch_assoc($result2d);
+      
+      
+      if ($row2d['cap'] <= $row2['total2'] * $row2d['percent']) {
+        $less = $row2d['cap'];
+      } else {
+        $less = $row2['total2'] * $row2d['percent'];
+      }
+    
+      $disc_msg = "Discount ".$less;
+      
+      $total = $row2['total2'] - $less;
+    } else {
+      $total = $row2['total2'];
+    }
+}
+$sql2b="SELECT * FROM tb_discount WHERE tb_discount.min <= '".$total."'";
+$result2b=mysqli_query($db,$sql2b);
+
+  
+
+
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
   if(!empty($_GET["product_id2"]) && !empty($_GET["quantity2"])) {
-  try {
+
       $sql6a = "DELETE FROM `tb_cart`
       WHERE tb_cart.transaction_id='" .$_GET['id']. "'
       AND tb_cart.product_id='" .$_GET['product_id2']. "'";
@@ -68,16 +113,10 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
       $DeleteProduct = mysqli_query($db, $sql6a);
       $ReturnProduct = mysqli_query($db, $sql6b);
      
-      header("refresh:0.5;url=cashier_new_transaction2.php?id=".$_GET['id']."&date=".$_GET['date']."");
-  }
-  catch(PDOException $e)
-    {
-      echo $sql1 . "<br>" . $e->getMessage();
-    }
-  $db=null;
+      header("refresh:0.1;url=cashier_new_transaction2.php?id=".$_GET['id']."&date=".$_GET['date']."");
+  
 }
 if(!empty($_GET["product_id"]) && !empty($_GET["price"] && !empty($_GET["quantity"]))) {
-    try {
 
         $sql5b="SELECT tb_products.disc
         FROM tb_products
@@ -106,7 +145,7 @@ if(!empty($_GET["product_id"]) && !empty($_GET["price"] && !empty($_GET["quantit
               var audio = new Audio('https://rclickpos.com/beep.wav');
               audio.play();
               </script>";
-        header("refresh:0.5;url=cashier_new_transaction2.php?id=".$_GET['id']."&date=".$_GET['date']."");
+        header("refresh:0.1;url=cashier_new_transaction2.php?id=".$_GET['id']."&date=".$_GET['date']."");
         }
 
         if(empty($resulttr['id'])) {
@@ -119,13 +158,6 @@ if(!empty($_GET["product_id"]) && !empty($_GET["price"] && !empty($_GET["quantit
         $UpdateProduct = mysqli_query($db, $sql4b);
         function_sound();
 
-        
-    }
-    catch(PDOException $e)
-      {
-        echo $sql1 . "<br>" . $e->getMessage();
-      }
-    $db=null;
   }
   if(!empty($_POST["name"]))
   {
@@ -141,7 +173,6 @@ if(!empty($_GET["product_id"]) && !empty($_GET["price"] && !empty($_GET["quantit
 
 }
 if(!empty($_GET['name'])){
-  try {
 
     $sql8 = "UPDATE tb_transactions 
     SET tb_transactions.name='" . $_GET['name'] . "'
@@ -150,15 +181,9 @@ if(!empty($_GET['name'])){
 
     header("refresh:0.5;url=cashier_dashboard.php");
 
-    }
-    catch(PDOException $e)
-      {
-        echo $sql1 . "<br>" . $e->getMessage();
-      }
-    $db=null;
 }
 if(!empty($_GET['payment'])){
-  try {
+
       $sqlcheck2 = "SELECT * FROM tb_payments
       WHERE tb_payments.id='" .$_GET['id']. "'";
       $Paymentcheck = mysqli_query($db, $sqlcheck2);
@@ -167,7 +192,7 @@ if(!empty($_GET['payment'])){
       if(empty($resultCheck2))  {
 
         $sql9="INSERT INTO tb_payments (id, date,time, total, payment, change1)
-        VALUES ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','" . $row2['total'] . "','" . $_GET["payment"] . "','" . $_GET["payment"]-$row2['total2'] . "')";
+        VALUES ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','" . $total . "','" . $_GET["payment"] . "','" . $_GET["payment"]-$total . "')";
 
         $sql10 = "UPDATE tb_transactions 
         SET tb_transactions.status='paid'
@@ -179,13 +204,6 @@ if(!empty($_GET['payment'])){
         header( "refresh:0.5;url=cashier_new_transaction2.php?date=".$_GET['date']."" );
       
       }
-
-    }
-    catch(PDOException $e)
-      {
-        echo $sql1 . "<br>" . $e->getMessage();
-      }
-    $db=null;
 }
 
 ?>
@@ -198,16 +216,18 @@ if(!empty($_GET['payment'])){
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.111.3">
-    <title><?php
+    <title>
+      <?php
       if(empty($row2['name'])) {
-                  $name ="NEW TRANSACTION";
-                  $SaveButton = null;
-                  } else {
-                  $name = $row2['name'];
-                  $SaveButton = "disabled";
-                  }
-                  echo $name;
-                  ?></title>
+      $name ="NEW TRANSACTION";
+      $SaveButton = null;
+      } else {
+      $name = $row2['name'];
+      $SaveButton = "disabled";
+      }
+      echo $name;
+      ?>
+      </title>
  
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <style>
@@ -246,11 +266,9 @@ if(!empty($_GET['payment'])){
       background-color: #fff; 
       border-bottom: 1px solid #d4d4d4; 
     }
-    /*when hovering an item:*/
     .autocomplete-items div:hover {
       background-color: #e9e9e9; 
     }
-    /*when navigating through the items using the arrow keys:*/
     .autocomplete-active {
       background-color: DodgerBlue !important; 
       color: #ffffff; 
@@ -275,7 +293,7 @@ if(!empty($_GET['payment'])){
   </a>
 </header>
 
-<div class="position-fixed top-20 end-0 translate-bottom bg-secondary-subtle p-1">
+<div class="position-fixed top-20 end-0 translate-bottom p-1">
 
   <div class="container">
     <div class="row">
@@ -310,14 +328,28 @@ if(!empty($_GET['payment'])){
                 <h6 class="text-muted fw-normal px-5" title="Number of Customers">Total</h6>
                 <h3 class="px-5 text-success">
                   <?php
-                  if(empty($row2['total2'])) {
-                  $total ="0";
-                  } else {
-                  $total = $row2['total2'];
-                  }
+                  
+                 
+                
+
                   echo $total;
                   ?>
                 </h3>
+                <div>
+                <p class="text-danger text-end" title="Remove Discount" <?php if(empty($_GET['disc'])) { echo "hidden"; }?>>
+                <?php echo $disc_msg; ?>
+                  <span>
+                    <button class="btn btn-sm p-0 m-0"
+                    onclick="location.href='cashier_new_transaction2.php?id=<?php echo $_GET['id'];?>&date=<?php echo  $_GET['date']?>'"> 
+                      <svg class="text-danger" xmlns="http://www.w3.org/2000/svg" width="27" height="30" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                      </svg>
+                    </button>
+                  </span>
+                </p>
+                
+                </div>
+                
         </div>
       </div>
     </div>
@@ -328,14 +360,14 @@ if(!empty($_GET['payment'])){
 <main class="ms-sm-auto" >
   <div class="container-fluid">
     <div class="row">
-    <div class="col-md-9">
+<div class="col-md-9 border-end">
     <form method="post" enctype="multipart/form-data" autocomplete=off>
       <div>
           <div class="input-group mt-3">
           <button class="btn btn-secondary" id="button-addon2"><span data-feather="camera" class="align-text-end"></button>
           
           <div class="autocomplete col">
-          <input id="search" onkeyup="this.value = this.value.toUpperCase();" name="search" class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Type to search product...">
+          <input id="search" onkeyup="this.value = this.value.toUpperCase();" name="search" class="form-control" list="datalistOptions" id="exampleDataList" placeholder="ALT + X to Search Product">
           </div>
            
             <button class="btn btn-secondary" type="submit" id="button-addon2"><span data-feather="search" class="align-text-end"></button>
@@ -378,7 +410,8 @@ if(!empty($_GET['payment'])){
                 foreach($resultb as $itemsb)
                 {
             ?>
-            <tr class="<?php echo $itemsb['textcolor']; ?>" 
+            <tr class="<?php echo $itemsb['textcolor']; ?>"
+            title="Click to add-to-Cart"
             onclick="<?php echo $cart_button;?>(this.getAttribute('data-1'), this.getAttribute('data-2'), 
             this.getAttribute('data-3'), this.getAttribute('data-4'))"
             data-1="<?php echo $itemsb['specification']; ?>" 
@@ -402,7 +435,7 @@ if(!empty($_GET['payment'])){
         </table>
       
     </div> 
-    <div class="col-md-3 bg-secondary-subtle pt-5">
+    <div class="col-md-3" style="margin-top: 70px;">
       <table class="table table-hover table-sm table-borderless mt-5">
           <tbody>
             <?php
@@ -454,12 +487,13 @@ if(!empty($_GET['payment'])){
                   <div class="row">
                       <div class="col-sm-10"><?php echo $items['specification']; ?></div>
                       <div class="col-sm-2 text-end">
-                        <button type="button" class="btn btn-sm p-0 m-0" 
+                        <button type="button" title="Void & Return Product" class="btn btn-sm p-0 m-0" 
                           onclick="btn_void(this.getAttribute('data-1'), this.getAttribute('data-2'), 
                           this.getAttribute('data-3'))"
                           data-1="<?php echo $items['id']; ?>"
                           data-2="<?php echo $items['specification']; ?>"
-                          data-3="<?php echo $items['quantity']; ?>">
+                          data-3="<?php echo $items['quantity']; ?>"
+                          <?php echo $btn_void;?>>
                           <span>
                             <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
                             <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
@@ -499,18 +533,18 @@ if(!empty($_GET['payment'])){
 </main>
 
 
-<div class="position-fixed bottom-0 end-0 translate-bottom p-3">
+<div class="position-fixed bottom-0 end-0 translate-bottom p-3 bg-white">
 <form>
-  <button type="button" class="btn btn-danger" accesskey="m" onclick="btn_save()" <?php echo $button;?>>SAVE ( ALT+M )</button>
-  <button type="button" class="btn btn-warning" accesskey="," onclick="" <?php echo $button;?>>DISCOUNT  ( ALT+, )</button>
-  <button type="button" class="btn btn-success" accesskey="." onclick="btn_cash()" <?php echo $button;?>>CASH  ( ALT+.)</button>
-  <button type="button" class="btn btn-primary" accesskey="/" onclick="" <?php echo $button;?>>G-CASH  ( ALT+/ )</button>
+  <button type="button" class="btn btn-danger" accesskey="m" onclick="btn_save()" <?php echo $btn_save;?>>SAVE ( ALT+M )</button>
+  <button type="button" class="btn btn-warning" accesskey="," onclick="btn_disc()" <?php echo $btn_disc;?>>DISCOUNT  ( ALT+, )</button>
+  <button type="button" class="btn btn-success" accesskey="." onclick="btn_cash()" <?php echo $btn_cash;?>>CASH  ( ALT+.)</button>
+  <button type="button" class="btn btn-primary" accesskey="/" onclick="" <?php echo $btn_gcash;?>>G-CASH  ( ALT+/ )</button>
 </form>
 </div>
-<div class="position-fixed bottom-0 start-0 translate-bottom p-3">
+<div class="position-fixed bottom-0 start-0 translate-bottom p-3 bg-white">
 <form>
   <button type="button" class="btn btn-secondary" accesskey="z" onclick="location.href='cashier_dashboard.php'">DASHBOARD ( ALT+Z )</button>
-  <button type="button" class="btn btn-secondary" accesskey="x"onclick="init()">SEARCH ( ALT+X )</button>
+  <button type="button" class="btn btn-secondary" accesskey="x"onclick="init()" hidden>SEARCH ( ALT+X )</button>
   <button type="button" class="btn btn-success" accesskey="c" onclick="window.open('cashier_new_transaction2.php?id=<?php echo $TR;?>&date=<?php echo date('Y-m-d')?>')" <?php echo $button;?>>NEW ( ALT+C )</button>
   <button type="button" class="btn btn-danger" accesskey="v" onclick="window.open('cashier_unpaid_transactions.php')"  <?php echo $button;?>>UNPAID ( ALT+V )</button>
 </form>
@@ -707,13 +741,43 @@ if(!empty($_GET['payment'])){
         change = result.value - <?php echo $total ;?>;
         if (result.isConfirmed) {
           swalWithBootstrapButtons.fire({
-            title: "Change is P "+change,
+            title: "Change is P "+change.toFixed(2),
             icon: "success",
             confirmButtonText: "DONE"
           }).then(() => {
             window.location.href = window.location.href+'&payment='+result.value;
 
            });
+        } else {
+          result.dismiss === Swal.DismissReason.cancel
+        }
+      });
+    }
+    function btn_disc() {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-secondary me-1"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: "SELECT DISCOUNT",
+        input: "select",
+        inputOptions: {
+        VOUCHERS : {
+          <?php while($row2b = mysqli_fetch_array($result2b)):;?>
+          <?php echo $row2b['id'];?>: "<?php echo $row2b['description'];?>",
+          <?php endwhile; ?>
+          }
+        },
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = window.location.href+'&disc='+result.value;
         } else {
           result.dismiss === Swal.DismissReason.cancel
         }
@@ -758,6 +822,9 @@ if(!empty($_GET['payment'])){
                   if (currentFocus > -1) {
                     if (x) x[currentFocus].click();
                   }
+                  if (inp.value == "") {
+                    e.preventDefault();
+                  }
                 }
             });
             function addActive(x) {
@@ -782,6 +849,7 @@ if(!empty($_GET['payment'])){
             }
             document.addEventListener("click", function (e) {
                 closeAllLists(e.target);
+                
             });
           }
           var specification = [

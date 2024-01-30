@@ -11,15 +11,19 @@ if($isMob){
 
 $sql2="SELECT
 DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date1,
-CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS sales,
-(SELECT COUNT(tb_payments.id)
-FROM tb_payments WHERE tb_payments.date='".date("Y-m-d")."') AS paidcustomers,
-SUM(tb_cart.quantity) AS paiditems
+FORMAT(SUM(tb_payments.total),2)AS sales,
+COUNT(tb_payments.id) AS paidcustomers
 FROM tb_payments
-JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
 WHERE tb_payments.date='".date("Y-m-d")."'";
 $result2=mysqli_query($db,$sql2);
 $row2 = mysqli_fetch_assoc($result2);
+
+$sql2b = "SELECT
+SUM(tb_cart.quantity) AS paiditems
+FROM tb_cart
+WHERE tb_cart.date='".date("Y-m-d")."'";
+$result2b=mysqli_query($db,$sql2b);
+$row2b = mysqli_fetch_assoc($result2b);
 
 $sql3="SELECT
 COUNT(tb_transactions.id)AS transactions
@@ -332,33 +336,21 @@ $row13 = mysqli_fetch_assoc($result13);
     <div class="">
         <div class="row">
           
-          <div class="col border rounded shadow m-1">
+          <div class="col text-center">
             <div class="card-body p-2">
-              <div class="float-end">
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-receipt-cutoff" viewBox="0 0 16 16">
-                  <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5M11.5 4a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
-                  <path d="M2.354.646a.5.5 0 0 0-.801.13l-.5 1A.5.5 0 0 0 1 2v13H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H15V2a.5.5 0 0 0-.053-.224l-.5-1a.5.5 0 0 0-.8-.13L13 1.293l-.646-.647a.5.5 0 0 0-.708 0L11 1.293l-.646-.647a.5.5 0 0 0-.708 0L9 1.293 8.354.646a.5.5 0 0 0-.708 0L7 1.293 6.354.646a.5.5 0 0 0-.708 0L5 1.293 4.354.646a.5.5 0 0 0-.708 0L3 1.293zm-.217 1.198.51.51a.5.5 0 0 0 .707 0L4 1.707l.646.647a.5.5 0 0 0 .708 0L6 1.707l.646.647a.5.5 0 0 0 .708 0L8 1.707l.646.647a.5.5 0 0 0 .708 0L10 1.707l.646.647a.5.5 0 0 0 .708 0L12 1.707l.646.647a.5.5 0 0 0 .708 0l.509-.51.137.274V15H2V2.118l.137-.274z"/>
-                </svg>
-              </div>
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers"><?php echo date("M j,Y");?></h6>
                 <h3 class=""><?php echo $row2['sales'];?></h3>
                 <p class="mb-0 text-muted">
                 <span class="text-primary me-2 fw-bold"><?php echo $row2['paidcustomers'];?></span>
                 <span class="text-nowrap">Receipts</span>
-                <span class="text-primary me-2 fw-bold"><?php echo $row2['paiditems'];?></span>
+                <span class="text-primary me-2 fw-bold"><?php echo $row2b['paiditems'];?></span>
                 <span class="text-nowrap">Products Sold</span> 
                 </p>
             </div>
           </div>
           
-          <div class="col border rounded shadow m-1">
+          <div class="col text-center">
             <div class="card-body p-2">
-              <div class="float-end">
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-card-checklist" viewBox="0 0 16 16">
-                  <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
-                  <path d="M7 5.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0M7 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m-1.496-.854a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0"/>
-                </svg>
-              </div>
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Amount Receivables</h6>
                 <h3 class=""><?php echo $row4['unpaid'];?></h3>
                 <p class="mb-0 text-muted">
@@ -370,13 +362,8 @@ $row13 = mysqli_fetch_assoc($result13);
             </div>
           </div>
 
-          <div class="col border rounded shadow m-1">
+          <div class="col text-center">
             <div class="card-body p-2">
-              <div class="float-end">
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-currency-dollar" viewBox="0 0 16 16">
-                  <path d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z"/>
-                </svg>
-              </div>
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Low Stocks</h6>
                 <h3 class="text-danger"><?php echo $row6['products']; ?></h3>
                 <p class="mb-0 text-muted">
@@ -412,7 +399,8 @@ $row13 = mysqli_fetch_assoc($result13);
                 JOIN (SELECT
                         tb_payments.id,
                         COUNT(tb_cart.transaction_id) as items,
-                        CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS total,
+                        CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS total2,
+                        tb_payments.total,
                           tb_payments.payment,
                           tb_payments.change1
                         FROM tb_payments

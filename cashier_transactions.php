@@ -3,15 +3,19 @@
 include('user_session.php');
 $sql2 = "SELECT
 DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date1,
-CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS sales_total,
-(SELECT COUNT(tb_payments.id)
-FROM tb_payments WHERE tb_payments.date='".$_GET['date']."') AS paidcustomers,
-SUM(tb_cart.quantity) AS paiditems
+FORMAT(SUM(tb_payments.total),2)AS sales_total,
+COUNT(tb_payments.id) AS paidcustomers
 FROM tb_payments
-JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
 WHERE tb_payments.date='".$_GET['date']."'";
 $result2=mysqli_query($db,$sql2);
 $row2 = mysqli_fetch_assoc($result2);
+
+$sql3 = "SELECT
+SUM(tb_cart.quantity) AS paiditems
+FROM tb_cart
+WHERE tb_cart.date='".$_GET['date']."'";
+$result3=mysqli_query($db,$sql3);
+$row3 = mysqli_fetch_assoc($result3);
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -271,24 +275,17 @@ $row2 = mysqli_fetch_assoc($result2);
   
       
       <div class="table" id="page">
-      <h6 class="text-center mb-3"><?php echo $row2['date1'];?></h6>
       <div class="">
         <div class="row">
           
-          <div class="col border rounded shadow m-1">
+          <div class="col text-center">
             <div class="card-body p-2">
-              <div class="float-end">
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-receipt-cutoff" viewBox="0 0 16 16">
-                  <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5M11.5 4a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
-                  <path d="M2.354.646a.5.5 0 0 0-.801.13l-.5 1A.5.5 0 0 0 1 2v13H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H15V2a.5.5 0 0 0-.053-.224l-.5-1a.5.5 0 0 0-.8-.13L13 1.293l-.646-.647a.5.5 0 0 0-.708 0L11 1.293l-.646-.647a.5.5 0 0 0-.708 0L9 1.293 8.354.646a.5.5 0 0 0-.708 0L7 1.293 6.354.646a.5.5 0 0 0-.708 0L5 1.293 4.354.646a.5.5 0 0 0-.708 0L3 1.293zm-.217 1.198.51.51a.5.5 0 0 0 .707 0L4 1.707l.646.647a.5.5 0 0 0 .708 0L6 1.707l.646.647a.5.5 0 0 0 .708 0L8 1.707l.646.647a.5.5 0 0 0 .708 0L10 1.707l.646.647a.5.5 0 0 0 .708 0L12 1.707l.646.647a.5.5 0 0 0 .708 0l.509-.51.137.274V15H2V2.118l.137-.274z"/>
-                </svg>
-              </div>
-                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Sales</h6>
+                <h6 class="mt-0" title="Number of Customers"><?php echo $row2['date1'];?></h6>
                 <h3 class=""><?php echo $row2['sales_total'] ?></h3>
                 <p class="mb-0 text-muted">
                 <span class="text-primary fw-bold"><?php echo $row2['paidcustomers'] ?></span>
                 <span class="text-nowrap me-2">Receipts</span>
-                <span class="text-primary fw-bold"><?php echo $row2['paiditems'] ?></span>
+                <span class="text-primary fw-bold"><?php echo $row3['paiditems'] ?></span>
                 <span class="text-nowrap me-2">Products Sold</span>
                 
                 </p>
@@ -321,7 +318,8 @@ $row2 = mysqli_fetch_assoc($result2);
                 JOIN (SELECT
                         tb_payments.id,
                         SUM(tb_cart.quantity) as items,
-                        CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS total,
+                        CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS total2,
+                        tb_payments.total,
                         CONCAT(FORMAT(tb_payments.payment, 2)) AS payment,
                           tb_payments.change1
                         FROM tb_payments
