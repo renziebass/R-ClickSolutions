@@ -6,6 +6,12 @@ CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_bra
 FROM tb_products";
 $search = null;
 
+$sql3a = "SELECT * FROM `tb_product_category`";
+$result3a=mysqli_query($db,$sql3a);
+
+$sql4a = "SELECT * FROM `tb_products`";
+$result4a=mysqli_query($db,$sql4a);
+
 
 $result1=mysqli_query($db,$sql1);
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -16,32 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $search = null;
   }
 }
-$sql2="SELECT
-SUM(tb_products.available)AS products
-FROM tb_products";
-$result2=mysqli_query($db,$sql2);
-$row2 = mysqli_fetch_assoc($result2);
 
-$sql3="SELECT
-COUNT(tb_products.id)AS lowstocks
-FROM tb_products
-WHERE tb_products.available <= 5 AND tb_products.available
-NOT IN (SELECT tb_products.available FROM tb_products WHERE tb_products.available='0')";
-$result3=mysqli_query($db,$sql3);
-$row3 = mysqli_fetch_assoc($result3);
-
-$sql4="SELECT
-COUNT(tb_products.id)AS zerostocks
-FROM tb_products
-WHERE tb_products.available='0'";
-$result4=mysqli_query($db,$sql4);
-$row4 = mysqli_fetch_assoc($result4);
-
-$sql5="SELECT
-COUNT(tb_product_category.category)AS category
-FROM tb_product_category";
-$result5=mysqli_query($db,$sql5);
-$row5 = mysqli_fetch_assoc($result5);
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -218,6 +199,34 @@ $row5 = mysqli_fetch_assoc($result5);
   border-color: transparent;
   box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
 }
+.autocomplete-items {
+      position: absolute;
+      border: 1px solid #d4d4d4;
+      border-bottom: none;
+      border-top: none;
+      z-index: 99;
+      /*position the autocomplete items to be the same width as the container:*/
+      top: 100%;
+      left: 0;
+      right: 0;
+    }
+    .autocomplete {
+      position: relative;
+      display: inline-block;
+    }
+    .autocomplete-items div {
+      padding: 10px;
+      cursor: pointer;
+      background-color: #fff; 
+      border-bottom: 1px solid #d4d4d4; 
+    }
+    .autocomplete-items div:hover {
+      background-color: #e9e9e9; 
+    }
+    .autocomplete-active {
+      background-color: DodgerBlue !important; 
+      color: #ffffff; 
+    }
 
   </style>
 
@@ -342,7 +351,7 @@ $row5 = mysqli_fetch_assoc($result5);
 
     <main class="col-md-9 ms-sm-auto col-lg-10">
     <div class="d-flex justify-content-end mt-3 mb-3">
-    <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
+    <button class="btn btn-secondary" onclick="printDiv();"type="button"><span data-feather="printer" class="align-text-bottom"></button>
             <script>
               function printDiv() {
               var printContents = document.getElementById("page").innerHTML;
@@ -356,64 +365,24 @@ $row5 = mysqli_fetch_assoc($result5);
               }
             </script>
     </div>
-      <form method="post" enctype="multipart/form-data">
+      <form method="post" enctype="multipart/form-data" autocomplete=off>
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mb-3">
-          <div class="input-group">
+            <div class="input-group shadow">
+            <div class="autocomplete col">
             <input id="search" onkeyup="this.value = this.value.toUpperCase();" name="search" class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Type to search product...">
+            </div>
             <script>
               window.onload = init;
               function init(){
               document.getElementById("search").focus();
               }
             </script>
-            <datalist id="datalistOptions">
-              <?php while($row1 = mysqli_fetch_array($result1)):;?>
-              <option value="<?php echo $row1['id'];?>"><?php echo $row1['specification'];?></option>
-              <?php endwhile; ?>
-            </datalist>
-            <button class="btn btn-secondary" type="submit" id="button-addon2">SEARCH <span data-feather="search" class="align-text-end"></button>
+
+            <button class="btn btn-secondary" type="submit" id="button-addon2"><span data-feather="search" class="align-text-end"></button>
           </div>
       </div>
       </form>
-      <div class="">
-        <div class="row">
-          
-          <div class="col border rounded shadow m-1">
-            <div class="card-body p-2">
-              <div class="float-end">
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-receipt-cutoff" viewBox="0 0 16 16">
-                  <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5M11.5 4a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
-                  <path d="M2.354.646a.5.5 0 0 0-.801.13l-.5 1A.5.5 0 0 0 1 2v13H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H15V2a.5.5 0 0 0-.053-.224l-.5-1a.5.5 0 0 0-.8-.13L13 1.293l-.646-.647a.5.5 0 0 0-.708 0L11 1.293l-.646-.647a.5.5 0 0 0-.708 0L9 1.293 8.354.646a.5.5 0 0 0-.708 0L7 1.293 6.354.646a.5.5 0 0 0-.708 0L5 1.293 4.354.646a.5.5 0 0 0-.708 0L3 1.293zm-.217 1.198.51.51a.5.5 0 0 0 .707 0L4 1.707l.646.647a.5.5 0 0 0 .708 0L6 1.707l.646.647a.5.5 0 0 0 .708 0L8 1.707l.646.647a.5.5 0 0 0 .708 0L10 1.707l.646.647a.5.5 0 0 0 .708 0L12 1.707l.646.647a.5.5 0 0 0 .708 0l.509-.51.137.274V15H2V2.118l.137-.274z"/>
-                </svg>
-              </div>
-                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Products</h6>
-                <h3 class=""><?php echo $row2['products'];?></h3>
-                <p class="mb-0 text-muted">
-                <span class="text-primary me-2 fw-bold"><?php echo $row5['category'];?></span>
-                <span class="text-nowrap">Category</span>  
-                </p>
-            </div>
-          </div>
 
-          <div class="col border rounded shadow m-1">
-            <div class="card-body p-2">
-              <div class="float-end">
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-receipt-cutoff" viewBox="0 0 16 16">
-                  <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5M11.5 4a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
-                  <path d="M2.354.646a.5.5 0 0 0-.801.13l-.5 1A.5.5 0 0 0 1 2v13H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H15V2a.5.5 0 0 0-.053-.224l-.5-1a.5.5 0 0 0-.8-.13L13 1.293l-.646-.647a.5.5 0 0 0-.708 0L11 1.293l-.646-.647a.5.5 0 0 0-.708 0L9 1.293 8.354.646a.5.5 0 0 0-.708 0L7 1.293 6.354.646a.5.5 0 0 0-.708 0L5 1.293 4.354.646a.5.5 0 0 0-.708 0L3 1.293zm-.217 1.198.51.51a.5.5 0 0 0 .707 0L4 1.707l.646.647a.5.5 0 0 0 .708 0L6 1.707l.646.647a.5.5 0 0 0 .708 0L8 1.707l.646.647a.5.5 0 0 0 .708 0L10 1.707l.646.647a.5.5 0 0 0 .708 0L12 1.707l.646.647a.5.5 0 0 0 .708 0l.509-.51.137.274V15H2V2.118l.137-.274z"/>
-                </svg>
-              </div>
-                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Low Stocks</h6>
-                <h3 class=""><?php echo $row3['lowstocks'];?></h3>
-                <p class="mb-0 text-muted">
-                <span class="text-primary me-2 fw-bold"><?php echo $row4['zerostocks'];?></span>
-                <span class="text-nowrap">Zero Stocks</span>  
-                </p>
-            </div>
-          </div>
-
-        </div>
-      </div>
       <div class="table" id="page">
       
 
@@ -422,7 +391,7 @@ $row5 = mysqli_fetch_assoc($result5);
          if(empty($_POST["search"])) {
           $text ="All Products";
           } else {
-          $text = "' ".$search." '";
+          $text = " ".$search." ";
           }
           echo $text;
         ?>
@@ -483,8 +452,98 @@ $row5 = mysqli_fetch_assoc($result5);
     </main>
   </div>
 </div>
+<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+<script>
+  function init(){
+    document.getElementById("search").focus();
+    }
+  function autocomplete(inp, arr) {
+            var currentFocus;
+            inp.addEventListener("input", function(e) {
+                var a, b, i, val = this.value;
+                closeAllLists();
+                if (!val) { return false;}
+                currentFocus = -1;
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(a);
+                for (i = 0; i < arr.length; i++) {
+                  if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                    b = document.createElement("DIV");
+                    b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                    b.innerHTML += arr[i].substr(val.length);
+                    b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                    b.addEventListener("click", function(e) {
+                        inp.value = this.getElementsByTagName("input")[0].value;
+                        closeAllLists();
+                    });
+                    a.appendChild(b);
+                  }
+                }
+            });
+            inp.addEventListener("keydown", function(e) {
+                var x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                if (e.keyCode == 40) {
+                  currentFocus++;
+                  addActive(x);
+                } else if (e.keyCode == 38) {
+                  currentFocus--;
+                  addActive(x);
+                } else if (e.keyCode == 13) {
+                  
+                  if (currentFocus > -1) {
+                    if (x) x[currentFocus].click();
+                  }
+                  if (inp.value == "") {
+                    e.preventDefault();
+                  }
+                }
+            });
+            function addActive(x) {
+              if (!x) return false;
+              removeActive(x);
+              if (currentFocus >= x.length) currentFocus = 0;
+              if (currentFocus < 0) currentFocus = (x.length - 1);
+              x[currentFocus].classList.add("autocomplete-active");
+            }
+            function removeActive(x) {
+              for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+              }
+            }
+            function closeAllLists(elmnt) {
+              var x = document.getElementsByClassName("autocomplete-items");
+              for (var i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != inp) {
+                  x[i].parentNode.removeChild(x[i]);
+                }
+              }
+            }
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+            });
+          }
+          var specification = [
+            <?php while($row1 = mysqli_fetch_array($result1)):;?>
+            "<?php echo $row1['specification'];?>",
+            <?php endwhile; ?>
+          ];
+          var category = [
+            <?php while($row3a = mysqli_fetch_array($result3a)):;?>
+            "<?php echo $row3a['category'];?>",
+            <?php endwhile; ?>
+          ];
+          var pb = [
+            <?php while($row4a = mysqli_fetch_array($result4a)):;?>
+            "<?php echo $row4a['product_brand'];?>",
+            <?php endwhile; ?>
+          ];
 
-
+          autocomplete(document.getElementById("search"), category.concat(specification, pb));
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>

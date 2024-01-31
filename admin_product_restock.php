@@ -1,66 +1,47 @@
 <?php
 include('user_session.php');
-$sql1 = "SELECT
+$sql1a = "SELECT
 tb_products.id,
 CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)
 AS specification
 FROM tb_products";
-$id = null;
-$result1=mysqli_query($db,$sql1);
-if ($_SERVER["REQUEST_METHOD"] == "GET") {
-  if (!empty($_GET["id"])) {
-    $id = $_GET["id"];
-  }
-}
-$sql2="SELECT
+$result1a=mysqli_query($db,$sql1a);
+
+$sql4a = "SELECT * FROM `tb_products`";
+$result4a=mysqli_query($db,$sql4a);
+
+$sql1b="SELECT
+tb_products.id,
+tb_products.supplier_id,
 tb_supplier.name,
 tb_products.price,
-CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)
-AS specification,
+tb_products.capital,
+CONCAT(tb_products.price - tb_products.capital) AS profit,
+tb_products.product_brand,
+tb_products.category,
+CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification,
 CONCAT(tb_products.available,'/',tb_products.stocks) AS stocks
 FROM tb_products
-JOIN tb_supplier
+LEFT JOIN tb_supplier
 ON tb_products.supplier_id=tb_supplier.id
-WHERE tb_products.id='".$id."'";
-$result2=mysqli_query($db,$sql2);
-$row2 = mysqli_fetch_assoc($result2);
+WHERE CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)
+LIKE '%".$_GET['search']."%'";
+$result1b=mysqli_query($db,$sql1b);
+$row1b = mysqli_fetch_assoc($result1b);
+$id = $row1b['id'];
 
-function validateInput($data) {
-  $data = trim($data);
-  $data = stripslashes($data);
-  $data = htmlspecialchars($data);
-  return $data;
-}
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  
-  if (empty($_POST["qty"])) {
-    $qty_err = "* ";
-  } else {
-    $qty = validateInput($_POST["qty"]);
-  }
+if(!empty($_GET['qty'])){
+$sql3 = "UPDATE tb_products
+SET tb_products.stocks=tb_products.stocks+'".$_GET['qty']."',tb_products.available=tb_products.available+'".$_GET['qty']."'
+WHERE tb_products.id='" .$id. "'";
+$RestockUpdate = mysqli_query($db, $sql3);
 
-  if(!empty($_POST["qty"]) && !empty($_GET["id"]))
-  {
-    try {
-      
-        $sql3 = "UPDATE tb_products
-        SET tb_products.stocks=tb_products.stocks+'$qty',tb_products.available=tb_products.available+'$qty'
-        WHERE tb_products.id='" .$_GET['id']. "'";
-        $RestockUpdate = mysqli_query($db, $sql3);
-
-        $sql4 = "INSERT INTO `tb_restock_history` (`product_id`, `date`, `qty`)
-        VALUES ('" .$_GET['id']. "', '".date("Y-m-d H:i:s")."', '$qty')";
-        $Restock = mysqli_query($db, $sql4);
+$sql4 = "INSERT INTO `tb_restock_history` (`product_id`, `date`, `qty`)
+VALUES ('" .$id. "', '".date("Y-m-d H:i:s")."', '".$_GET['qty']."')";
+$Restock = mysqli_query($db, $sql4);
         
-        header("Location: admin_product_restock.php?id=".$_GET['id']."");
-    
-    }
-    catch(PDOException $e)
-      {
-        echo $sql1 . "<br>" . $e->getMessage();
-      }
-    $db=null;
-  }
+header("Location: admin_product_restock.php?search=".$_GET['search']."");
+
 }
 ?>
 <!doctype html>
@@ -238,6 +219,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   border-color: transparent;
   box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
 }
+.autocomplete-items {
+      position: absolute;
+      border: 1px solid #d4d4d4;
+      border-bottom: none;
+      border-top: none;
+      z-index: 99;
+      /*position the autocomplete items to be the same width as the container:*/
+      top: 100%;
+      left: 0;
+      right: 0;
+    }
+    .autocomplete {
+      position: relative;
+      display: inline-block;
+    }
+    .autocomplete-items div {
+      padding: 10px;
+      cursor: pointer;
+      background-color: #fff; 
+      border-bottom: 1px solid #d4d4d4; 
+    }
+    .autocomplete-items div:hover {
+      background-color: #e9e9e9; 
+    }
+    .autocomplete-active {
+      background-color: DodgerBlue !important; 
+      color: #ffffff; 
+    }
 
   </style>
 
@@ -368,7 +377,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <main class="col-md-9 ms-sm-auto col-lg-10">
     <div class="d-flex justify-content-end mt-3 mb-3">
-    <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
+    <button class="btn btn-secondary" onclick="printDiv();"type="button"><span data-feather="printer" class="align-text-bottom"></button>
             <script>
               function printDiv() {
               var printContents = document.getElementById("page").innerHTML;
@@ -382,67 +391,69 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               }
             </script>
     </div>
-    <h6 class="text-center mb-3 mt-3">Add New Product</h6>
-      <div class="row">
-        <div class="col-md">
-        <form method="get" action="<?php echo $_SERVER['PHP_SELF'];?>">
+    <h6 class="text-center mb-3 mt-3">Re-Stock Product: <?php echo $row1b['id'];?></h6>
+    <div class="col">
+        <form method="get" action="<?php echo $_SERVER['PHP_SELF'];?>" autocomplete=off>
         <div class="mb-3">
-            <div class="input-group">
-              <input id="search" onkeyup="this.value = this.value.toUpperCase();" name="id" class="form-control" list="datalistOptions" id="exampleDataList" value="" placeholder="Type to search product...">
+            <div class="input-group shadow">
+            <div class="autocomplete col">
+            <input id="search" onkeyup="this.value = this.value.toUpperCase();" name="search" class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Type to search product...">
+            </div>
               <script>
                 window.onload = init;
                 function init(){
                 document.getElementById("search").focus();
                 }
               </script>
-              <datalist id="datalistOptions">
-                <?php while($row1 = mysqli_fetch_array($result1)):;?>
-                <option value="<?php echo $row1['id'];?>"><?php echo $row1['specification'];?></option>
-                <?php endwhile; ?>
-              </datalist>
-              <button class="btn btn-secondary" type="submit" id="button-addon2">SEARCH <span data-feather="search" class="align-text-end"></button>
+             
+              <button class="btn btn-secondary" type="submit" id="button-addon2"><span data-feather="search" class="align-text-end"></button>
             </div>
         </div>
       </form>
         </div>
-        <div class="col-md">
-        <form method="post" enctype="multipart/form-data">
-        <div class="mb-3">
-            <div class="input-group">
-              <input name="qty" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="Type quantity" required>
-              <button class="btn btn-success" type="submit" id="button-addon2">RE-STOCK <span data-feather="upload-cloud" class="align-text-end"></button> 
-            </div>
-        </div>
-      </form>
-        </div>
-      </div>
      
       
       <div class="table" id="page">
-      <div class="">
-        <div class="row">
+      <div class="mb-3">
+        <div class="row ">
           
-          <div class="col border rounded shadow m-1">
+          <div class="col text-center">
             <div class="card-body p-2">
-              <div class="float-end">
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-receipt-cutoff" viewBox="0 0 16 16">
-                  <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5M11.5 4a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
-                  <path d="M2.354.646a.5.5 0 0 0-.801.13l-.5 1A.5.5 0 0 0 1 2v13H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H15V2a.5.5 0 0 0-.053-.224l-.5-1a.5.5 0 0 0-.8-.13L13 1.293l-.646-.647a.5.5 0 0 0-.708 0L11 1.293l-.646-.647a.5.5 0 0 0-.708 0L9 1.293 8.354.646a.5.5 0 0 0-.708 0L7 1.293 6.354.646a.5.5 0 0 0-.708 0L5 1.293 4.354.646a.5.5 0 0 0-.708 0L3 1.293zm-.217 1.198.51.51a.5.5 0 0 0 .707 0L4 1.707l.646.647a.5.5 0 0 0 .708 0L6 1.707l.646.647a.5.5 0 0 0 .708 0L8 1.707l.646.647a.5.5 0 0 0 .708 0L10 1.707l.646.647a.5.5 0 0 0 .708 0L12 1.707l.646.647a.5.5 0 0 0 .708 0l.509-.51.137.274V15H2V2.118l.137-.274z"/>
-                </svg>
-              </div>
-                <h6 class="text-muted fw-normal mt-0" title="Number of Customers"><?php echo $row2['name'];?></h6>
-                <h3 class=""><?php echo $row2['specification'];?></h3>
+                <h6 class="fw-normal mt-0"><?php echo $row1b['name'];?></h6>
+                <h3 class=""><?php echo $row1b['specification'];?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary fw-bold"><?php echo $row2['price'];?></span>
-                <span class="text-nowrap me-2">Price</span>
-                <span class="text-primary fw-bold"><?php echo $row2['stocks'];?></span>
-                <span class="text-nowrap me-2">Stocks</span>
-                
+                <p class="mb-0 text-muted">
+                <span class="text-primary fw-bold"><?php echo $row1b['stocks'];?></span>
+                <span class="text-nowrap me-2">Stocks</span> 
+                </p>
+                </p>
+            </div>
+          </div>
+          <div class="col text-center">
+            <div class="card-body p-2">
+                <h6 class="fw-normal mt-0" title="Number of Customers">Price</h6>
+                <h3 class=""><?php echo $row1b['price'];?></h3>
+                <p class="mb-0 text-muted">
+                <p class="mb-0 text-muted">
+                <span class="text-danger fw-bold"><?php echo $row1b['capital'];?></span>
+                <span class="text-nowrap me-2">Capital</span>  
+                <span class="text-primary fw-bold"><?php echo $row1b['profit'];?></span>
+                <span class="text-nowrap">Profit</span>  
+                </p>
                 </p>
             </div>
           </div>
 
         </div>
+      </div>
+      <div class="col-md container text-center">
+        <button class="btn btn-secondary"
+        onclick="btn_qty(this.getAttribute('data-1'), this.getAttribute('data-2'), 
+            this.getAttribute('data-3'), this.getAttribute('data-4'))"
+            data-1="<?php echo $row1b['specification'];?>" 
+            data-2="<?php echo $row1b['id'];?>" 
+            data-3="<?php echo $row1b['stocks'];?>"
+        type="button">RE-STOCK</button>
       </div>
       <h6 class="mt-3 text-center text-muted">Re-stock history</h6>  
         <table class="table table-hover table-sm">
@@ -485,7 +496,136 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </div>
 </div>
 
+<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+<script>
+  function init(){
+    document.getElementById("search").focus();
+    }
+    function btn_qty(data_1,data_2,data_3) {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-secondary me-1"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: data_1,
+        input: "text",
+        footer: '<h6 class="text-white text-center">Current stocks: '+data_3+'</h6>',
+        showCancelButton: true,
+        confirmButtonText: "Add",
+        cancelButtonText: "Cancel",
+        reverseButtons: true,
+        inputValidator: (result) => {
+          if (!result) {
+            return "Enter quantity!";
+          } else {
+          }
+        },
+        inputAttributes: {
+        maxlength: "10"
+      }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          swalWithBootstrapButtons.fire({
+          title: result.value+" Stock(s) Successfully Added",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500
+         }).then((result2) => {
+          if (result2.dismiss === swalWithBootstrapButtons.DismissReason.timer) {
+            window.location.href = window.location.href+'&qty='+result.value;
+          }
+          });
+          
+        } else {
+          result.dismiss === Swal.DismissReason.cancel
+        }
+      });
+    }
+  function autocomplete(inp, arr) {
+            var currentFocus;
+            inp.addEventListener("input", function(e) {
+                var a, b, i, val = this.value;
+                closeAllLists();
+                if (!val) { return false;}
+                currentFocus = -1;
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(a);
+                for (i = 0; i < arr.length; i++) {
+                  if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                    b = document.createElement("DIV");
+                    b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                    b.innerHTML += arr[i].substr(val.length);
+                    b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                    b.addEventListener("click", function(e) {
+                        inp.value = this.getElementsByTagName("input")[0].value;
+                        closeAllLists();
+                    });
+                    a.appendChild(b);
+                  }
+                }
+            });
+            inp.addEventListener("keydown", function(e) {
+                var x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                if (e.keyCode == 40) {
+                  currentFocus++;
+                  addActive(x);
+                } else if (e.keyCode == 38) {
+                  currentFocus--;
+                  addActive(x);
+                } else if (e.keyCode == 13) {
+                  
+                  if (currentFocus > -1) {
+                    if (x) x[currentFocus].click();
+                  }
+                  if (inp.value == "") {
+                    e.preventDefault();
+                  }
+                }
+            });
+            function addActive(x) {
+              if (!x) return false;
+              removeActive(x);
+              if (currentFocus >= x.length) currentFocus = 0;
+              if (currentFocus < 0) currentFocus = (x.length - 1);
+              x[currentFocus].classList.add("autocomplete-active");
+            }
+            function removeActive(x) {
+              for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+              }
+            }
+            function closeAllLists(elmnt) {
+              var x = document.getElementsByClassName("autocomplete-items");
+              for (var i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != inp) {
+                  x[i].parentNode.removeChild(x[i]);
+                }
+              }
+            }
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+            });
+          }
+          var specification = [
+            <?php while($row1a = mysqli_fetch_array($result1a)):;?>
+            "<?php echo $row1a['specification'];?>",
+            <?php endwhile; ?>
+          ];
+          var pb = [
+            <?php while($row4a = mysqli_fetch_array($result4a)):;?>
+            "<?php echo $row4a['product_brand'];?>",
+            <?php endwhile; ?>
+          ];
 
+          autocomplete(document.getElementById("search"), specification.concat(pb));
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>

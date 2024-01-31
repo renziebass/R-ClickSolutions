@@ -220,10 +220,9 @@ if(!empty($_GET['payment'])){
       <?php
       if(empty($row2['name'])) {
       $name ="NEW TRANSACTION";
-      $SaveButton = null;
       } else {
       $name = $row2['name'];
-      $SaveButton = "disabled";
+      $btn_save = "hidden";
       }
       echo $name;
       ?>
@@ -549,7 +548,7 @@ if(!empty($_GET['payment'])){
   <button type="button" class="btn btn-danger" accesskey="v" onclick="window.open('cashier_unpaid_transactions.php')"  <?php echo $button;?>>UNPAID ( ALT+V )</button>
 </form>
 </div>
-<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
   <script>
     

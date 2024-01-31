@@ -308,7 +308,7 @@ if (mysqli_num_rows($result) > 0) {
 
     <main class="col-md-9 ms-sm-auto col-lg-10">
     <div class="d-flex justify-content-end mt-3 mb-3">
-    <button class="btn btn-secondary me-1" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
+    <button class="btn btn-secondary me-1" onclick="printDiv();"type="button"><span data-feather="printer" class="align-text-bottom"></button>
             <script>
               function printDiv() {
               var printContents = document.getElementById("page").innerHTML;
@@ -321,7 +321,7 @@ if (mysqli_num_rows($result) > 0) {
               location.reload();
               }
             </script>
-          <button class="btn btn-success me-1" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal0" data-bs5="<?php echo $_GET['id']?>" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal2">EDIT <span data-feather="edit" class="align-text-bottom"></button>
+          <button class="btn btn-success me-1" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal0" data-bs5="<?php echo $_GET['id']?>" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal2"><span data-feather="edit" class="align-text-bottom"></button>
           <div class="modal fade" id="exampleModal0" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
               <div class="modal-content">
@@ -366,7 +366,7 @@ if (mysqli_num_rows($result) > 0) {
             echo $payment;
             ?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary me-2 fw-bold"><?php
+                <span class="text-primary fw-bold"><?php
             if(empty($row1['items'])) {
             $items ="0";
             } else {

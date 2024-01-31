@@ -303,7 +303,7 @@ if (mysqli_num_rows($result) > 0) {
 
     <main class="col-md-9 ms-sm-auto col-lg-10">
     <div class="d-flex justify-content-end mt-3 mb-3">
-    <button class="btn btn-secondary me-1" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
+    <button class="btn btn-secondary me-1" onclick="printDiv();"type="button"><span data-feather="printer" class="align-text-bottom"></button>
             <script>
               function printDiv() {
               var printContents = document.getElementById("page").innerHTML;
@@ -352,7 +352,7 @@ if (mysqli_num_rows($result) > 0) {
             echo $payment;
             ?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary me-2 fw-bold"><?php
+                <span class="text-primary fw-bold"><?php
             if(empty($row1['items'])) {
             $items ="0";
             } else {
@@ -378,7 +378,7 @@ if (mysqli_num_rows($result) > 0) {
                 echo $payment;
                 ?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary me-2 fw-bold"> <?php
+                <span class="text-primary fw-bold"> <?php
                 if(empty($row1['change1'])) {
                 $change1 ="0";
                 } else {

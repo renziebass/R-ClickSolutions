@@ -454,7 +454,7 @@ $row19 = mysqli_fetch_assoc($result19);
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_product_restock.php?id=20230419234321">
+            <a class="nav-link" href="admin_product_restock.php?search=CHAIN DID 428-130 DS">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Re-stock product
             </a>
@@ -510,16 +510,11 @@ $row19 = mysqli_fetch_assoc($result19);
 
     <main class="col-md-9 ms-sm-auto col-lg-10">
 
-      <div class="pt-3">
+      <div class="pt-1">
         <div class="row">
-          
-          <div class="col border rounded shadow m-1">
+
+          <div class="col text-center">
             <div class="card-body p-2">
-              <div class="float-end">
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-currency-dollar" viewBox="0 0 16 16">
-                  <path d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z"/>
-                </svg>
-              </div>
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Revenue</h6>
                 <h3 class=""><?php echo $row1['paid'];?></h3>
                 <p class="mb-0 text-muted">
@@ -531,36 +526,25 @@ $row19 = mysqli_fetch_assoc($result19);
             </div>
           </div>
 
-          <div class="col border rounded shadow m-1">
+          <div class="col text-center">
             <div class="card-body p-2">
-              <div class="float-end">
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-currency-dollar" viewBox="0 0 16 16">
-                  <path d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z"/>
-                </svg>
-              </div>
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Net Profit</h6>
                 <h3 class=""><?php echo $row19['profit'];?></h3>
                 <p class="mb-0 text-muted">
                 <span class="text-primary fw-bold"><?php echo $row19['capital'];?></span>
                 <span class="text-nowrap me-1">Capital</span>
-  
                 </p>
             </div>
           </div>
 
-          <div class="col border rounded shadow m-1">
+          <div class="col text-center">
             <div class="card-body p-2">
-              <div class="float-end">
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-currency-dollar" viewBox="0 0 16 16">
-                  <path d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z"/>
-                </svg>
-              </div>
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Receivable</h6>
-                <h3 class=""><?php echo $row4['unpaid'];?></h3>
+                <h3 class="text-danger"><?php echo $row4['unpaid'];?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary fw-bold"><?php echo $row3['transactions'];?></span>
+                <span class="text-danger fw-bold"><?php echo $row3['transactions'];?></span>
                 <span class="text-nowrap me-2">Accounts</span>
-                <span class="text-primary fw-bold"><?php echo $row13['items'];?></span>
+                <span class="text-danger fw-bold"><?php echo $row13['items'];?></span>
                 <span class="text-nowrap me-2">Products</span>
                 </p>
             </div>
@@ -568,38 +552,40 @@ $row19 = mysqli_fetch_assoc($result19);
           
         </div>
       </div>
-      <div class="pt-3">
+      
+      
+
+      <div class="row">
+        <div class="col-md">
+          <h6 class="mt-2">Monthly Sales Chart</h6>
+          <canvas class="my-4 w-100" id="myChart" width="200" height="120"></canvas>
+        </div>
+        <div class="col-md">
+          <h6 class="mt-2">Top 5 Selling Categories</h6>
+          <canvas class="my-4 w-100" id="myChart2" width="200" height="120"></canvas>
+        </div>
+      </div>
+      <div class="pt-1">
         <div class="row">
           
-          <div class="col border rounded shadow m-1">
+          <div class="col text-center">
             <div class="card-body p-2">
-              <div class="float-end">
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-list-ol" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5"/>
-                  <path d="M1.713 11.865v-.474H2c.217 0 .363-.137.363-.317 0-.185-.158-.31-.361-.31-.223 0-.367.152-.373.31h-.59c.016-.467.373-.787.986-.787.588-.002.954.291.957.703a.595.595 0 0 1-.492.594v.033a.615.615 0 0 1 .569.631c.003.533-.502.8-1.051.8-.656 0-1-.37-1.008-.794h.582c.008.178.186.306.422.309.254 0 .424-.145.422-.35-.002-.195-.155-.348-.414-.348h-.3zm-.004-4.699h-.604v-.035c0-.408.295-.844.958-.844.583 0 .96.326.96.756 0 .389-.257.617-.476.848l-.537.572v.03h1.054V9H1.143v-.395l.957-.99c.138-.142.293-.304.293-.508 0-.18-.147-.32-.342-.32a.33.33 0 0 0-.342.338zM2.564 5h-.635V2.924h-.031l-.598.42v-.567l.629-.443h.635z"/>
-                </svg>
-              </div>
+    
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Inventory</h6>
                 <h3 class=""><?php echo $row5['amount']; ?></h3>
                 <p class="mb-0 text-muted">
                 <span class="text-primary fw-bold"><?php echo $row18['amount']; ?></span>
                 <span class="text-nowrap me-2">Total</span>
-                <span class="text-primary fw-bold"><?php echo $row6['products']; ?></span>
+                <span class="text-danger fw-bold"><?php echo $row6['products']; ?></span>
                 <span class="text-nowrap me-2">Low Stocks</span> 
-                <span class="text-primary fw-bold"><?php echo $row7['products']; ?></span>
+                <span class="text-danger fw-bold"><?php echo $row7['products']; ?></span>
                 <span class="text-nowrap me-2">Zero Stocks</span>
                 </p>
             </div>
           </div>
 
-          <div class="col border rounded shadow m-1">
+          <div class="col text-center">
             <div class="card-body p-2">
-              <div class="float-end">
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-list-ol" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5"/>
-                  <path d="M1.713 11.865v-.474H2c.217 0 .363-.137.363-.317 0-.185-.158-.31-.361-.31-.223 0-.367.152-.373.31h-.59c.016-.467.373-.787.986-.787.588-.002.954.291.957.703a.595.595 0 0 1-.492.594v.033a.615.615 0 0 1 .569.631c.003.533-.502.8-1.051.8-.656 0-1-.37-1.008-.794h.582c.008.178.186.306.422.309.254 0 .424-.145.422-.35-.002-.195-.155-.348-.414-.348h-.3zm-.004-4.699h-.604v-.035c0-.408.295-.844.958-.844.583 0 .96.326.96.756 0 .389-.257.617-.476.848l-.537.572v.03h1.054V9H1.143v-.395l.957-.99c.138-.142.293-.304.293-.508 0-.18-.147-.32-.342-.32a.33.33 0 0 0-.342.338zM2.564 5h-.635V2.924h-.031l-.598.42v-.567l.629-.443h.635z"/>
-                </svg>
-              </div>
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Monthly Avg</h6>
                 <h3 class=""><?php echo $row15['monthly'];?></h3>
                 <p class="mb-0 text-muted">
@@ -609,14 +595,8 @@ $row19 = mysqli_fetch_assoc($result19);
             </div>
           </div>
 
-          <div class="col border rounded shadow m-1">
+          <div class="col text-center">
             <div class="card-body p-2">
-              <div class="float-end">
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-list-ol" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5"/>
-                  <path d="M1.713 11.865v-.474H2c.217 0 .363-.137.363-.317 0-.185-.158-.31-.361-.31-.223 0-.367.152-.373.31h-.59c.016-.467.373-.787.986-.787.588-.002.954.291.957.703a.595.595 0 0 1-.492.594v.033a.615.615 0 0 1 .569.631c.003.533-.502.8-1.051.8-.656 0-1-.37-1.008-.794h.582c.008.178.186.306.422.309.254 0 .424-.145.422-.35-.002-.195-.155-.348-.414-.348h-.3zm-.004-4.699h-.604v-.035c0-.408.295-.844.958-.844.583 0 .96.326.96.756 0 .389-.257.617-.476.848l-.537.572v.03h1.054V9H1.143v-.395l.957-.99c.138-.142.293-.304.293-.508 0-.18-.147-.32-.342-.32a.33.33 0 0 0-.342.338zM2.564 5h-.635V2.924h-.031l-.598.42v-.567l.629-.443h.635z"/>
-                </svg>
-              </div>
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Today <?php echo date("M j,Y");?></h6>
                 <h3 class=""><?php echo $row2['sales'];?></h3>
                 <p class="mb-0 text-muted">
@@ -630,73 +610,7 @@ $row19 = mysqli_fetch_assoc($result19);
           
         </div>
       </div>
-
-      <div class="row mt-3">
-        <div class="col-md">
-          <h6 class="mt-2">Monthly Sales Chart</h6>
-          <canvas class="my-4 w-100" id="myChart" width="200" height="120"></canvas>
-        </div>
-        <div class="col-md">
-          <h6 class="mt-2">Top 5 Selling Categories</h6>
-          <canvas class="my-4 w-100" id="myChart2" width="200" height="120"></canvas>
-        </div>
-      </div>
       
-      <h6>Recent Paid Transactions</h6>
-      <div class="table-responsive">
-        <table class="table table-hover table-sm">
-          <thead>
-            <tr>
-              <th scope="col">Time</th>
-              <th scope="col">Items</th>
-              <th scope="col">Total</th>
-              <th scope="col">Payment</th>
-              <th scope="col">Change</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php
-                $sql="SELECT *
-                FROM (SELECT
-                        tb_transactions.id,
-                        tb_transactions.time,
-                        tb_transactions.date
-                        FROM tb_transactions WHERE tb_transactions.status='paid') AS A
-                JOIN (SELECT
-                        tb_payments.id,
-                        COUNT(tb_cart.transaction_id) as items,
-                          SUM(tb_cart.price) AS total,
-                          tb_payments.payment,
-                          tb_payments.change1
-                        FROM tb_payments
-                      JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
-                      WHERE tb_payments.date='".date("Y-m-d")."'
-                        GROUP BY tb_payments.id) AS B
-                ON A.id=B.id
-                GROUP BY A.id
-                ORDER BY A.time DESC";
-                                                                                    
-                $result = mysqli_query($db,$sql);
-
-                if (mysqli_num_rows($result) > 0) 
-                {
-                foreach($result as $items)
-                {
-            ?>
-            <tr onclick="location.href='admin_transaction.php?id=<?php echo $items['id'];?>'">  
-                <td><?php echo $items['time']; ?></td>
-                <td><?php echo $items['items']; ?></td>
-                <td><?php echo $items['total']; ?></td>
-                <td><?php echo $items['payment']; ?></td>
-                <td><?php echo $items['change1']; ?></td>
-            </tr>
-            <?php
-            } 
-            } 
-            ?>
-          </tbody>
-        </table>
-      </div>
     </main>
   </div>
 </div>
@@ -776,7 +690,7 @@ $row19 = mysqli_fetch_assoc($result19);
           <?php echo $row17['pcs'];?>,
           <?php endwhile; ?>],
     backgroundColor: [
-      '#610C9F','#DA0C81','#F05941','#FFB000','#279EFF'
+      '#0d6efd','#DA0C81','#198754','#FFB000','#dc3545'
     ],
     hoverOffset: 4
   }]

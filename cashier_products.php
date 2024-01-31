@@ -220,11 +220,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       background-color: #fff; 
       border-bottom: 1px solid #d4d4d4; 
     }
-    /*when hovering an item:*/
     .autocomplete-items div:hover {
       background-color: #e9e9e9; 
     }
-    /*when navigating through the items using the arrow keys:*/
     .autocomplete-active {
       background-color: DodgerBlue !important; 
       color: #ffffff; 
@@ -293,7 +291,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <main class="col-md-9 ms-sm-auto col-lg-10">
     <div class="d-flex justify-content-end mt-3 mb-3">
-    <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
+    <button class="btn btn-secondary" onclick="printDiv();"type="button"><span data-feather="printer" class="align-text-bottom"></button>
             <script>
               function printDiv() {
               var printContents = document.getElementById("page").innerHTML;
@@ -432,6 +430,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   
                   if (currentFocus > -1) {
                     if (x) x[currentFocus].click();
+                  }
+                  if (inp.value == "") {
+                    e.preventDefault();
                   }
                 }
             });

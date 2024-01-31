@@ -61,8 +61,6 @@ WHERE tb_products.available='0'";
 $result7=mysqli_query($db,$sql7);
 $row7 = mysqli_fetch_assoc($result7);
 
-$dateS=date_create(date("Y-m-d"));
-$TR = $_SESSION['id']."-".date_format($dateS,"Ymd")."-".date("His");
 
 $sql13="SELECT
 SUM(tb_cart.quantity) AS items
@@ -265,7 +263,7 @@ $row13 = mysqli_fetch_assoc($result13);
       </button>
       <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
         <li>
-          <button onclick="location.href='<?php echo $newTR_loc;?>.php?id=<?php echo $TR;?>&date=<?php echo date('Y-m-d')?>'" type="button" class="dropdown-item d-flex align-items-center" aria-pressed="false">
+          <button onclick="location.href='<?php echo $newTR_loc;?>.php?date=<?php echo date('Y-m-d')?>'" type="button" class="dropdown-item d-flex align-items-center" aria-pressed="false">
            New Transaction
           </button>
         </li>
@@ -341,9 +339,9 @@ $row13 = mysqli_fetch_assoc($result13);
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers"><?php echo date("M j,Y");?></h6>
                 <h3 class=""><?php echo $row2['sales'];?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary me-2 fw-bold"><?php echo $row2['paidcustomers'];?></span>
-                <span class="text-nowrap">Receipts</span>
-                <span class="text-primary me-2 fw-bold"><?php echo $row2b['paiditems'];?></span>
+                <span class="text-primary fw-bold"><?php echo $row2['paidcustomers'];?></span>
+                <span class="text-nowrap me-2">Receipts</span>
+                <span class="text-primary fw-bold"><?php echo $row2b['paiditems'];?></span>
                 <span class="text-nowrap">Products Sold</span> 
                 </p>
             </div>
@@ -354,9 +352,9 @@ $row13 = mysqli_fetch_assoc($result13);
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Amount Receivables</h6>
                 <h3 class=""><?php echo $row4['unpaid'];?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary me-2 fw-bold"><?php echo $row3['transactions'];?></span>
-                <span class="text-nowrap">Accounts</span>
-                <span class="text-primary me-2 fw-bold"><?php echo $row13['items'];?></span>
+                <span class="text-primary fw-bold"><?php echo $row3['transactions'];?></span>
+                <span class="text-nowrap me-2">Accounts</span>
+                <span class="text-primary fw-bold"><?php echo $row13['items'];?></span>
                 <span class="text-nowrap">Items</span> 
                 </p>
             </div>
@@ -367,7 +365,7 @@ $row13 = mysqli_fetch_assoc($result13);
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Low Stocks</h6>
                 <h3 class="text-danger"><?php echo $row6['products']; ?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-danger me-2 fw-bold"><?php echo $row7['products']; ?></span>
+                <span class="text-danger fw-bold"><?php echo $row7['products']; ?></span>
                 <span class="text-nowrap">Zero Stocks</span>  
                 </p>
             </div>
