@@ -23,6 +23,7 @@ $sql1="SELECT
 SUM(tb_cart.quantity) AS items,
 tb_payments.total,
 CONCAT(DATE_FORMAT(tb_transactions.date,'%M %d,%Y'),'  ',tb_transactions.time) AS date_time,
+tb_transactions.date,
 CONCAT(FORMAT(tb_payments.payment, 2)) AS payment,
 tb_payments.change1
 FROM tb_cart LEFT JOIN tb_transactions ON tb_cart.transaction_id=tb_transactions.id
@@ -31,6 +32,16 @@ WHERE tb_cart.transaction_id='" .$_GET['id']. "'
 GROUP BY tb_cart.transaction_id";
 $result1=mysqli_query($db,$sql1);
 $row1 = mysqli_fetch_assoc($result1);
+
+$tr_date=date_create($row1['date']);
+$cur_date=date_create(date("Y-m-d"));
+$diff=date_diff($tr_date,$cur_date);
+
+if($diff->format('%a') === '0'){
+  $btn_void=null;
+} else {
+  $btn_void="hidden";
+}
 
 $sql="SELECT *
 FROM (SELECT
@@ -444,7 +455,8 @@ if (mysqli_num_rows($result) > 0) {
                     this.getAttribute('data-3'))"
                     data-1="<?php echo $items['id']; ?>"
                     data-2="<?php echo $items['specification']; ?>"
-                    data-3="<?php echo $items['quantity']; ?>">
+                    data-3="<?php echo $items['quantity']; ?>"
+                    <?php echo $btn_void?>>
                     <span>
                       <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
                       <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
