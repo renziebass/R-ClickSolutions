@@ -586,10 +586,12 @@ if(!empty($_GET['payment'])){
           swalWithBootstrapButtons.fire({
             title: "Saved "+result.value.toUpperCase(),
             icon: "success",
-            confirmButtonText: "DONE"
-          }).then(() => {
-            window.location.href = window.location.href+'&name='+result.value.toUpperCase();
-
+            showConfirmButton: false,
+            timer: 1500
+          }).then((result2) => {
+            if (result2.dismiss === swalWithBootstrapButtons.DismissReason.timer) {
+              window.location.href = window.location.href+'&name='+result.value.toUpperCase();
+            }
            });
         } else {
           result.dismiss === Swal.DismissReason.cancel
@@ -742,10 +744,12 @@ if(!empty($_GET['payment'])){
           swalWithBootstrapButtons.fire({
             title: "Change is P "+change.toFixed(2),
             icon: "success",
-            confirmButtonText: "DONE"
-          }).then(() => {
-            window.location.href = window.location.href+'&payment='+result.value;
-
+            showConfirmButton: false,
+            timer: 1500
+          }).then((result2) => {
+            if (result2.dismiss === swalWithBootstrapButtons.DismissReason.timer) {
+              window.location.href = window.location.href+'&payment='+result.value;
+            }
            });
         } else {
           result.dismiss === Swal.DismissReason.cancel
