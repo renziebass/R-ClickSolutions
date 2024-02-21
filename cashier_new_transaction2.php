@@ -292,7 +292,7 @@ if(!empty($_GET['payment'])){
   </a>
 </header>
 
-<div class="position-fixed top-20 end-0 translate-bottom p-1">
+<div class="position-fixed top-20 end-0 translate-bottom p-1 bg-white">
 
   <div class="container">
     <div class="row">
@@ -534,18 +534,39 @@ if(!empty($_GET['payment'])){
 
 <div class="position-fixed bottom-0 end-0 translate-bottom p-3 bg-white">
 <form>
-  <button type="button" class="btn btn-danger" accesskey="m" onclick="btn_save()" <?php echo $btn_save;?>>SAVE ( ALT+M )</button>
-  <button type="button" class="btn btn-warning" accesskey="," onclick="btn_disc()" <?php echo $btn_disc;?>>DISCOUNT  ( ALT+, )</button>
-  <button type="button" class="btn btn-success" accesskey="." onclick="btn_cash()" <?php echo $btn_cash;?>>CASH  ( ALT+.)</button>
-  <button type="button" class="btn btn-primary" accesskey="/" onclick="" <?php echo $btn_gcash;?>>G-CASH  ( ALT+/ )</button>
+  <div class="btn-group-vertical">
+  <button type="button" class="btn btn-danger btn-sm" accesskey="m" onclick="btn_save()" <?php echo $btn_save;?>>ALT+M</button>
+  <button type="button" class="btn btn-outline-danger fw-bold" accesskey="m" onclick="btn_save()" <?php echo $btn_save;?>>SAVE</button>
+  </div>
+  <div class="btn-group-vertical">
+    <button type="button" class="btn btn-warning btn-sm" accesskey="," onclick="btn_disc()" <?php echo $btn_disc;?>>ALT+,</button>
+    <button type="button" class="btn btn-outline-warning fw-bold" accesskey="," onclick="btn_disc()" <?php echo $btn_disc;?>>DISCOUNT</button>
+  </div>
+  <div class="btn-group-vertical">
+    <button type="button" class="btn btn-success btn-sm" accesskey="." onclick="btn_cash()" <?php echo $btn_cash;?>>ALT+.</button>
+    <button type="button" class="btn btn-outline-success fw-bold" accesskey="." onclick="btn_cash()" <?php echo $btn_cash;?>>CASH</button>
+  </div>
+  <div class="btn-group-vertical">
+    <button type="button" class="btn btn-primary btn-sm" accesskey="/" onclick="" <?php echo $btn_gcash;?>>ALT+/</button>
+    <button type="button" class="btn btn-outline-primary fw-bold" accesskey="/" onclick="" <?php echo $btn_gcash;?>>G-CASH</button>
+  </div>
 </form>
 </div>
 <div class="position-fixed bottom-0 start-0 translate-bottom p-3 bg-white">
 <form>
-  <button type="button" class="btn btn-secondary" accesskey="z" onclick="location.href='cashier_dashboard.php'">DASHBOARD ( ALT+Z )</button>
   <button type="button" class="btn btn-secondary" accesskey="x"onclick="init()" hidden>SEARCH ( ALT+X )</button>
-  <button type="button" class="btn btn-success" accesskey="c" onclick="window.open('cashier_new_transaction2.php?id=<?php echo $TR;?>&date=<?php echo date('Y-m-d')?>')" <?php echo $button;?>>NEW ( ALT+C )</button>
-  <button type="button" class="btn btn-danger" accesskey="v" onclick="window.open('cashier_unpaid_transactions.php')"  <?php echo $button;?>>UNPAID ( ALT+V )</button>
+  <div class="btn-group-vertical">
+    <button type="button" class="btn btn-secondary btn-sm" accesskey="z" onclick="location.href='cashier_dashboard.php'">ALT+Z</button>
+    <button type="button" class="btn btn-outline-secondary fw-bold" accesskey="z" onclick="location.href='cashier_dashboard.php'">DASHBOARD</button>
+  </div>
+  <div class="btn-group-vertical">
+    <button type="button" class="btn btn-success btn-sm" accesskey="c" onclick="window.open('cashier_new_transaction2.php?id=<?php echo $TR;?>&date=<?php echo date('Y-m-d')?>')" <?php echo $button;?>>ALT+C</button>
+    <button type="button" class="btn btn-outline-success fw-bold" accesskey="c" onclick="window.open('cashier_new_transaction2.php?id=<?php echo $TR;?>&date=<?php echo date('Y-m-d')?>')" <?php echo $button;?>>NEW TR</button>
+  </div>
+  <div class="btn-group-vertical">
+    <button type="button" class="btn btn-danger btn-sm" accesskey="v" onclick="window.open('cashier_unpaid_transactions.php')"  <?php echo $button;?>>ALT+V</button>
+    <button type="button" class="btn btn-outline-danger fw-bold" accesskey="v" onclick="window.open('cashier_unpaid_transactions.php')"  <?php echo $button;?>>UNPAID</button>
+  </div>
 </form>
 </div>
   <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
@@ -607,8 +628,7 @@ if(!empty($_GET['payment'])){
         buttonsStyling: false
       });
       swalWithBootstrapButtons.fire({
-        title: "VOID PRODUCT ?",
-        footer: '<h6 class="text-white text-center">'+data_2+'</h6>',
+        title: "VOID "+data_2+" ?",
         showCancelButton: true,
         confirmButtonText: "Void",
         cancelButtonText: "Cancel",

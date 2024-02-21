@@ -281,11 +281,11 @@ $row3 = mysqli_fetch_assoc($result3);
           <div class="col text-center">
             <div class="card-body p-2">
                 <h6 class="mt-0" title="Number of Customers"><?php echo $row2['date1'];?></h6>
-                <h3 class=""><?php echo $row2['sales_total'] ?></h3>
+                <h3 class="text-success"><?php echo $row2['sales_total'] ?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary fw-bold"><?php echo $row2['paidcustomers'] ?></span>
+                <span class="text-success fw-bold"><?php echo $row2['paidcustomers'] ?></span>
                 <span class="text-nowrap me-2">Receipts</span>
-                <span class="text-primary fw-bold"><?php echo $row3['paiditems'] ?></span>
+                <span class="text-success fw-bold"><?php echo $row3['paiditems'] ?></span>
                 <span class="text-nowrap me-2">Products Sold</span>
                 
                 </p>

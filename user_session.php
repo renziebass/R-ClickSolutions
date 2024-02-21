@@ -4,7 +4,7 @@
    $user_check = $_SESSION['id'];
    $sql1 = "SELECT
    tb_accounts.userid,
-   CONCAT(tb_users.first_name,' ',tb_users.middle_name,' ',tb_users.last_name) AS name
+   CONCAT(tb_users.first_name,' ',tb_users.last_name) AS name
    FROM tb_accounts
    JOIN tb_users ON tb_accounts.userid=tb_users.userid
    WHERE tb_accounts.userid='$user_check'";

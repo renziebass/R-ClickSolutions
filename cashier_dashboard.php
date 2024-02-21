@@ -253,21 +253,10 @@ $row13 = mysqli_fetch_assoc($result13);
 
 
     <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3">
-      <button class="btn btn-bd-primary d-flex align-items-center"
-              type="button"
-              data-bs-toggle="dropdown">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
-                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-              </svg>
-      </button>
-      <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
-        <li>
-          <button onclick="location.href='<?php echo $newTR_loc;?>.php?date=<?php echo date('Y-m-d')?>'" type="button" class="dropdown-item d-flex align-items-center" aria-pressed="false">
-           New Transaction
-          </button>
-        </li>
-      </ul>
+      <div class="btn-group-vertical">
+        <button type="button" class="btn btn-success btn-sm" accesskey="c" onclick="location.href='<?php echo $newTR_loc;?>.php?date=<?php echo date('Y-m-d')?>'" >ALT+C</button>
+        <button type="button" class="btn btn-outline-success fw-bold" accesskey="c" onclick="location.href='<?php echo $newTR_loc;?>.php?date=<?php echo date('Y-m-d')?>'" >NEW TR</button>
+      </div>
     </div>
  
   
@@ -336,12 +325,12 @@ $row13 = mysqli_fetch_assoc($result13);
           
           <div class="col text-center">
             <div class="card-body p-2">
-                <h6 class="text-muted fw-normal mt-0" title="Number of Customers"><?php echo date("M j,Y");?></h6>
-                <h3 class=""><?php echo $row2['sales'];?></h3>
+                <h6 class="fw-bold mt-0" title="Number of Customers"><?php echo date("M j,Y");?></h6>
+                <h3 class="text-success"><?php echo $row2['sales'];?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary fw-bold"><?php echo $row2['paidcustomers'];?></span>
+                <span class="text-success fw-bold"><?php echo $row2['paidcustomers'];?></span>
                 <span class="text-nowrap me-2">Receipts</span>
-                <span class="text-primary fw-bold"><?php echo $row2b['paiditems'];?></span>
+                <span class="text-success fw-bold"><?php echo $row2b['paiditems'];?></span>
                 <span class="text-nowrap">Products Sold</span> 
                 </p>
             </div>
@@ -350,11 +339,11 @@ $row13 = mysqli_fetch_assoc($result13);
           <div class="col text-center">
             <div class="card-body p-2">
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Amount Receivables</h6>
-                <h3 class=""><?php echo $row4['unpaid'];?></h3>
+                <h3 class="text-danger"><?php echo $row4['unpaid'];?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary fw-bold"><?php echo $row3['transactions'];?></span>
+                <span class="text-danger fw-bold"><?php echo $row3['transactions'];?></span>
                 <span class="text-nowrap me-2">Accounts</span>
-                <span class="text-primary fw-bold"><?php echo $row13['items'];?></span>
+                <span class="text-danger fw-bold"><?php echo $row13['items'];?></span>
                 <span class="text-nowrap">Items</span> 
                 </p>
             </div>

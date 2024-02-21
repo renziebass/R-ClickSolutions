@@ -288,11 +288,11 @@ $row3 = mysqli_fetch_assoc($result3);
           <div class="col text-center">
             <div class="card-body p-2">
                 <h6 class="mt-0" title="Number of Customers">Amount Receivable</h6>
-                <h3 class=""><?php echo $row3['unpaid'];?></h3>
+                <h3 class="text-danger"><?php echo $row3['unpaid'];?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary fw-bold"><?php echo $row1['transactions'];?></span>
+                <span class="text-danger fw-bold"><?php echo $row1['transactions'];?></span>
                 <span class="text-nowrap me-2">Accounts</span>
-                <span class="text-primary fw-bold"><?php echo $row2['items'];?></span>
+                <span class="text-danger fw-bold"><?php echo $row2['items'];?></span>
                 <span class="text-nowrap me-2">Items</span>
 
                 </p>

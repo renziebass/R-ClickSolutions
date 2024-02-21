@@ -11,19 +11,6 @@ if($isMob){
 if((empty($_GET['id']))) {
   header("Location: cashier_unpaid_transactions.php");
 }
-if((empty($_GET['DeleteProduct'])) && (empty($_GET['QTY']))) {
-} else {
-$sql2="DELETE FROM tb_cart WHERE tb_cart.product_id='" .$_GET['DeleteProduct']. "' AND tb_cart.transaction_id='" .$_GET['id']. "'";
-$sql3="UPDATE tb_products
-SET tb_products.available=tb_products.available+'" .$_GET['QTY']. "'
-WHERE tb_products.id='" .$_GET['DeleteProduct']. "'";
-if (($db->query($sql2)) && ($db->query($sql3)) === TRUE) {
-  echo "Record updated successfully";
-  header("Location: cashier_unpaid_transaction.php?id=".$_GET['id']."");
-} else {
-  echo "Error updating record: " . $db->error;
-}
-}
 
 $sql1="SELECT   
 tb_transactions.name,
@@ -321,20 +308,13 @@ if (mysqli_num_rows($result) > 0) {
               location.reload();
               }
             </script>
-          <button class="btn btn-success me-1" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal0" data-bs5="<?php echo $_GET['id']?>" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal2"><span data-feather="edit" class="align-text-bottom"></button>
-          <div class="modal fade" id="exampleModal0" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content">
-                  <div class="modal-header">
-                    <h6 class="modal-title" id="exampleModalLabel">Modify Transaction: <?php echo $_GET['id'];?></h6>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" onclick="location.href='<?php echo $newTR_loc;?>.php?id=<?php echo $_GET['id'];?>&date=<?php echo date('Y-m-d')?>'" class="btn btn-sm btn-danger" >Modify</button>
-                  </div>
-              </div>
-            </div>
-          </div>
+          <button class="btn btn-success me-1" type="button"
+          onclick="btn_modify(this.getAttribute('data-1'),this.getAttribute('data-2'),this.getAttribute('data-3'))"
+          data-1="<?php echo $row1['name']; ?>"
+          data-2="<?php echo $_GET['id']; ?>"
+          data-3="<?php echo date("Y-m-d"); ?>">
+         <span data-feather="edit" class="align-text-bottom"></button>
+         
     </div>
 
       <div class="table" id="page">
@@ -357,7 +337,7 @@ if (mysqli_num_rows($result) > 0) {
         echo "".$row1['name']." -".$_GET['id']." (".$date_time.")";
       } 
       ?></h6>
-                <h3 class=""><?php
+                <h3 class="text-danger"><?php
             if(empty($row1['total'])) {
             $payment ="0";
             } else {
@@ -366,7 +346,7 @@ if (mysqli_num_rows($result) > 0) {
             echo $payment;
             ?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary fw-bold"><?php
+                <span class="text-danger fw-bold"><?php
             if(empty($row1['items'])) {
             $items ="0";
             } else {
@@ -425,23 +405,7 @@ if (mysqli_num_rows($result) > 0) {
                 <td><?php echo $items['quantity']; ?></td>
                 <td><?php echo $items['price']; ?></td>
                 <td><?php echo $items['total']; ?></td>
-                <td>
-        
-                  <button type="button" class="btn btn-sm p-0 m-0"
-                  onclick="btn_void(this.getAttribute('data-1'), this.getAttribute('data-2'), 
-                  this.getAttribute('data-3'))"
-                  data-1="<?php echo $items['product_id']; ?>" 
-                  data-2="<?php echo $items['specification']; ?>"
-                  data-3="<?php echo $items['quantity']; ?>">
-                    <span>
-                      <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
-                      <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
-                      </svg>
-                    </span>
-                  </button>
 
-               
-                </td>
             </tr>
             <?php
             } 
@@ -458,24 +422,23 @@ if (mysqli_num_rows($result) > 0) {
 <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 <script>
-  function btn_void(data_1,data_2,data_3) {
+    function btn_modify(data_1,data_2,data_3) {
       const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
-          confirmButton: "btn btn-danger",
+          confirmButton: "btn btn-success",
           cancelButton: "btn btn-secondary me-1"
         },
         buttonsStyling: false
       });
       swalWithBootstrapButtons.fire({
-        title: "VOID PRODUCT ?",
-        footer: '<h6 class="text-white text-center">'+data_2+'</h6>',
+        title: "MODIFY "+data_1+ " ?",
         showCancelButton: true,
-        confirmButtonText: "Void",
+        confirmButtonText: "Modify",
         cancelButtonText: "Cancel",
         reverseButtons: true
       }).then((result) => {
         if (result.isConfirmed) {
-          window.location.href = window.location.href+'&DeleteProduct='+data_1+'&QTY='+data_3;
+          location.href='cashier_new_transaction2.php?id='+data_2+'&date='+data_3;
         } else {
           result.dismiss === Swal.DismissReason.cancel
         }
