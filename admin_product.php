@@ -317,20 +317,13 @@ $row1 = mysqli_fetch_assoc($result1);
 
     <main class="col-md-9 ms-sm-auto col-lg-10">
     <div class="d-flex justify-content-end mt-3">
-    <button class="btn btn-success me-1" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal0" data-bs5="<?php echo $_GET['id']?>" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal2"><span data-feather="edit" class="align-text-bottom"></button>
-          <div class="modal fade" id="exampleModal0" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content">
-                  <div class="modal-header">
-                    <h6 class="modal-title" id="exampleModalLabel">Modify Product: <?php echo $_GET['id'];?></h6>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" onclick="location.href='admin_update_product.php?search=<?php echo $row1['specification'];?>&date=<?php echo date('Y-m-d')?>'" class="btn btn-sm btn-danger" >Modify</button>
-                  </div>
-              </div>
-            </div>
-          </div>
+    <button class="btn btn-success me-1" type="button" 
+    onclick="btn_modify(this.getAttribute('data-1'),this.getAttribute('data-2'),this.getAttribute('data-3'))"
+          data-1="<?php echo $row1['specification']; ?>"
+          data-2="<?php echo $_GET['id']; ?>"
+          data-3="<?php echo date("Y-m-d"); ?>"
+    ><span data-feather="edit" class="align-text-bottom"></button>
+
     <button class="btn btn-secondary" onclick="printDiv();"type="button"><span data-feather="printer" class="align-text-bottom"></button>
             <script>
               function printDiv() {
@@ -353,7 +346,7 @@ $row1 = mysqli_fetch_assoc($result1);
           
           <div class="col text-center">
             <div class="card-body p-2">
-                <h6 class="text-muted fw-normal mt-0" title="Number of Customers"><?php echo $row1['specification'];?></h6>
+                <h6 class="fw-bold mt-0" title="Number of Customers"><?php echo $row1['specification'];?></h6>
                 <h3 class=""><?php echo $row1['stocks'];?></h3>
                 <p class="mb-0 text-muted">
                 <p class="mb-0 text-muted">
@@ -427,7 +420,32 @@ $row1 = mysqli_fetch_assoc($result1);
   </div>
 </div>
 
-
+<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+<script>
+    function btn_modify(data_1,data_2,data_3) {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-secondary me-1"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: "MODIFY "+data_1+ " ?",
+        showCancelButton: true,
+        confirmButtonText: "Modify",
+        cancelButtonText: "Cancel",
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          location.href='admin_update_product.php?search='+data_1+'&date='+data_3;
+        } else {
+          result.dismiss === Swal.DismissReason.cancel
+        }
+      });
+    }
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>

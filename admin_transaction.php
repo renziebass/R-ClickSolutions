@@ -66,9 +66,15 @@ GROUP BY B.product_id";
 $result = mysqli_query($db,$sql);
 
 if (mysqli_num_rows($result) > 0) {
-  $voidButton = "disabled";
+
 } else {
-  $voidButton = null;
+ 
+  $sql4="DELETE FROM tb_transactions WHERE tb_transactions.id='" .$_GET['id']. "'";
+  $sql5="DELETE FROM tb_payments
+  WHERE tb_payments.id='" .$_GET['id']. "'";
+  if (($db->query($sql4)) && ($db->query($sql5)) === TRUE) {
+    header("Location: admin_transactions.php?date=".date("Y-m-d")."");
+  } 
 }
 ?>
 <!doctype html>
@@ -390,20 +396,6 @@ if (mysqli_num_rows($result) > 0) {
               location.reload();
               }
             </script>
-            <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" <?php echo $voidButton; ?>>VOID <span data-feather="trash" class="align-text-bottom"></span></button>
-          <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h6 class="modal-title" id="exampleModalLabel">Void & Delete Transaction</h6>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button onclick="location.href='admin_transaction.php?VoidID=<?php echo $_GET['id']?>'" type="button" class="btn btn-sm btn-danger">Void</button>
-                        </div>
-                      </div>
-                    </div>
-          </div>
     </div>
       
       <div class="table" id="page">
@@ -546,37 +538,18 @@ if (mysqli_num_rows($result) > 0) {
                 <td><?php echo $items['profit']; ?></td>
                 <td>
         
-                  <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal2" data-bs1="<?php echo $items['id']; ?>" data-bs2="<?php echo $items['specification']; ?>" data-bs3="<?php echo $items['quantity']; ?>">
+                  <button type="button" class="btn btn-sm p-0 m-0"
+                  onclick="btn_void(this.getAttribute('data-1'), this.getAttribute('data-2'), 
+                  this.getAttribute('data-3'))"
+                  data-1="<?php echo $items['id']; ?>"
+                  data-2="<?php echo $items['specification']; ?>"
+                  data-3="<?php echo $items['quantity']; ?>">
                     <span>
                       <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
                       <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
                       </svg>
                     </span>
                   </button>
-
-                  <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h6 class="modal-title" id="exampleModalLabel"></h6>
-                        </div>
-                        <div class="modal-body">
-                            <form method="get" enctype="multipart/form-data">
-                              <div class="mb-3">
-                                <input type="hidden" id="id" name="id" value="<?php echo $_GET['id']?>" class="form-control">
-                                <input type="hidden" id="DeleteProduct" name="DeleteProduct" class="form-control">
-                                <input type="hidden" id="QTY" name="QTY" class="form-control">
-                              
-                              </div>
-                          </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button type="submit" class="btn btn-sm btn-danger">Confirm</button>
-                          </form>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
 
                 </td>
             </tr>
@@ -586,38 +559,39 @@ if (mysqli_num_rows($result) > 0) {
             } 
             ?>
           </tbody>
-          <script>
-            const exampleModal = document.getElementById('exampleModal2')
-            if (exampleModal) {
-              exampleModal.addEventListener('show.bs.modal', event => {
-                // Button that triggered the modal
-                const button = event.relatedTarget
-                // Extract info from data-bs-* attributes
-                const recipient = button.getAttribute('data-bs1')
-                const recipient2 = button.getAttribute('data-bs2')
-                const recipient3 = button.getAttribute('data-bs3')
-                // If necessary, you could initiate an Ajax request here
-                // and then do the updating in a callback.
-
-                // Update the modal's content.
-         
-                const modalBodyInput1 = document.getElementById('DeleteProduct')
-                const modalBodyInput2 = document.getElementById('QTY')
-                const modalTitle = exampleModal.querySelector('.modal-title')
-            
-                modalBodyInput1.value = recipient
-                modalBodyInput2.value = recipient3
-                modalTitle.textContent = `Delete & Return Product(s) ${recipient2}`
-              })
-            }
-          </script>
+          
         </table>
       </div>
     </main>
   </div>
 </div>
 
-
+<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+<script>
+  function btn_void(data_1,data_2,data_3) {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-danger",
+          cancelButton: "btn btn-secondary me-1"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: "VOID "+data_2+" ?",
+        showCancelButton: true,
+        confirmButtonText: "Void",
+        cancelButtonText: "Cancel",
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = window.location.href+'&DeleteProduct='+data_1+'&QTY='+data_3;
+        } else {
+          result.dismiss === Swal.DismissReason.cancel
+        }
+      });
+    }
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>

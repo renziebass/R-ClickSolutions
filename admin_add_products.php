@@ -57,10 +57,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   } else {
     $cap = validateInput($_POST["cap"]);
   }
-  
+
+   
+    
   if(!empty($_POST["pbrand"]) && !empty($_POST["qty"] && !empty($_POST["price"])))
   {
-    try {
+      
       $sql5check = "SELECT * FROM tb_products
       WHERE tb_products.product_brand='$pbrand'
       AND tb_products.category='$category'
@@ -79,12 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Refresh:0");
       }
 
-    }
-    catch(PDOException $e)
-      {
-        echo $sql1 . "<br>" . $e->getMessage();
-      }
-    $db=null;
+    
   }
 }
 $sql1 = "SELECT * FROM tb_product_category";
@@ -405,7 +402,7 @@ $result4=mysqli_query($db,$sql4);
     <main class="col-md-9 ms-sm-auto col-lg-10">
     <h6 class="text-center mb-3 mt-5">Add New Product</h6>
       <div class="align-items-center ">
-      <form method="post" action="" enctype="multipart/form-data">
+      <form method="post" action="" id="myForm" enctype="multipart/form-data">
           <div class="row mb-3">
             <div class="col-md">
               <div class="form-floating shadow">
@@ -535,7 +532,10 @@ $result4=mysqli_query($db,$sql4);
                 <td><?php echo $items['profit']; ?></td>
                 <td>
         
-                  <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs1="<?php echo $items['id']; ?>" data-bs2="<?php echo $items['specification']; ?>">
+                  <button type="button" class="btn btn-sm p-0 m-0"
+                  onclick="btn_void(this.getAttribute('data-1'), this.getAttribute('data-2'))"
+                    data-1="<?php echo $items['id']; ?>"
+                    data-2="<?php echo $items['specification']; ?>">
                     <span>
                       <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
                       <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
@@ -543,28 +543,7 @@ $result4=mysqli_query($db,$sql4);
                     </span>
                   </button>
 
-                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h6 class="modal-title" id="exampleModalLabel"></h6>
-                        </div>
-                        <div class="modal-body">
-                            <form method="get" enctype="multipart/form-data">
-                              <div class="mb-3">
-                        
-                                <input type="hidden" id="xid" name="xid" class="form-control">
-                              
-                              </div>
-                          </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button type="submit" class="btn btn-sm btn-danger">Remove</button>
-                        </form>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                 
                 </td>
                
             </tr>
@@ -573,37 +552,68 @@ $result4=mysqli_query($db,$sql4);
             } 
             ?>
           </tbody>
-          <script>
-            const exampleModal = document.getElementById('exampleModal')
-            if (exampleModal) {
-              exampleModal.addEventListener('show.bs.modal', event => {
-                // Button that triggered the modal
-                const button = event.relatedTarget
-                // Extract info from data-bs-* attributes
-                const recipient = button.getAttribute('data-bs1')
-                const recipient2 = button.getAttribute('data-bs2')
-              
-                // If necessary, you could initiate an Ajax request here
-                // and then do the updating in a callback.
-
-                // Update the modal's content.
-         
-                const modalBodyInput1 = document.getElementById('xid')
-                const modalTitle = exampleModal.querySelector('.modal-title')
-            
-                modalBodyInput1.value = recipient
-                modalTitle.textContent = `Remove ${recipient2}`
-
-              })
-            }
-          </script>
+          
         </table>
       </div>
     </main>
   </div>
 </div>
 
-
+<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+<script>
+  function btn_save() {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-secondary me-1"
+        },
+        buttonsStyling: false
+      });
+          swalWithBootstrapButtons.fire({
+          title: "Successfully Added",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500
+         }).then((result) => {
+          if (result.dismiss === swalWithBootstrapButtons.DismissReason.timer) {
+            document.getElementById("myForm").submit();
+          }
+      });
+    }
+  function btn_void(data_1,data_2) {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-danger",
+          cancelButton: "btn btn-secondary me-1"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: "DELETE "+data_2+" ?",
+        showCancelButton: true,
+        confirmButtonText: "Delete",
+        cancelButtonText: "Cancel",
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          swalWithBootstrapButtons.fire({
+          title: "DELETED",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500
+         }).then((result2) => {
+          if (result2.dismiss === swalWithBootstrapButtons.DismissReason.timer) {
+            window.location.href = window.location.href+'?xid='+data_1;
+          }
+          });
+          
+        } else {
+          result.dismiss === Swal.DismissReason.cancel
+        }
+      });
+    }
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
