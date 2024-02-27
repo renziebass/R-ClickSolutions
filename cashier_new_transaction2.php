@@ -359,7 +359,7 @@ if(!empty($_GET['payment'])){
 <main class="ms-sm-auto" >
   <div class="container-fluid">
     <div class="row">
-<div class="col-md-9 border-end">
+<div class="col-md-9 border-end" style="margin-bottom: 90px;">
     <form method="post" enctype="multipart/form-data" autocomplete=off>
       <div>
           <div class="input-group mt-3">
@@ -434,8 +434,8 @@ if(!empty($_GET['payment'])){
         </table>
       
     </div> 
-    <div class="col-md-3" style="margin-top: 70px;">
-      <table class="table table-hover table-sm table-borderless mt-5">
+    <div class="col-md-3" style="margin-top: 70px; margin-bottom: 70px;">
+      <table class="table table-hover table-sm table-borderless mt-5 mb-5">
           <tbody>
             <?php
             if(!empty($_GET['id'])) {

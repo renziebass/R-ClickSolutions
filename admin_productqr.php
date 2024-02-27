@@ -350,6 +350,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <main class="col-md-9 ms-sm-auto col-lg-10">
     <h6 class="text-center mb-3 mt-5">Generate Product Multiple QR</h6>
+    <div class="d-flex justify-content-end mt-3 mb-3">
+    <button type="button" onclick="printDiv();" class="btn btn btn-secondary"><span data-feather="printer" class="align-text-bottom"></button>
+    
+    </div>
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
         <div class="input-group input-group shadow">
@@ -369,8 +373,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=12" value="">36</a>
               </div>
           <input type="text" name="product_id" class="form-control" placeholder="<?php echo $_GET['product_id']; ?>">
-          <button class="btn btn-secondary" type="submit">SEARCH <span data-feather="search" class="align-text-end"></button>
-          <button type="button" onclick="printDiv();" class="btn btn btn-secondary">PRINT <span data-feather="printer" class="align-text-bottom"></button>
+          <button class="btn btn-secondary" type="submit"><span data-feather="search" class="align-text-end"></button>
         </div>
         </form>
         <script>

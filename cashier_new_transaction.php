@@ -345,7 +345,7 @@ if(!empty($_GET['payment'])){
         </div>
       </div>
     </div>
-    <table class="table table-hover table-sm table-borderless mt-2">
+    <table class="table table-hover table-sm table-borderless mt-2 mb-5">
           <tbody>
             <?php
             if(!empty($_GET['id'])) {
@@ -435,7 +435,7 @@ if(!empty($_GET['payment'])){
           </div>
       </div>
       </form>
-    <table class="table table-hover table-borderless table-sm mt-3" id="tblFocus">
+    <table class="table table-hover table-borderless table-sm mt-3 mb-5" id="tblFocus">
           <thead>
             <tr class="text-muted">
               <th scope="col">Specification</th>

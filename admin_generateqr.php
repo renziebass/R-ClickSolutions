@@ -12,7 +12,18 @@ if(!empty($_GET['xid'])) {
   $sql7="DELETE FROM tb_product_qr WHERE tb_product_qr.id='" .$_GET['xid']. "'";
 
   if (($db->query($sql7)) === TRUE) {
-    echo "Category Deleted";
+   
+    header("Location: admin_generateqr.php");
+  } else {
+    echo "Error updating record: " . $db->error;
+  }
+}
+
+if(!empty($_GET['clear'])) {
+  $sql7b="DELETE FROM tb_product_qr";
+
+  if (($db->query($sql7b)) === TRUE) {
+   
     header("Location: admin_generateqr.php");
   } else {
     echo "Error updating record: " . $db->error;
@@ -367,11 +378,15 @@ if(!empty($_POST["id"]) && !empty($_POST["size"]))
 
     <main class="col-md-9 ms-sm-auto col-lg-10">
     <h6 class="text-center mb-3 mt-5">Generate QR Images</h6>
+    <div class="d-flex justify-content-end mt-3 mb-3">
+    <button type="button" class="btn btn-secondary me-1" onclick="window.location.href='admin_productqr_print.php';"><span data-feather="printer" class="align-text-bottom"></button>
+    <button class="btn btn-danger me-1" type="button" onclick="btn_clear()">
+             <span data-feather="x" class="align-text-bottom"></button>
+    </div>
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
         <div class="input-group input-group shadow">
         <select class="btn btn-outline-secondary" name="size">
-          <option value="80x80">80x80 QR SIZE</option>
           <option value="90x90">90x90 QR SIZE</option>
           <option value="100x100">100x100 QR SIZE</option>
           <option value="110x110">110x110 QR SIZE</option>
@@ -392,15 +407,11 @@ if(!empty($_POST["id"]) && !empty($_POST["size"]))
                 <option value="<?php echo $row1['id'];?>"><?php echo $row1['specification'];?></option>
                 <?php endwhile; ?>
         </datalist>
-          <button class="btn btn-success" type="submit">ADD <span data-feather="plus" class="align-text-end"></button>
-          <button type="button" class="btn btn-secondary" onclick="window.location.href='admin_productqr_print.php';">PRINT <span data-feather="printer" class="align-text-bottom"></button>
+          <button class="btn btn-success" type="submit"><span data-feather="plus" class="align-text-end"></button>
         </div>
         </form>
 
       </div>
-      <h6 class="mt-3 text-muted">
-        List of Products to print QR Images
-      </h6>
       <div class="mt-3" id="page">
       
       <table class="table table-hover table-sm">
@@ -435,36 +446,17 @@ if(!empty($_POST["id"]) && !empty($_POST["size"]))
                 <td><?php echo $items['size']; ?></td>
                 <td><?php echo $items['fsize']; ?></td>
                 <td>
-                <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs1="<?php echo $items['id']; ?>" data-bs2="<?php echo $items['specification']; ?>">
+                <button type="button"
+                class="btn btn-sm p-0 m-0"
+                onclick="btn_delete(this.getAttribute('data-1'),this.getAttribute('data-2'))"
+                data-1="<?php echo $items['id']; ?>"
+                data-2="<?php echo $items['specification']; ?>">
                     <span>
                       <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
                       <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
                       </svg>
                     </span>
                   </button>
-
-                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h6 class="modal-title" id="exampleModalLabel"></h6>
-                        </div>
-                        <div class="modal-body">
-                            <form method="get" enctype="multipart/form-data">
-                              <div class="mb-3">
-                        
-                                <input type="hidden" id="xid" name="xid" class="form-control">
-                              
-                              </div>
-                          </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                        </form>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </td>
             </tr>
             <?php
@@ -472,30 +464,6 @@ if(!empty($_POST["id"]) && !empty($_POST["size"]))
             } 
             ?>
           </tbody>
-          <script>
-            const exampleModal = document.getElementById('exampleModal')
-            if (exampleModal) {
-              exampleModal.addEventListener('show.bs.modal', event => {
-                // Button that triggered the modal
-                const button = event.relatedTarget
-                // Extract info from data-bs-* attributes
-                const recipient = button.getAttribute('data-bs1')
-                const recipient2 = button.getAttribute('data-bs2')
-              
-                // If necessary, you could initiate an Ajax request here
-                // and then do the updating in a callback.
-
-                // Update the modal's content.
-         
-                const modalBodyInput1 = document.getElementById('xid')
-                const modalTitle = exampleModal.querySelector('.modal-title')
-            
-                modalBodyInput1.value = recipient
-                modalTitle.textContent = `Delete Product ${recipient2}`
-
-              })
-            }
-          </script>
         </table>
 
       </div>
@@ -503,7 +471,74 @@ if(!empty($_POST["id"]) && !empty($_POST["size"]))
   </div>
 </div>
 
-
+<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+<script>
+  function btn_delete(data_1,data_2) {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-danger",
+          cancelButton: "btn btn-secondary me-1"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: "DELETE "+data_2+" ?",
+        showCancelButton: true,
+        confirmButtonText: "Delete",
+        cancelButtonText: "Cancel",
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          swalWithBootstrapButtons.fire({
+          title: "DELETED",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500
+         }).then((result2) => {
+          if (result2.dismiss === swalWithBootstrapButtons.DismissReason.timer) {
+            window.location.href = window.location.href+'?xid='+data_1;
+          }
+          });
+          
+        } else {
+          result.dismiss === Swal.DismissReason.cancel
+        }
+      });
+    }
+    function btn_clear() {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-danger",
+          cancelButton: "btn btn-secondary me-1"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: "CLEAR LIST ?",
+        showCancelButton: true,
+        confirmButtonText: "Delete",
+        cancelButtonText: "Cancel",
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          swalWithBootstrapButtons.fire({
+          title: "DELETED",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500
+         }).then((result2) => {
+          if (result2.dismiss === swalWithBootstrapButtons.DismissReason.timer) {
+            window.location.href = window.location.href+'?clear=true';
+          }
+          });
+          
+        } else {
+          result.dismiss === Swal.DismissReason.cancel
+        }
+      });
+    }
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>

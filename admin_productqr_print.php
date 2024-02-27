@@ -307,7 +307,7 @@ include('user_session.php');
 
     <main class="col-md-9 ms-sm-auto col-lg-10">
     <div class="d-flex justify-content-end mt-3 mb-3">
-    <button class="btn btn-secondary" onclick="printDiv();"type="button">PRINT <span data-feather="printer" class="align-text-bottom"></button>
+    <button class="btn btn-secondary" onclick="printDiv();"type="button"><span data-feather="printer" class="align-text-bottom"></button>
             <script>
               function printDiv() {
               var printContents = document.getElementById("page").innerHTML;
@@ -325,7 +325,7 @@ include('user_session.php');
 
       <div class="mt-3" id="page">
               
-      <div class="container-fluid text-center">
+      <div class="container-fluid text-start">
       
             <div class="row">
             <?php
@@ -345,12 +345,12 @@ include('user_session.php');
                 foreach($result as $items)
                 {
             ?>
-              <div class="col-lg d-flex flex-row border p-1">
-                <div class="">
+              <div class="col-sm-4 d-flex flex-row border-bottom border-end">
+                <div class="p-0">
                   <img class="m-0" src="https://chart.googleapis.com/chart?chs=<?php echo $items['size']; ?>&cht=qr&chl=<?php echo $items['id']; ?>">
                   
                 </div>
-                <div class="pt-3">
+                <div class="">
                   <p class="m-0 <?php echo $items['fsize']; ?>"><?php echo $items['specification']; ?></p>
                   <p class="m-0 text-danger <?php echo $items['fsize']; ?>" style="font-weight: bold;"><?php echo $items['price']; ?></p>
                 </div>
