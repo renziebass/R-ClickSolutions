@@ -330,12 +330,8 @@ if (mysqli_num_rows($result) > 0) {
       } else {
       $date_time = $row1['date_time'];
       }
-
-      if(empty($row1['name']) && ($_GET['id'])) {
-        echo "No Products, Please VOID this TRANSACTION";
-      } else {
-        echo "".$row1['name']." -".$_GET['id']." (".$date_time.")";
-      } 
+      echo "".$row1['name']." - ".$_GET['id']." (".$date_time.")";
+      
       ?></h6>
                 <h3 class="text-danger"><?php
             if(empty($row1['total'])) {
