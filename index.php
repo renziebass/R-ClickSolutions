@@ -1,5 +1,5 @@
 <?php
-include("config.php");
+include("user_session.php");
 ?>
 <!doctype html>
 <html lang="en">
