@@ -107,35 +107,63 @@ include("config.php");
     <?php
         session_start();
         if($_SERVER["REQUEST_METHOD"] == "POST") {
-        $id = mysqli_real_escape_string($db,$_POST['id']);
-        $password = mysqli_real_escape_string($db,$_POST['password']);
-        $sql1 = "SELECT * FROM tb_accounts WHERE userid='$id' AND password='$password'";
-        $run_user = mysqli_query($db, $sql1);
-        if (!$sql1) {
-            die(mysqli_error($db));
-        }   
-        $check_user = mysqli_num_rows($run_user);
-        if($check_user>0){
-          $user_data = mysqli_fetch_assoc($run_user);
-         
-          $sql2 = "INSERT INTO `tb_login_history` (`id`, `date`, `time`)
-          VALUES ('$id','".date("Y-m-d")."','".date("H:i:s")."')";
+        $id = mysqli_real_escape_string($db1,$_POST['id']);
+        $password = mysqli_real_escape_string($db1,$_POST['password']);
+        
+        $sql="SELECT
+        tb_accounts.user,
+        tb_accounts.pass,
+        tb_accounts.db,
+        tb_users.company_id,
+        tb_users.user_id
+        FROM tb_accounts
+        LEFT JOIN tb_users
+        ON tb_accounts.id=tb_users.company_id
+        WHERE tb_users.user_id='$id'";
+        $check_id = mysqli_query($db, $sql);
 
-          if ($user_data["acc_type"] == 'CASHIER') {
-            //redirect somehwere
-            $_SESSION['id'] = $id;
-            $recordSession = mysqli_query($db, $sql2);
-            header("location: cashier_dashboard.php");
-          }
-          if ($user_data["acc_type"] == 'ADMIN') {
-            //redirect somehwere
-            $_SESSION['id'] = $id;
-            $recordSession = mysqli_query($db, $sql2);
-            header("location: admin_dashboard.php");
-          }
-        } else {
-          echo $error = "Login Credentials is invalid";
-      }
+        $row = mysqli_fetch_assoc($check_id);
+
+        define('HOST','localhost');
+        define('USER',$row['user']);
+        define('PASS',$row['pass']);
+        define('DB',$row['db']);
+
+
+        $db = mysqli_connect(HOST,USER,PASS,DB);
+        $con = mysqli_connect(HOST,USER,PASS,DB);
+
+
+        if($check_id>0){
+                 $sql1 = "SELECT * FROM tb_accounts WHERE userid='$id' AND password='$password'";
+                $run_user = mysqli_query($db, $sql1);
+                if (!$sql1) {
+                    die(mysqli_error($db));
+                }   
+                $check_user = mysqli_num_rows($run_user);
+                if($check_user>0){
+                  $user_data = mysqli_fetch_assoc($run_user);
+                
+                  $sql2 = "INSERT INTO `tb_login_history` (`id`, `date`, `time`)
+                  VALUES ('$id','".date("Y-m-d")."','".date("H:i:s")."')";
+
+                  if ($user_data["acc_type"] == 'CASHIER') {
+                    //redirect somehwere
+                    $_SESSION['id'] = $id;
+                    $recordSession = mysqli_query($db, $sql2);
+                    header("location: cashier_dashboard.php");
+                  }
+                  if ($user_data["acc_type"] == 'ADMIN') {
+                    //redirect somehwere
+                    $_SESSION['id'] = $id;
+                    $recordSession = mysqli_query($db, $sql2);
+                    header("location: admin_dashboard.php");
+                  }
+                } else {
+                  echo $error = "Login Credentials is invalid";
+                  }
+        }
+
     }
     ?>
     </p>
