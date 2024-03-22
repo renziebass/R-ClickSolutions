@@ -29,13 +29,13 @@
    $row2 = mysqli_fetch_assoc($result2);
 
 
-   define('HOST','localhost');
-   define('USER',$row2['user']);
-   define('PASS',$row1['pass']);
-   define('DB',$row1['db']);
+   define('HOST1','localhost');
+   define('USER1',$row2['user']);
+   define('PASS1',$row1['pass']);
+   define('DB1',$row1['db']);
 
-   $db = mysqli_connect(HOST,USER,PASS,DB);
-   $con = mysqli_connect(HOST,USER,PASS,DB);
+   $db = mysqli_connect(HOST1,USER1,PASS1,DB1);
+   $con = mysqli_connect(HOST1,USER1,PASS1,DB1);
 
    if(!isset($_SESSION['id'])){
       header("location:index.php");
