@@ -1,5 +1,5 @@
 <?php
-   require('config.php');
+   require('index.php');
    session_start();
    $user_check = $_SESSION['id'];
    $sql1 = "SELECT
