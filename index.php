@@ -109,61 +109,82 @@ include("config.php");
         if($_SERVER["REQUEST_METHOD"] == "POST") {
         $id = mysqli_real_escape_string($db1,$_POST['id']);
         $password = mysqli_real_escape_string($db1,$_POST['password']);
-        
-        $sql="SELECT
+
+        $sql0 = "SELECT
         tb_accounts.user,
         tb_accounts.pass,
         tb_accounts.db,
-        tb_users.company_id,
-        tb_users.user_id
+        tb_users.user_id,
+        tb_users.company_id
         FROM tb_accounts
         LEFT JOIN tb_users
         ON tb_accounts.id=tb_users.company_id
         WHERE tb_users.user_id='$id'";
-        $check_id = mysqli_query($db, $sql);
+        $run_user0 = mysqli_query($db1, $sql0);
+        $row0 = mysqli_fetch_assoc($run_user0);
 
-        $row = mysqli_fetch_assoc($check_id);
-
-        define('HOST','localhost');
-        define('USER',$row['user']);
-        define('PASS',$row['pass']);
-        define('DB',$row['db']);
-
-
-        $db = mysqli_connect(HOST,USER,PASS,DB);
-        $con = mysqli_connect(HOST,USER,PASS,DB);
-
-
-        if($check_id>0){
-                 $sql1 = "SELECT * FROM tb_accounts WHERE userid='$id' AND password='$password'";
-                $run_user = mysqli_query($db, $sql1);
-                if (!$sql1) {
-                    die(mysqli_error($db));
-                }   
-                $check_user = mysqli_num_rows($run_user);
-                if($check_user>0){
-                  $user_data = mysqli_fetch_assoc($run_user);
-                
-                  $sql2 = "INSERT INTO `tb_login_history` (`id`, `date`, `time`)
-                  VALUES ('$id','".date("Y-m-d")."','".date("H:i:s")."')";
-
-                  if ($user_data["acc_type"] == 'CASHIER') {
-                    //redirect somehwere
-                    $_SESSION['id'] = $id;
-                    $recordSession = mysqli_query($db, $sql2);
-                    header("location: cashier_dashboard.php");
-                  }
-                  if ($user_data["acc_type"] == 'ADMIN') {
-                    //redirect somehwere
-                    $_SESSION['id'] = $id;
-                    $recordSession = mysqli_query($db, $sql2);
-                    header("location: admin_dashboard.php");
-                  }
-                } else {
-                  echo $error = "Login Credentials is invalid";
-                  }
+        if (!$sql0) {
+          die(mysqli_error($db1));
         }
+        $check_user0 = mysqli_num_rows($run_user0);
+        if($check_user0>0){
 
+          define('HOST1','localhost');
+          define('USER1',$row0['user']);
+          define('PASS1',$row0['pass']);
+          define('DB1',$row0['db']);
+
+          /*
+          define('HOST1','localhost');
+          define('USER1',$row0['user']);
+          define('PASS1',$row0['pass']);
+          define('DB1',$row0['db']);
+
+          define('HOST1','localhost');
+          define('USER1','root');
+          define('PASS1','');
+          define('DB1','timonio001');
+          */
+
+
+          $db2 = mysqli_connect(HOST1,USER1,PASS1,DB1);
+  
+
+          $sql1 = "SELECT * FROM tb_accounts WHERE userid='$id' AND password='$password'";
+          $run_user = mysqli_query($db2, $sql1);
+
+          if (!$sql1) {
+              die(mysqli_error($db2));
+          }  
+
+          $check_user = mysqli_num_rows($run_user);
+          if($check_user>0){
+            $user_data = mysqli_fetch_assoc($run_user);
+          
+            $sql2 = "INSERT INTO `tb_login_history` (`id`, `date`, `time`)
+            VALUES ('$id','".date("Y-m-d")."','".date("H:i:s")."')";
+
+            if ($user_data["acc_type"] == 'CASHIER') {
+              //redirect somehwere
+              $_SESSION['id'] = $id;
+              $recordSession = mysqli_query($db2, $sql2);
+              header("location: cashier_dashboard.php");
+            }
+            if ($user_data["acc_type"] == 'ADMIN') {
+              //redirect somehwere
+              $_SESSION['id'] = $id;
+              $recordSession = mysqli_query($db2, $sql2);
+              header("location: admin_dashboard.php");
+            }
+          } else {
+            echo $error = "Login Credentials is invalid";
+          }
+          
+        } else {
+          echo $error = "Invalid User ID";
+        }  
+
+        
     }
     ?>
     </p>
