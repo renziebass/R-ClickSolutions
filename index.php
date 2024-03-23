@@ -130,9 +130,9 @@ include("config.php");
         if($check_user0>0){
 
           define('HOST1','localhost');
-          define('USER1','root');
-          define('PASS1','');
-          define('DB1','kg_db');
+          define('USER1',$row0['user']);
+          define('PASS1',$row0['pass']);
+          define('DB1',$row0['db']);
 
           /*
           define('HOST1','localhost');
