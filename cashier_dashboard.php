@@ -257,7 +257,12 @@ $row13 = mysqli_fetch_assoc($result13);
         <button type="button" class="btn btn-success btn-sm" accesskey="c" onclick="location.href='<?php echo $newTR_loc;?>.php?date=<?php echo date('Y-m-d')?>'" >ALT+C</button>
         <button type="button" class="btn btn-outline-success fw-bold" accesskey="c" onclick="location.href='<?php echo $newTR_loc;?>.php?date=<?php echo date('Y-m-d')?>'" >NEW TR</button>
       </div>
+      <div class="btn-group-vertical">
+        <button type="button" class="btn btn-warning btn-sm" accesskey="v" onclick="location.href='cashier_new_transaction3.php?date=<?php echo date('Y-m-d')?>'" >ALT+V</button>
+        <button type="button" class="btn btn-outline-warning fw-bold" accesskey="v" onclick="location.href='cashier_new_transaction3.php?date=<?php echo date('Y-m-d')?>'" >WS TR</button>
+      </div>
     </div>
+    
  
   
   

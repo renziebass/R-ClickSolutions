@@ -3,6 +3,7 @@ define('HOST','localhost');
 define('USER','u186319490_renziebass');
 define('PASS','Kg9182022');
 define('DB','u186319490_companies');
+
    
 $db = mysqli_connect(HOST,USER,PASS,DB);
 $con = mysqli_connect(HOST,USER,PASS,DB);

@@ -116,7 +116,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
       $DeleteProduct = mysqli_query($db, $sql6a);
       $ReturnProduct = mysqli_query($db, $sql6b);
      
-      header("refresh:0.1;url=cashier_new_transaction.php?id=".$_GET['id']."&date=".$_GET['date']."");
+      header("refresh:0.1;url=cashier_new_transaction3.php?id=".$_GET['id']."&date=".$_GET['date']."");
   
 }
 if(!empty($_GET["product_id"]) && !empty($_GET["price"] && !empty($_GET["quantity"]))) {
@@ -148,7 +148,7 @@ if(!empty($_GET["product_id"]) && !empty($_GET["price"] && !empty($_GET["quantit
               var audio = new Audio('https://rclickpos.com/beep.wav');
               audio.play();
               </script>";
-        header("refresh:0.1;url=cashier_new_transaction.php?id=".$_GET['id']."&date=".$_GET['date']."");
+        header("refresh:0.1;url=cashier_new_transaction3.php?id=".$_GET['id']."&date=".$_GET['date']."");
         }
 
         if(empty($resulttr['id'])) {
@@ -204,7 +204,7 @@ if(!empty($_GET['payment'])){
         $SaveTR2a = mysqli_query($db, $sql9);
         $SaveTR2b = mysqli_query($db, $sql10);
 
-        header( "refresh:0.5;url=cashier_new_transaction.php?date=".$_GET['date']."" );
+        header( "refresh:0.5;url=cashier_new_transaction3.php?date=".$_GET['date']."" );
       
       }
 }
@@ -282,7 +282,9 @@ if(!empty($_GET['payment'])){
   
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
   <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="cashier_dashboard.php">R-Click POS: Karaang Garahe</a>
- 
+  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-end">
+      WHOLESALE TRANSACTION
+  </a>
 </header>
 
 <main class="ms-sm-auto" >
@@ -314,6 +316,7 @@ if(!empty($_GET['payment'])){
       </div>
       
       <div class="col">
+        
         <div class="card-body">
             <div class="float-end text-success">
               <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-currency-exchange" viewBox="0 0 16 16">
@@ -335,7 +338,7 @@ if(!empty($_GET['payment'])){
                 <?php echo $disc_msg; ?>
                   <span>
                     <button class="btn btn-sm p-0 m-0"
-                    onclick="location.href='cashier_new_transaction2.php?id=<?php echo $_GET['id'];?>&date=<?php echo  $_GET['date']?>'"> 
+                    onclick="location.href='cashier_new_transaction3.php?id=<?php echo $_GET['id'];?>&date=<?php echo  $_GET['date']?>'"> 
                       <svg class="text-danger" xmlns="http://www.w3.org/2000/svg" width="27" height="30" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
                         <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
                       </svg>
@@ -348,6 +351,7 @@ if(!empty($_GET['payment'])){
         </div>
       </div>
     </div>
+   
     <table class="table table-hover table-sm table-borderless mt-2 mb-5">
           <tbody>
             <?php
@@ -355,12 +359,12 @@ if(!empty($_GET['payment'])){
               $sql="SELECT *
               FROM (SELECT
                   tb_products.id,
-                  CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)AS specification,
-                  FORMAT(tb_products.price, 2) AS price
+                  CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)AS specification
                   FROM tb_cart LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id) AS A
               JOIN (SELECT
                   tb_cart.product_id,
                   SUM(tb_cart.quantity) AS quantity,
+                  FORMAT(SUM(tb_cart.price), 2) AS price,
                   FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2) AS total
                   FROM tb_cart WHERE tb_cart.transaction_id='".$_GET['id']."'
                   GROUP BY tb_cart.product_id) AS B
@@ -370,12 +374,12 @@ if(!empty($_GET['payment'])){
               $sql="SELECT *
                 FROM (SELECT
                     tb_products.id,
-                    CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)AS specification,
-                    FORMAT(tb_products.price, 2) AS price
+                    CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)AS specification
                     FROM tb_cart LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id) AS A
                 JOIN (SELECT
                     tb_cart.product_id,
                     SUM(tb_cart.quantity) AS quantity,
+                    FORMAT(SUM(tb_cart.price), 2) AS price,
                     FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2) AS total
                     FROM tb_cart WHERE tb_cart.transaction_id=''
                     GROUP BY tb_cart.product_id) AS B
@@ -443,7 +447,9 @@ if(!empty($_GET['payment'])){
             <tr class="text-muted">
               <th scope="col">Specification</th>
               <th scope="col">Stocks</th>
-              <th scope="col">SRP</th>
+              <th scope="col">Price 1</th>
+              <th scope="col">Price 2</th>
+              <th scope="col">Price 3</th>
               <th scope="col">Discount</th>
             </tr>
           </thead>
@@ -456,7 +462,9 @@ if(!empty($_GET['payment'])){
                 CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification,
                 CONCAT(tb_products.available,'/',tb_products.stocks) AS stocks,
                 tb_products.available,
-                CONCAT(tb_products.price) AS price,
+                CONCAT(tb_products.price1) AS price1,
+                CONCAT(tb_products.price2) AS price2,
+                CONCAT(tb_products.price3) AS price3,
                 CASE WHEN tb_products.available=0
                 THEN 'text-danger' ELSE null END AS textcolor
                 FROM tb_products
@@ -477,15 +485,19 @@ if(!empty($_GET['payment'])){
             <tr class="<?php echo $itemsb['textcolor']; ?>"
             title="Click to add-to-Cart"
             onclick="<?php echo $cart_button;?>(this.getAttribute('data-1'), this.getAttribute('data-2'), 
-            this.getAttribute('data-3'), this.getAttribute('data-4'))"
+            this.getAttribute('data-3'), this.getAttribute('data-4'), this.getAttribute('data-5'), this.getAttribute('data-6'))"
             data-1="<?php echo $itemsb['specification']; ?>" 
             data-2="<?php echo $itemsb['id']; ?>" 
-            data-3="<?php echo $itemsb['price']; ?>"
-            data-4="<?php echo $itemsb['available']; ?>"> 
+            data-3="<?php echo $itemsb['price1']; ?>"
+            data-4="<?php echo $itemsb['available']; ?>"
+            data-5="<?php echo $itemsb['price2']; ?>"
+            data-6="<?php echo $itemsb['price3']; ?>"> 
 
                 <td><?php echo $itemsb['specification']; ?></td>
                 <td><?php echo $itemsb['stocks']; ?></td>
-                <td><?php echo $itemsb['price']; ?></td>
+                <td><?php echo $itemsb['price1']; ?></td>
+                <td><?php echo $itemsb['price2']; ?></td>
+                <td><?php echo $itemsb['price3']; ?></td>
                 <td><?php echo $itemsb['disc']; ?></td>
             </tr>
             <?php
@@ -508,7 +520,7 @@ if(!empty($_GET['payment'])){
 
 <div class="position-fixed bottom-0 end-0 translate-bottom p-3 bg-white">
 <form>
-<button type="button" class="btn btn-success btn-sm" accesskey="c" onclick="window.open('cashier_new_transaction2.php?id=<?php echo $TR;?>&date=<?php echo date('Y-m-d')?>')" <?php echo $button;?>>NEW TR</button>
+<button type="button" class="btn btn-success btn-sm" accesskey="c" onclick="window.open('cashier_new_transaction3.php?id=<?php echo $TR;?>&date=<?php echo date('Y-m-d')?>')" <?php echo $button;?>>NEW TR</button>
     <button type="button" class="btn btn-danger btn-sm" accesskey="m" onclick="btn_save()" <?php echo $btn_save;?>>SAVE</button>
     <button type="button" class="btn btn-warning btn-sm" accesskey="," onclick="btn_disc()" <?php echo $btn_disc;?>>DISCOUNT</button>
     <button type="button" class="btn btn-success btn-sm" accesskey="." onclick="btn_cash()" <?php echo $btn_cash;?>>CASH</button>
@@ -601,7 +613,7 @@ if(!empty($_GET['payment'])){
         }
       });
     }
-    function btn_qty(data_1,data_2,data_3,data_4) {
+    function btn_qty(data_1,data_2,data_3,data_4,data_5,data_6) {
       const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
           confirmButton: "btn btn-success",
@@ -634,13 +646,37 @@ if(!empty($_GET['payment'])){
       }
       }).then((result) => {
         if (result.isConfirmed) {
-          window.location.href = window.location.href+'&price='+data_3+'&product_id='+data_2+'&quantity='+result.value;
+          const inputOptions = [];
+              inputOptions[data_3]= data_3;
+              inputOptions[data_5]= data_5;
+              inputOptions[data_6]= data_6;
+              swalWithBootstrapButtons.fire({
+                title: "SELECT PRICE",
+                input: "radio",
+                inputOptions,
+                inputValidator: (value) => {
+                  if (!value) {
+                    return value;
+                  }
+                },
+                showCancelButton: true,
+                confirmButtonText: "Confirm",
+                cancelButtonText: "Cancel",
+                reverseButtons: true
+            }).then((result2) => {
+              if (result2.isConfirmed) {
+                window.location.href = window.location.href+'&price='+result2.value+'&product_id='+data_2+'&quantity='+result.value;
+              } else {
+                result.dismiss === Swal.DismissReason.cancel
+              }
+            });
+          
         } else {
           result.dismiss === Swal.DismissReason.cancel
         }
       });
     }
-    function btn_tr(data_1,data_2,data_3,data_4) {
+    function btn_tr(data_1,data_2,data_3,data_4,data_5,data_6) {
       const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
           confirmButton: "btn btn-success",
@@ -680,11 +716,33 @@ if(!empty($_GET['payment'])){
               maxlength: "10"
             }
             }).then((result2) => {
-              if (result2.isConfirmed) {
-                window.location.href = window.location.href+'&price='+data_3+'&product_id='+data_2+'&quantity='+result2.value+'&id=<?php echo $TR;?>';
+              /////////////////////
+          
+              const inputOptions = [];
+              inputOptions[data_3]= data_3;
+              inputOptions[data_5]= data_5;
+              inputOptions[data_6]= data_6;
+              swalWithBootstrapButtons.fire({
+                title: "SELECT PRICE",
+                input: "radio",
+                inputOptions,
+                inputValidator: (value) => {
+                  if (!value) {
+                    return value;
+                  }
+                },
+                showCancelButton: true,
+                confirmButtonText: "Confirm",
+                cancelButtonText: "Cancel",
+                reverseButtons: true
+            }).then((result3) => {
+              if (result3.isConfirmed) {
+                window.location.href = window.location.href+'&price='+result3.value+'&product_id='+data_2+'&quantity='+result2.value+'&id=<?php echo $TR;?>';
               } else {
                 result.dismiss === Swal.DismissReason.cancel
               }
+            });
+              /////////////////////
             });
         } else {
           result.dismiss === Swal.DismissReason.cancel
@@ -761,7 +819,7 @@ if(!empty($_GET['payment'])){
       }).then((result) => {
         if (result.isConfirmed) {
           swalWithBootstrapButtons.fire({
-            title: "No Change! Confirm on Online-Banking",
+            title: "No Change! Confirm on",
             icon: "success",
             showConfirmButton: false,
             timer: 1500
@@ -775,7 +833,7 @@ if(!empty($_GET['payment'])){
         }
       });
     }
-    function btn_disc() {
+    function btn_disc() { 
       const swalWithBootstrapButtons = Swal.mixin({
         customClass: {
           confirmButton: "btn btn-success",
