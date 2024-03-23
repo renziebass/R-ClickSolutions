@@ -6,7 +6,7 @@ include("config.php");
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>R-Click POS</title>
+    <title>R-Click Solutions</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <style>
       .bd-placeholder-img {
@@ -84,17 +84,17 @@ include("config.php");
     <link href="sign-in.css" rel="stylesheet">
 </head>
   <body class="bg-image" 
-     style="background-image: url('https://rclickpos.com/assets/img/BG.jpg');
+     style="background-image: url('https://rclickpos.com/assets/img/BG2.jpg');
             height: 100vh">
   
       
     <main class="form-signin w-100 m-auto">
     <div class="container text-center">
-    <img src="assets/img/R-ClickLogo.png" alt="" width="100" height="100">
-    <img src="assets/img/KGLogo.png" alt="" width="110" height="60">
+    <img class="shadow"src="assets/img/R-ClickLogo.png" alt="" width="100" height="100">
+  
     </div>
     <form method="post">
-    <h1 class="h3 mb-3 fw-normal text-center">R-Click POS Sign-in</h1>
+    <h1 class="h3 mb-3 fw-normal text-center">R-Click Solutions POS</h1>
 
     <div class="form-floating py-1">
       <input type="text" class="form-control" name="id" id="id">
@@ -130,9 +130,9 @@ include("config.php");
         if($check_user0>0){
 
           define('HOST1','localhost');
-          define('USER1',$row0['user']);
-          define('PASS1',$row0['pass']);
-          define('DB1',$row0['db']);
+          define('USER1','root');
+          define('PASS1','');
+          define('DB1','kg_db');
 
           /*
           define('HOST1','localhost');
@@ -144,6 +144,11 @@ include("config.php");
           define('USER1','root');
           define('PASS1','');
           define('DB1','timonio001');
+
+          define('HOST1','localhost');
+          define('USER1','root');
+          define('PASS1','');
+          define('DB1','kg_db');
           */
 
 
