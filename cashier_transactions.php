@@ -16,6 +16,24 @@ FROM tb_cart
 WHERE tb_cart.date='".$_GET['date']."'";
 $result3=mysqli_query($db,$sql3);
 $row3 = mysqli_fetch_assoc($result3);
+
+$sql4 = "SELECT
+COUNT(tb_payments.id) AS cashcustomers,
+SUM(tb_payments.total) AS cashpayments
+FROM tb_payments
+WHERE tb_payments.payment1='CASH' AND
+tb_payments.date='".$_GET['date']."'";
+$result4=mysqli_query($db,$sql4);
+$row4 = mysqli_fetch_assoc($result4);
+
+$sql5 = "SELECT
+COUNT(tb_payments.id) AS othercustomers,
+SUM(tb_payments.total) AS otherpayments
+FROM tb_payments
+WHERE tb_payments.payment1!='CASH' AND
+tb_payments.date='".$_GET['date']."'";
+$result5=mysqli_query($db,$sql5);
+$row5 = mysqli_fetch_assoc($result5);
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -292,6 +310,28 @@ $row3 = mysqli_fetch_assoc($result3);
             </div>
           </div>
 
+          <div class="col text-center">
+            <div class="card-body p-2">
+                <h6 class="mt-0 text-muted" title="Number of Customers">CASH PAYMENTS</h6>
+                <h3 class="text-success"><?php echo $row4['cashpayments'] ?></h3>
+                <p class="mb-0 text-muted">
+                <span class="text-success fw-bold"><?php echo $row4['cashcustomers'] ?></span>
+                <span class="text-nowrap me-2">Receipts</span>
+                </p>
+            </div>
+          </div>
+
+          <div class="col text-center">
+            <div class="card-body p-2">
+                <h6 class="mt-0 text-muted" title="Number of Customers">OTHER PAYMENTS</h6>
+                <h3 class="text-success"><?php echo $row5['otherpayments'] ?></h3>
+                <p class="mb-0 text-muted">
+                <span class="text-success fw-bold"><?php echo $row5['othercustomers'] ?></span>
+                <span class="text-nowrap me-2">Receipts</span>
+                </p>
+            </div>
+          </div>
+
         </div>
       </div>
   
@@ -320,7 +360,7 @@ $row3 = mysqli_fetch_assoc($result3);
                         SUM(tb_cart.quantity) as items,
                         CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS total2,
                         tb_payments.total,
-                        CONCAT(FORMAT(tb_payments.payment, 2)) AS payment,
+                        CONCAT(tb_payments.payment1,' - ',FORMAT(tb_payments.payment, 2)) AS payment,
                           tb_payments.change1
                         FROM tb_payments
                       JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id

@@ -260,6 +260,7 @@ $row1 = mysqli_fetch_assoc($result1);
               }
             </script>
     </div>
+      <h6 class="mt-0 text-center" title="QR CODE"><?php echo $_GET['id']; ?></h6>
       <img class="p-0 m-0 mx-auto d-block" src="https://chart.googleapis.com/chart?chs=140x140&cht=qr&chl=<?php echo $_GET['id']; ?>">
       <div class="table" id="page">
       <div class="">

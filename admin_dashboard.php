@@ -341,7 +341,7 @@ $row19 = mysqli_fetch_assoc($result19);
   <body>
 
 
-    <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3">
+    <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3" hidden>
       <button class="btn btn-bd-primary d-flex align-items-center"
               type="button"
               data-bs-toggle="dropdown">

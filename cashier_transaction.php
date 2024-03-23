@@ -335,9 +335,13 @@ if (mysqli_num_rows($result) > 0) {
     
 
   
-      
+      <h6 class="text-muted mt-0 text-center">
+        <?php
+          echo $diff->format('%a day(s) ago');
+        ?>
+      </h6>
       <div class="table" id="page">
-      <h6 class="text-center mb-3">
+      <h6 class="text-center">
       <?php
       if(empty($row1['date_time'])) {
       $date_time ="N/A";

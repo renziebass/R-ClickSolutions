@@ -32,7 +32,7 @@
    define('HOST1','localhost');
    define('USER1','root');
    define('PASS1','');
-   define('DB1','timonio001');
+   define('DB1','kg_db');
    */
 
 

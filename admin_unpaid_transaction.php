@@ -365,9 +365,10 @@ if (mysqli_num_rows($result) > 0) {
              onclick="btn_modify(this.getAttribute('data-1'),this.getAttribute('data-2'),this.getAttribute('data-3'))"
               data-1="<?php echo $row1['name']; ?>"
               data-2="<?php echo $_GET['id']; ?>"
-              data-3="<?php echo date("Y-m-d"); ?>">
-             <span data-feather="edit" class="align-text-bottom"></button>
+              data-3="<?php echo date("Y-m-d"); ?>" hidden>
+             <span data-feather="edit" class="align-text-bottom" ></button>
     </div>
+  
 
 
   
@@ -385,14 +386,10 @@ if (mysqli_num_rows($result) > 0) {
       } else {
       $date_time = $row1['date_time'];
       }
-
-      if(empty($row1['name']) && ($_GET['id'])) {
-        echo "No Products, Please VOID this TRANSACTION";
-      } else {
-        echo "".$row1['name']." -".$_GET['id']." (".$date_time.")";
-      } 
+      echo "".$row1['name']." - ".$_GET['id']." (".$date_time.")";
+      
       ?></h6>
-                <h3 class=""><?php
+                <h3 class="text-danger"><?php
             if(empty($row1['total'])) {
             $payment ="0";
             } else {
@@ -401,7 +398,7 @@ if (mysqli_num_rows($result) > 0) {
             echo $payment;
             ?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary fw-bold"><?php
+                <span class="text-danger fw-bold"><?php
             if(empty($row1['items'])) {
             $items ="0";
             } else {

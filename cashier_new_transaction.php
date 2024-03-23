@@ -96,6 +96,9 @@ if(empty($row2['total2'])) {
 $sql2b="SELECT * FROM tb_discount WHERE tb_discount.min <= '".$total."'";
 $result2b=mysqli_query($db,$sql2b);
 
+$sql2c="SELECT * FROM tb_payment_methods";
+$result2c=mysqli_query($db,$sql2c);
+
   
 
 
@@ -191,8 +194,8 @@ if(!empty($_GET['payment'])){
 
       if(empty($resultCheck2))  {
 
-        $sql9="INSERT INTO tb_payments (id, date,time, total, payment, change1)
-        VALUES ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','" . $total . "','" . $_GET["payment"] . "','" . $_GET["payment"]-$total . "')";
+        $sql9="INSERT INTO tb_payments (id, date,time, total, payment, payment1, change1)
+        VALUES ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','" . $total . "','" . $_GET["payment"] . "','".$_GET['payment1']."','" . $_GET["payment"]-$total . "')";
 
         $sql10 = "UPDATE tb_transactions 
         SET tb_transactions.status='paid'
@@ -509,7 +512,7 @@ if(!empty($_GET['payment'])){
     <button type="button" class="btn btn-danger btn-sm" accesskey="m" onclick="btn_save()" <?php echo $btn_save;?>>SAVE</button>
     <button type="button" class="btn btn-warning btn-sm" accesskey="," onclick="btn_disc()" <?php echo $btn_disc;?>>DISCOUNT</button>
     <button type="button" class="btn btn-success btn-sm" accesskey="." onclick="btn_cash()" <?php echo $btn_cash;?>>CASH</button>
-    <button type="button" class="btn btn-primary btn-sm" accesskey="/" onclick="" <?php echo $btn_gcash;?>>G-CASH</button>
+    <button type="button" class="btn btn-primary btn-sm" accesskey="/" onclick="btn_other()" <?php echo $btn_gcash;?>>OTHER</button>
 </form>
 </div>
 
@@ -725,7 +728,46 @@ if(!empty($_GET['payment'])){
             timer: 1500
           }).then((result2) => {
             if (result2.dismiss === swalWithBootstrapButtons.DismissReason.timer) {
-              window.location.href = window.location.href+'&payment='+result.value;
+              window.location.href = window.location.href+'&payment='+result.value+'&payment1=CASH';
+            }
+           });
+        } else {
+          result.dismiss === Swal.DismissReason.cancel
+        }
+      });
+    }
+    function btn_other() {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-primary",
+          cancelButton: "btn btn-secondary me-1"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: "SELECT PAYMENT",
+        input: "select",
+        inputOptions: {
+        OPTIONS : {
+          <?php while($row2c = mysqli_fetch_array($result2c)):;?>
+          <?php echo $row2c['options'];?>: "<?php echo $row2c['options'];?>",
+          <?php endwhile; ?>
+          }
+        },
+        showCancelButton: true,
+        confirmButtonText: "Received, Confirm",
+        cancelButtonText: "Cancel",
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          swalWithBootstrapButtons.fire({
+            title: "No Change! Confirm on Online-Banking",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500
+          }).then((result2) => {
+            if (result2.dismiss === swalWithBootstrapButtons.DismissReason.timer) {
+              window.location.href = window.location.href+'&payment=<?php echo $total ;?>&payment1='+result.value;
             }
            });
         } else {

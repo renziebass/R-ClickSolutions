@@ -52,6 +52,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   } else {
     $price = validateInput($_POST["price"]);
   }
+  if (empty($_POST["price1"])) {
+    $price1_err = "* ";
+  } else {
+    $price1 = validateInput($_POST["price1"]);
+  }
+  if (empty($_POST["price2"])) {
+    $price2_err = "* ";
+  } else {
+    $price2 = validateInput($_POST["price2"]);
+  }
+  if (empty($_POST["price3"])) {
+    $price3_err = "* ";
+  } else {
+    $price3 = validateInput($_POST["price3"]);
+  }
   if (empty($_POST["cap"])) {
     $cap_err = "* ";
   } else {
@@ -71,8 +86,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       $CategoryCheck5 = mysqli_query($db, $sql5check);
       $result5 = mysqli_fetch_assoc($CategoryCheck5);
       if(empty($result5)) {
-        $sql4 = "INSERT INTO `tb_products` (`id`, `supplier_id`, `product_brand`, `category`, `mc_brand`, `mc_model`, `stocks`, `available`, `capital` ,`price`,`date`)
-        VALUES ('".date("YmdHis")."', '$supplier', '$pbrand', '$category', '$mcbrand', '$mcmodel', '$qty', '$qty', '$cap' ,'$price','".date("Y-m-d H:i:s")."')";
+        $sql4 = "INSERT INTO `tb_products` (`id`, `supplier_id`, `product_brand`, `category`, `mc_brand`, `mc_model`, `stocks`, `available`, `capital` ,`price`,`price1`,`price2`,`price3`,`date`)
+        VALUES ('".date("YmdHis")."', '$supplier', '$pbrand', '$category', '$mcbrand', '$mcmodel', '$qty', '$qty', '$cap' ,'$price','$price1','$price2','$price3','".date("Y-m-d H:i:s")."')";
         $AddCategory = mysqli_query($db, $sql4);
         
         header("Location: admin_add_products.php");
@@ -482,6 +497,26 @@ $result4=mysqli_query($db,$sql4);
                 <label for="floatingInputGrid">SRP</label>
               </div>
             </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md">
+              <div class="form-floating shadow">
+                <input name="price1" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="PRICE 1">
+                <label for="floatingInputGrid">PRICE 1</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating shadow">
+                <input name="price2" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="PRICE 2" >
+                <label for="floatingInputGrid">PRICE 2</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating shadow">
+                <input name="price3" type="decimal" class="form-control" aria-label="Text input with dropdown button" placeholder="PRICE 3" >
+                <label for="floatingInputGrid">PRICE 3</label>
+              </div>
+            </div>
           </div>      
           <div class="d-grid gap-2 d-md-flex justify-content-md-end">
             <button class="btn btn-success" type="submit">SAVE <span data-feather="upload-cloud" class="align-text-end"></button>
@@ -496,7 +531,11 @@ $result4=mysqli_query($db,$sql4);
               <th scope="col">Supplier</th>
               <th scope="col">Specification</th>
               <th scope="col">Stocks</th>
+              <th scope="col">Available</th>
               <th scope="col">SRP</th>
+              <th scope="col">PRICE 1</th>
+              <th scope="col">PRICE 2</th>
+              <th scope="col">PRICE 3</th>
               <th scope="col">Capital</th>
               <th scope="col">Profit</th>
               <th scope="col"></th>
@@ -510,9 +549,15 @@ $result4=mysqli_query($db,$sql4);
                 CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification,
                 tb_products.product_brand,
                 tb_products.stocks,
+                tb_products.available,
                 CONCAT(FORMAT(tb_products.capital, 2)) AS capital,
                 CONCAT(FORMAT(tb_products.price, 2)) AS price,
-                (tb_products.price - tb_products.capital) AS profit
+                CONCAT(FORMAT(tb_products.price1, 2)) AS price1,
+                CONCAT(FORMAT(tb_products.price2, 2)) AS price2,
+                CONCAT(FORMAT(tb_products.price3, 2)) AS price3,
+                (tb_products.price - tb_products.capital) AS profit,
+                CASE WHEN tb_products.available=tb_products.stocks
+                THEN 'null' ELSE 'hidden' END AS button
                 FROM tb_products
                 ORDER BY tb_products.date DESC";
                                                                                     
@@ -527,7 +572,11 @@ $result4=mysqli_query($db,$sql4);
                 <td><?php echo $items['supplier_id']; ?></td>
                 <td><?php echo $items['specification']; ?></td>
                 <td><?php echo $items['stocks']; ?></td>
+                <td><?php echo $items['available']; ?></td>
                 <td><?php echo $items['price']; ?></td>
+                <td><?php echo $items['price1']; ?></td>
+                <td><?php echo $items['price2']; ?></td>
+                <td><?php echo $items['price3']; ?></td>
                 <td><?php echo $items['capital']; ?></td>
                 <td><?php echo $items['profit']; ?></td>
                 <td>
@@ -535,7 +584,7 @@ $result4=mysqli_query($db,$sql4);
                   <button type="button" class="btn btn-sm p-0 m-0"
                   onclick="btn_void(this.getAttribute('data-1'), this.getAttribute('data-2'))"
                     data-1="<?php echo $items['id']; ?>"
-                    data-2="<?php echo $items['specification']; ?>">
+                    data-2="<?php echo $items['specification']; ?>" <?php echo $items['button']; ?>>
                     <span>
                       <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
                       <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>

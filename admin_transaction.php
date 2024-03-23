@@ -35,6 +35,7 @@ CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS total,
 SUM(tb_cart.price*tb_cart.quantity - tb_products.capital*tb_cart.quantity) AS profit,
 SUM(tb_products.capital*tb_cart.quantity) AS capital,
 CONCAT(DATE_FORMAT(tb_transactions.date,'%M %d,%Y'),'  ',tb_transactions.time) AS date_time,
+tb_transactions.date,
 CONCAT(FORMAT(tb_payments.payment, 2)) AS payment,
 tb_payments.change1
 FROM tb_cart
@@ -64,6 +65,10 @@ ON A.id=B.product_id
 GROUP BY B.product_id";
                                                       
 $result = mysqli_query($db,$sql);
+
+$tr_date=date_create($row1['date']);
+$cur_date=date_create(date("Y-m-d"));
+$diff=date_diff($tr_date,$cur_date);
 
 if (mysqli_num_rows($result) > 0) {
 
@@ -397,7 +402,11 @@ if (mysqli_num_rows($result) > 0) {
               }
             </script>
     </div>
-      
+    <h6 class="text-muted mt-0 text-center">
+        <?php
+          echo $diff->format('%a day(s) ago');
+        ?>
+      </h6>
       <div class="table" id="page">
       <h6 class="text-center mb-1">
       <?php

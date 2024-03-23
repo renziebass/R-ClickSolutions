@@ -352,11 +352,11 @@ $row3 = mysqli_fetch_assoc($result3);
           <div class="col text-center">
             <div class="card-body p-2">
                 <h6 class=" fw-normal mt-0" title="Number of Customers">Unpaid Accounts</h6>
-                <h3 class=""><?php echo $row3['unpaid'];?></h3>
+                <h3 class=" text-danger"><?php echo $row3['unpaid'];?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary fw-bold"><?php echo $row1['transactions'];?></span>
+                <span class="text-danger fw-bold"><?php echo $row1['transactions'];?></span>
                 <span class="text-nowrap me-2">Accounts</span>
-                <span class="text-primary fw-bold"><?php echo $row2['items'];?></span>
+                <span class="text-danger fw-bold"><?php echo $row2['items'];?></span>
                 <span class="text-nowrap">Items</span>
                 
                 </p>
@@ -370,6 +370,7 @@ $row3 = mysqli_fetch_assoc($result3);
           <thead>
             <tr class="text-muted">
               <th scope="col">Name</th>
+              <th scope="col">Duration</th>
               <th scope="col">Date Time</th>
               <th scope="col">Items</th>
               <th scope="col">Amount</th>
@@ -386,6 +387,7 @@ $row3 = mysqli_fetch_assoc($result3);
                 JOIN (SELECT
                     tb_cart.transaction_id,
                     SUM(tb_cart.quantity) as items,
+                    CONCAT(DATEDIFF(NOW(),tb_cart.date), ' day(s) ago') AS duration,
                     SUM(tb_cart.price*tb_cart.quantity) AS total
                         FROM tb_cart
                     GROUP BY tb_cart.transaction_id) AS B
@@ -402,6 +404,7 @@ $row3 = mysqli_fetch_assoc($result3);
             ?>
             <tr onclick="location.href='admin_unpaid_transaction.php?id=<?php echo $items['id'];?>'">  
                 <td><?php echo $items['name']; ?></td>
+                <td><?php echo $items['duration']; ?></td>
                 <td><?php echo $items['date']; ?></td>
                 <td><?php echo $items['items']; ?></td>
                 <td><?php echo $items['total']; ?></td>
