@@ -281,7 +281,7 @@ if(!empty($_GET['payment'])){
   <body>
   
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="cashier_dashboard.php">R-Click POS: Karaang Garahe</a>
+  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="cashier_dashboard.php">R-Click POS</a>
   <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-end">
       WHOLESALE TRANSACTION
   </a>

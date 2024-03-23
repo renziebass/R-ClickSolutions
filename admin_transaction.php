@@ -265,7 +265,7 @@ if (mysqli_num_rows($result) > 0) {
 
     
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">R-Click POS: Karaang Garahe</a>
+  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">R-Click POS</a>
   <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -352,7 +352,7 @@ if (mysqli_num_rows($result) > 0) {
           <li class="nav-item">
             <a class="nav-link" href="admin_add_mc.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
-              Add new brand & model
+              Add new mc brand & model
             </a>
           </li>
           <li class="nav-item">
