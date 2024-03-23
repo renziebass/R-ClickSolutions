@@ -90,7 +90,7 @@ include("config.php");
       
     <main class="form-signin w-100 m-auto">
     <div class="container text-center">
-    <img class="shadow"src="assets/img/R-ClickLogo.png" alt="" width="100" height="100">
+    <img class="shadow mb-3"src="assets/img/R-ClickLogo.png" alt="" width="100" height="100">
   
     </div>
     <form method="post">
