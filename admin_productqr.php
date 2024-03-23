@@ -314,7 +314,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <li class="nav-item">
             <a class="nav-link" href="admin_add_mc.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
-              Add new mc brand & model
+              Add new brand & model
             </a>
           </li>
           <li class="nav-item">

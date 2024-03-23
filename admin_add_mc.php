@@ -358,7 +358,7 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
           <li class="nav-item">
             <a class="nav-link active" href="admin_add_mc.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
-              Add new mc brand & model
+              Add new brand & model
             </a>
           </li>
           <li class="nav-item">
@@ -397,7 +397,7 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
         <div class="input-group input-group mb-3 shadow">
-          <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="mb" class="form-control" placeholder="New Motorcycle Brand" aria-label="Recipient's username" aria-describedby="button-addon2">
+          <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="mb" class="form-control" placeholder="New Brand" aria-label="Recipient's username" aria-describedby="button-addon2">
           <button class="btn btn-success" type="submit">ADD <span data-feather="upload-cloud" class="align-text-end"></button>
         </div>
         <div class="input-group input-group mb-3 shadow">
@@ -408,7 +408,7 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
             <?php echo $row3['brand'];?></option>
           <?php endwhile; ?>
           </select>
-          <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="mcmodel" class="form-control" placeholder="New Motorcycle Model" aria-label="Recipient's username" aria-describedby="button-addon2">
+          <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="mcmodel" class="form-control" placeholder="New Model" aria-label="Recipient's username" aria-describedby="button-addon2">
           <button class="btn btn-success" type="submit">ADD <span data-feather="upload-cloud" class="align-text-end"></button>
         </div>
       </form>
@@ -418,7 +418,7 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
         <table class="table table-hover table-sm">
           <thead>
             <tr class="text-muted">
-              <th scope="col">MC Brand - Model</th>
+              <th scope="col">Brand - Model</th>
               <th scope="col"></th>
             </tr>
           </thead>
