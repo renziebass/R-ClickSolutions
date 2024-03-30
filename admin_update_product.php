@@ -10,7 +10,10 @@ tb_products.capital,
 tb_products.product_brand,
 tb_products.category,
 tb_products.mc_brand,
-tb_products.mc_model
+tb_products.mc_model,
+tb_products.price1,
+tb_products.price2,
+tb_products.price3
 FROM tb_products
 LEFT JOIN tb_supplier ON tb_products.supplier_id=tb_supplier.id
 WHERE
@@ -99,6 +102,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   } else {
     $cap = validateInput($_POST["cap"]);
   }
+  if (empty($_POST["price1"])) {
+    $price1_err = "* ";
+  } else {
+    $price1 = validateInput($_POST["price1"]);
+  }
+  if (empty($_POST["price2"])) {
+    $price2_err = "* ";
+  } else {
+    $price2 = validateInput($_POST["price2"]);
+  }
+  if (empty($_POST["price3"])) {
+    $price3_err = "* ";
+  } else {
+    $price3 = validateInput($_POST["price3"]);
+  }
   
   if(!empty($_POST["pbrand"]) && !empty($_POST["price"]))
   {
@@ -112,7 +130,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       tb_products.mc_model='$mcmodel',
       tb_products.capital='$cap',
       tb_products.price='$price',
-      tb_products.disc='$disc'
+      tb_products.disc='$disc',
+      tb_products.price1='$price1',
+      tb_products.price2='$price2',
+      tb_products.price3='$price3'
       WHERE tb_products.id='" .$id. "'";
       $update = mysqli_query($db, $sql4);
         
@@ -594,7 +615,27 @@ $result4=mysqli_query($db,$sql4);
                 <label for="floatingInputGrid">SRP</label>
               </div>
             </div>
-          </div>      
+          </div>  
+          <div class="row mb-3">
+            <div class="col-md">
+              <div class="form-floating shadow">
+                <input name="price1" type="number" value="<?php echo $row0['price1'];?>" class="form-control" aria-label="Text input with dropdown button" placeholder="CAP" required>
+                <label for="floatingInputGrid">PRICE 1</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating shadow">
+                <input name="price2" type="decimal" value="<?php echo $row0['price2'];?>" class="form-control" aria-label="Text input with dropdown button" placeholder="SRP" required>
+                <label for="floatingInputGrid">PRICE 2</label>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="form-floating shadow">
+                <input name="price3" type="decimal" value="<?php echo $row0['price3'];?>" class="form-control" aria-label="Text input with dropdown button" placeholder="SRP" required>
+                <label for="floatingInputGrid">PRICE 3</label>
+              </div>
+            </div>
+          </div>     
           <div class="d-grid gap-2 d-md-flex justify-content-md-end">
             <button class="btn btn-success" type="submit"><span data-feather="save" class="align-text-end"></button>
           </div>
