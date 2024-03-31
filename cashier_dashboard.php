@@ -370,7 +370,7 @@ $row13 = mysqli_fetch_assoc($result13);
 
       <h6 class="mt-3 text-center text-muted">Recent Paid Transactions</h6>
       <div class="table-responsive">
-        <table class="table table-hover table-sm">
+        <table class="table table-hover table-sm mb-5">
           <thead>
             <tr class="text-muted">
               <th scope="col">Time</th>
