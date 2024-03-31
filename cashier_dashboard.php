@@ -369,7 +369,7 @@ $row13 = mysqli_fetch_assoc($result13);
       </div>
 
       <h6 class="mt-3 text-center text-muted">Recent Paid Transactions</h6>
-      <div class="table-responsive">
+      <div class="table-responsive" style="margin-bottom: 70px;">
         <table class="table table-hover table-sm mb-5">
           <thead>
             <tr class="text-muted">
