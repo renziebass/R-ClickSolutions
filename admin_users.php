@@ -267,7 +267,7 @@ $row1 = mysqli_fetch_assoc($result1);
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_product_restock.php?id=20230419234321">
+            <a class="nav-link" href="admin_product_restock.php?search=a">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Re-stock product
             </a>

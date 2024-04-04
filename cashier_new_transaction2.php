@@ -538,20 +538,20 @@ if(!empty($_GET['payment'])){
 <div class="position-fixed bottom-0 end-0 translate-bottom p-3 bg-white">
 <form>
   <div class="btn-group-vertical">
-  <button type="button" class="btn btn-danger btn-sm" accesskey="m" onclick="btn_save()" <?php echo $btn_save;?>>ALT+M</button>
-  <button type="button" class="btn btn-outline-danger fw-bold" accesskey="m" onclick="btn_save()" <?php echo $btn_save;?>>SAVE</button>
+  <button type="button" class="btn btn-danger btn-sm" style="--bs-btn-padding-y: .15rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;" accesskey="m" onclick="btn_save()" <?php echo $btn_save;?>>ALT+M</button>
+  <button type="button" class="btn btn-sm btn-outline-danger fw-bold" accesskey="m" onclick="btn_save()" <?php echo $btn_save;?>>SAVE</button>
   </div>
   <div class="btn-group-vertical">
-    <button type="button" class="btn btn-warning btn-sm" accesskey="," onclick="btn_disc()" <?php echo $btn_disc;?>>ALT+,</button>
-    <button type="button" class="btn btn-outline-warning fw-bold" accesskey="," onclick="btn_disc()" <?php echo $btn_disc;?>>DISCOUNT</button>
+    <button type="button" class="btn btn-warning btn-sm" style="--bs-btn-padding-y: .15rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;" accesskey="," onclick="btn_disc()" <?php echo $btn_disc;?>>ALT+,</button>
+    <button type="button" class="btn btn-sm btn-outline-warning fw-bold" accesskey="," onclick="btn_disc()" <?php echo $btn_disc;?>>DISCOUNT</button>
   </div>
   <div class="btn-group-vertical">
-    <button type="button" class="btn btn-success btn-sm" accesskey="." onclick="btn_cash()" <?php echo $btn_cash;?>>ALT+.</button>
-    <button type="button" class="btn btn-outline-success fw-bold" accesskey="." onclick="btn_cash()" <?php echo $btn_cash;?>>CASH</button>
+    <button type="button" class="btn btn-success btn-sm" style="--bs-btn-padding-y: .15rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;" accesskey="." onclick="btn_cash()" <?php echo $btn_cash;?>>ALT+.</button>
+    <button type="button" class="btn btn-sm btn-outline-success fw-bold" accesskey="." onclick="btn_cash()" <?php echo $btn_cash;?>>CASH</button>
   </div>
   <div class="btn-group-vertical">
-    <button type="button" class="btn btn-primary btn-sm" accesskey="/" onclick="btn_other()" <?php echo $btn_gcash;?>>ALT+/</button>
-    <button type="button" class="btn btn-outline-primary fw-bold" accesskey="/" onclick="btn_other()" <?php echo $btn_gcash;?>>OTHER</button>
+    <button type="button" class="btn btn-primary btn-sm" style="--bs-btn-padding-y: .15rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;" accesskey="/" onclick="btn_other()" <?php echo $btn_gcash;?>>ALT+/</button>
+    <button type="button" class="btn btn-sm btn-outline-primary fw-bold" accesskey="/" onclick="btn_other()" <?php echo $btn_gcash;?>>OTHER</button>
   </div>
 </form>
 </div>
@@ -559,16 +559,16 @@ if(!empty($_GET['payment'])){
 <form>
   <button type="button" class="btn btn-secondary" accesskey="x"onclick="init()" hidden>SEARCH ( ALT+X )</button>
   <div class="btn-group-vertical">
-    <button type="button" class="btn btn-secondary btn-sm" accesskey="z" onclick="location.href='cashier_dashboard.php'">ALT+Z</button>
-    <button type="button" class="btn btn-outline-secondary fw-bold" accesskey="z" onclick="location.href='cashier_dashboard.php'">DASHBOARD</button>
+    <button type="button" class="btn btn-secondary btn-sm" style="--bs-btn-padding-y: .15rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;" accesskey="z" onclick="location.href='cashier_dashboard.php'">ALT+Z</button>
+    <button type="button" class="btn btn-sm btn-outline-secondary fw-bold" accesskey="z" onclick="location.href='cashier_dashboard.php'">DASHBOARD</button>
   </div>
   <div class="btn-group-vertical">
-    <button type="button" class="btn btn-success btn-sm" accesskey="c" onclick="window.open('cashier_new_transaction2.php?id=<?php echo $TR;?>&date=<?php echo date('Y-m-d')?>')" <?php echo $button;?>>ALT+C</button>
-    <button type="button" class="btn btn-outline-success fw-bold" accesskey="c" onclick="window.open('cashier_new_transaction2.php?id=<?php echo $TR;?>&date=<?php echo date('Y-m-d')?>')" <?php echo $button;?>>NEW TR</button>
+    <button type="button" class="btn btn-success btn-sm" style="--bs-btn-padding-y: .15rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;" accesskey="c" onclick="window.open('cashier_new_transaction2.php?id=<?php echo $TR;?>&date=<?php echo date('Y-m-d')?>')" <?php echo $button;?>>ALT+C</button>
+    <button type="button" class="btn btn-sm btn-outline-success fw-bold" accesskey="c" onclick="window.open('cashier_new_transaction2.php?id=<?php echo $TR;?>&date=<?php echo date('Y-m-d')?>')" <?php echo $button;?>>NEW TR</button>
   </div>
   <div class="btn-group-vertical">
-    <button type="button" class="btn btn-danger btn-sm" accesskey="v" onclick="window.open('cashier_unpaid_transactions.php')"  <?php echo $button;?>>ALT+V</button>
-    <button type="button" class="btn btn-outline-danger fw-bold" accesskey="v" onclick="window.open('cashier_unpaid_transactions.php')"  <?php echo $button;?>>UNPAID</button>
+    <button type="button" class="btn btn-danger btn-sm" style="--bs-btn-padding-y: .15rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;" accesskey="v" onclick="window.open('cashier_unpaid_transactions.php')"  <?php echo $button;?>>ALT+V</button>
+    <button type="button" class="btn btn-sm btn-outline-danger fw-bold" accesskey="v" onclick="window.open('cashier_unpaid_transactions.php')"  <?php echo $button;?>>UNPAID</button>
   </div>
 </form>
 </div>

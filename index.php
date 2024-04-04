@@ -6,7 +6,7 @@ include("config.php");
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>R-Click Solutions</title>
+    <title>R-Click POS Sign-In</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <style>
       .bd-placeholder-img {
@@ -80,6 +80,9 @@ include("config.php");
       .bd-mode-toggle {
         z-index: 1500;
       }
+      .bd-mode-toggle .dropdown-menu .active .bi {
+        display: block !important;
+      }
     </style>
     <link href="sign-in.css" rel="stylesheet">
 </head>
@@ -96,13 +99,13 @@ include("config.php");
     <form method="post">
     <h1 class="h3 mb-3 fw-normal text-center">R-Click Solutions POS</h1>
 
-    <div class="form-floating py-1">
-      <input type="text" class="form-control" name="id" id="id">
-      <label for="id">User ID</label>
-    </div>
-    <div class="form-floating py-1">
-      <input type="password" class="form-control" name="password" id="password">
-      <label for="password">Password</label>
+    <div class="form-floating">
+  <input type="text" class="form-control" id="floatingInput" name="id" placeholder="123">
+  <label for="floatingInput">User ID</label>
+</div>
+<div class="form-floating">
+  <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password">
+  <label for="floatingPassword">Password</label>
       <p class="text-danger mt-3 text-center">
     <?php
         session_start();
@@ -133,6 +136,7 @@ include("config.php");
           define('USER1',$row0['user']);
           define('PASS1',$row0['pass']);
           define('DB1',$row0['db']);
+
 
           /*
           define('HOST1','localhost');

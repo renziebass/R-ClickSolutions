@@ -369,13 +369,53 @@ $row6 = mysqli_fetch_assoc($result6);
           <div class="col text-center">
             <div class="card-body p-2">
                 <h6 class="mt-0"><?php echo date("F d,Y H:i") ?></h6>
-                <h3 class=""><?php echo $row3['amount']; ?></h3>
+                <h3 class="">
+                  <?php
+                  $amount=null;
+                  if (empty($row3['amount'])) {
+                    $amount = 0;
+                  } else {
+                    $amount = $row3['amount'];
+                  }
+                  echo $amount;
+                  ?>
+                </h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary fw-bold"><?php echo $row1['products']; ?></span>
+                <span class="text-primary fw-bold">
+                  <?php
+                  $products=null;
+                  if (empty($row1['products'])) {
+                    $products = 0;
+                  } else {
+                    $products = $row1['products'];
+                  }
+                  echo $products;
+                  ?>
+                </span>
                 <span class="text-nowrap me-2">Products</span>
-                <span class="text-primary fw-bold"><?php echo $row4['items'];?></span>
+                <span class="text-primary fw-bold">
+                  <?php
+                  $items=null;
+                  if (empty($row4['items'])) {
+                    $items = 0;
+                  } else {
+                    $items = $row4['items'];
+                  }
+                  echo $items;
+                  ?>
+                </span>
                 <span class="text-nowrap me-2">Sold</span>
-                <span class="text-primary fw-bold"><?php echo $row6['products2']; ?></span>
+                <span class="text-primary fw-bold">
+                  <?php
+                  $products2=null;
+                  if (empty($row6['products2'])) {
+                    $products2 = 0;
+                  } else {
+                    $products2 = $row6['products2'];
+                  }
+                  echo $row6['products2'];
+                  ?>
+                </span>
                 <span class="text-nowrap me-2">Remaining</span>
                 <span class="text-primary fw-bold"><?php echo $row5['category'];?></span>
                 <span class="text-nowrap me-2">Category</span>

@@ -360,7 +360,7 @@ $result4=mysqli_query($db,$sql4);
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_product_restock.php?id=20230419234321">
+            <a class="nav-link" href="admin_product_restock.php?search=a">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Re-stock product
             </a>
@@ -418,7 +418,7 @@ $result4=mysqli_query($db,$sql4);
     <h6 class="text-center mb-3 mt-5">Add New Product</h6>
       <div class="align-items-center ">
       <form method="post" action="" id="myForm" enctype="multipart/form-data">
-          <div class="row mb-3">
+          <div class="row">
             <div class="col-md">
               <div class="form-floating shadow">
                   <select name="supplier" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon" required>
@@ -444,7 +444,7 @@ $result4=mysqli_query($db,$sql4);
               </div>
             </div>
           </div>
-          <div class="row mb-3">
+          <div class="row">
             <div class="col-md">
               <div class="form-floating shadow">
                 <select name="mcbrand" class="form-select" id="inputGroupSelect06" aria-label="Example select with button addon">
@@ -470,7 +470,7 @@ $result4=mysqli_query($db,$sql4);
               </div>
             </div>
           </div>
-          <div class="row mb-3">
+          <div class="row">
             <div class="col-md">
               <div class="form-floating shadow">
                 <input class="form-control" name="pbrand" type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" aria-label="Text input with dropdown button" placeholder="Product Brand" required>
@@ -478,7 +478,7 @@ $result4=mysqli_query($db,$sql4);
               </div>
             </div>
           </div>
-          <div class="row mb-3">
+          <div class="row">
             <div class="col-md">
               <div class="form-floating shadow">
                 <input name="cap" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="CAP" required>
@@ -493,7 +493,7 @@ $result4=mysqli_query($db,$sql4);
             </div>
             <div class="col-md">
               <div class="form-floating shadow">
-                <input name="price" type="decimal" class="form-control" aria-label="Text input with dropdown button" placeholder="SRP" required>
+                <input name="price" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="SRP" required>
                 <label for="floatingInputGrid">SRP</label>
               </div>
             </div>
@@ -513,13 +513,13 @@ $result4=mysqli_query($db,$sql4);
             </div>
             <div class="col-md">
               <div class="form-floating shadow">
-                <input name="price3" type="decimal" class="form-control" aria-label="Text input with dropdown button" placeholder="PRICE 3" >
+                <input name="price3" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="PRICE 3" >
                 <label for="floatingInputGrid">PRICE 3</label>
               </div>
             </div>
           </div>      
           <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <button class="btn btn-success" type="submit">SAVE <span data-feather="upload-cloud" class="align-text-end"></button>
+            <button class="btn btn-success" type="submit">ADD <span data-feather="upload-cloud" class="align-text-end"></button>
           </div>
         </form>
       </div>

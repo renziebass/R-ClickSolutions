@@ -298,7 +298,7 @@ if(!empty($_GET['xcategory'])) {
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_product_restock.php?id=20230419234321">
+            <a class="nav-link" href="admin_product_restock.php?search=a">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Re-stock product
             </a>
@@ -356,9 +356,13 @@ if(!empty($_GET['xcategory'])) {
     <h6 class="text-center mb-3 mt-5">Add New Product Category</h6>
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
-        <div class="input-group input-group mb-3 shadow">
-          <input type="text" onkeyup="this.value = this.value.toUpperCase();" name="category" class="form-control" placeholder="New Product Category" aria-label="Recipient's username" aria-describedby="button-addon2" required>
-          <button class="btn btn-success" type="submit">SAVE <span data-feather="upload-cloud" class="align-text-end"></button>
+        <div class="form-floating shadow mb-2">
+          <input name="category" type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" placeholder="New Product Category">
+          <label for="floatingInputGrid">NEW PRODUCT CATEGORY</label>
+        </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <button class="btn btn-success" type="submit">SAVE
+          <span data-feather="upload-cloud" class="align-text-end"></button>
         </div>
       </form>
       </div>

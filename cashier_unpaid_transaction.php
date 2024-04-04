@@ -434,7 +434,7 @@ if (mysqli_num_rows($result) > 0) {
         reverseButtons: true
       }).then((result) => {
         if (result.isConfirmed) {
-          location.href='cashier_new_transaction2.php?id='+data_2+'&date='+data_3;
+          location.href='<?php echo $newTR_loc;?>.php?id='+data_2+'&date='+data_3;
         } else {
           result.dismiss === Swal.DismissReason.cancel
         }

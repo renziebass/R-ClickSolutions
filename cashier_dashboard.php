@@ -46,21 +46,6 @@ FROM tb_products";
 $result5=mysqli_query($db,$sql5);
 $row5 = mysqli_fetch_assoc($result5);
 
-$sql6 = "SELECT
-COUNT(tb_products.id)AS products
-FROM tb_products
-WHERE tb_products.available <= 5 AND tb_products.available
-NOT IN (SELECT tb_products.available FROM tb_products WHERE tb_products.available='0')";
-$result6=mysqli_query($db,$sql6);
-$row6 = mysqli_fetch_assoc($result6);
-
-$sql7 = "SELECT
-COUNT(tb_products.id)AS products
-FROM tb_products
-WHERE tb_products.available='0'";
-$result7=mysqli_query($db,$sql7);
-$row7 = mysqli_fetch_assoc($result7);
-
 
 $sql13="SELECT
 SUM(tb_cart.quantity) AS items
@@ -71,6 +56,24 @@ $result13=mysqli_query($db,$sql13);
 $row13 = mysqli_fetch_assoc($result13);
 
   //$TR = $_SESSION['id']."-".date("Ymd")."-".date("His");
+
+$sql14 = "SELECT
+COUNT(tb_payments.id) AS cashcustomers,
+SUM(tb_payments.total) AS cashpayments
+FROM tb_payments
+WHERE tb_payments.payment1='CASH' AND
+tb_payments.date='".date("Y-m-d")."'";
+$result14=mysqli_query($db,$sql14);
+$row14 = mysqli_fetch_assoc($result14);
+
+$sql15 = "SELECT
+COUNT(tb_payments.id) AS othercustomers,
+SUM(tb_payments.total) AS otherpayments
+FROM tb_payments
+WHERE tb_payments.payment1!='CASH' AND
+tb_payments.date='".date("Y-m-d")."'";
+$result15=mysqli_query($db,$sql15);
+$row15 = mysqli_fetch_assoc($result15);
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -254,12 +257,12 @@ $row13 = mysqli_fetch_assoc($result13);
 
     <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3">
       <div class="btn-group-vertical">
-        <button type="button" class="btn btn-success btn-sm" accesskey="c" onclick="location.href='<?php echo $newTR_loc;?>.php?date=<?php echo date('Y-m-d')?>'" >ALT+C</button>
-        <button type="button" class="btn btn-outline-success fw-bold" accesskey="c" onclick="location.href='<?php echo $newTR_loc;?>.php?date=<?php echo date('Y-m-d')?>'" >NEW TR</button>
+        <button type="button" class="btn btn-success btn-sm" style="--bs-btn-padding-y: .15rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;" accesskey="c" onclick="location.href='<?php echo $newTR_loc;?>.php?date=<?php echo date('Y-m-d')?>'" >ALT+C</button>
+        <button type="button" class="btn btn-sm btn-outline-success fw-bold" accesskey="c" onclick="location.href='<?php echo $newTR_loc;?>.php?date=<?php echo date('Y-m-d')?>'" >NEW TR</button>
       </div>
       <div class="btn-group-vertical">
-        <button type="button" class="btn btn-warning btn-sm" accesskey="v" onclick="location.href='cashier_new_transaction3.php?date=<?php echo date('Y-m-d')?>'" >ALT+V</button>
-        <button type="button" class="btn btn-outline-warning fw-bold" accesskey="v" onclick="location.href='cashier_new_transaction3.php?date=<?php echo date('Y-m-d')?>'" >WS TR</button>
+        <button type="button" class="btn btn-warning btn-sm" style="--bs-btn-padding-y: .15rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;" accesskey="v" onclick="location.href='cashier_new_transaction3.php?date=<?php echo date('Y-m-d')?>'" >ALT+V</button>
+        <button type="button" class="btn btn-sm btn-outline-warning fw-bold" accesskey="v" onclick="location.href='cashier_new_transaction3.php?date=<?php echo date('Y-m-d')?>'" >WS TR</button>
       </div>
     </div>
     
@@ -331,39 +334,111 @@ $row13 = mysqli_fetch_assoc($result13);
           <div class="col text-center">
             <div class="card-body p-2">
                 <h6 class="fw-bold mt-0" title="Number of Customers"><?php echo date("M j,Y");?></h6>
-                <h3 class="text-success"><?php echo $row2['sales'];?></h3>
+                <h3 class="text-success">
+                  <?php
+                  $sales=null;
+                  if (empty($row2['sales'])) {
+                    $sales = 0;
+                  } else {
+                    $sales = $row2['sales'];
+                  }
+                  echo $sales;
+                  ?>
+                </h3>
                 <p class="mb-0 text-muted">
                 <span class="text-success fw-bold"><?php echo $row2['paidcustomers'];?></span>
                 <span class="text-nowrap me-2">Receipts</span>
-                <span class="text-success fw-bold"><?php echo $row2b['paiditems'];?></span>
+                <span class="text-success fw-bold">
+                  <?php
+                  $product_sold=null;
+                  if (empty($row2b['paiditems'])) {
+                    $product_sold = 0;
+                  } else {
+                    $product_sold = $row2b['paiditems'];
+                  }
+                  echo $product_sold;
+                  ?>
+                </span>
                 <span class="text-nowrap">Products Sold</span> 
-                </p>
-            </div>
-          </div>
-          
-          <div class="col text-center">
-            <div class="card-body p-2">
-                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Amount Receivables</h6>
-                <h3 class="text-danger"><?php echo $row4['unpaid'];?></h3>
-                <p class="mb-0 text-muted">
-                <span class="text-danger fw-bold"><?php echo $row3['transactions'];?></span>
-                <span class="text-nowrap me-2">Accounts</span>
-                <span class="text-danger fw-bold"><?php echo $row13['items'];?></span>
-                <span class="text-nowrap">Items</span> 
                 </p>
             </div>
           </div>
 
           <div class="col text-center">
             <div class="card-body p-2">
-                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Low Stocks</h6>
-                <h3 class="text-danger"><?php echo $row6['products']; ?></h3>
+                <h6 class="mt-0 text-muted" title="Number of Customers">CASH PAYMENTS</h6>
+                <h3 class="text-success">
+                  <?php
+                  $cashpayments=null;
+                  if (empty($row14['cashpayments'])) {
+                    $cashpayments = 0;
+                  } else {
+                    $cashpayments = $row14['cashpayments'];
+                  }
+                  echo $cashpayments;
+                  ?>
+                </h3>
                 <p class="mb-0 text-muted">
-                <span class="text-danger fw-bold"><?php echo $row7['products']; ?></span>
-                <span class="text-nowrap">Zero Stocks</span>  
+                <span class="text-success fw-bold"><?php echo $row14['cashcustomers'] ?></span>
+                <span class="text-nowrap me-2">Receipts</span>
                 </p>
             </div>
           </div>
+
+          <div class="col text-center">
+            <div class="card-body p-2">
+                <h6 class="mt-0 text-muted" title="Number of Customers">OTHER PAYMENTS</h6>
+                <h3 class="text-success">
+                  <?php
+                  $otherpayments=null;
+                  if (empty($row15['otherpayments'])) {
+                    $otherpayments = 0;
+                  } else {
+                    $otherpayments = $row15['otherpayments'];
+                  }
+                  echo $otherpayments;
+                  ?>
+                </h3>
+                <p class="mb-0 text-muted">
+                <span class="text-success fw-bold"><?php echo $row15['othercustomers'] ?></span>
+                <span class="text-nowrap me-2">Receipts</span>
+                </p>
+            </div>
+          </div>
+          
+          <div class="col text-center" onclick="location.href='cashier_unpaid_transactions.php'">
+            <div class="card-body p-2">
+                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Amount Receivables</h6>
+                <h3 class="text-danger">
+                  <?php
+                  $unpaid=null;
+                  if (empty($row4['unpaid'])) {
+                    $unpaid = 0;
+                  } else {
+                    $unpaid = $row4['unpaid'];
+                  }
+                  echo $unpaid;
+                  ?>
+                </h3>
+                <p class="mb-0 text-muted">
+                <span class="text-danger fw-bold"><?php echo $row3['transactions'];?></span>
+                <span class="text-nowrap me-2">Accounts</span>
+                <span class="text-danger fw-bold">
+                  <?php
+                  $items=null;
+                  if (empty($row13['items'])) {
+                    $items = 0;
+                  } else {
+                    $items = $row13['items'];
+                  }
+                  echo $items;
+                  ?>
+                </span>
+                <span class="text-nowrap">Items</span> 
+                </p>
+            </div>
+          </div>
+
           
         </div>
       </div>

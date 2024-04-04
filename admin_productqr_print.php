@@ -245,19 +245,19 @@ include('user_session.php');
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_add_products.php?id=20230419234321">
+            <a class="nav-link" href="admin_add_products.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Add new product
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_product_restock.php?id=20230419234321">
+            <a class="nav-link" href="admin_product_restock.php?search=a">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Re-stock product
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_add_category.php?id=20230419234321">
+            <a class="nav-link" href="admin_add_category.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Add new category
             </a>

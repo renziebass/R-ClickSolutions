@@ -35,7 +35,7 @@ $result4=mysqli_query($db,$sql4);
 $row4 = mysqli_fetch_assoc($result4);
 
 $sql5 = "SELECT 
-CONCAT(FORMAT(SUM(tb_products.available*tb_products.price), 2)) AS amount
+CONCAT(FORMAT(SUM(tb_products.available*tb_products.capital), 2)) AS amount
 FROM tb_products";
 $result5=mysqli_query($db,$sql5);
 $row5 = mysqli_fetch_assoc($result5);
@@ -144,11 +144,6 @@ ORDER BY pcs DESC
 LIMIT 5";
 $result17=mysqli_query($db,$sql17);
 
-$sql18 = "SELECT 
-CONCAT(FORMAT(SUM(tb_products.stocks*tb_products.price), 2)) AS amount
-FROM tb_products";
-$result18=mysqli_query($db,$sql18);
-$row18 = mysqli_fetch_assoc($result18);
 
 $sql19 = "SELECT
 FORMAT(SUM(tb_products.capital*tb_cart.quantity) , 2) AS capital,
@@ -516,11 +511,31 @@ $row19 = mysqli_fetch_assoc($result19);
           <div class="col text-center">
             <div class="card-body p-2">
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Revenue</h6>
-                <h3 class=""><?php echo $row1['paid'];?></h3>
+                <h3 class="">
+                  <?php
+                  $paid=null;
+                  if (empty($row1['paid'])) {
+                    $paid = 0;
+                  } else {
+                    $paid = $row1['paid'];
+                  }
+                  echo $paid;
+                  ?>
+                </h3>
                 <p class="mb-0 text-muted">
                 <span class="text-primary fw-bold"><?php echo $row12['transactions'];?></span>
                 <span class="text-nowrap me-2">Receipts</span>
-                <span class="text-primary fw-bold"><?php echo $row11['items'];?></span>
+                <span class="text-primary fw-bold">
+                  <?php
+                  $items=null;
+                  if (empty($row11['items'])) {
+                    $items = 0;
+                  } else {
+                    $items = $row11['items'];
+                  }
+                  echo $items;
+                  ?>
+                </span>
                 <span class="text-nowrap me-2">Products Sold</span>
                 </p>
             </div>
@@ -529,9 +544,29 @@ $row19 = mysqli_fetch_assoc($result19);
           <div class="col text-center">
             <div class="card-body p-2">
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Net Profit</h6>
-                <h3 class=""><?php echo $row19['profit'];?></h3>
+                <h3 class="">
+                  <?php
+                  $profit=null;
+                  if (empty($row19['profit'])) {
+                    $profit = 0;
+                  } else {
+                    $profit = $row19['profit'];
+                  }
+                  echo $profit;
+                  ?>
+                </h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary fw-bold"><?php echo $row19['capital'];?></span>
+                <span class="text-primary fw-bold">
+                  <?php
+                  $capital=null;
+                  if (empty($row19['capital'])) {
+                    $capital = 0;
+                  } else {
+                    $capital = $row19['capital'];
+                  }
+                  echo  $capital;
+                  ?>
+                </span>
                 <span class="text-nowrap me-1">Capital</span>
                 </p>
             </div>
@@ -540,11 +575,31 @@ $row19 = mysqli_fetch_assoc($result19);
           <div class="col text-center">
             <div class="card-body p-2">
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Receivable</h6>
-                <h3 class="text-danger"><?php echo $row4['unpaid'];?></h3>
+                <h3 class="text-danger">
+                  <?php
+                  $unpaid=null;
+                  if (empty($row4['unpaid'])) {
+                    $unpaid = 0;
+                  } else {
+                    $unpaid = $row4['unpaid'];
+                  }
+                  echo $unpaid;
+                  ?>
+                </h3>
                 <p class="mb-0 text-muted">
                 <span class="text-danger fw-bold"><?php echo $row3['transactions'];?></span>
                 <span class="text-nowrap me-2">Accounts</span>
-                <span class="text-danger fw-bold"><?php echo $row13['items'];?></span>
+                <span class="text-danger fw-bold">
+                  <?php
+                  $items=null;
+                  if (empty($row13['items'])) {
+                    $items = 0;
+                  } else {
+                    $items = $row13['items'];
+                  }
+                  echo $items;
+                  ?>
+                </span>
                 <span class="text-nowrap me-2">Products</span>
                 </p>
             </div>
@@ -571,11 +626,19 @@ $row19 = mysqli_fetch_assoc($result19);
           <div class="col text-center">
             <div class="card-body p-2">
     
-                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Inventory</h6>
-                <h3 class=""><?php echo $row5['amount']; ?></h3>
+                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Capital Inventory</h6>
+                <h3 class="">
+                  <?php
+                  $amount=null;
+                  if (empty($row5['amount'])) {
+                    $amount = 0;
+                  } else {
+                    $amount = $row5['amount'];
+                  }
+                  echo $amount;
+                  ?>
+                </h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary fw-bold"><?php echo $row18['amount']; ?></span>
-                <span class="text-nowrap me-2">Total</span>
                 <span class="text-danger fw-bold"><?php echo $row6['products']; ?></span>
                 <span class="text-nowrap me-2">Low Stocks</span> 
                 <span class="text-danger fw-bold"><?php echo $row7['products']; ?></span>
@@ -587,9 +650,29 @@ $row19 = mysqli_fetch_assoc($result19);
           <div class="col text-center">
             <div class="card-body p-2">
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Monthly Avg</h6>
-                <h3 class=""><?php echo $row15['monthly'];?></h3>
+                <h3 class="">
+                  <?php
+                  $monthly=null;
+                  if (empty($row15['monthly'])) {
+                    $monthly = 0;
+                  } else {
+                    $monthly = $row15['monthly'];
+                  }
+                  echo $monthly;
+                  ?>
+                </h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary fw-bold"><?php echo $row14['daily'];?></span>
+                <span class="text-primary fw-bold">
+                  <?php
+                  $daily=null;
+                  if (empty($row14['daily'])) {
+                    $daily = 0;
+                  } else {
+                    $daily = $row14['daily'];
+                  }
+                  echo $daily;
+                  ?>
+                </span>
                 <span class="text-nowrap me-2">Daily</span>
                 </p>
             </div>
@@ -598,11 +681,31 @@ $row19 = mysqli_fetch_assoc($result19);
           <div class="col text-center">
             <div class="card-body p-2">
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Today <?php echo date("M j,Y");?></h6>
-                <h3 class=""><?php echo $row2['sales'];?></h3>
+                <h3 class="">
+                  <?php
+                  $today_sales=null;
+                  if (empty($row2['sales'])) {
+                    $today_sales = 0;
+                  } else {
+                    $today_sales = $row2['sales'];
+                  }
+                  echo $today_sales;
+                  ?>
+                </h3>
                 <p class="mb-0 text-muted">
                 <span class="text-primary fw-bold"><?php echo $row2['paidcustomers'];?></span>
                 <span class="text-nowrap me-2">Receipts</span>
-                <span class="text-primary fw-bold"><?php echo $row2['paiditems'];?></span>
+                <span class="text-primary fw-bold">
+                  <?php
+                  $paid_items=null;
+                  if (empty($row2['paiditems'])) {
+                    $paid_items = 0;
+                  } else {
+                    $paid_items = $row2['paiditems'];
+                  }
+                  echo $paid_items;
+                  ?>
+                </span>
                 <span class="text-nowrap me-2">Products Sold</span> 
                 </p>
             </div>

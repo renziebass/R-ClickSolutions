@@ -288,7 +288,7 @@ if(!empty($_POST["password"]))
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_product_restock.php?id=20230419234321">
+            <a class="nav-link" href="admin_product_restock.php?search=a">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Re-stock product
             </a>
@@ -347,40 +347,18 @@ if(!empty($_POST["password"]))
       <h5>Account Information</h5>
       </div>
       <h6><?php echo $row1['acc_type'];?> <?php echo $row1['userid'];?> - <?php echo $row1['name'];?></h6>
-      <form method="post" action="" enctype="multipart/form-data">
+      <form method="post" id="dynForm" enctype="multipart/form-data">
         <div class="input-group input-group mb-3 shadow">
-          <div class="input-group-text">
-          <input class="form-check-input mt-0" onclick="showpw()" type="checkbox" value="" aria-label="Checkbox for following text input"> Show Password
-          </div>
+          
           <input id="textpw" type="password" class="form-control" placeholder="USERID" aria-label="Example text with button addon" aria-describedby="button-addon1" name="password" value="<?php echo $row1['password'];?>">
-          <script>
-          function showpw() {
-          var x = document.getElementById("textpw");
-          if (x.type === "password") {
-          x.type = "text";
-          } else {
-          x.type = "password";
-          }
-          }
-          </script>
-         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal">
-          UPDATE <span data-feather="upload-cloud" class="align-text-end">
-            </button>
-
-                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h6 class="modal-title" id="exampleModalLabel">Update Account Password</h6>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button type="submit" class="btn btn-sm btn-danger" >Update</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
         </div>
+        <input class="form-check-input mb-3" onclick="showpw()" type="checkbox" value="" aria-label="Checkbox for following text input"> Show Password
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <button type="button" class="btn btn-success"onclick="btn_update()">
+            UPDATE <span data-feather="upload-cloud" class="align-text-end">
+          </button>
+        </div>
+        
       </form> 
       <div class="table" id="page">
       <h6>Login History</h6>
@@ -420,7 +398,50 @@ if(!empty($_POST["password"]))
   </div>
 </div>
 
-
+<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+<script>
+   function showpw() {
+          var x = document.getElementById("textpw");
+          if (x.type === "password") {
+          x.type = "text";
+          } else {
+          x.type = "password";
+          }
+          }
+  function btn_update() {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-secondary me-1"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: "CONFIRM UPDATE PASSWORD?",
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          swalWithBootstrapButtons.fire({
+          title: "PASSWORD UPDATED",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500
+         }).then((result2) => {
+          if (result2.dismiss === swalWithBootstrapButtons.DismissReason.timer) {
+            document.getElementById("dynForm").submit();
+          }
+          });
+          
+        } else {
+          result.dismiss === Swal.DismissReason.cancel
+        }
+      });
+    }
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>

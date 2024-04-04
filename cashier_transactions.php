@@ -299,11 +299,31 @@ $row5 = mysqli_fetch_assoc($result5);
           <div class="col text-center">
             <div class="card-body p-2">
                 <h6 class="mt-0" title="Number of Customers"><?php echo $row2['date1'];?></h6>
-                <h3 class="text-success"><?php echo $row2['sales_total'] ?></h3>
+                <h3 class="text-success">
+                  <?php
+                  $sales_total=null;
+                  if (empty($row2['sales_total'])) {
+                    $sales_total = 0;
+                  } else {
+                    $sales_total = $row2['sales_total'];
+                  }
+                  echo $sales_total;
+                  ?>
+                </h3>
                 <p class="mb-0 text-muted">
                 <span class="text-success fw-bold"><?php echo $row2['paidcustomers'] ?></span>
                 <span class="text-nowrap me-2">Receipts</span>
-                <span class="text-success fw-bold"><?php echo $row3['paiditems'] ?></span>
+                <span class="text-success fw-bold">
+                  <?php 
+                  $paiditems=null;
+                  if (empty($row3['paiditems'])) {
+                    $paiditems = 0;
+                  } else {
+                    $paiditems = $row3['paiditems'];
+                  }
+                  echo $paiditems;
+                  ?>
+                </span>
                 <span class="text-nowrap me-2">Products Sold</span>
                 
                 </p>
@@ -313,7 +333,17 @@ $row5 = mysqli_fetch_assoc($result5);
           <div class="col text-center">
             <div class="card-body p-2">
                 <h6 class="mt-0 text-muted" title="Number of Customers">CASH PAYMENTS</h6>
-                <h3 class="text-success"><?php echo $row4['cashpayments'] ?></h3>
+                <h3 class="text-success">
+                  <?php
+                  $cashpayments=null;
+                  if (empty($row4['cashpayments'])) {
+                    $cashpayments = 0;
+                  } else {
+                    $cashpayments = $row4['cashpayments'];
+                  }
+                  echo $cashpayments;
+                  ?>
+                </h3>
                 <p class="mb-0 text-muted">
                 <span class="text-success fw-bold"><?php echo $row4['cashcustomers'] ?></span>
                 <span class="text-nowrap me-2">Receipts</span>
@@ -324,7 +354,17 @@ $row5 = mysqli_fetch_assoc($result5);
           <div class="col text-center">
             <div class="card-body p-2">
                 <h6 class="mt-0 text-muted" title="Number of Customers">OTHER PAYMENTS</h6>
-                <h3 class="text-success"><?php echo $row5['otherpayments'] ?></h3>
+                <h3 class="text-success">
+                  <?php
+                  $otherpayments=null;
+                  if (empty($row5['otherpayments'])) {
+                    $otherpayments = 0;
+                  } else {
+                    $otherpayments = $row5['otherpayments'];
+                  }
+                  echo $otherpayments;
+                  ?>
+                </h3>
                 <p class="mb-0 text-muted">
                 <span class="text-success fw-bold"><?php echo $row5['othercustomers'] ?></span>
                 <span class="text-nowrap me-2">Receipts</span>

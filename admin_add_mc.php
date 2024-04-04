@@ -98,7 +98,7 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.111.3">
-    <title>ADD MC</title>
+    <title>ADD BRAND & MODEL</title>
  
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 
@@ -338,7 +338,7 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_product_restock.php?id=20230419234321">
+            <a class="nav-link" href="admin_product_restock.php?search=a">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Re-stock product
             </a>
@@ -396,21 +396,31 @@ if(!empty($_GET['xmcbrand']) && !empty($_GET['xmcmodel'])) {
     <h6 class="text-center mb-3 mt-5">Add New Brand & Model</h6>
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
-        <div class="input-group input-group mb-3 shadow">
-          <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="mb" class="form-control" placeholder="New Brand" aria-label="Recipient's username" aria-describedby="button-addon2">
-          <button class="btn btn-success" type="submit">ADD <span data-feather="upload-cloud" class="align-text-end"></button>
+        <div class="form-floating shadow mb-2">
+          <input name="mb" type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" placeholder="New Brand" aria-label="Recipient's username" aria-describedby="button-addon2">
+          <label for="floatingInputGrid">NEW BRAND</label>
         </div>
-        <div class="input-group input-group mb-3 shadow">
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-2">
+        <button class="btn btn-success" type="submit">ADD <span data-feather="upload-cloud" class="align-text-end"></button>
+        </div>
+        <div class="form-floating shadow">
         <select name="mcbrand" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
-        <option selected disabled value="">No Brand</option>
+          <option selected disabled value="">No Brand</option>
           <?php while($row3 = mysqli_fetch_array($result3)):;?> 
             <option class="dropdown-item" href="admin_inventory_manage.php?pcategory=<?php echo $row3['brand'];?>" value="<?php echo $row3['brand'];?>">
             <?php echo $row3['brand'];?></option>
           <?php endwhile; ?>
-          </select>
-          <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="mcmodel" class="form-control" placeholder="New Model" aria-label="Recipient's username" aria-describedby="button-addon2">
-          <button class="btn btn-success" type="submit">ADD <span data-feather="upload-cloud" class="align-text-end"></button>
+          <label for="floatingInputGrid">SELECT BRAND</label>
+        </select>
         </div>
+        <div class="form-floating shadow mb-2">
+          <input name="mcmodel" type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" placeholder="New Brand" aria-label="Recipient's username" aria-describedby="button-addon2">
+          <label for="floatingInputGrid">NEW MODEL</label>
+        </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <button class="btn btn-success" type="submit">ADD <span data-feather="upload-cloud" class="align-text-end"></button>
+        </div>
+        
       </form>
       </div>
       <div class="table" id="page">

@@ -611,7 +611,7 @@ if(!empty($_GET['payment'])){
       });
       swalWithBootstrapButtons.fire({
         title: data_1,
-        input: "text",
+        input: "number",
         footer: '<h6 class="text-white text-center">Available stocks: '+data_4+'</h6>',
         showCancelButton: true,
         confirmButtonText: "Add to Cart",

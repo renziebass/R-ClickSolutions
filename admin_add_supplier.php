@@ -323,7 +323,7 @@ $result4=mysqli_query($db,$sql4);
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_product_restock.php?id=20230419234321">
+            <a class="nav-link" href="admin_product_restock.php?search=a">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Re-stock product
             </a>
@@ -378,10 +378,10 @@ $result4=mysqli_query($db,$sql4);
     </nav>
 
     <main class="col-md-9 ms-sm-auto col-lg-10">
-    <h6 class="text-center mb-3 mt-5">Add New Supplier</h6>
+    <h6 class="text-center mt-5">Add New Supplier</h6>
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
-        <div class="row mb-3">
+        <div class="row">
             <div class="col-md">
               <div class="form-floating shadow">
                 <input type="text" name="id" class="form-control" placeholder="ID" aria-label="Recipient's username" aria-describedby="button-addon2" required>
@@ -395,7 +395,7 @@ $result4=mysqli_query($db,$sql4);
             </div>
             </div>
         </div>
-        <div class="row mb-3">
+        <div class="row">
             <div class="col-md">
               <div class="form-floating shadow">
               <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="address" class="form-control" placeholder="Location" aria-label="Recipient's username" aria-describedby="button-addon2" required>
@@ -409,7 +409,7 @@ $result4=mysqli_query($db,$sql4);
             </div>
             </div>
         </div>
-        <div class="row mb-3">
+        <div class="row">
             <div class="col-md">
               <div class="form-floating shadow">
               <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="notes" class="form-control" placeholder="Notes" aria-label="Recipient's username" aria-describedby="button-addon2" required>

@@ -447,7 +447,7 @@ header("Location: admin_product_restock.php?search=".$_GET['search']."");
         </div>
       </div>
       <div class="col-md container text-center">
-        <button class="btn btn-secondary"
+        <button class="btn btn-success"
         onclick="btn_qty(this.getAttribute('data-1'), this.getAttribute('data-2'), 
             this.getAttribute('data-3'), this.getAttribute('data-4'))"
             data-1="<?php echo $row1b['specification'];?>" 

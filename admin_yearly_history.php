@@ -281,7 +281,7 @@ $row5 = mysqli_fetch_assoc($result5);
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_product_restock.php?id=20230419234321">
+            <a class="nav-link" href="admin_product_restock.php?search=a">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Re-stock product
             </a>
@@ -364,7 +364,17 @@ $row5 = mysqli_fetch_assoc($result5);
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Receipts</h6>
                 <h3 class=""><?php echo $row1['transactions'];?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary fw-bold"><?php echo $row2['items'];?></span>
+                <span class="text-primary fw-bold">
+                  <?php
+                  $items=null;
+                  if (empty($row2['items'])) {
+                    $items = 0;
+                  } else {
+                    $items = $row2['items'];
+                  }
+                  echo $items;
+                  ?>
+                </span>
                 <span class="text-nowrap">Products Sold</span>  
                 </p>
             </div>
@@ -374,11 +384,41 @@ $row5 = mysqli_fetch_assoc($result5);
           <div class="col text-center">
             <div class="card-body p-2">
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Revenue</h6>
-                <h3 class=""><?php echo $row3['paid'];?></h3>
+                <h3 class="">
+                  <?php
+                  $paid=null;
+                  if (empty($row3['paid'])) {
+                    $paid = 0;
+                  } else {
+                    $paid = $row3['paid'];
+                  }
+                  echo $paid;
+                  ?>
+                </h3>
                 <p class="mb-0 text-muted">
-                <span class="text-primary fw-bold"><?php echo $row5['capital'];?></span>
+                <span class="text-primary fw-bold">
+                  <?php 
+                  $capital=null;
+                  if (empty($row5['capital'])) {
+                    $capital = 0;
+                  } else {
+                    $capital = $row5['capital'];
+                  }
+                  echo $capital;
+                  ?>
+                </span>
                 <span class="text-nowrap me-2">Capital</span> 
-                <span class="text-primary fw-bold"><?php echo $row5['profit'];?></span>
+                <span class="text-primary fw-bold">
+                  <?php
+                  $profit=null;
+                  if (empty($row5['profit'])) {
+                    $profit = 0;
+                  } else {
+                    $profit = $row5['profit'];
+                  }
+                  echo $profit;
+                  ?>
+                </span>
                 <span class="text-nowrap">Net Profit</span>  
                 </p>
             </div>

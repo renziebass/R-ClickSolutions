@@ -316,19 +316,19 @@ if(!empty($_POST["id"]) && !empty($_POST["size"]))
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_add_products.php?id=20230419234321">
+            <a class="nav-link" href="admin_add_products.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Add new product
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_product_restock.php?id=20230419234321">
+            <a class="nav-link" href="admin_product_restock.php?search=a">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Re-stock product
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="admin_add_category.php?id=20230419234321">
+            <a class="nav-link" href="admin_add_category.php">
               <span data-feather="file-text" class="align-text-bottom"></span>
               Add new category
             </a>
@@ -385,15 +385,18 @@ if(!empty($_POST["id"]) && !empty($_POST["size"]))
     </div>
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
-        <div class="input-group input-group shadow">
-        <select class="btn btn-outline-secondary" name="size">
-          <option value="90x90">90x90 QR SIZE</option>
-          <option value="100x100">100x100 QR SIZE</option>
-          <option value="110x110">110x110 QR SIZE</option>
-          <option value="120x120">120x120 QR SIZE</option>
-          <option value="130x130">130x130 QR SIZE</option>
-        </select>
-        <select class="btn btn-outline-secondary" name="fsize">
+        <div class="form-floating shadow">
+          <select class="form-select" name="size">
+            <option value="90x90">90x90</option>
+            <option value="100x100">100x100</option>
+            <option value="110x110">110x110</option>
+            <option value="120x120">120x120</option>
+            <option value="130x130">130x130</option>
+          </select>
+          <label for="floatingInputGrid">QR SIZE</label>
+        </div>
+        <div class="form-floating shadow">
+        <select class="form-select" name="fsize">
           <option value="fs-6">FONT SIZE 1</option>
           <option value="fs-5">FONT SIZE 2</option>
           <option value="fs-4">FONT SIZE 3</option>
@@ -401,14 +404,22 @@ if(!empty($_POST["id"]) && !empty($_POST["size"]))
           <option value="fs-2">FONT SIZE 5</option>
           <option value="fs-1">FONT SIZE 6</option>
         </select>
+          <label for="floatingInputGrid">FONT SIZE</label>
+        </div>
+        <div class="form-floating shadow mb-2">
         <input id="search" onkeyup="this.value = this.value.toUpperCase();" name="id" class="form-control" list="datalistOptions" id="exampleDataList" value="" placeholder="Type to search product...">
-        <datalist id="datalistOptions">
+          <datalist id="datalistOptions">
                 <?php while($row1 = mysqli_fetch_array($result1)):;?>
                 <option value="<?php echo $row1['id'];?>"><?php echo $row1['specification'];?></option>
                 <?php endwhile; ?>
         </datalist>
-          <button class="btn btn-success" type="submit"><span data-feather="plus" class="align-text-end"></button>
+          <label for="floatingInputGrid">NEW PRODUCT CATEGORY</label>
         </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <button class="btn btn-success" type="submit">ADD
+          <span data-feather="upload-cloud" class="align-text-end"></button>
+        </div>
+      
         </form>
 
       </div>
