@@ -69,6 +69,7 @@ date_format(tb_payments.date,'%b')AS month,
 SUM(tb_cart.price*tb_cart.quantity)AS amount
 FROM tb_payments
 LEFT JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
+WHERE year(tb_payments.date)=date('Y')
 GROUP BY year(tb_payments.date),month(tb_payments.date)
 ORDER BY year(tb_payments.date),month(tb_payments.date) DESC
 LIMIT 12";
@@ -79,6 +80,7 @@ date_format(tb_payments.date,'%b')AS month,
 SUM(tb_cart.price*tb_cart.quantity)AS amount
 FROM tb_payments
 LEFT JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
+WHERE year(tb_payments.date)=date('Y')
 GROUP BY year(tb_payments.date),month(tb_payments.date)
 ORDER BY year(tb_payments.date),month(tb_payments.date) DESC
 LIMIT 12";
