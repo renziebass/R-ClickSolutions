@@ -616,7 +616,7 @@ $row19 = mysqli_fetch_assoc($result19);
 
       <div class="row mt-3">
         <div class="col-md">
-          <h6 class="mt-2">Monthly Sales Chart</h6>
+          <h6 class="mt-2">Monthly Sales Chart <?php echo date('Y')?></h6>
           <canvas class="my-4 w-100" id="myChart" width="200" height="120"></canvas>
         </div>
         <div class="col-md">
