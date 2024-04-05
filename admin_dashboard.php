@@ -71,7 +71,7 @@ FROM tb_payments
 LEFT JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
 WHERE year(tb_payments.date)='".date('Y')."'
 GROUP BY year(tb_payments.date),month(tb_payments.date)
-ORDER BY year(tb_payments.date),month(tb_payments.date) DESC
+ORDER BY year(tb_payments.date),month(tb_payments.date) ASC
 LIMIT 12";
 $result9=mysqli_query($db,$sql9);
 
@@ -82,7 +82,7 @@ FROM tb_payments
 LEFT JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
 WHERE year(tb_payments.date)='".date('Y')."'
 GROUP BY year(tb_payments.date),month(tb_payments.date)
-ORDER BY year(tb_payments.date),month(tb_payments.date) DESC
+ORDER BY year(tb_payments.date),month(tb_payments.date) ASC
 LIMIT 12";
 $result10=mysqli_query($db,$sql10);
 
