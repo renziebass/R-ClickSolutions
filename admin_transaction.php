@@ -422,7 +422,7 @@ if (mysqli_num_rows($result) > 0) {
         <div class="row">
           
           <div class="col text-center">
-            <div class="card-body p-2">
+            <div class="card-body">
         
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Capital</h6>
                 <h3 class=""><?php
@@ -448,7 +448,7 @@ if (mysqli_num_rows($result) > 0) {
           </div>
 
           <div class="col text-center">
-            <div class="card-body p-2">
+            <div class="card-body">
  
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Total</h6>
                 <h3 class=""><?php
@@ -474,7 +474,7 @@ if (mysqli_num_rows($result) > 0) {
           </div>
 
           <div class="col text-center">
-            <div class="card-body p-2">
+            <div class="card-body">
 
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Payment</h6>
                 <h3 class=""><?php

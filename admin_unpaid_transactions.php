@@ -350,7 +350,7 @@ $row3 = mysqli_fetch_assoc($result3);
         <div class="row">
           
           <div class="col text-center">
-            <div class="card-body p-2">
+            <div class="card-body">
                 <h6 class=" fw-normal mt-0" title="Number of Customers">Unpaid Accounts</h6>
                 <h3 class=" text-danger">
                   <?php
@@ -365,7 +365,8 @@ $row3 = mysqli_fetch_assoc($result3);
                 </h3>
                 <p class="mb-0 text-muted">
                 <span class="text-danger fw-bold"><?php echo $row1['transactions'];?></span>
-                <span class="text-nowrap me-2">Accounts</span>
+                <span class="text-nowrap">Accounts</span>
+                <br>
                 <span class="text-danger fw-bold">
                   <?php
                   $items=null;

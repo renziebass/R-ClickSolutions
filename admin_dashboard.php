@@ -506,10 +506,10 @@ $row19 = mysqli_fetch_assoc($result19);
     <main class="col-md-9 ms-sm-auto col-lg-10">
 
       <div class="pt-1">
-        <div class="row">
+        <div class="row mt-3">
 
-          <div class="col text-center">
-            <div class="card-body p-2">
+          <div class="col text-center" onclick="location.href='admin_yearly_history.php'">
+            <div class="card-body">
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Revenue</h6>
                 <h3 class="">
                   <?php
@@ -524,7 +524,8 @@ $row19 = mysqli_fetch_assoc($result19);
                 </h3>
                 <p class="mb-0 text-muted">
                 <span class="text-primary fw-bold"><?php echo $row12['transactions'];?></span>
-                <span class="text-nowrap me-2">Receipts</span>
+                <span class="text-nowrap">Receipts</span>
+                <br>
                 <span class="text-primary fw-bold">
                   <?php
                   $items=null;
@@ -536,13 +537,13 @@ $row19 = mysqli_fetch_assoc($result19);
                   echo $items;
                   ?>
                 </span>
-                <span class="text-nowrap me-2">Products Sold</span>
+                <span class="text-nowrap">Products Sold</span>
                 </p>
             </div>
           </div>
 
-          <div class="col text-center">
-            <div class="card-body p-2">
+          <div class="col text-center" onclick="location.href='admin_yearly_history.php'">
+            <div class="card-body">
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Net Profit</h6>
                 <h3 class="">
                   <?php
@@ -567,13 +568,13 @@ $row19 = mysqli_fetch_assoc($result19);
                   echo  $capital;
                   ?>
                 </span>
-                <span class="text-nowrap me-1">Capital</span>
+                <span class="text-nowrap">Capital</span>
                 </p>
             </div>
           </div>
 
-          <div class="col text-center">
-            <div class="card-body p-2">
+          <div class="col text-center" onclick="location.href='admin_unpaid_transactions.php'">
+            <div class="card-body">
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Receivable</h6>
                 <h3 class="text-danger">
                   <?php
@@ -588,7 +589,8 @@ $row19 = mysqli_fetch_assoc($result19);
                 </h3>
                 <p class="mb-0 text-muted">
                 <span class="text-danger fw-bold"><?php echo $row3['transactions'];?></span>
-                <span class="text-nowrap me-2">Accounts</span>
+                <span class="text-nowrap">Accounts</span>
+                <br>
                 <span class="text-danger fw-bold">
                   <?php
                   $items=null;
@@ -600,7 +602,7 @@ $row19 = mysqli_fetch_assoc($result19);
                   echo $items;
                   ?>
                 </span>
-                <span class="text-nowrap me-2">Products</span>
+                <span class="text-nowrap">Products</span>
                 </p>
             </div>
           </div>
@@ -610,7 +612,7 @@ $row19 = mysqli_fetch_assoc($result19);
       
       
 
-      <div class="row">
+      <div class="row mt-3">
         <div class="col-md">
           <h6 class="mt-2">Monthly Sales Chart</h6>
           <canvas class="my-4 w-100" id="myChart" width="200" height="120"></canvas>
@@ -621,10 +623,10 @@ $row19 = mysqli_fetch_assoc($result19);
         </div>
       </div>
       <div class="pt-1">
-        <div class="row">
+        <div class="row mb-3">
           
-          <div class="col text-center">
-            <div class="card-body p-2">
+          <div class="col text-center" onclick="location.href='admin_inventory.php'">
+            <div class="card-body">
     
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Capital Inventory</h6>
                 <h3 class="">
@@ -640,15 +642,16 @@ $row19 = mysqli_fetch_assoc($result19);
                 </h3>
                 <p class="mb-0 text-muted">
                 <span class="text-danger fw-bold"><?php echo $row6['products']; ?></span>
-                <span class="text-nowrap me-2">Low Stocks</span> 
+                <span class="text-nowrap">Low Stocks</span>
+                <br>
                 <span class="text-danger fw-bold"><?php echo $row7['products']; ?></span>
-                <span class="text-nowrap me-2">Zero Stocks</span>
+                <span class="text-nowrap">Zero Stocks</span>
                 </p>
             </div>
           </div>
 
           <div class="col text-center">
-            <div class="card-body p-2">
+            <div class="card-body">
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Monthly Avg</h6>
                 <h3 class="">
                   <?php
@@ -673,13 +676,13 @@ $row19 = mysqli_fetch_assoc($result19);
                   echo $daily;
                   ?>
                 </span>
-                <span class="text-nowrap me-2">Daily</span>
+                <span class="text-nowrap">Daily</span>
                 </p>
             </div>
           </div>
 
-          <div class="col text-center">
-            <div class="card-body p-2">
+          <div class="col text-center" onclick="location.href='admin_transactions.php?date=<?php echo date('Y-m-d')?>'">
+            <div class="card-body">
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Today <?php echo date("M j,Y");?></h6>
                 <h3 class="">
                   <?php
@@ -694,7 +697,8 @@ $row19 = mysqli_fetch_assoc($result19);
                 </h3>
                 <p class="mb-0 text-muted">
                 <span class="text-primary fw-bold"><?php echo $row2['paidcustomers'];?></span>
-                <span class="text-nowrap me-2">Receipts</span>
+                <span class="text-nowrap">Receipts</span>
+                <br>
                 <span class="text-primary fw-bold">
                   <?php
                   $paid_items=null;
@@ -706,7 +710,7 @@ $row19 = mysqli_fetch_assoc($result19);
                   echo $paid_items;
                   ?>
                 </span>
-                <span class="text-nowrap me-2">Products Sold</span> 
+                <span class="text-nowrap">Products Sold</span> 
                 </p>
             </div>
           </div>

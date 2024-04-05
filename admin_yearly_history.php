@@ -382,7 +382,7 @@ $row5 = mysqli_fetch_assoc($result5);
         
 
           <div class="col text-center">
-            <div class="card-body p-2">
+            <div class="card-body">
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Revenue</h6>
                 <h3 class="">
                   <?php
@@ -407,7 +407,8 @@ $row5 = mysqli_fetch_assoc($result5);
                   echo $capital;
                   ?>
                 </span>
-                <span class="text-nowrap me-2">Capital</span> 
+                <span class="text-nowrap">Capital</span>
+                <br>
                 <span class="text-primary fw-bold">
                   <?php
                   $profit=null;

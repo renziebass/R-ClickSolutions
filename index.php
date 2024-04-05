@@ -86,9 +86,9 @@ include("config.php");
     </style>
     <link href="sign-in.css" rel="stylesheet">
 </head>
-  <body class="bg-image" 
-     style="background-image: url('https://rclickpos.com/assets/img/BG2.jpg');
-            height: 100vh">
+  <body class="" 
+     style="background-color:#b2fff9;
+            height: 100vh;">
   
       
     <main class="form-signin w-100 m-auto">
