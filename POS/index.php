@@ -91,7 +91,7 @@ include("config.php");
             height: 100vh;">
   
       
-    <main class="form-signin w-100 mt-5">
+    <main class="form-signin w-100 m-auto">
     <div class="container text-center">
     <img class="shadow mb-3"src="assets/img/R-ClickLogo.png" alt="" width="100" height="100">
   
