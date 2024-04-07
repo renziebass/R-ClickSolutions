@@ -30,10 +30,6 @@
    define('PASS1',$row0['pass']);
    define('DB1',$row0['db']);
 
-   define('HOST1','localhost');
-   define('USER1','root');
-   define('PASS1','');
-   define('DB1','timonio001');
 
    define('HOST1','localhost');
    define('USER1','root');

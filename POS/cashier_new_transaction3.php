@@ -145,7 +145,7 @@ if(!empty($_GET["product_id"]) && !empty($_GET["price"] && !empty($_GET["quantit
 
         function function_sound() {
         echo "<script>
-              var audio = new Audio('https://rclickpos.com/beep.wav');
+              var audio = new Audio('https://rclicksolutions.com/POS/beep.wav');
               audio.play();
               </script>";
         header("refresh:0.1;url=cashier_new_transaction3.php?id=".$_GET['id']."&date=".$_GET['date']."");
