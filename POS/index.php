@@ -87,11 +87,11 @@ include("config.php");
     <link href="sign-in.css" rel="stylesheet">
 </head>
   <body class="" 
-     style="background-color:#b2fff9
+     style="background-color:#b2fff9;
             height: 100vh;">
   
       
-    <main class="form-signin w-100 m-auto">
+    <main class="form-signin w-100">
     <div class="container text-center">
     <img class="shadow mb-3"src="assets/img/R-ClickLogo.png" alt="" width="100" height="100">
   
