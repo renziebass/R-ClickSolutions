@@ -87,7 +87,7 @@ include("config.php");
     <link href="sign-in.css" rel="stylesheet">
 </head>
   <body class="" 
-     style="background-color:#b2fff9;
+     style="background-color:#b2fff9
             height: 100vh;">
   
       
@@ -203,7 +203,7 @@ include("config.php");
         <input type="checkbox" value="remember-me"> Remember me
       </label>
     </div>
-    <button class="w-100 btn btn-sm btn-primary" type="submit" disabled>Sign in</button>
+    <button class="w-100 btn btn-sm btn-primary" type="submit">Sign in</button>
     <p class="mt-5 mb-3 text-body-secondary text-center">&copy; R-Click Solutions PH 2023</p>
   </form>
 </main>
