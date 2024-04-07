@@ -86,7 +86,7 @@ include("config.php");
     </style>
     <link href="sign-in.css" rel="stylesheet">
 </head>
-  <body class="" 
+  <body class="d-flex align-items-center py-4" 
      style="background-color:#b2fff9;
             height: 100vh;">
   
