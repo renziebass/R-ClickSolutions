@@ -1,8 +1,8 @@
 <?php
 define('HOST','localhost');
-define('USER','u186319490_renziebass');
+define('USER','u809137626_admin0');
 define('PASS','Kg9182022');
-define('DB','u186319490_companies');
+define('DB','u809137626_users_db');
 
 
 $db1 = mysqli_connect(HOST,USER,PASS,DB);
