@@ -387,34 +387,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <form method="post" action="" enctype="multipart/form-data">
           
          
-          <div class="row mb-3">
-            <div class="col-md">
+          <div class="row">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
                 <input class="form-control" name="id" type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" aria-label="Text input with dropdown button" placeholder="Product Brand" required>
                 <label for="floatingInputGrid">ID</label>
               </div>
             </div>
-            <div class="col-md">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
                 <input class="form-control" name="description" type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" aria-label="Text input with dropdown button" placeholder="Product Brand" required>
                 <label for="floatingInputGrid">DESCRIPTION</label>
               </div>
             </div>
           </div>
-          <div class="row mb-3">
-            <div class="col-md">
+          <div class="row">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
                 <input name="percent" type="decimal" class="form-control" aria-label="Text input with dropdown button" placeholder="CAP" required>
                 <label for="floatingInputGrid">PERCENT</label>
               </div>
             </div>
-            <div class="col-md">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
                 <input name="min" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="QTY" required>
                 <label for="floatingInputGrid">MINIMUM AMMOUNT</label>
               </div>
             </div>
-            <div class="col-md">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
                 <input name="cap" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="SRP" required>
                 <label for="floatingInputGrid">MAXIMUM DISCOUNT</label>

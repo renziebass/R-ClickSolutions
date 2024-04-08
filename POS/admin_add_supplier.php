@@ -382,13 +382,13 @@ $result4=mysqli_query($db,$sql4);
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
         <div class="row">
-            <div class="col-md">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
                 <input type="text" name="id" class="form-control" placeholder="ID" aria-label="Recipient's username" aria-describedby="button-addon2" required>
                 <label for="floatingInputGrid">ID</label>
               </div>
             </div>
-            <div class="col-md">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
               <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="name" class="form-control" placeholder="Company/Name" aria-label="Recipient's username" aria-describedby="button-addon2" required>
               <label for="floatingInputGrid">SUPPLIER NAME</label>
@@ -396,13 +396,13 @@ $result4=mysqli_query($db,$sql4);
             </div>
         </div>
         <div class="row">
-            <div class="col-md">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
               <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="address" class="form-control" placeholder="Location" aria-label="Recipient's username" aria-describedby="button-addon2" required>
                 <label for="floatingInputGrid">ADDRESS</label>
               </div>
             </div>
-            <div class="col-md">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
               <input type="text" name="number" class="form-control" placeholder="Mobile" aria-label="Recipient's username" aria-describedby="button-addon2" required>
               <label for="floatingInputGrid">CONTACT NUMBER</label>
@@ -410,7 +410,7 @@ $result4=mysqli_query($db,$sql4);
             </div>
         </div>
         <div class="row">
-            <div class="col-md">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
               <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="notes" class="form-control" placeholder="Notes" aria-label="Recipient's username" aria-describedby="button-addon2" required>
                 <label for="floatingInputGrid">NOTES</label>
@@ -427,7 +427,7 @@ $result4=mysqli_query($db,$sql4);
         <table class="table table-hover table-sm">
           <thead>
           <tr class="text-muted">
-              <th scope="col">Supplier</th>
+              <th scope="col">ID</th>
               <th scope="col">Specification</th>
               <th scope="col">Address</th>
               <th scope="col">Notes</th>

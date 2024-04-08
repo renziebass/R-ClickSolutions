@@ -392,7 +392,6 @@ if(!empty($_GET['xcategory'])) {
             <tr>
                 <td><?php echo $items['category']; ?></td>
                 <td>
-        
                   <button type="button" class="btn btn-sm p-0 m-0"
                   onclick="btn_delete(this.getAttribute('data-1'))"
                   data-1="<?php echo $items['category']; ?>">
@@ -402,8 +401,6 @@ if(!empty($_GET['xcategory'])) {
                       </svg>
                     </span>
                   </button>
-
- 
                 </td>
               
             </tr>

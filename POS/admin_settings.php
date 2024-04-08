@@ -348,8 +348,7 @@ if(!empty($_POST["password"]))
       </div>
       <h6><?php echo $row1['acc_type'];?> <?php echo $row1['userid'];?> - <?php echo $row1['name'];?></h6>
       <form method="post" id="dynForm" enctype="multipart/form-data">
-        <div class="input-group input-group mb-3 shadow">
-          
+        <div class="mb-3 shadow">
           <input id="textpw" type="password" class="form-control" placeholder="USERID" aria-label="Example text with button addon" aria-describedby="button-addon1" name="password" value="<?php echo $row1['password'];?>">
         </div>
         <input class="form-check-input mb-3" onclick="showpw()" type="checkbox" value="" aria-label="Checkbox for following text input"> Show Password
@@ -360,7 +359,7 @@ if(!empty($_POST["password"]))
         </div>
         
       </form> 
-      <div class="table" id="page">
+      <div class="table mt-5" id="page">
       <h6>Login History</h6>
         <table class="table table-hover table-sm">
           <thead>

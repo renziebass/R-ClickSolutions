@@ -419,7 +419,7 @@ $result4=mysqli_query($db,$sql4);
       <div class="align-items-center ">
       <form method="post" action="" id="myForm" enctype="multipart/form-data">
           <div class="row">
-            <div class="col-md">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
                   <select name="supplier" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon" required>
                     <option selected disabled value=""></option>
@@ -431,7 +431,7 @@ $result4=mysqli_query($db,$sql4);
                 <label for="inputGroupSelect04">SUPPLIER</label>
               </div>
             </div>
-            <div class="col-md">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
                   <select name="category" class="form-select" id="inputGroupSelect05" aria-label="Example select with button addon" required>
                     <option selected disabled value=""></option>
@@ -445,7 +445,7 @@ $result4=mysqli_query($db,$sql4);
             </div>
           </div>
           <div class="row">
-            <div class="col-md">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
                 <select name="mcbrand" class="form-select" id="inputGroupSelect06" aria-label="Example select with button addon">
                   <option selected disabled value="">N/A</option>
@@ -457,7 +457,7 @@ $result4=mysqli_query($db,$sql4);
                 <label for="inputGroupSelect06">BRAND</label>
               </div>
             </div>
-            <div class="col-md">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
                 <select name="mcmodel" class="form-select" id="inputGroupSelect04" aria-label="Example select with button addon">
                   <option selected disabled value="">N/A</option>
@@ -471,7 +471,7 @@ $result4=mysqli_query($db,$sql4);
             </div>
           </div>
           <div class="row">
-            <div class="col-md">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
                 <input class="form-control" name="pbrand" type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" aria-label="Text input with dropdown button" placeholder="Product Brand" required>
                 <label for="floatingInputGrid">PRODUCT BRAND & DESCRIPTION</label>
@@ -479,19 +479,19 @@ $result4=mysqli_query($db,$sql4);
             </div>
           </div>
           <div class="row">
-            <div class="col-md">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
                 <input name="cap" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="CAP" required>
                 <label for="floatingInputGrid">CAPITAL</label>
               </div>
             </div>
-            <div class="col-md">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
                 <input name="qty" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="QTY" required>
                 <label for="floatingInputGrid">QUANTITY</label>
               </div>
             </div>
-            <div class="col-md">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
                 <input name="price" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="SRP" required>
                 <label for="floatingInputGrid">SRP</label>
@@ -499,19 +499,19 @@ $result4=mysqli_query($db,$sql4);
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-md">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
                 <input name="price1" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="PRICE 1">
                 <label for="floatingInputGrid">PRICE 1</label>
               </div>
             </div>
-            <div class="col-md">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
                 <input name="price2" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="PRICE 2" >
                 <label for="floatingInputGrid">PRICE 2</label>
               </div>
             </div>
-            <div class="col-md">
+            <div class="col-md p-2">
               <div class="form-floating shadow">
                 <input name="price3" type="number" class="form-control" aria-label="Text input with dropdown button" placeholder="PRICE 3" >
                 <label for="floatingInputGrid">PRICE 3</label>
