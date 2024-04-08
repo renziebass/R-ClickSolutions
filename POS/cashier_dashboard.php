@@ -465,7 +465,7 @@ $row15 = mysqli_fetch_assoc($result15);
                         FROM tb_transactions WHERE tb_transactions.status='paid') AS A
                 JOIN (SELECT
                         tb_payments.id,
-                        COUNT(tb_cart.transaction_id) as items,
+                        SUM(tb_cart.quantity) as items,
                         CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS total2,
                         tb_payments.total,
                         CONCAT(tb_payments.payment1,' - ',FORMAT(tb_payments.payment, 2)) AS payment,
