@@ -279,18 +279,23 @@ $row3 = mysqli_fetch_assoc($result3);
               }
             </script>
     </div>
-
-  
-      
-      <div class="table" id="page">
-      <div class="">
+    <div class="" id="page">
+    <h6 class="text-center m-2">Amount Receivable</h6>
         <div class="row">
-          
-          <div class="col text-center">
-            <div class="card-body p-2">
-                <h6 class="mt-0" title="Number of Customers">Amount Receivable</h6>
-                <h3 class="text-danger">
-                  <?php
+
+          <div class="col text-start p-2">
+            <div class="card-body p-2 border-start border-4 shadow rounded border-danger bg-white">
+                <div class="row">
+                  <p class="col m-0 text-danger">
+                    TOTAL
+                  </p>
+                  <p class="col m-0 d-flex justify-content-end text-danger">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-person-lines-fill" viewBox="0 0 16 16">
+                    <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zM11 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5m.5 2.5a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1zm2 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1z"/>
+                  </svg>
+                  </p>
+                </div>
+                <h4 class="text-danger"><span>&#8369;<?php
                   $unpaid=null;
                   if (empty($row3['unpaid'])) {
                     $unpaid = 0;
@@ -298,13 +303,14 @@ $row3 = mysqli_fetch_assoc($result3);
                     $unpaid = $row3['unpaid'];
                   }
                   echo $unpaid;
-                  ?>
-                </h3>
+                  ?></span>
+                </h4>
                 <p class="mb-0 text-muted">
                 <span class="text-danger fw-bold"><?php echo $row1['transactions'];?></span>
                 <span class="text-nowrap me-2">Accounts</span>
+                <br>
                 <span class="text-danger fw-bold">
-                  <?php
+                <?php
                    $items=null;
                    if (empty($row2['items'])) {
                      $items = 0;
@@ -314,16 +320,30 @@ $row3 = mysqli_fetch_assoc($result3);
                   echo $items;
                   ?>
                 </span>
-                <span class="text-nowrap me-2">Items</span>
-
+                <span class="text-nowrap">Items</span> 
                 </p>
             </div>
           </div>
-
+          
         </div>
-      </div>
-        <table class="table table-hover table-sm mt-3">
-          <thead>
+        <div class="row">
+
+        <div class="col text-start p-2">
+            <div class="card-body p-2 border-top border-3 border-danger shadow rounded bg-white">
+                <div class="row mb-3">
+                  <p class="col-8 m-0">
+                    ACOUNTS
+                  </p>
+                  <p class="col m-0 d-flex justify-content-end text-danger  ">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-list-ol" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5"/>
+                    <path d="M1.713 11.865v-.474H2c.217 0 .363-.137.363-.317 0-.185-.158-.31-.361-.31-.223 0-.367.152-.373.31h-.59c.016-.467.373-.787.986-.787.588-.002.954.291.957.703a.595.595 0 0 1-.492.594v.033a.615.615 0 0 1 .569.631c.003.533-.502.8-1.051.8-.656 0-1-.37-1.008-.794h.582c.008.178.186.306.422.309.254 0 .424-.145.422-.35-.002-.195-.155-.348-.414-.348h-.3zm-.004-4.699h-.604v-.035c0-.408.295-.844.958-.844.583 0 .96.326.96.756 0 .389-.257.617-.476.848l-.537.572v.03h1.054V9H1.143v-.395l.957-.99c.138-.142.293-.304.293-.508 0-.18-.147-.32-.342-.32a.33.33 0 0 0-.342.338zM2.564 5h-.635V2.924h-.031l-.598.42v-.567l.629-.443h.635z"/>
+                  </svg>
+                  </p>
+                </div>
+
+        <table class="table table-hover table-sm mb-5" style="margin-bottom: 70px;">
+        <thead>
             <tr class="text-muted">
               <th scope="col">Name</th>
               <th scope="col">Date Time</th>
@@ -368,11 +388,17 @@ $row3 = mysqli_fetch_assoc($result3);
             ?>
           </tbody>
         </table>
+              
+               
+            </div>
+          </div>
+
+        </div>
       </div>
+  
     </main>
   </div>
 </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>

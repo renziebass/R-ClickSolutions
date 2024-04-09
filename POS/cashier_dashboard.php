@@ -258,11 +258,11 @@ $row15 = mysqli_fetch_assoc($result15);
     <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3">
       <div class="btn-group-vertical">
         <button type="button" class="btn btn-success btn-sm" style="--bs-btn-padding-y: .15rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;" accesskey="c" onclick="location.href='<?php echo $newTR_loc;?>.php?date=<?php echo date('Y-m-d')?>'" >ALT+C</button>
-        <button type="button" class="btn btn-sm btn-outline-success fw-bold" accesskey="c" onclick="location.href='<?php echo $newTR_loc;?>.php?date=<?php echo date('Y-m-d')?>'" >NEW TR</button>
+        <button type="button" class="btn btn-sm btn-outline-success fw-bold bg-white" accesskey="c" onclick="location.href='<?php echo $newTR_loc;?>.php?date=<?php echo date('Y-m-d')?>'" >NEW TR</button>
       </div>
       <div class="btn-group-vertical">
         <button type="button" class="btn btn-warning btn-sm" style="--bs-btn-padding-y: .15rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem;" accesskey="v" onclick="location.href='cashier_new_transaction3.php?date=<?php echo date('Y-m-d')?>'" >ALT+V</button>
-        <button type="button" class="btn btn-sm btn-outline-warning fw-bold" accesskey="v" onclick="location.href='cashier_new_transaction3.php?date=<?php echo date('Y-m-d')?>'" >WS TR</button>
+        <button type="button" class="btn btn-sm btn-outline-warning fw-bold bg-white" accesskey="v" onclick="location.href='cashier_new_transaction3.php?date=<?php echo date('Y-m-d')?>'" >WS TR</button>
       </div>
     </div>
     
@@ -327,15 +327,28 @@ $row15 = mysqli_fetch_assoc($result15);
       </div>
     </nav>
 
-    <main class="col-md-9 ms-sm-auto col-lg-10">
+    <main class="col-md-9 ms-sm-auto col-lg-10 bg-light">
     <div class="">
+    <h6 class="text-center m-2"><?php echo date("F j,Y");?></h6>
         <div class="row">
+
+          <div class="col text-start p-2 ">
+            <div class="card-body p-2 border-start border-4 shadow rounded border-success bg-white">
+            <div class="row">
+              <p class="col m-0 text-success">
+                SALES
+              </p>
+              <p class="col m-0 d-flex justify-content-end text-success">
+              <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-cash-coin" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8m5-4a5 5 0 1 1-10 0 5 5 0 0 1 10 0"/>
+                <path d="M9.438 11.944c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195z"/>
+                <path d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083q.088-.517.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1z"/>
+                <path d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 6 6 0 0 1 3.13-1.567"/>
+              </svg>
+              </p>
+            </div>
           
-          <div class="col text-center">
-            <div class="card-body p-2">
-                <h6 class="fw-bold mt-0" title="Number of Customers"><?php echo date("M j,Y");?></h6>
-                <h3 class="text-success">
-                  <?php
+                <h4 class="text-success"><span>&#8369;<?php
                   $sales=null;
                   if (empty($row2['sales'])) {
                     $sales = 0;
@@ -343,11 +356,12 @@ $row15 = mysqli_fetch_assoc($result15);
                     $sales = $row2['sales'];
                   }
                   echo $sales;
-                  ?>
-                </h3>
+                  ?></span>
+                </h4>
                 <p class="mb-0 text-muted">
                 <span class="text-success fw-bold"><?php echo $row2['paidcustomers'];?></span>
                 <span class="text-nowrap me-2">Receipts</span>
+                <br>
                 <span class="text-success fw-bold">
                   <?php
                   $product_sold=null;
@@ -359,16 +373,27 @@ $row15 = mysqli_fetch_assoc($result15);
                   echo $product_sold;
                   ?>
                 </span>
-                <span class="text-nowrap">Products Sold</span> 
+                <span class="text-nowrap">Products</span> 
                 </p>
             </div>
           </div>
 
-          <div class="col text-center">
-            <div class="card-body p-2">
-                <h6 class="mt-0 text-muted" title="Number of Customers">CASH PAYMENTS</h6>
-                <h3 class="text-success">
-                  <?php
+          <div class="col text-start p-2">
+            <div class="card-body p-2 border-start border-4 shadow rounded border-primary bg-white">
+            <div class="row">
+              <p class="col m-0 text-primary">
+                CASH
+              </p>
+              <p class="col m-0 d-flex justify-content-end text-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-cash-coin" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8m5-4a5 5 0 1 1-10 0 5 5 0 0 1 10 0"/>
+                <path d="M9.438 11.944c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195z"/>
+                <path d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083q.088-.517.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1z"/>
+                <path d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 6 6 0 0 1 3.13-1.567"/>
+              </svg>
+              </p>
+            </div>
+                <h4 class="text-primary"><span>&#8369;<?php
                   $cashpayments=null;
                   if (empty($row14['cashpayments'])) {
                     $cashpayments = 0;
@@ -376,20 +401,29 @@ $row15 = mysqli_fetch_assoc($result15);
                     $cashpayments = $row14['cashpayments'];
                   }
                   echo $cashpayments;
-                  ?>
-                </h3>
+                  ?></span>
+                </h4>
                 <p class="mb-0 text-muted">
-                <span class="text-success fw-bold"><?php echo $row14['cashcustomers'] ?></span>
-                <span class="text-nowrap me-2">Receipts</span>
+                  <br>
+                <span class="text-primary fw-bold"><?php echo $row14['cashcustomers'] ?></span>
+                <span class="text-nowrap me-2">Payments</span>
                 </p>
             </div>
           </div>
 
-          <div class="col text-center">
-            <div class="card-body p-2">
-                <h6 class="mt-0 text-muted" title="Number of Customers">OTHER PAYMENTS</h6>
-                <h3 class="text-success">
-                  <?php
+          <div class="col text-start p-2">
+            <div class="card-body p-2 border-start border-4 shadow rounded border-warning bg-white">
+            <div class="row">
+              <p class="col m-0 text-warning">
+                OTHER
+              </p>
+              <p class="col m-0 d-flex justify-content-end text-warning">
+              <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-bank" viewBox="0 0 16 16">
+                <path d="m8 0 6.61 3h.89a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H15v7a.5.5 0 0 1 .485.38l.5 2a.498.498 0 0 1-.485.62H.5a.498.498 0 0 1-.485-.62l.5-2A.5.5 0 0 1 1 13V6H.5a.5.5 0 0 1-.5-.5v-2A.5.5 0 0 1 .5 3h.89zM3.777 3h8.447L8 1zM2 6v7h1V6zm2 0v7h2.5V6zm3.5 0v7h1V6zm2 0v7H12V6zM13 6v7h1V6zm2-1V4H1v1zm-.39 9H1.39l-.25 1h13.72z"/>
+              </svg>
+              </p>
+            </div>
+                <h4 class="text-warning"><span>&#8369;<?php
                   $otherpayments=null;
                   if (empty($row15['otherpayments'])) {
                     $otherpayments = 0;
@@ -397,20 +431,29 @@ $row15 = mysqli_fetch_assoc($result15);
                     $otherpayments = $row15['otherpayments'];
                   }
                   echo $otherpayments;
-                  ?>
-                </h3>
+                  ?></span>
+                </h4>
                 <p class="mb-0 text-muted">
-                <span class="text-success fw-bold"><?php echo $row15['othercustomers'] ?></span>
-                <span class="text-nowrap me-2">Receipts</span>
+                  <br>
+                <span class="text-warning fw-bold"><?php echo $row15['othercustomers'] ?></span>
+                <span class="text-nowrap me-2">Payments</span>
                 </p>
             </div>
           </div>
-          
-          <div class="col text-center" onclick="location.href='cashier_unpaid_transactions.php'">
-            <div class="card-body p-2">
-                <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Amount Receivables</h6>
-                <h3 class="text-danger">
-                  <?php
+
+          <div class="col text-start p-2">
+            <div class="card-body p-2 border-start border-4 shadow rounded border-danger bg-white">
+                <div class="row">
+                  <p class="col m-0 text-danger">
+                    RECEIVABLE
+                  </p>
+                  <p class="col m-0 d-flex justify-content-end text-danger">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-person-lines-fill" viewBox="0 0 16 16">
+                    <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zM11 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5m.5 2.5a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1zm2 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1z"/>
+                  </svg>
+                  </p>
+                </div>
+                <h4 class="text-danger"><span>&#8369;<?php
                   $unpaid=null;
                   if (empty($row4['unpaid'])) {
                     $unpaid = 0;
@@ -418,13 +461,14 @@ $row15 = mysqli_fetch_assoc($result15);
                     $unpaid = $row4['unpaid'];
                   }
                   echo $unpaid;
-                  ?>
-                </h3>
+                  ?></span>
+                </h4>
                 <p class="mb-0 text-muted">
                 <span class="text-danger fw-bold"><?php echo $row3['transactions'];?></span>
                 <span class="text-nowrap me-2">Accounts</span>
+                <br>
                 <span class="text-danger fw-bold">
-                  <?php
+                <?php
                   $items=null;
                   if (empty($row13['items'])) {
                     $items = 0;
@@ -438,14 +482,25 @@ $row15 = mysqli_fetch_assoc($result15);
                 </p>
             </div>
           </div>
-
           
         </div>
-      </div>
+        <div class="row">
 
-      <h6 class="mt-3 text-center text-muted">Recent Paid Transactions</h6>
-      <div class="table-responsive" style="margin-bottom: 70px;">
-        <table class="table table-hover table-sm mb-5">
+        <div class="col text-start p-2">
+            <div class="card-body p-2 border-top border-3 border-success shadow rounded bg-white">
+                <div class="row mb-3">
+                  <p class="col-8 m-0">
+                    RECENT PAID TRANSACTIONS
+                  </p>
+                  <p class="col m-0 d-flex justify-content-end text-success">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-list-ol" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5"/>
+                    <path d="M1.713 11.865v-.474H2c.217 0 .363-.137.363-.317 0-.185-.158-.31-.361-.31-.223 0-.367.152-.373.31h-.59c.016-.467.373-.787.986-.787.588-.002.954.291.957.703a.595.595 0 0 1-.492.594v.033a.615.615 0 0 1 .569.631c.003.533-.502.8-1.051.8-.656 0-1-.37-1.008-.794h.582c.008.178.186.306.422.309.254 0 .424-.145.422-.35-.002-.195-.155-.348-.414-.348h-.3zm-.004-4.699h-.604v-.035c0-.408.295-.844.958-.844.583 0 .96.326.96.756 0 .389-.257.617-.476.848l-.537.572v.03h1.054V9H1.143v-.395l.957-.99c.138-.142.293-.304.293-.508 0-.18-.147-.32-.342-.32a.33.33 0 0 0-.342.338zM2.564 5h-.635V2.924h-.031l-.598.42v-.567l.629-.443h.635z"/>
+                  </svg>
+                  </p>
+                </div>
+
+        <table class="table table-hover table-sm mb-5" style="margin-bottom: 70px;">
           <thead>
             <tr class="text-muted">
               <th scope="col">Time</th>
@@ -498,7 +553,16 @@ $row15 = mysqli_fetch_assoc($result15);
             ?>
           </tbody>
         </table>
+              
+               
+            </div>
+          </div>
+
+        </div>
       </div>
+      
+
+
     </main>
   </div>
 </div>
