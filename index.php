@@ -9,7 +9,7 @@
     <meta name="generator" content="Hugo 0.122.0">
     <title>R-Click Solutions</title>
 
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/cover/">
+
 
     
 
@@ -92,6 +92,36 @@
       .bd-mode-toggle .dropdown-menu .active .bi {
         display: block !important;
       }
+      /* GLOBAL STYLES
+      -------------------------------------------------- */
+      /* Padding below the footer and lighter body text */
+
+      body {
+        padding-top: 3rem;
+        padding-bottom: 3rem;
+        color: rgb(var(--bs-tertiary-color-rgb));
+      }
+
+
+      /* CUSTOMIZE THE CAROUSEL
+      -------------------------------------------------- */
+
+      /* Carousel base class 
+      .carousel {
+        margin-bottom: 4rem;
+      }
+      */
+      /* Since positioning the image, we need to help out the caption */
+      .carousel-caption {
+        bottom: 3rem;
+        z-index: 10;
+      }
+
+      /* Declare heights because of positioning of img element */
+      .carousel-item {
+        height: 32rem;
+      }
+      
     </style>
 
     
@@ -121,26 +151,65 @@
   <header class="mb-auto">
     <div>
       
-      <img class="float-md-start mb-0"src="assets/img/R-ClickLogo1.png" alt="" width="50" height="50">
+      <img class="float-md-start mb-0"src="assets/img/R-ClickLogo.png" alt="" width="80" height="80">
       <nav class="nav nav-masthead justify-content-center float-md-end">
         <a class="nav-link fw-bold py-1 px-0 active" aria-current="page" href="#">Home</a>
-        <a class="nav-link fw-bold py-1 px-0" href="#">Features</a>
+        <a class="nav-link fw-bold py-1 px-0" href="#">Projects</a>
         <a class="nav-link fw-bold py-1 px-0" href="#">Contact</a>
       </nav>
     </div>
   </header>
 
-  <main class="px-3">
-    <h1>Crafting Innovative Web Apps</h1>
-    <p class="lead">R-click Solutions offers innovative web applications for startups and businesses, specializing in custom solutions for online presence and digital capabilities enhancement.</p>
-    <p class="lead">
-      <a href="#" class="btn btn-md btn-light fw-bold border-white bg-white">Learn more</a>
-    </p>
+  <main class="">
+    <div class="row">
+      <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+          <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+          <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+          <div class="carousel-item active" >
+            <div class="container">
+              <div class="carousel-caption text-start">
+                <h1>Crafting Innovative Web Apps</h1>
+                <p class="opacity-75">R-Click Solutions offers innovative web applications for startups and businesses,
+                  specializing in custom solutions for online presence and digital capabilities enhancement.</p>
+                <p><a class="btn btn-sm btn-primary" href="#">Learn more</a></p>
+              </div>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <div class="container">
+              <div class="carousel-caption text-center">
+                <h1>Portfolio</h1>
+                <p>Check out some of our recent projects to see examples of our work and
+                  the innovative solutions we've delivered to our clients.</p>
+                  <p><a class="btn btn-sm btn-primary" href="#">Learn more</a></p>
+              </div>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <div class="container">
+              <div class="carousel-caption text-end">
+                <h1>Contact Us</h1>
+                <p>Ready to turn your ideas into reality? Get in touch with us today to discuss your project requirements and how we can help you achieve your goals.</p>
+                <p><a class="btn btn-sm btn-primary" href="#">Contact Us</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+    </div>
+    <div class="row">
+    <p class="text-white text-center m-0">&copy; R-Click Solutions PH 2023</p>
+    </div>
+   
+ 
+    
   </main>
+  
 
-  <footer class="mt-auto text-white-50">
-    <p>Cover template for <a href="https://getbootstrap.com/" class="text-white">Bootstrap</a>, by <a href="https://twitter.com/mdo" class="text-white">@mdo</a>.</p>
-  </footer>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
