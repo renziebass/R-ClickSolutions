@@ -281,15 +281,13 @@ if(!empty($_GET['payment'])){
   <body>
   
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="cashier_dashboard.php">R-Click POS</a>
-  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-end">
-      WHOLESALE TRANSACTION
-  </a>
+  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="cashier_dashboard.php">R-Click Solutions POS: <i><?php echo $company_name; ?></i></a>
 </header>
 
 <main class="ms-sm-auto" >
   <div class="container-fluid">
     <div class="row">
+      <h6 class="text-center m-2 text-danger">WHOLE SALE TRANSACTION</h6>
 <div class="col">
 <div class="">
     <div class="row" id="click">

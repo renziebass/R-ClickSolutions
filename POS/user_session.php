@@ -9,6 +9,7 @@
    tb_accounts.user,
    tb_accounts.pass,
    tb_accounts.db,
+   tb_accounts.company_name,
    tb_users.user_id,
    tb_users.company_id
    FROM tb_accounts
@@ -17,6 +18,7 @@
    WHERE tb_users.user_id='$user_check'";
    $run_user0 = mysqli_query($db1, $sql0);
    $row0 = mysqli_fetch_assoc($run_user0);
+   $company_name=$row0['company_name'];
 
    define('HOST1','localhost');
    define('USER1',$row0['user']);
@@ -33,7 +35,7 @@
    define('HOST1','localhost');
    define('USER1','root');
    define('PASS1','');
-   define('DB1','sp_db');
+   define('DB1','vl_db');
    */
 
 

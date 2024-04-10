@@ -184,7 +184,7 @@ include('user_session.php');
 
 
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">R-Click POS</a>
+  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">R-Click Solutions POS: <i><?php echo $company_name; ?></i></a>
   <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -193,51 +193,9 @@ include('user_session.php');
 
 <div class="container-fluid">
   <div class="row">
-    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-body-tertiary sidebar collapse">
-      <div class="position-sticky pt-3 sidebar-sticky">
-      <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="cashier_dashboard.php">
-              <span data-feather="home" class="align-text-bottom"></span>
-              Dashboard
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="cashier_transactions_history.php">
-              <span data-feather="file" class="align-text-bottom"></span>
-              Paid Transactions
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="cashier_unpaid_transactions.php">
-              <span data-feather="file" class="align-text-bottom"></span>
-              Unpaid Transactions
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="cashier_products.php">
-              <span data-feather="shopping-cart" class="align-text-bottom"></span>
-              Products
-            </a>
-          </li>
-        </ul>
-        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
-          <span>Account</span>
-        </h6>
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-              <span data-feather="user" class="align-text-bottom"></span>
-              <strong><?php echo $name; ?></strong>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                <li><a class="dropdown-item" href="cashier_settings.php">Settings</a></li>
-                <li><a class="dropdown-item" href="signout.php">Sign out</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </nav>
+  <?php
+  include 'cashier_navbar.php';
+  ?>
 
     <main class="col-md-9 ms-sm-auto col-lg-10">
     <div class="" >
@@ -257,22 +215,13 @@ include('user_session.php');
             </script>
     </div>
 
-
+    <div class="col">
+        <h6 class="text-center m-3">Current Week Sales Report</h6>
+      </div>
         <div class="row">
 
-        <div class="col text-start p-2" id="page">
-            <div class="card-body p-2 border-top border-3 border-success shadow rounded bg-white">
-                <div class="row mb-3">
-                  <p class="col-8 m-0">
-                  Current Week Sales Report
-                  </p>
-                  <p class="col m-0 d-flex justify-content-end text-success">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-list-ol" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5"/>
-                    <path d="M1.713 11.865v-.474H2c.217 0 .363-.137.363-.317 0-.185-.158-.31-.361-.31-.223 0-.367.152-.373.31h-.59c.016-.467.373-.787.986-.787.588-.002.954.291.957.703a.595.595 0 0 1-.492.594v.033a.615.615 0 0 1 .569.631c.003.533-.502.8-1.051.8-.656 0-1-.37-1.008-.794h.582c.008.178.186.306.422.309.254 0 .424-.145.422-.35-.002-.195-.155-.348-.414-.348h-.3zm-.004-4.699h-.604v-.035c0-.408.295-.844.958-.844.583 0 .96.326.96.756 0 .389-.257.617-.476.848l-.537.572v.03h1.054V9H1.143v-.395l.957-.99c.138-.142.293-.304.293-.508 0-.18-.147-.32-.342-.32a.33.33 0 0 0-.342.338zM2.564 5h-.635V2.924h-.031l-.598.42v-.567l.629-.443h.635z"/>
-                  </svg>
-                  </p>
-                </div>
+        <div class="col text-center p-2" id="page">
+            <div class="card-body p-2">
 
         <table class="table table-hover table-sm mb-5" style="margin-bottom: 70px;">
         <thead>

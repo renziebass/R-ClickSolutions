@@ -1,14 +1,5 @@
 <?php
 include('user_session.php');
-$sql1 = "SELECT
-tb_products.id,
-CONCAT(tb_products.category,'-',tb_products.product_brand) AS cpb,
-tb_products.price,
-CONCAT(tb_products.mc_brand,' ',tb_products.mc_model) AS specification
- FROM tb_products WHERE tb_products.id='".$_GET['product_id']."'";
-$result1=mysqli_query($db,$sql1);
-$row1 = mysqli_fetch_assoc($result1);
-
 function validateInput($data) {
   $data = trim($data);
   $data = stripslashes($data);
@@ -16,32 +7,45 @@ function validateInput($data) {
   return $data;
 }
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if (empty($_POST["product_id"])) {
-    $product_id_err = "* ";
+  if (empty($_POST["options"])) {
+    $options_err = "* ";
   } else {
-    $product_id = validateInput($_POST["product_id"]);
+    $options = validateInput($_POST["options"]);
   }
-  
-  if(!empty($_POST["product_id"]))
+}
+if(!empty($_POST["options"]))
   {
     try {
-      $sql2check = "SELECT * FROM tb_products
-      WHERE tb_products.id='$product_id'";
-      $CategoryCheck2 = mysqli_query($db, $sql2check);
-      $result2 = mysqli_fetch_assoc($CategoryCheck2);
-      if(empty($result2)) {
-        echo '<script>alert("Product Doesnt Exist Exist!")</script>';
-        header("Refresh:0");
-      } else {
-        header("Location: admin_productqr.php?product_id=$product_id&line=1");
+      $sql4check = "SELECT tb_payment_methods.options
+      FROM tb_payment_methods
+      WHERE tb_payment_methods.options='$options'";
+      $CategoryCheck4 = mysqli_query($db, $sql4check);
+      $result4 = mysqli_fetch_assoc($CategoryCheck4);
+      if(empty($result4)) {
+        $sql4 = "INSERT INTO tb_payment_methods (options) VALUES ('$options');";
+        $AddCategory = mysqli_query($db, $sql4);
         
+        header("Location: admin_add_payment.php");
+      } else {
+        echo '<script>alert("Payment Method Already Exist!")</script>';
+        header("Refresh:0");
       }
+
     }
     catch(PDOException $e)
       {
         echo $sql1 . "<br>" . $e->getMessage();
       }
     $db=null;
+}
+if(!empty($_GET['xpayment'])) {
+  $sql7="DELETE FROM tb_payment_methods WHERE tb_payment_methods.options='" .$_GET['xpayment']. "'";
+
+  if (($db->query($sql7)) === TRUE) {
+    echo "Payment Deleted";
+    header("Location: admin_add_payment.php");
+  } else {
+    echo "Error updating record: " . $db->error;
   }
 }
 ?>
@@ -54,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.111.3">
-    <title>PRODUCT QR GENERATOR</title>
+    <title>ADD PAYMENT METHOD</title>
  
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 
@@ -227,7 +231,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <body>
   
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">R-Click POS</a>
+  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">R-Click Solutions POS: <i><?php echo $company_name; ?></i></a>
   <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -241,59 +245,102 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   ?>
 
     <main class="col-md-9 ms-sm-auto col-lg-10">
-    <h6 class="text-center mb-3 mt-5">Generate Product Multiple QR</h6>
-    <div class="d-flex justify-content-end mt-3 mb-3">
-    <button type="button" onclick="printDiv();" class="btn btn btn-secondary"><span data-feather="printer" class="align-text-bottom"></button>
-    
-    </div>
+    <h6 class="text-center mb-3 mt-5">Add Payment Method</h6>
       <div class=" align-items-center ">
       <form method="post" action="" enctype="multipart/form-data">
-        <div class="input-group input-group shadow">
-        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">3 PCS</button>
-              <div class="dropdown-menu">
-                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=1" value="">3</a>
-                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=2" value="">6</a>
-                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=3" value="">9</a>
-                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=4" value="">12</a>
-                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=5" value="">15</a>
-                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=6" value="">18</a>
-                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=7" value="">21</a>
-                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=8" value="">24</a>
-                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=9" value="">27</a>
-                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=10" value="">30</a>
-                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=11" value="">33</a>
-                  <a class="dropdown-item" href="admin_productqr.php?product_id=<?php echo $row1['id'];?>&line=12" value="">36</a>
-              </div>
-          <input type="text" name="product_id" class="form-control" placeholder="<?php echo $_GET['product_id']; ?>">
-          <button class="btn btn-secondary" type="submit"><span data-feather="search" class="align-text-end"></button>
+        <div class="form-floating shadow mb-2">
+          <input name="options" type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control" placeholder="New Product Payment">
+          <label for="floatingInputGrid">NEW PAYMENT METHOD</label>
         </div>
-        </form>
-        <script>
-          function printDiv() {
-            var printContents = document.getElementById("page").innerHTML;
-            var originalContents = document.body.innerHTML;
-            document.body.innerHTML = printContents;
-            window.print();
-            document.body.innerHTML = originalContents;
-            }
-            function refreshDiv() {
-            location.reload();
-            } 
-        </script>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <button class="btn btn-success" type="submit">SAVE
+          <span data-feather="upload-cloud" class="align-text-end"></button>
+        </div>
+      </form>
       </div>
+      <div class="table" id="page">
+      <h6 class="mt-3 text-muted text-center">Payment Methods</h6>
+        <table class="table table-hover table-sm">
+          <thead>
+          <tr class="text-muted">
+              <th scope="col">Category</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php
+                $sql="SELECT * FROM tb_payment_methods";
+                                                                                    
+                $result = mysqli_query($db,$sql);
 
-      <div class="mt-3" id="page">
-      <?php
-        for ($i = 0; $i < $_GET['line']; $i++) {
-          include('line.php');
-        }
-      ?> 
+                if (mysqli_num_rows($result) > 0) 
+                {
+                foreach($result as $items)
+                {
+            ?>
+            <tr>
+                <td><?php echo $items['options']; ?></td>
+                <td>
+                  <button type="button" class="btn btn-sm p-0 m-0"
+                  onclick="btn_delete(this.getAttribute('data-1'))"
+                  data-1="<?php echo $items['options']; ?>">
+                    <span>
+                      <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
+                      <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
+                      </svg>
+                    </span>
+                  </button>
+                </td>
+              
+            </tr>
+            <?php
+            } 
+            } 
+            ?>
+          </tbody>
+   
+        </table>
       </div>
     </main>
   </div>
 </div>
 
-
+<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+<script>
+  function btn_delete(data_1) {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-danger",
+          cancelButton: "btn btn-secondary me-1"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: "DELETE "+data_1+" ?",
+        showCancelButton: true,
+        confirmButtonText: "Delete",
+        cancelButtonText: "Cancel",
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          swalWithBootstrapButtons.fire({
+          title: "DELETED",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500
+         }).then((result2) => {
+          if (result2.dismiss === swalWithBootstrapButtons.DismissReason.timer) {
+            window.location.href = window.location.href+'?xpayment='+data_1;
+          }
+          });
+          
+        } else {
+          result.dismiss === Swal.DismissReason.cancel
+        }
+      });
+    }
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>

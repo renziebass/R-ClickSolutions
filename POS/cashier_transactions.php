@@ -218,7 +218,7 @@ $row5 = mysqli_fetch_assoc($result5);
 
     
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">R-Click POS</a>
+  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">R-Click Solutions POS: <i><?php echo $company_name; ?></i></a>
   <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -227,51 +227,9 @@ $row5 = mysqli_fetch_assoc($result5);
 
 <div class="container-fluid">
   <div class="row">
-    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-body-tertiary sidebar collapse">
-      <div class="position-sticky pt-3 sidebar-sticky">
-      <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="cashier_dashboard.php">
-              <span data-feather="home" class="align-text-bottom"></span>
-              Dashboard
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="cashier_transactions_history.php">
-              <span data-feather="file" class="align-text-bottom"></span>
-              Paid Transactions
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="cashier_unpaid_transactions.php">
-              <span data-feather="file" class="align-text-bottom"></span>
-              Unpaid Transactions
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="cashier_products.php">
-              <span data-feather="shopping-cart" class="align-text-bottom"></span>
-              Products
-            </a>
-          </li>
-        </ul>
-        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
-          <span>Account</span>
-        </h6>
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-              <span data-feather="user" class="align-text-bottom"></span>
-              <strong><?php echo $name; ?></strong>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                <li><a class="dropdown-item" href="cashier_settings.php">Settings</a></li>
-                <li><a class="dropdown-item" href="signout.php">Sign out</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </nav>
+  <?php
+  include 'cashier_navbar.php';
+  ?>
 
     <main class="col-md-9 ms-sm-auto col-lg-10">
     <div class="d-flex justify-content-end mt-3 mb-3">
@@ -289,18 +247,29 @@ $row5 = mysqli_fetch_assoc($result5);
               }
             </script>
     </div>
-
-  
-      
-      <div class="table" id="page">
-      <div class="">
-        <div class="row">
+      <div class=""id="page">
+      <div class="col">
+        <h6 class="text-center m-3">Transactions <?php 
+      $date=date_create($_GET['date']);
+      echo date_format($date,"F j,Y");
+      ?></h6>
+      </div>
+      <div class="row">
+      <div class="col text-start p-2 ">
+            <div class="card-body p-2 border-start border-4 shadow rounded border-success bg-white">
+            <div class="row">
+              <p class="col m-0 text-success">
+                SALES
+              </p>
+              <p class="col m-0 d-flex justify-content-end text-success">
+              <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-person-lines-fill" viewBox="0 0 16 16">
+                    <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5 6s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zM11 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5m.5 2.5a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1zm2 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1zm0 3a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1z"/>
+                  </svg>
+              </p>
+            </div>
           
-          <div class="col text-center">
-            <div class="card-body p-2">
-                <h6 class="mt-0" title="Number of Customers"><?php echo $row2['date1'];?></h6>
-                <h3 class="text-success">
-                  <?php
+                <h4 class="text-success">
+                <span>&#8369;</span><?php
                   $sales_total=null;
                   if (empty($row2['sales_total'])) {
                     $sales_total = 0;
@@ -309,32 +278,37 @@ $row5 = mysqli_fetch_assoc($result5);
                   }
                   echo $sales_total;
                   ?>
-                </h3>
+                </h4>
                 <p class="mb-0 text-muted">
-                <span class="text-success fw-bold"><?php echo $row2['paidcustomers'] ?></span>
-                <span class="text-nowrap me-2">Receipts</span>
                 <span class="text-success fw-bold">
-                  <?php 
-                  $paiditems=null;
-                  if (empty($row3['paiditems'])) {
-                    $paiditems = 0;
-                  } else {
-                    $paiditems = $row3['paiditems'];
-                  }
-                  echo $paiditems;
-                  ?>
+                <?php echo $row2['paidcustomers'] ?>
                 </span>
-                <span class="text-nowrap me-2">Products Sold</span>
-                
+                <span class="text-nowrap">Receipts</span> 
                 </p>
             </div>
           </div>
 
-          <div class="col text-center">
-            <div class="card-body p-2">
-                <h6 class="mt-0 text-muted" title="Number of Customers">CASH PAYMENTS</h6>
-                <h3 class="text-success">
-                  <?php
+         
+      </div>
+      <div class="row">
+    
+
+          <div class="col text-start p-2">
+            <div class="card-body p-2 border-start border-4 shadow rounded border-primary bg-white">
+            <div class="row">
+              <p class="col m-0 text-primary">
+                CASH 
+              </p>
+              <p class="col m-0 d-flex justify-content-end text-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-cash-coin" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8m5-4a5 5 0 1 1-10 0 5 5 0 0 1 10 0"/>
+                <path d="M9.438 11.944c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195z"/>
+                <path d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083q.088-.517.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1z"/>
+                <path d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 6 6 0 0 1 3.13-1.567"/>
+              </svg>
+              </p>
+            </div>
+                <h4 class="text-primary"><span>&#8369;</span><?php
                   $cashpayments=null;
                   if (empty($row4['cashpayments'])) {
                     $cashpayments = 0;
@@ -343,19 +317,29 @@ $row5 = mysqli_fetch_assoc($result5);
                   }
                   echo $cashpayments;
                   ?>
-                </h3>
+                </h4>
                 <p class="mb-0 text-muted">
-                <span class="text-success fw-bold"><?php echo $row4['cashcustomers'] ?></span>
-                <span class="text-nowrap me-2">Receipts</span>
+                <span class="text-primary fw-bold">
+                <?php echo $row4['cashcustomers'] ?>
+                </span>
+                <span class="text-nowrap">Payments</span>  
                 </p>
             </div>
           </div>
 
-          <div class="col text-center">
-            <div class="card-body p-2">
-                <h6 class="mt-0 text-muted" title="Number of Customers">OTHER PAYMENTS</h6>
-                <h3 class="text-success">
-                  <?php
+          <div class="col text-start p-2">
+            <div class="card-body p-2 border-start border-4 shadow rounded border-warning bg-white">
+            <div class="row">
+              <p class="col m-0 text-warning">
+                OTHER 
+              </p>
+              <p class="col m-0 d-flex justify-content-end text-warning">
+              <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-bank" viewBox="0 0 16 16">
+                <path d="m8 0 6.61 3h.89a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H15v7a.5.5 0 0 1 .485.38l.5 2a.498.498 0 0 1-.485.62H.5a.498.498 0 0 1-.485-.62l.5-2A.5.5 0 0 1 1 13V6H.5a.5.5 0 0 1-.5-.5v-2A.5.5 0 0 1 .5 3h.89zM3.777 3h8.447L8 1zM2 6v7h1V6zm2 0v7h2.5V6zm3.5 0v7h1V6zm2 0v7H12V6zM13 6v7h1V6zm2-1V4H1v1zm-.39 9H1.39l-.25 1h13.72z"/>
+              </svg>
+              </p>
+            </div>
+                <h4 class="text-warning"><span>&#8369;</span><?php
                   $otherpayments=null;
                   if (empty($row5['otherpayments'])) {
                     $otherpayments = 0;
@@ -364,20 +348,20 @@ $row5 = mysqli_fetch_assoc($result5);
                   }
                   echo $otherpayments;
                   ?>
-                </h3>
+                </h4>
                 <p class="mb-0 text-muted">
-                <span class="text-success fw-bold"><?php echo $row5['othercustomers'] ?></span>
-                <span class="text-nowrap me-2">Receipts</span>
+                <span class="text-warning fw-bold">
+                <?php echo $row5['othercustomers'] ?>
+                </span>
+                <span class="text-nowrap">Payments</span>  
                 </p>
             </div>
           </div>
-
-        </div>
       </div>
-  
-      <h6 class="mt-3 text-center text-muted">Transactions</h6>
      
-        <table class="table table-hover table-sm">
+
+          <div class="col text-center">
+          <table class="table table-hover table-sm">
           <thead>
             <tr class="text-muted">
               <th scope="col">Time</th>
@@ -430,7 +414,12 @@ $row5 = mysqli_fetch_assoc($result5);
             ?>
           </tbody>
         </table>
+          </div>
+
+        
+        </div>
       </div>
+
     </main>
   </div>
 </div>

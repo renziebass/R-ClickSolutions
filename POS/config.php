@@ -20,6 +20,6 @@ define('DB','u809137626_users_db');
 define('HOST','localhost');
 define('USER','root');
 define('PASS','');
-define('DB','companies');
+define('DB','users_db');
 */
 ?>

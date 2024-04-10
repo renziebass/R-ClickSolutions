@@ -254,7 +254,7 @@ header("Location: admin_product_restock.php?search=".$_GET['search']."");
   <body>
   
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">R-Click POS</a>
+  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">R-Click Solutions POS: <i><?php echo $company_name; ?></i></a>
   <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -263,117 +263,9 @@ header("Location: admin_product_restock.php?search=".$_GET['search']."");
 
 <div class="container-fluid">
   <div class="row">
-    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-body-tertiary sidebar collapse">
-      <div class="position-sticky pt-3 sidebar-sticky">
-      <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="admin_dashboard.php">
-              <span data-feather="home" class="align-text-bottom"></span>
-              Dashboard
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_yearly_history.php">
-              <span data-feather="file" class="align-text-bottom"></span>
-              Paid Transactions
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_unpaid_transactions.php">
-              <span data-feather="file" class="align-text-bottom"></span>
-              Unpaid Transactions
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_products.php">
-              <span data-feather="shopping-cart" class="align-text-bottom"></span>
-              Products
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_inventory.php">
-              <span data-feather="bar-chart-2" class="align-text-bottom"></span>
-              Inventory
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_users.php">
-              <span data-feather="users" class="align-text-bottom"></span>
-              Users
-            </a>
-          </li>
-        </ul>
-
-        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
-          <span>Quick Links</span>
-        </h6>
-        <ul class="nav flex-column mb-5">
-          <li class="nav-item">
-            <a class="nav-link" href="admin_generateqr.php">
-              <span data-feather="file-text" class="align-text-bottom"></span>
-              QR Generator
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_add_products.php">
-              <span data-feather="file-text" class="align-text-bottom"></span>
-              Add new product
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="admin_product_restock.php">
-              <span data-feather="file-text" class="align-text-bottom"></span>
-              Re-stock product
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_add_category.php">
-              <span data-feather="file-text" class="align-text-bottom"></span>
-              Add new category
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_add_supplier.php">
-              <span data-feather="file-text" class="align-text-bottom"></span>
-              Add new supplier
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_add_mc.php">
-              <span data-feather="file-text" class="align-text-bottom"></span>
-              Add new brand & model
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_add_user.php">
-              <span data-feather="file-text" class="align-text-bottom"></span>
-              Add new user
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_add_discount.php">
-              <span data-feather="file-text" class="align-text-bottom"></span>
-              Add new discounts
-            </a>
-          </li>
-        </ul>
-        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
-          <span>Account</span>
-        </h6>
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-              <span data-feather="user" class="align-text-bottom"></span>
-              <strong><?php echo $name; ?></strong>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                <li><a class="dropdown-item" href="admin_settings.php">Settings</a></li>
-                <li><a class="dropdown-item" href="signout.php">Sign out</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </nav>
+  <?php
+  include 'admin_navbar.php';
+  ?>
 
     <main class="col-md-9 ms-sm-auto col-lg-10">
     <div class="d-flex justify-content-end mt-3 mb-3">

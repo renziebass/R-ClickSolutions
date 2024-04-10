@@ -221,7 +221,7 @@ if(!empty($_POST["password"]))
   <body>
   
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">R-Click POS</a>
+  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">R-Click Solutions POS: <i><?php echo $company_name; ?></i></a>
   <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -230,51 +230,9 @@ if(!empty($_POST["password"]))
 
 <div class="container-fluid">
   <div class="row">
-    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-body-tertiary sidebar collapse">
-      <div class="position-sticky pt-3 sidebar-sticky">
-      <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="cashier_dashboard.php">
-              <span data-feather="home" class="align-text-bottom"></span>
-              Dashboard
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="cashier_transactions_history.php">
-              <span data-feather="file" class="align-text-bottom"></span>
-              Paid Transactions
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="cashier_unpaid_transactions.php">
-              <span data-feather="file" class="align-text-bottom"></span>
-              Unpaid Transactions
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="cashier_products.php">
-              <span data-feather="shopping-cart" class="align-text-bottom"></span>
-              Products
-            </a>
-          </li>
-        </ul>
-        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
-          <span>Account</span>
-        </h6>
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-              <span data-feather="user" class="align-text-bottom"></span>
-              <strong><?php echo $name; ?></strong>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                <li><a class="dropdown-item" href="cashier_settings.php">Settings</a></li>
-                <li><a class="dropdown-item" href="signout.php">Sign out</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </nav>
+  <?php
+  include 'cashier_navbar.php';
+  ?>
 
     <main class="col-md-9 ms-sm-auto col-lg-10">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
