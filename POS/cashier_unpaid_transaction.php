@@ -281,6 +281,15 @@ if (mysqli_num_rows($result) > 0) {
 
           <div class="col text-center">
             <div class="card-body p-2">
+            <h5 class="mt-0" title="Number of Customers"><?php
+      if(empty($row1['date_time'])) {
+      $date_time ="N/A";
+      } else {
+      $date_time = $row1['date_time'];
+      }
+      echo "".$_GET['id']."";
+      
+      ?></h5>
  
                 <h6 class="mt-0" title="Number of Customers"><?php
       if(empty($row1['date_time'])) {
@@ -288,10 +297,10 @@ if (mysqli_num_rows($result) > 0) {
       } else {
       $date_time = $row1['date_time'];
       }
-      echo "".$row1['name']." - ".$_GET['id']." (".$date_time.")";
+      echo "".$row1['name']." - ".$date_time."";
       
       ?></h6>
-                <h3 class="text-danger"><?php
+                <h3 class="text-danger"><span>&#8369;<?php
             if(empty($row1['total'])) {
             $payment ="0";
             } else {

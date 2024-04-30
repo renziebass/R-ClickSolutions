@@ -36,12 +36,16 @@ $result4=mysqli_query($db,$sql4);
 $row4 = mysqli_fetch_assoc($result4);
 
 $sql5="SELECT
+CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS paid,
 FORMAT(SUM(tb_products.capital*tb_cart.quantity) , 2) AS capital,
-FORMAT(SUM(tb_cart.price*tb_cart.quantity - tb_products.capital*tb_cart.quantity) , 2) AS profit
-FROM tb_transactions
-INNER JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
+CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity - tb_products.capital*tb_cart.quantity) , 2)) AS profit
+FROM tb_payments
+LEFT JOIN tb_cart ON tb_payments.id=tb_cart.transaction_id
 LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id
-WHERE tb_transactions.status='paid' AND MONTH(tb_transactions.date)='".$_GET['m']."' AND YEAR(tb_transactions.date)='".$_GET['y']."';";
+RIGHT JOIN tb_transactions ON tb_payments.id=tb_transactions.id
+WHERE tb_transactions.status='paid' AND
+MONTH(tb_payments.date)='".$_GET['m']."' AND
+YEAR(tb_payments.date)='".$_GET['y']."'";
 $result5=mysqli_query($db,$sql5);
 $row5 = mysqli_fetch_assoc($result5);
 ?>
@@ -379,6 +383,7 @@ $row5 = mysqli_fetch_assoc($result5);
           </thead>
           <tbody>
             <?php
+                /*
                 $sql="SELECT *
                 FROM (SELECT
                         tb_payments.date,
@@ -398,6 +403,27 @@ $row5 = mysqli_fetch_assoc($result5);
                       GROUP BY tb_transactions.date) AS B
                 ON A.date1=B.date1
                 ORDER BY A.date DESC";
+                */
+                $sql="SELECT *
+                FROM (SELECT
+                        tb_payments.date,
+                        DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date1,
+                        FORMAT(SUM(tb_payments.total),2) AS amount,
+                        COUNT(tb_payments.payment) AS customers
+                        FROM tb_payments
+                        WHERE MONTH(tb_payments.date)='".$_GET['m']."' AND YEAR(tb_payments.date)='".$_GET['y']."'
+                       GROUP BY tb_payments.date) AS A
+                JOIN (SELECT
+                      SUM(tb_cart.quantity) AS items,
+                      CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS amount2,
+                      DATE_FORMAT(tb_payments.date,'%M %d,%Y') AS date1
+                      FROM tb_transactions
+                      JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
+                      JOIN tb_payments ON tb_transactions.id=tb_payments.id
+                      WHERE tb_transactions.status='paid'
+                      GROUP BY tb_payments.date) AS B
+                ON A.date1=B.date1
+                ORDER BY B.date1 DESC;";
                                                                                     
                 $result = mysqli_query($db,$sql);
 

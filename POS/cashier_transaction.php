@@ -316,7 +316,7 @@ if (mysqli_num_rows($result) > 0) {
             <div class="card-body p-2">
  
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Total</h6>
-                <h3 class="text-success"><?php
+                <h3 class="text-success"><span>&#8369;<?php
             if(empty($row1['total'])) {
             $payment ="0";
             } else {
@@ -342,7 +342,7 @@ if (mysqli_num_rows($result) > 0) {
             <div class="card-body p-2">
 
                 <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Payment</h6>
-                <h3 class="text-primary"><?php
+                <h3 class="text-primary"><span>&#8369;<?php
                 if(empty($row1['payment'])) {
                 $payment ="0";
                 } else {
@@ -351,7 +351,7 @@ if (mysqli_num_rows($result) > 0) {
                 echo $payment;
                 ?></h3>
                 <p class="mb-0 text-muted">
-                <span class="text-danger fw-bold"> <?php
+                <span class="text-danger fw-bold"><span>&#8369;<?php
                 if(empty($row1['change1'])) {
                 $change1 ="0";
                 } else {
