@@ -146,7 +146,7 @@
     <div class="carousel-inner">
 
       <div class="carousel-item active">
-      <img class="mx-auto mt-5 d-block" width="auto" height="30%" src="main/assets/img/PIGGY.png">
+      <img class="mx-auto mt-5 d-block" width="auto" height="30%" src="assets/img/PIGGY.png">
         <div class="container">
           <div class="carousel-caption p-0 text-center text-dark">
             <h1>Affordable Business Solution</h1>
@@ -158,7 +158,7 @@
       </div>
 
       <div class="carousel-item">
-      <img class="mx-auto mt-5 d-block" width="auto" height="30%" src="main/assets/img/CRAFT.png">
+      <img class="mx-auto mt-5 d-block" width="auto" height="30%" src="assets/img/CRAFT.png">
         <div class="container">
           <div class="carousel-caption p-0 text-center text-dark">
             <h1>Crafting Innovative Web Apps</h1>
@@ -169,7 +169,7 @@
       </div>
 
       <div class="carousel-item">
-      <img class="mx-auto mt-5 d-block" width="auto" height="30%" src="main/assets/img/USER.png">
+      <img class="mx-auto mt-5 d-block" width="auto" height="30%" src="assets/img/USER.png">
         <div class="container">
           <div class="carousel-caption p-0 text-center text-dark">
             <h1>USER FRIENDLY</h1>
@@ -194,7 +194,7 @@
 
     <div class="row">
       <div class="col-md-6">
-        <img class="mx-auto d-block" width="300" height="300" src="main/assets/img/RENZIE.png">
+        <img class="mx-auto d-block" width="300" height="300" src="assets/img/RENZIE.png">
       </div>
       <div class="col-md-6 text-center my-auto">
         <h3 class="fw-bold">Mr. Renzie Operario Bassig, <span class="text-body-secondary">Fullstack Developer.</span></h>
@@ -215,13 +215,13 @@
           <div class="carousel-inner">
 
             <div class="carousel-item active" data-bs-interval="1000">
-              <img class="mx-auto d-block" width="350" height="350" src="main/assets/img/GIF1.png">
+              <img class="mx-auto d-block" width="350" height="350" src="assets/img/GIF1.png">
             </div>
             <div class="carousel-item" data-bs-interval="1000">
-              <img class="mx-auto d-block" width="350" height="350" src="main/assets/img/GIF2.png">
+              <img class="mx-auto d-block" width="350" height="350" src="assets/img/GIF2.png">
             </div>
             <div class="carousel-item" data-bs-interval="1000">
-              <img class="mx-auto d-block" width="350" height="350" src="main/assets/img/GIF3.png">
+              <img class="mx-auto d-block" width="350" height="350" src="assets/img/GIF3.png">
             </div>
 
           </div>
@@ -233,7 +233,7 @@
 
     <div class="row p-5">
       <div class="col-md-6">
-        <img class="mx-auto d-block" width="150" height="150" src="main/assets/img/SATISFIED.png">
+        <img class="mx-auto d-block" width="150" height="150" src="assets/img/SATISFIED.png">
       </div>
       <div class="col-md-6 text-center my-auto">
         <h3 class="fw-bold">See for yourself.</h>
