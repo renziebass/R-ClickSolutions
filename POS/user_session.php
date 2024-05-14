@@ -25,7 +25,6 @@
    define('PASS1',$row0['pass']);
    define('DB1',$row0['db']);
 
-
    /*
    define('HOST1','localhost');
    define('USER1',$row0['user']);

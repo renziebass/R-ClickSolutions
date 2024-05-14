@@ -399,7 +399,7 @@ $row15 = mysqli_fetch_assoc($result15);
             </div>
           </div>
 
-          <div class="col text-start p-2">
+          <div class="col text-start p-2" onClick="window.location='cashier_unpaid_transactions.php';">
             <div class="card-body p-2 border-start border-4 shadow rounded border-danger bg-white">
                 <div class="row">
                   <p class="col m-0 text-danger">

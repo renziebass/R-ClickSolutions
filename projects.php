@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.122.0">
-    <title>R-Click Solutions</title>
+    <title>Projects</title>
 
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
@@ -125,10 +125,10 @@
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <ul class="navbar-nav me-auto mb-2 mb-md-0">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
+            <a class="nav-link active" aria-current="index.php" href="#">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="projects.php">Projects</a>
+            <a class="nav-link" href="">Projects</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" aria-disabled="true">Contact</a>
@@ -141,117 +141,12 @@
 
 <main>
 
-  <div id="myCarousel" class="carousel slide mb-1" data-bs-ride="carousel"  style="background-color:#ffc068;"> 
-    <div class="carousel-indicators">
-      <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-      <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-      <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
-    </div>
-
-    <div class="carousel-inner">
-
-      <div class="carousel-item active">
-      <img class="mx-auto mt-5 d-block" width="auto" height="30%" src="assets/img/PIGGY.PNG">
-        <div class="container">
-          <div class="carousel-caption p-0 text-center text-dark">
-            <h1>Affordable Business Solution</h1>
-            <p>R-Click Solutions stands out as the most cost-effective option
-              for comprehensive business solutions,
-              offering unparalleled value without compromising on quality.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="carousel-item">
-      <img class="mx-auto mt-5 d-block" width="auto" height="30%" src="assets/img/CRAFT.PNG">
-        <div class="container">
-          <div class="carousel-caption p-0 text-center text-dark">
-            <h1>Crafting Innovative Web Apps</h1>
-            <p>R-Click Solutions offers innovative web applications for startups and businesses,
-            specializing in custom solutions for online presence and digital capabilities enhancement.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="carousel-item">
-      <img class="mx-auto mt-5 d-block" width="auto" height="30%" src="assets/img/USER.PNG">
-        <div class="container">
-          <div class="carousel-caption p-0 text-center text-dark">
-            <h1>USER FRIENDLY</h1>
-            <p>Specializes in creating user-friendly software that combines intuitive design with
-              seamless functionality,
-              ensuring an exceptional experience for users of all skill levels.</p>
-          </div>
-        </div>
-      </div>
-
-    </div>
+  <div  style="background-color:#ffc068;"> 
+  
+    
 
   </div>
 
-
-  <!-- Marketing messaging and featurettes
-  ================================================== -->
-  <!-- Wrap the rest of the page in another container to center all the content. -->
-
-  <div class="container marketing">
-
-
-    <div class="row">
-      <div class="col-md-6">
-        <img class="mx-auto d-block" width="300" height="300" src="assets/img/RENZIE.PNG">
-      </div>
-      <div class="col-md-6 text-center my-auto">
-        <h3 class="fw-bold">Mr. Renzie Operario Bassig, <span class="text-body-secondary">Fullstack Developer.</span></h>
-        <p class="lead mt-3">"It will be an honour for me to contribute to your growth."</p>
-      </div>
-    </div>
-
-    <hr class="featurette-divider">
-
-    <div class="row">
-      <div class="col-md-6 text-center my-auto">
-        <h3 class="fw-bold">Cross-Platform Compatible.</h>
-        <p class="lead">Web-Applications that can run on multiple operating systems
-          or environments without requiring major modifications.</p>
-      </div>
-      <div class="col-md-6">
-        <div id="myCarousel" class="carousel" data-bs-ride="carousel" > 
-          <div class="carousel-inner">
-
-            <div class="carousel-item active" data-bs-interval="1000">
-              <img class="mx-auto d-block" width="350" height="350" src="assets/img/GIF1.PNG">
-            </div>
-            <div class="carousel-item" data-bs-interval="1000">
-              <img class="mx-auto d-block" width="350" height="350" src="assets/img/GIF2.PNG">
-            </div>
-            <div class="carousel-item" data-bs-interval="1000">
-              <img class="mx-auto d-block" width="350" height="350" src="assets/img/GIF3.PNG">
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <hr class="featurette-divider">
-
-    <div class="row p-5">
-      <div class="col-md-6">
-        <img class="mx-auto d-block" width="150" height="150" src="assets/img/SATISFIED.PNG">
-      </div>
-      <div class="col-md-6 text-center my-auto">
-        <h3 class="fw-bold">See for yourself.</h>
-        <p class="lead mt-3">Check out the google reviews from genuine clients.</p>
-        <p><a class="btn btn-sm btn-secondary" href="#">See Reviews</a></p>
-      </div>
-    </div>
-
-    <hr class="featurette-divider">
-
-    <!-- /END THE FEATURETTES -->
-
-  </div><!-- /.container -->
 
 
   <!-- FOOTER -->

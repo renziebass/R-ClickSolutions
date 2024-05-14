@@ -402,7 +402,7 @@ $row19 = mysqli_fetch_assoc($result19);
     <h6 class="text-center m-2"><?php echo date("F j,Y");?></h6>
         <div class="row">
 
-          <div class="col text-start p-2 ">
+          <div class="col text-start p-2" onClick="window.location='admin_yearly_history.php';">
             <div class="card-body p-2 border-start border-4 shadow rounded border-success bg-white">
             <div class="row">
               <p class="col m-0 text-success">
@@ -532,7 +532,7 @@ $row19 = mysqli_fetch_assoc($result19);
             </div>
           </div>
 
-          <div class="col text-start p-2">
+          <div class="col text-start p-2" onClick="window.location='admin_unpaid_transactions.php';">
             <div class="card-body p-2 border-start border-4 shadow rounded border-danger bg-white">
                 <div class="row">
                   <p class="col m-0 text-danger">
@@ -633,7 +633,7 @@ $row19 = mysqli_fetch_assoc($result19);
             </div>
           </div>
 
-          <div class="col text-start p-2">
+          <div class="col text-start p-2" onClick="window.location='admin_transactions.php?date=<?php echo date("Y-m-d") ?>';">
             <div class="card-body p-2 border-start border-4 shadow rounded border-success bg-white">
                 <div class="row">
                   <p class="col m-0 text-success">
