@@ -194,7 +194,7 @@
 
     <div class="row">
       <div class="col-md-6">
-        <img class="mx-auto d-block" width="300" height="300" src="assets/img/RENZIE.PNG">
+        <img class="mx-auto d-block" width="300" height="300" src="POS/assets/img/R-ClickLogo.png">
       </div>
       <div class="col-md-6 text-center my-auto">
         <h3 class="fw-bold">Mr. Renzie Operario Bassig, <span class="text-body-secondary">Fullstack Developer.</span></h>
