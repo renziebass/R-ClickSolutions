@@ -146,7 +146,7 @@
     <div class="carousel-inner">
 
       <div class="carousel-item active">
-      <img class="mx-auto mt-5 d-block" width="auto" height="30%" src="assets/img/PIGGY.png">
+      <img class="mx-auto mt-5 d-block" width="auto" height="30%" src="POS/main/assets/img/PIGGY.png">
         <div class="container">
           <div class="carousel-caption p-0 text-center text-dark">
             <h1>Affordable Business Solution</h1>
@@ -158,7 +158,7 @@
       </div>
 
       <div class="carousel-item">
-      <img class="mx-auto mt-5 d-block" width="auto" height="30%" src="assets/img/CRAFT.png">
+      <img class="mx-auto mt-5 d-block" width="auto" height="30%" src="POS/main/assets/img/CRAFT.png">
         <div class="container">
           <div class="carousel-caption p-0 text-center text-dark">
             <h1>Crafting Innovative Web Apps</h1>
@@ -169,7 +169,7 @@
       </div>
 
       <div class="carousel-item">
-      <img class="mx-auto mt-5 d-block" width="auto" height="30%" src="assets/img/USER.png">
+      <img class="mx-auto mt-5 d-block" width="auto" height="30%" src="POS/main/assets/img/USER.png">
         <div class="container">
           <div class="carousel-caption p-0 text-center text-dark">
             <h1>USER FRIENDLY</h1>
