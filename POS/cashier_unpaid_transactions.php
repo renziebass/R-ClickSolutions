@@ -298,6 +298,7 @@ $row3 = mysqli_fetch_assoc($result3);
         <thead>
             <tr class="text-muted">
               <th scope="col">Name</th>
+              <th scope="col">Duration</th>
               <th scope="col">Date Time</th>
               <th scope="col">Items</th>
               <th scope="col">Amount</th>
@@ -314,6 +315,7 @@ $row3 = mysqli_fetch_assoc($result3);
                 JOIN (SELECT
                     tb_cart.transaction_id,
                     SUM(tb_cart.quantity) as items,
+                    CONCAT(DATEDIFF(NOW(),tb_cart.date), ' day(s) ago') AS duration,
                     SUM(tb_cart.price*tb_cart.quantity) AS total
                         FROM tb_cart
                     GROUP BY tb_cart.transaction_id) AS B
@@ -330,6 +332,7 @@ $row3 = mysqli_fetch_assoc($result3);
             ?>
             <tr onclick="location.href='cashier_unpaid_transaction.php?id=<?php echo $items['id'];?>'">  
                 <td><?php echo $items['name']; ?></td>
+                <td><?php echo $items['duration']; ?></td>
                 <td><?php echo $items['date']; ?></td>
                 <td><?php echo $items['items']; ?></td>
                 <td><?php echo $items['total']; ?></td>
