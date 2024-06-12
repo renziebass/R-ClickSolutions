@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.122.0">
-    <title>VIDA Spa - Treatments</title>
+    <title>VIDA Spa - Massage</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 
@@ -142,85 +142,106 @@
   <div class="nav-scroller py-1 mb-3 border-bottom">
     <nav class="nav nav-underline justify-content-between">
       <a class="nav-item nav-link link-body-emphasis" href="index.php">Home</a>
-      <a class="nav-item nav-link link-body-emphasis active" href="#">Treatments</a>
-      <a class="nav-item nav-link link-body-emphasis" href="promotions.php">Promotions</a>
-      <a class="nav-item nav-link link-body-emphasis" href="press.php">Press</a>
+      <a class="nav-item nav-link link-body-emphasis active" href="treatments.php">Treatments</a>
+      <a class="nav-item nav-link link-body-emphasis" href="#">Promotions</a>
+      <a class="nav-item nav-link link-body-emphasis" href="#">Press</a>
     </nav>
   </div>
 </div>
 
 <main class="container">
-  <div class="p-4 mb-4 rounded text-body-emphasis" style="background-color: #EEE8D8;">
+  <div class="row">
+  <img class="img-fluid" width="100%" height="100%" src="assets/img/massage2.jpg" alt="">
+  </div>
+  <div class="p-4 mb-4 rounded-bottom text-body-emphasis" style="background-color: #EEE8D8;">
 
-  <div class="album">
-    <div class="container">
-
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-        <div class="col">
-          <a href="pampering.php" style="text-decoration:none">
-          <div class="card shadow-sm">
-          <img class="img-fluid" width="100%" height="225" src="assets/img/pampering.jpg" alt="">
-            <div class="card-body text-center">
-            <h5>Pampering</h5>
-            </div>
-          </div>
-          </a>
-         
-        </div>
-        <div class="col">
-          <a href="facial.php" style="text-decoration:none">
-          <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/facial.jpg" alt="">
-            <div class="card-body text-center">
-            <h5>Facial</h5>
-            </div>
-          </div>
-          </a>
-        </div>
-        <div class="col">
-          <a href="massage.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/massage.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Massage</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-
-        <div class="col">
-          <a href="waxing.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/waxing.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Waxing</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-        <div class="col">
-          <a href="tinting.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/tinting.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Tinting</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-        <div class="col">
-          <a href="nail.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/manicure.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Nail Service</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-      </div>
+  <div class="row">
+    <div class="row text-center">
+    <h4>Vida Spa offers high quality services and prepare the best products
+      for our varieties of massage. Prepare to immediately feel the sense
+      of refreshment and relaxation. Our team of experts with professional
+      masseuses and therapists with high depth of experience are here to help</h4>
     </div>
   </div>
+
+  <hr class="m-5">
+
+    <div class="row text-center">
+    <h1>Body Massage</h1>
+    </div>
+
+      
+    <div class="row text-center mt-5">
+    <h2>Swedish Massage (60mins / 90mins)</h2>
+    <h1 class="text-danger">$520 - 720</h1>
+    <p>- A series of long soothing, relaxing strokes and employs greater pressure
+      using aromatic oils. This treatment increases oxygen flow to the muscles,
+      and releases toxins from the muscles.</p>
+    </div>
+
+    <div class="row text-center mt-3">
+    <h2>Deep Tissue Massage (60mins / 90mins)</h2>
+    <h1 class="text-danger">$620 - 820</h1>
+    <p>- A massage focused on targeting the muscles to release muscle tensions.</p>
+    </div>
+
+    <div class="row text-center mt-3">
+    <h2>Sports Massage (60mins / 90mins)</h2>
+    <h1 class="text-danger">$720 - 920</h1>
+    <p>- Our professional technique performed whose athletes or active individuals
+      for the purpose of aiding recovery.</p>
+    </div>
+
+    <div class="row text-center mt-3">
+    <h2>Slimming / Lymphatic Massage (60mins / 90mins)</h2>
+    <h1 class="text-danger">$690 / 890</h1>
+    <p>- Use precise rhythm, pressure, and direction of massage to clear stagnant
+      fluid from lymph nodes. Activating fluid flow in blocked nodes might detoxify
+      the body to improve health.</p>
+    </div>
+
+    <div class="row text-center mt-3">
+    <h2>Thai Massage (60mins)</h2>
+    <h1 class="text-danger">$580 - 780</h1>
+    <p>- Thai massage without using oil. $100 will be charge for every 15 minutes after 60 minutes.</p>
+    </div>
+
+    <div class="row text-center mt-3">
+    <h2>Note: All massage services are only available for women</h2>
+    </div>
+
+  <div class="row text-center">
+    <h1>Add ons:</h1>
+    </div>
+
+      
+    <div class="row text-center mt-5">
+    <h2>Neck and Shoulders ( 15mins)</h2>
+    <h1 class="text-danger">$180</h1>
+    <p>- A massage focused on targeting the muscles to release muscle tensions.</p>
+    </div>
+
+    <div class="row text-center mt-5">
+    <h2>Back and Shoulders ( 30mins)</h2>
+    <h1 class="text-danger">$360</h1>
+    <p>- A massage focused on targeting the muscles to release muscle tensions.</p>
+    </div>
+
+    <div class="row text-center mt-5">
+    <h2>Back and Shoulders ( 60mins)</h2>
+    <h1 class="text-danger">$560</h1>
+    <p>- A massage focused on targeting the muscles to release muscle tensions.</p>
+    </div>
+
+    <div class="row text-center mt-5">
+    <h2>Foot Massage</h2>
+    <h1 class="text-danger">$180 - 360</h1>
+    <p>$180 - 30 mins (Add on to nail services only)</p>
+    <p>$360 - 65 mins including foot soak</p>
+    </div>
+
+    
+  
 
   </div>
 

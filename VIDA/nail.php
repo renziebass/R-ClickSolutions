@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.122.0">
-    <title>VIDA Spa - Treatments</title>
+    <title>VIDA Spa - Nail Services</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 
@@ -142,85 +142,98 @@
   <div class="nav-scroller py-1 mb-3 border-bottom">
     <nav class="nav nav-underline justify-content-between">
       <a class="nav-item nav-link link-body-emphasis" href="index.php">Home</a>
-      <a class="nav-item nav-link link-body-emphasis active" href="#">Treatments</a>
-      <a class="nav-item nav-link link-body-emphasis" href="promotions.php">Promotions</a>
-      <a class="nav-item nav-link link-body-emphasis" href="press.php">Press</a>
+      <a class="nav-item nav-link link-body-emphasis active" href="treatments.php">Treatments</a>
+      <a class="nav-item nav-link link-body-emphasis" href="#">Promotions</a>
+      <a class="nav-item nav-link link-body-emphasis" href="#">Press</a>
     </nav>
   </div>
 </div>
 
 <main class="container">
-  <div class="p-4 mb-4 rounded text-body-emphasis" style="background-color: #EEE8D8;">
+  <div class="row">
+  <img class="img-fluid" width="100%" height="100%" src="assets/img/manicure2.jpg" alt="">
+  </div>
+  <div class="p-4 mb-4 rounded-bottom text-body-emphasis" style="background-color: #EEE8D8;">
 
-  <div class="album">
-    <div class="container">
-
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-        <div class="col">
-          <a href="pampering.php" style="text-decoration:none">
-          <div class="card shadow-sm">
-          <img class="img-fluid" width="100%" height="225" src="assets/img/pampering.jpg" alt="">
-            <div class="card-body text-center">
-            <h5>Pampering</h5>
-            </div>
-          </div>
-          </a>
-         
-        </div>
-        <div class="col">
-          <a href="facial.php" style="text-decoration:none">
-          <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/facial.jpg" alt="">
-            <div class="card-body text-center">
-            <h5>Facial</h5>
-            </div>
-          </div>
-          </a>
-        </div>
-        <div class="col">
-          <a href="massage.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/massage.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Massage</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-
-        <div class="col">
-          <a href="waxing.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/waxing.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Waxing</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-        <div class="col">
-          <a href="tinting.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/tinting.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Tinting</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-        <div class="col">
-          <a href="nail.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/manicure.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Nail Service</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-      </div>
+  <div class="row">
+    <div class="row text-center">
+    <h4>About Nails</h4>
     </div>
   </div>
+
+  <hr class="m-5">
+
+    <div class="row text-center">
+    <h1>Nail Services</h1>
+    </div>
+
+      
+    <div class="row text-center mt-5">
+    <h2>Spa Manicure</h2>
+    <h1 class="text-danger">$228</h1>
+    <p>- Includes Cutting nails, file, cuticle work, mini massage and a normal nail polish.</p>
+    </div>
+
+    <div class="row text-center mt-3">
+    <h2>Spa Pedicure</h2>
+    <h1 class="text-danger">$328</h1>
+    <p>- Includes Cutting nails, file, cuticle work, scrub,
+      removing of dead calluses and mini massage, regular polish.</p>
+    </div>
+
+    <div class="row text-center mt-3">
+    <h2>Set of Spa Mani & Spa Pedi</h2>
+    <h1 class="text-danger">$508</h1>
+    </div>
+
+    <div class="row text-center mt-3">
+    <h2>Express Manicure</h2>
+    <h1 class="text-danger">$180</h1>
+    <p>- Includes a quick Cutting of nails, file and regular polish.</p>
+    </div>
+
+    <div class="row text-center mt-3">
+    <h2>Express Pedicure</h2>
+    <h1 class="text-danger">$210</h1>
+    <p>- Includes a quick Cutting of nails, file and regular polish.</p>
+    </div>
+
+    <div class="row text-center mt-3">
+    <h2>Ultimate Spa Manicure</h2>
+    <h1 class="text-danger">$388</h1>
+    <p>- Includes Cutting of Nails, file, cuticle work, paraffin wax, regular polish.
+      Clients Choice of :15mins Foot Massage  or  Paraffin Wax</p>
+    </div>
+
+    <div class="row text-center mt-3">
+    <h2>Ultimate Spa Manicure and Ultimate Spa Pedicure</h2>
+    <h1 class="text-danger">$648</h1>
+    <p>- Includes Cutting of Nails, file, cuticle work, paraffin wax, regular polish.
+      Clients Choice of :15mins Foot Massage  or  Paraffin Wax</p>
+    </div>
+
+    <div class="row text-center">
+    <h2>Add ons:</h2>
+    </div>
+
+    <div class="row text-center">
+      <div class="row">
+        <p class="col">Shellac Removal </p><p class="col text-danger">$90</p>
+      </div>
+      <div class="row">
+        <p class="col">Shellac Polish </p><p class="col text-danger">$120</p>
+      </div>
+      <div class="row">
+        <p class="col">French Tip</p><p class="col text-danger">$100</p>
+      </div>
+      <div class="row">
+        <p class="col">Foot Massage</p><p class="col text-danger">$180</p>
+      </div>
+    </div>
+    <div class="row text-center mt-1">
+    <p>30 Mins  (only add on to nail services)</p>
+    </div>
+
 
   </div>
 

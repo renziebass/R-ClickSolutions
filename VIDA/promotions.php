@@ -96,7 +96,7 @@
     <!-- Custom styles for this template -->
     <link href="blog.css" rel="stylesheet">
   </head>
-  <body>
+  <body style="background-image: url('assets/img/floral.png')">
     <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
       <symbol id="check2" viewBox="0 0 16 16">
         <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
@@ -144,7 +144,7 @@
       <a class="nav-item nav-link link-body-emphasis" href="index.php">Home</a>
       <a class="nav-item nav-link link-body-emphasis" href="treatments.php">Treatments</a>
       <a class="nav-item nav-link link-body-emphasis active" href="#">Promotions</a>
-      <a class="nav-item nav-link link-body-emphasis" href="#">Press</a>
+      <a class="nav-item nav-link link-body-emphasis" href="press.php">Press</a>
     </nav>
   </div>
 </div>
@@ -156,9 +156,9 @@
     <div class="col-md-7 px-0 my-auto">
       <div class="card-body text-center">
         <h1 class="text-danger ">Weekend Special</h1>
-        <p class="lead my-3">Enjoy 10% DISCOUNT to all facial treatments on Saturdays and Sundays!
+        <p>Enjoy 10% DISCOUNT to all facial treatments on Saturdays and Sundays!
           (Booking will require ONE day in advance).
-        </p>
+    </p>
       </div>
     </div>
     <div class="col-md-5">

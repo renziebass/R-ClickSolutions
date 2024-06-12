@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.122.0">
-    <title>VIDA Spa - Treatments</title>
+    <title>VIDA Spa - Pampering</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 
@@ -142,85 +142,60 @@
   <div class="nav-scroller py-1 mb-3 border-bottom">
     <nav class="nav nav-underline justify-content-between">
       <a class="nav-item nav-link link-body-emphasis" href="index.php">Home</a>
-      <a class="nav-item nav-link link-body-emphasis active" href="#">Treatments</a>
-      <a class="nav-item nav-link link-body-emphasis" href="promotions.php">Promotions</a>
-      <a class="nav-item nav-link link-body-emphasis" href="press.php">Press</a>
+      <a class="nav-item nav-link link-body-emphasis active" href="treatments.php">Treatments</a>
+      <a class="nav-item nav-link link-body-emphasis" href="#">Promotions</a>
+      <a class="nav-item nav-link link-body-emphasis" href="#">Press</a>
     </nav>
   </div>
 </div>
 
 <main class="container">
-  <div class="p-4 mb-4 rounded text-body-emphasis" style="background-color: #EEE8D8;">
+  <div class="row">
+  <img class="img-fluid" width="100%" height="100%" src="assets/img/pampering2.jpg" alt="">
+  </div>
+  <div class="p-4 mb-4 rounded-bottom text-body-emphasis" style="background-color: #EEE8D8;">
 
-  <div class="album">
-    <div class="container">
-
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-        <div class="col">
-          <a href="pampering.php" style="text-decoration:none">
-          <div class="card shadow-sm">
-          <img class="img-fluid" width="100%" height="225" src="assets/img/pampering.jpg" alt="">
-            <div class="card-body text-center">
-            <h5>Pampering</h5>
-            </div>
-          </div>
-          </a>
-         
-        </div>
-        <div class="col">
-          <a href="facial.php" style="text-decoration:none">
-          <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/facial.jpg" alt="">
-            <div class="card-body text-center">
-            <h5>Facial</h5>
-            </div>
-          </div>
-          </a>
-        </div>
-        <div class="col">
-          <a href="massage.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/massage.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Massage</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-
-        <div class="col">
-          <a href="waxing.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/waxing.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Waxing</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-        <div class="col">
-          <a href="tinting.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/tinting.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Tinting</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-        <div class="col">
-          <a href="nail.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/manicure.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Nail Service</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-      </div>
+  <div class="row">
+    <div class="row text-center">
+    <h2>Rejuvinating Treatment (90 mins)</h2>
+    <h1 class="text-danger">$900 - $1,100</h1>
+    <p>- 30 mins Back Massage – Aroma therapy relaxing massage.</p>
+    <p>- Our Dermalogica Facial is a remedy for a healthy glowing skin.
+      It nourishes and smoothens your skin complexion OR Sundari design
+      to promote treatment for skin regeneration
+      and healing process that helps to stimulate your collagen production
+      for firming and healthier skin.</p>
     </div>
   </div>
+
+  <hr class="m-5">
+
+    <div class="row text-center">
+    <h2>Rejuvinating Retreat (2 hours)</h2>
+    <h1 class="text-danger">$1200 - $1400</h1>
+    <p>- 60 mins Swedish or Deep Tissue Massage</p>
+    <p>- Our Dermalogica Facial is a remedy for a healthy glowing skin.
+      It nourishes and smoothens your skin complexion OR Sundari design
+      to promote treatment for skin regeneration and healing process
+      that helps to stimulate your collagen production for firming and healthier skin.</p>
+    </div>
+
+  <hr class="m-5">
+
+    <div class="row text-center">
+    <h2>Vida Mini Retreat (75 mins)</h2>
+    <h1 class="text-danger">$820</h1>
+    <p>- Mini Facial, treatment is design to unsure nourishment and moisture
+      level for healthy hydrated looking skin featuring Dermalogica product.</p>
+    </div>
+
+  <hr class="m-5">
+
+    <div class="row text-center">
+    <h6>Teen Facial Treatment ( 45mins) Age between 13-16 years old</h6>
+    <h1 class="text-danger">$450</h1>
+    </div>
+  
 
   </div>
 

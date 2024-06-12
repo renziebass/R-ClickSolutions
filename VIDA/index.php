@@ -96,7 +96,7 @@
     <!-- Custom styles for this template -->
     <link href="blog.css" rel="stylesheet">
   </head>
-  <body>
+  <body style="background-image: url('assets/img/floral.png')">
     <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
       <symbol id="check2" viewBox="0 0 16 16">
         <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
@@ -144,7 +144,7 @@
       <a class="nav-item nav-link link-body-emphasis active" href="#">Home</a>
       <a class="nav-item nav-link link-body-emphasis" href="treatments.php">Treatments</a>
       <a class="nav-item nav-link link-body-emphasis" href="promotions.php">Promotions</a>
-      <a class="nav-item nav-link link-body-emphasis" href="#">Press</a>
+      <a class="nav-item nav-link link-body-emphasis" href="press.php">Press</a>
     </nav>
   </div>
 </div>
@@ -169,7 +169,7 @@
 
   <div class="row mb-5">
     <div class="col-md-6">
-      <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+      <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-280 position-relative">
         <div class="col p-4 d-flex flex-column position-static">
           <h3 class="d-inline-block mb-2">Spa Philosophy 1</h3>
           <p class="card-text m-4">Indulge your senses in the tranquility of the contemporary décor,
@@ -182,7 +182,7 @@
       </div>
     </div>
     <div class="col-md-6">
-      <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+      <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-280 position-relative">
         <div class="col p-4 d-flex flex-column position-static">
           <h3 class="d-inline-block mb-2">Spa Philosophy 2</h3>
           <p class="m-4">Vida spa provides positive energy to recharge your body and soul.

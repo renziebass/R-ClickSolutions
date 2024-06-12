@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.122.0">
-    <title>VIDA Spa - Treatments</title>
+    <title>VIDA Spa - Facial</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 
@@ -142,85 +142,103 @@
   <div class="nav-scroller py-1 mb-3 border-bottom">
     <nav class="nav nav-underline justify-content-between">
       <a class="nav-item nav-link link-body-emphasis" href="index.php">Home</a>
-      <a class="nav-item nav-link link-body-emphasis active" href="#">Treatments</a>
-      <a class="nav-item nav-link link-body-emphasis" href="promotions.php">Promotions</a>
-      <a class="nav-item nav-link link-body-emphasis" href="press.php">Press</a>
+      <a class="nav-item nav-link link-body-emphasis active" href="treatments.php">Treatments</a>
+      <a class="nav-item nav-link link-body-emphasis" href="#">Promotions</a>
+      <a class="nav-item nav-link link-body-emphasis" href="#">Press</a>
     </nav>
   </div>
 </div>
 
 <main class="container">
-  <div class="p-4 mb-4 rounded text-body-emphasis" style="background-color: #EEE8D8;">
+  <div class="row">
+  <img class="img-fluid" width="100%" height="100%" src="assets/img/facial2.jpg" alt="">
+  </div>
+  <div class="p-4 mb-4 rounded-bottom text-body-emphasis" style="background-color: #EEE8D8;">
 
-  <div class="album">
-    <div class="container">
-
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-        <div class="col">
-          <a href="pampering.php" style="text-decoration:none">
-          <div class="card shadow-sm">
-          <img class="img-fluid" width="100%" height="225" src="assets/img/pampering.jpg" alt="">
-            <div class="card-body text-center">
-            <h5>Pampering</h5>
-            </div>
-          </div>
-          </a>
-         
-        </div>
-        <div class="col">
-          <a href="facial.php" style="text-decoration:none">
-          <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/facial.jpg" alt="">
-            <div class="card-body text-center">
-            <h5>Facial</h5>
-            </div>
-          </div>
-          </a>
-        </div>
-        <div class="col">
-          <a href="massage.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/massage.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Massage</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-
-        <div class="col">
-          <a href="waxing.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/waxing.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Waxing</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-        <div class="col">
-          <a href="tinting.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/tinting.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Tinting</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-        <div class="col">
-          <a href="nail.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/manicure.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Nail Service</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-      </div>
+  <div class="row">
+    <div class="row text-center">
+    <h6>All facial treatments come with a complimentary skin scanner analysis
+    Once your complimentary skin care analysis has been done and we have fully
+    discussed your concerns and needs; Our staff will create and perform
+    a customized skin care treatment for you. This will be done with Dermalogica
+    or Sundari skincare Products.</h6>
     </div>
   </div>
+
+  <hr class="m-5">
+
+    <div class="row text-center">
+    <h1>Dermalogica</h1>
+    </div>
+
+      
+    <div class="row text-center mt-5">
+    <h2>Vida Dermalogica Signature Facial (60Mins)</h2>
+    <h1 class="text-danger">$680</h1>
+    <p>- Our Dermalogica Signature Facial is remedy for your healthy glowing skin.
+      It nourishes and smoothens your skin complexion.</p>
+    </div>
+
+    <div class="row text-center mt-3">
+    <h2>Soothe and Calming Facial (75mins)</h2>
+    <h1 class="text-danger">$780</h1>
+    <p>- Facial treatment of inflamed, sensitive skin that triggers and give
+      serious relief of damage skin problems.</p>
+    </div>
+
+    <div class="row text-center mt-3">
+    <h2>Deep Cleansing Facial (75mins)</h2>
+    <h1 class="text-danger">$880</h1>
+    <p>- Intense purifying treatment regulate problematic oily skin,
+      includes exfoliate steaming and extraction. The treatment is suitable for those
+      who are suffering from breakouts cause by hormonal and environmental change.</p>
+    </div>
+
+    <div class="row text-center mt-3">
+    <h2>Ultimate Deep Cleansing Facial (90mins)</h2>
+    <h1 class="text-danger">$980</h1>
+    <p>- Design to promote treatment for skin regeneration and healing process that
+      helps to stimulate your collagen production for firming and healthier skin.</p>
+    </div>
+
+    <div class="row text-center mt-3">
+    <h2>Anti- aging Age Smart Facial (75mins)</h2>
+    <h1 class="text-danger">$980</h1>
+    <p>- The facial design to promote deep nourishment to chronically dry & dehydrated skin.
+      The result of healing process of mature & dull looking skin is to refresh,
+      boost anti-oxidant and improves elasticity of the skin.</p>
+    </div>
+
+    <div class="row text-center mt-3">
+    <h2>Add on Eye and Lip Treatment</h2>
+    <h1 class="text-danger">$260</h1>
+    </div>
+
+  <hr class="m-5">
+
+  <div class="row text-center">
+    <h1>Sundari</h1>
+    </div>
+
+      
+    <div class="row text-center mt-5">
+    <h2>Vida Sundari Signature Facial (60mins)</h2>
+    <h1 class="text-danger">$780</h1>
+    <p>- Design to ensure nourishment and moisture level for healthy hydrated skin.</p>
+    </div>
+
+    <div class="row text-center mt-5">
+    <h2>Sundari Deep Cleansing Facial (75mins)</h2>
+    <h1 class="text-danger">$880</h1>
+    <p>- Intense cleansing facial, exfoliation of dead skin cells, steaming, extraction, massage and cooling mask for healthy glowing skin.</p>
+    </div>
+
+    <div class="row text-center mt-5">
+    <h2>Sundari Ultimate Healing Detox Facial (90mins)</h2>
+    <h1 class="text-danger">$1170</h1>
+    <p>- Design to promote mature and demanding skin. The treatment is to enhance firming and moisture balance.</p>
+    </div>
+  
 
   </div>
 

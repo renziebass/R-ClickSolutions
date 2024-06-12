@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.122.0">
-    <title>VIDA Spa - Treatments</title>
+    <title>VIDA Spa - Press</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 
@@ -142,9 +142,9 @@
   <div class="nav-scroller py-1 mb-3 border-bottom">
     <nav class="nav nav-underline justify-content-between">
       <a class="nav-item nav-link link-body-emphasis" href="index.php">Home</a>
-      <a class="nav-item nav-link link-body-emphasis active" href="#">Treatments</a>
+      <a class="nav-item nav-link link-body-emphasis" href="treatments.php">Treatments</a>
       <a class="nav-item nav-link link-body-emphasis" href="promotions.php">Promotions</a>
-      <a class="nav-item nav-link link-body-emphasis" href="press.php">Press</a>
+      <a class="nav-item nav-link link-body-emphasis active" href="#">Press</a>
     </nav>
   </div>
 </div>
@@ -152,75 +152,23 @@
 <main class="container">
   <div class="p-4 mb-4 rounded text-body-emphasis" style="background-color: #EEE8D8;">
 
-  <div class="album">
-    <div class="container">
 
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-        <div class="col">
-          <a href="pampering.php" style="text-decoration:none">
-          <div class="card shadow-sm">
-          <img class="img-fluid" width="100%" height="225" src="assets/img/pampering.jpg" alt="">
-            <div class="card-body text-center">
-            <h5>Pampering</h5>
-            </div>
-          </div>
-          </a>
-         
-        </div>
-        <div class="col">
-          <a href="facial.php" style="text-decoration:none">
-          <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/facial.jpg" alt="">
-            <div class="card-body text-center">
-            <h5>Facial</h5>
-            </div>
-          </div>
-          </a>
-        </div>
-        <div class="col">
-          <a href="massage.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/massage.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Massage</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-
-        <div class="col">
-          <a href="waxing.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/waxing.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Waxing</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-        <div class="col">
-          <a href="tinting.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/tinting.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Tinting</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-        <div class="col">
-          <a href="nail.php" style="text-decoration:none">
-            <div class="card shadow-sm">
-            <img class="img-fluid" width="100%" height="225" src="assets/img/manicure.jpg" alt="">
-              <div class="card-body text-center">
-              <h5>Nail Service</h5>
-              </div>
-            </div>
-          </a>
-        </div>
-      </div>
+ 
+    <div class="row text-center">
+      <h6>We at Vida Spa express our thank you to the local press in Hong Kong for featuring our Spa.
+      Facial,Waxing,Massage and Nail Services</h6>
     </div>
-  </div>
+    
+    <hr class="m-3">
+
+    <div class="row text-center">
+    <p>
+      Click <a href="https://theloophk.com/where-to-get-a-foot-massage-in-hong-kong/" target="_blank">here</a> to see the through the link. The Loop . JUNE 6, 2016
+      </p>
+    <img class="img-fluid" width="100%" height="100%" src="assets/img/iphone.png" alt="">
+    </div>
+
+  
 
   </div>
 
