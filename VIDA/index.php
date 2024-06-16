@@ -134,7 +134,7 @@
         <a class="blog-header-logo text-body-emphasis text-decoration-none" href="#">VIDA Spa</a>
       </div>
       <div class="col-4 d-flex justify-content-end align-items-center">
-        <a class="btn btn-sm btn-danger fw-bold" onclick="btn_save()" href="#">Book Appoinment</a>
+        <a class="btn btn-sm btn-danger fw-bold" onclick="btn_book()" href="#">Book Appoinment</a>
       </div>
     </div>
   </header>
@@ -258,130 +258,8 @@
 </footer>
 <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+<script src="book.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
-<script>
-function btn_save() {
-      const swalWithBootstrapButtons = Swal.mixin({
-        customClass: {
-          confirmButton: "btn btn-success",
-          cancelButton: "btn btn-secondary me-1"
-        },
-        buttonsStyling: false
-      });
-      swalWithBootstrapButtons.fire({
-        title: "First Name",
-        input: "text",
-        showCancelButton: true,
-        confirmButtonText: "Next",
-        cancelButtonText: "Cancel",
-        reverseButtons: true,
-        inputValidator: (result1) => {
-          if (!result1) {
-            return "Enter name!";
-          } else {
-          }
-        },
-        inputAttributes: {
-        maxlength: "30"
-      }
-      }).then((result1) => {
-        if (result1.isConfirmed) {
-          swalWithBootstrapButtons.fire({
-        title: "Last Name",
-        input: "text",
-        showCancelButton: true,
-        confirmButtonText: "Next",
-        reverseButtons: true,
-        inputValidator: (result2) => {
-          if (!result2) {
-            return "Enter name!";
-          } else {
-          }
-        },
-        inputAttributes: {
-        maxlength: "30"
-      }
-      }).then((result2) => {
-        if (result2.isConfirmed) {
-          swalWithBootstrapButtons.fire({
-        title: "SELECT SERVICE",
-        input: "select",
-        inputOptions: {
-        TREATMENTS : {
-          pampering:"PAMPERING",
-          facial:"FACIAL",
-          massage:"MASSAGE",
-          waxing:"WAXING",
-          tinting:"TINTING",
-          nailservice:"NAIL SERVICES",
-          }
-        },
-        showCancelButton: true,
-        confirmButtonText: "Next",
-        cancelButtonText: "Cancel",
-        reverseButtons: true
-      }).then((result3) => {
-        if (result3.isConfirmed) {
-          swalWithBootstrapButtons.fire({
-        title: "Select Date",
-        input: "date",
-        showCancelButton: true,
-        confirmButtonText: "Next",
-        cancelButtonText: "Cancel",
-        reverseButtons: true,
-        inputValidator: (result4) => {
-          if (!result4) {
-            return "Enter name!";
-          } else {
-          }
-        },
-        inputAttributes: {
-        maxlength: "30"
-      }
-      }).then((result4) => {
-        if (result4.isConfirmed) {
-          swalWithBootstrapButtons.fire({
-        title: "Appointment Time",
-        input: "time",
-        confirmButtonText: "Confirm Appointment",
-        reverseButtons: true,
-        inputValidator: (result5) => {
-          if (!result5) {
-            return "Enter name!";
-          } else {
-          }
-        },
-        inputAttributes: {
-        maxlength: "30"
-      }
-      }).then((result5) => {
-        if (result5.isConfirmed) {
-  
-        } else {
-          result.dismiss === Swal.DismissReason.cancel
-        }
-      });
-      
-        } else {
-          result.dismiss === Swal.DismissReason.cancel
-        }
-      });
-        } else {
-          result.dismiss === Swal.DismissReason.cancel
-        }
-      });
-          
-          
-        } else {
-          result.dismiss === Swal.DismissReason.cancel
-        }
-      });
-          
-        } else {
-          result.dismiss === Swal.DismissReason.cancel
-        }
-      });
-    }
-</script>
+
     </body>
 </html>
