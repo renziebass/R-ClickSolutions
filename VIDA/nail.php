@@ -143,8 +143,8 @@
     <nav class="nav nav-underline justify-content-between">
       <a class="nav-item nav-link link-body-emphasis" href="index.php">Home</a>
       <a class="nav-item nav-link link-body-emphasis active" href="treatments.php">Treatments</a>
-      <a class="nav-item nav-link link-body-emphasis" href="#">Promotions</a>
-      <a class="nav-item nav-link link-body-emphasis" href="#">Press</a>
+      <a class="nav-item nav-link link-body-emphasis" href="promotions.php">Promotions</a>
+      <a class="nav-item nav-link link-body-emphasis" href="press.php">Press</a>
     </nav>
   </div>
 </div>
