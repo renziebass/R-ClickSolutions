@@ -155,8 +155,8 @@
 
  
     <div class="row text-center">
-      <h6>We at Vida Spa express our thank you to the local press in Hong Kong for featuring our Spa.
-      Facial,Waxing,Massage and Nail Services</h6>
+      <p>We at Vida Spa express our thank you to the local press in Hong Kong for featuring our Spa.
+      Facial,Waxing,Massage and Nail Services</p>
     </div>
     
     <hr class="m-3">

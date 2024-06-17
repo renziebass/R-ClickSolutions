@@ -157,8 +157,8 @@
 
   <div class="row">
     <div class="row text-center">
-    <h2>Rejuvinating Treatment (90 mins)</h2>
-    <h1 class="text-danger">$900 - $1,100</h1>
+    <p class="col fw-bold text-start">Rejuvinating Treatment<br><span class="text-muted">(90 mins)</span></p>
+    <p class="col fw-bold text-end text-danger fs-5">$900 - $1,100</p>
     <p>- 30 mins Back Massage – Aroma therapy relaxing massage.</p>
     <p>- Our Dermalogica Facial is a remedy for a healthy glowing skin.
       It nourishes and smoothens your skin complexion OR Sundari design
@@ -171,8 +171,8 @@
   <hr class="m-5">
 
     <div class="row text-center">
-    <h2>Rejuvinating Retreat (2 hours)</h2>
-    <h1 class="text-danger">$1200 - $1400</h1>
+    <p class="col fw-bold text-start">Rejuvinating Retreat<br><span class="text-muted">(2 hours)</span></p>
+    <p class="col fw-bold text-end text-danger fs-5">$1200 - $1400</p>
     <p>- 60 mins Swedish or Deep Tissue Massage</p>
     <p>- Our Dermalogica Facial is a remedy for a healthy glowing skin.
       It nourishes and smoothens your skin complexion OR Sundari design
@@ -183,8 +183,8 @@
   <hr class="m-5">
 
     <div class="row text-center">
-    <h2>Vida Mini Retreat (75 mins)</h2>
-    <h1 class="text-danger">$820</h1>
+    <p class="col fw-bold text-start">Vida Mini Retreat<br><span class="text-muted">(75 mins)</span></p>
+    <p class="col fw-bold text-end text-danger fs-5">$820</p>
     <p>- Mini Facial, treatment is design to unsure nourishment and moisture
       level for healthy hydrated looking skin featuring Dermalogica product.</p>
     </div>
@@ -192,8 +192,9 @@
   <hr class="m-5">
 
     <div class="row text-center">
-    <h6>Teen Facial Treatment ( 45mins) Age between 13-16 years old</h6>
-    <h1 class="text-danger">$450</h1>
+    <p class="col fw-bold text-start">Teen Facial Treatment<br><span class="text-muted">(45mins)</span></p>
+    <p class="col fw-bold text-end text-danger fs-5">$450</p>
+    <p>- Age between 13-16 years old</p>
     </div>
   
 

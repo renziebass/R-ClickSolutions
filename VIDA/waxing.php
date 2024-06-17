@@ -156,10 +156,10 @@
   <div class="p-4 mb-4 rounded-bottom text-body-emphasis" style="background-color: #EEE8D8;">
   <div class="row">
     <div class="row text-center">
-    <h4>We use Caron Wax (High Quality) for all our waxing services.
+    <p>We use Caron Wax (High Quality) for all our waxing services.
       If you have any Skin irritations or have recently had prolonged
       sun exposure we do not recommend waxing hair removal services.
-      Please consult with our therapist.</h4>
+      Please consult with our therapist.</p>
     </div>
   </div>
 

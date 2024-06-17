@@ -69,7 +69,7 @@ function btn_book() {
       reverseButtons: true,
       inputValidator: (result4) => {
         if (!result4) {
-          return "Enter name!";
+          return "Choose Date!";
         } else {
         }
       },
@@ -85,16 +85,15 @@ function btn_book() {
       reverseButtons: true,
       inputValidator: (result5) => {
         if (!result5) {
-          return "Enter name!";
+          return "Choose Time!";
         } else {
         }
-      },
-      inputAttributes: {
-      maxlength: "30"
-    }
+      }
+
     }).then((result5) => {
       if (result5.isConfirmed) {
-
+        window.location.href = 
+        'mailto:Vidaspa@mail.com?subject=NEW APPOINTMENT&body='+result1.value+' '+result2.value+' - '+result3.value+' - '+result4.value+' - '+result5.value;
       } else {
         result.dismiss === Swal.DismissReason.cancel
       }

@@ -157,7 +157,12 @@
 
   <div class="row">
     <div class="row text-center">
-    <h4>About Nails</h4>
+    <p>Our salon excels in nail services, offering a luxurious experience tailored to each client's needs.
+       Our skilled technicians use top-quality products and the latest techniques to ensure stunning
+       results, whether it's a classic manicure, intricate nail art, or a long-lasting gel polish
+        We prioritize hygiene and comfort, maintaining a clean and relaxing environment.
+        With a wide array of colors and styles to choose from, we guarantee satisfaction and
+        beautifully polished nails that will leave you feeling pampered and confident.</p>
     </div>
   </div>
 
@@ -169,45 +174,45 @@
 
       
     <div class="row text-center mt-5">
-    <h2>Spa Manicure</h2>
-    <h1 class="text-danger">$228</h1>
+    <p class="col fw-bold text-start">Spa Manicure</p>
+    <p class="col fw-bold text-end text-danger fs-5">$228</p>
     <p>- Includes Cutting nails, file, cuticle work, mini massage and a normal nail polish.</p>
     </div>
 
     <div class="row text-center mt-3">
-    <h2>Spa Pedicure</h2>
-    <h1 class="text-danger">$328</h1>
+    <p class="col fw-bold text-start">Spa Pedicure</p>
+    <p class="col fw-bold text-end text-danger fs-5">$328</p>
     <p>- Includes Cutting nails, file, cuticle work, scrub,
       removing of dead calluses and mini massage, regular polish.</p>
     </div>
 
     <div class="row text-center mt-3">
-    <h2>Set of Spa Mani & Spa Pedi</h2>
-    <h1 class="text-danger">$508</h1>
+    <p class="col fw-bold text-start">Manicure and Pedicure set</p>
+    <p class="col fw-bold text-end text-danger fs-5">$508</p>
     </div>
 
     <div class="row text-center mt-3">
-    <h2>Express Manicure</h2>
-    <h1 class="text-danger">$180</h1>
+    <p class="col fw-bold text-start">Express Manicure</p>
+    <p class="col fw-bold text-end text-danger fs-5">$180</p>
     <p>- Includes a quick Cutting of nails, file and regular polish.</p>
     </div>
 
     <div class="row text-center mt-3">
-    <h2>Express Pedicure</h2>
-    <h1 class="text-danger">$210</h1>
+    <p class="col fw-bold text-start">Express Pedicure</p>
+    <p class="col fw-bold text-end text-danger fs-5">$210</p>
     <p>- Includes a quick Cutting of nails, file and regular polish.</p>
     </div>
 
     <div class="row text-center mt-3">
-    <h2>Ultimate Spa Manicure</h2>
-    <h1 class="text-danger">$388</h1>
+    <p class="col fw-bold text-start">Ultimate Spa Manicure</p>
+    <p class="col fw-bold text-end text-danger fs-5">$388</p>
     <p>- Includes Cutting of Nails, file, cuticle work, paraffin wax, regular polish.
       Clients Choice of :15mins Foot Massage  or  Paraffin Wax</p>
     </div>
 
     <div class="row text-center mt-3">
-    <h2>Ultimate Spa Manicure and Ultimate Spa Pedicure</h2>
-    <h1 class="text-danger">$648</h1>
+    <p class="col fw-bold text-start">Ultimate Spa Manicure and Ultimate Spa Pedicure</p>
+    <p class="col fw-bold text-end text-danger fs-5">$648</p>
     <p>- Includes Cutting of Nails, file, cuticle work, paraffin wax, regular polish.
       Clients Choice of :15mins Foot Massage  or  Paraffin Wax</p>
     </div>

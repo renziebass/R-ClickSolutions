@@ -157,7 +157,11 @@
 
   <div class="row">
     <div class="row text-center">
-    <h4>Tinting Tingting about tinting hahahahah</h4>
+    <p>Our salon offers exceptional eyebrow tinting with personalized,
+      precise results using high-quality tints. Our experienced
+      technicians ensure a natural, long-lasting finish,
+      and our welcoming atmosphere guarantees a pampering experience,
+      leaving you with perfectly defined brows.</p>
     </div>
   </div>
 

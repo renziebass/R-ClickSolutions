@@ -156,7 +156,7 @@
     <div class="col-md-7 px-0 my-auto">
       <div class="card-body text-center">
         <h1 class="text-danger ">Weekend Special</h1>
-        <p>Enjoy 10% DISCOUNT to all facial treatments on Saturdays and Sundays!
+        <p class="fw-bold">Enjoy 10% DISCOUNT to all facial treatments on Saturdays and Sundays!
           (Booking will require ONE day in advance).
     </p>
       </div>

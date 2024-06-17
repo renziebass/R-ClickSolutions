@@ -157,10 +157,10 @@
 
   <div class="row">
     <div class="row text-center">
-    <h4>Vida Spa offers high quality services and prepare the best products
+    <p>Vida Spa offers high quality services and prepare the best products
       for our varieties of massage. Prepare to immediately feel the sense
       of refreshment and relaxation. Our team of experts with professional
-      masseuses and therapists with high depth of experience are here to help</h4>
+      masseuses and therapists with high depth of experience are here to help</p>
     </div>
   </div>
 
@@ -172,42 +172,42 @@
 
       
     <div class="row text-center mt-5">
-    <h2>Swedish Massage (60mins / 90mins)</h2>
-    <h1 class="text-danger">$520 - 720</h1>
+    <p class="col fw-bold text-start">Swedish Massage<br><span class="text-muted">(60mins / 90mins)</span></p>
+    <p class="col fw-bold text-end text-danger fs-5">$520 - 720</p>
     <p>- A series of long soothing, relaxing strokes and employs greater pressure
       using aromatic oils. This treatment increases oxygen flow to the muscles,
       and releases toxins from the muscles.</p>
     </div>
 
     <div class="row text-center mt-3">
-    <h2>Deep Tissue Massage (60mins / 90mins)</h2>
-    <h1 class="text-danger">$620 - 820</h1>
+    <p class="col fw-bold text-start">Deep Tissue Massage<br><span class="text-muted">(60mins / 90mins)</span></p>
+    <p class="col fw-bold text-end text-danger fs-5">$620 - 820</p>
     <p>- A massage focused on targeting the muscles to release muscle tensions.</p>
     </div>
 
     <div class="row text-center mt-3">
-    <h2>Sports Massage (60mins / 90mins)</h2>
-    <h1 class="text-danger">$720 - 920</h1>
+    <p class="col fw-bold text-start">Sports Massage<br><span class="text-muted">(60mins / 90mins)</span></p>
+    <p class="col fw-bold text-end text-danger fs-5">$720 - 920</p>
     <p>- Our professional technique performed whose athletes or active individuals
       for the purpose of aiding recovery.</p>
     </div>
 
     <div class="row text-center mt-3">
-    <h2>Slimming / Lymphatic Massage (60mins / 90mins)</h2>
-    <h1 class="text-danger">$690 / 890</h1>
+    <p class="col fw-bold text-start">Slimming / Lymphatic Massage<br><span class="text-muted">(60mins / 90mins)</span></p>
+    <p class="col fw-bold text-end text-danger fs-5">$690 / 890</p>
     <p>- Use precise rhythm, pressure, and direction of massage to clear stagnant
       fluid from lymph nodes. Activating fluid flow in blocked nodes might detoxify
       the body to improve health.</p>
     </div>
 
     <div class="row text-center mt-3">
-    <h2>Thai Massage (60mins)</h2>
-    <h1 class="text-danger">$580 - 780</h1>
+    <p class="col fw-bold text-start">Thai Massage<br><span class="text-muted">(60mins)</span></p>
+    <p class="col fw-bold text-end text-danger fs-5">$580 - 780</p>
     <p>- Thai massage without using oil. $100 will be charge for every 15 minutes after 60 minutes.</p>
     </div>
 
     <div class="row text-center mt-3">
-    <h2>Note: All massage services are only available for women</h2>
+    <p class="text-muted fw-bold ">Note: All massage services are only available for women</p>
     </div>
 
   <div class="row text-center">
@@ -216,28 +216,33 @@
 
       
     <div class="row text-center mt-5">
-    <h2>Neck and Shoulders ( 15mins)</h2>
-    <h1 class="text-danger">$180</h1>
+    <p class="col fw-bold text-start">Neck and Shoulders<br><span class="text-muted">(15mins)</span></p>
+    <p class="col fw-bold text-end text-danger fs-5">$180</p>
     <p>- A massage focused on targeting the muscles to release muscle tensions.</p>
     </div>
 
     <div class="row text-center mt-5">
-    <h2>Back and Shoulders ( 30mins)</h2>
-    <h1 class="text-danger">$360</h1>
+    <p class="col fw-bold text-start">Back and Shoulders<br><span class="text-muted">(30mins)</span></p>
+    <p class="col fw-bold text-end text-danger fs-5">$360</p>
     <p>- A massage focused on targeting the muscles to release muscle tensions.</p>
     </div>
 
     <div class="row text-center mt-5">
-    <h2>Back and Shoulders ( 60mins)</h2>
-    <h1 class="text-danger">$560</h1>
+    <p class="col fw-bold text-start">Back and Shoulders<br><span class="text-muted">(60mins)</span></p>
+    <p class="col fw-bold text-end text-danger fs-5">$560</p>
     <p>- A massage focused on targeting the muscles to release muscle tensions.</p>
     </div>
 
     <div class="row text-center mt-5">
-    <h2>Foot Massage</h2>
-    <h1 class="text-danger">$180 - 360</h1>
-    <p>$180 - 30 mins (Add on to nail services only)</p>
-    <p>$360 - 65 mins including foot soak</p>
+    <p class="col fw-bold text-start">Foot Massage<br><span class="text-muted">(30mins)</span></p>
+    <p class="col fw-bold text-end text-danger fs-5">$180</p>
+    <p>- Add on to nail services only</p>
+    </div>
+
+    <div class="row text-center mt-5">
+    <p class="col fw-bold text-start">Foot Massage<br><span class="text-muted">(65mins)</span></p>
+    <p class="col fw-bold text-end text-danger fs-5">$360</p>
+    <p>- With foot soak</p>
     </div>
 
     

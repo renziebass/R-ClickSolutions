@@ -157,11 +157,11 @@
 
   <div class="row">
     <div class="row text-center">
-    <h6>All facial treatments come with a complimentary skin scanner analysis
+    <p>All facial treatments come with a complimentary skin scanner analysis
     Once your complimentary skin care analysis has been done and we have fully
     discussed your concerns and needs; Our staff will create and perform
     a customized skin care treatment for you. This will be done with Dermalogica
-    or Sundari skincare Products.</h6>
+    or Sundari skincare Products.</p>
     </div>
   </div>
 
@@ -172,46 +172,46 @@
     </div>
       
     <div class="row text-center mt-5">
-    <h2>Vida Dermalogica Signature Facial (60Mins)</h2>
-    <h1 class="text-danger">$680</h1>
+    <p class="col fw-bold text-start">Vida Dermalogica Signature Facial<br><span class="text-muted">(60Mins)</span></p>
+    <p class="col fw-bold text-end text-danger fs-5">$680</p>
     <p>- Our Dermalogica Signature Facial is remedy for your healthy glowing skin.
       It nourishes and smoothens your skin complexion.</p>
     </div>
     
     <hr class="m-3">
     <div class="row text-center mt-3">
-    <h2>Soothe and Calming Facial (75mins)</h2>
-    <h1 class="text-danger">$780</h1>
+    <p class="col fw-bold text-start">Soothe and Calming Facial<br><span class="text-muted">(75mins)</span></p>
+    <p class="col fw-bold text-end text-danger fs-5">$780</p>
     <p>- Facial treatment of inflamed, sensitive skin that triggers and give
       serious relief of damage skin problems.</p>
     </div>
     <hr class="m-3">
     <div class="row text-center mt-3">
-    <h2>Deep Cleansing Facial (75mins)</h2>
-    <h1 class="text-danger">$880</h1>
+    <p class="col fw-bold text-start">Deep Cleansing Facial<br><span class="text-muted">(75mins)</span></p>
+    <p class="col fw-bold text-end text-danger fs-5">$880</p>
     <p>- Intense purifying treatment regulate problematic oily skin,
       includes exfoliate steaming and extraction. The treatment is suitable for those
       who are suffering from breakouts cause by hormonal and environmental change.</p>
     </div>
     <hr class="m-3">
     <div class="row text-center mt-3">
-    <h2>Ultimate Deep Cleansing Facial (90mins)</h2>
-    <h1 class="text-danger">$980</h1>
+    <p class="col fw-bold text-start">Ultimate Deep Cleansing Facial<br><span class="text-muted">(90mins)</span></p>
+    <p class="col fw-bold text-end text-danger fs-5">$980</p>
     <p>- Design to promote treatment for skin regeneration and healing process that
       helps to stimulate your collagen production for firming and healthier skin.</p>
     </div>
     <hr class="m-3">
     <div class="row text-center mt-3">
-    <h2>Anti- aging Age Smart Facial (75mins)</h2>
-    <h1 class="text-danger">$980</h1>
+    <p class="col fw-bold text-start">Anti- aging Age Smart Facial<br><span class="text-muted">(75mins)</span></p>
+    <p class="col fw-bold text-end text-danger fs-5">$980</p>
     <p>- The facial design to promote deep nourishment to chronically dry & dehydrated skin.
       The result of healing process of mature & dull looking skin is to refresh,
       boost anti-oxidant and improves elasticity of the skin.</p>
     </div>
     <hr class="m-3">
     <div class="row text-center mt-3">
-    <h2>Add on Eye and Lip Treatment</h2>
-    <h1 class="text-danger">$260</h1>
+    <p class="col fw-bold text-start">Add on Eye and Lip Treatment</p>
+    <p class="col fw-bold text-end text-danger fs-5">$260</p>
     </div>
 
 
