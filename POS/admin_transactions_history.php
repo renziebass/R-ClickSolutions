@@ -436,7 +436,7 @@ $row5 = mysqli_fetch_assoc($result5);
                 <td><?php echo $items['date1']; ?></td>
                 <td><?php echo $items['customers']; ?></td>
                 <td><?php echo $items['items']; ?></td>
-                <td><?php echo $items['amount']; ?></td>
+                <td><?php echo $items['amount2']; ?></td>
             </tr>
             <?php
             } 

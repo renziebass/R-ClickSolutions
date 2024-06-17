@@ -170,7 +170,6 @@
     <div class="row text-center">
     <h1>Dermalogica</h1>
     </div>
-
       
     <div class="row text-center mt-5">
     <h2>Vida Dermalogica Signature Facial (60Mins)</h2>
@@ -178,14 +177,15 @@
     <p>- Our Dermalogica Signature Facial is remedy for your healthy glowing skin.
       It nourishes and smoothens your skin complexion.</p>
     </div>
-
+    
+    <hr class="m-3">
     <div class="row text-center mt-3">
     <h2>Soothe and Calming Facial (75mins)</h2>
     <h1 class="text-danger">$780</h1>
     <p>- Facial treatment of inflamed, sensitive skin that triggers and give
       serious relief of damage skin problems.</p>
     </div>
-
+    <hr class="m-3">
     <div class="row text-center mt-3">
     <h2>Deep Cleansing Facial (75mins)</h2>
     <h1 class="text-danger">$880</h1>
@@ -193,14 +193,14 @@
       includes exfoliate steaming and extraction. The treatment is suitable for those
       who are suffering from breakouts cause by hormonal and environmental change.</p>
     </div>
-
+    <hr class="m-3">
     <div class="row text-center mt-3">
     <h2>Ultimate Deep Cleansing Facial (90mins)</h2>
     <h1 class="text-danger">$980</h1>
     <p>- Design to promote treatment for skin regeneration and healing process that
       helps to stimulate your collagen production for firming and healthier skin.</p>
     </div>
-
+    <hr class="m-3">
     <div class="row text-center mt-3">
     <h2>Anti- aging Age Smart Facial (75mins)</h2>
     <h1 class="text-danger">$980</h1>
@@ -208,39 +208,12 @@
       The result of healing process of mature & dull looking skin is to refresh,
       boost anti-oxidant and improves elasticity of the skin.</p>
     </div>
-
+    <hr class="m-3">
     <div class="row text-center mt-3">
     <h2>Add on Eye and Lip Treatment</h2>
     <h1 class="text-danger">$260</h1>
     </div>
 
-  <hr class="m-5">
-
-  <div class="row text-center">
-    <h1>Sundari</h1>
-    </div>
-
-      
-    <div class="row text-center mt-5">
-    <h2>Vida Sundari Signature Facial (60mins)</h2>
-    <h1 class="text-danger">$780</h1>
-    <p>- Design to ensure nourishment and moisture level for healthy hydrated skin.</p>
-    </div>
-
-    <div class="row text-center mt-5">
-    <h2>Sundari Deep Cleansing Facial (75mins)</h2>
-    <h1 class="text-danger">$880</h1>
-    <p>- Intense cleansing facial, exfoliation of dead skin cells, steaming, extraction, massage and cooling mask for healthy glowing skin.</p>
-    </div>
-
-    <div class="row text-center mt-5">
-    <h2>Sundari Ultimate Healing Detox Facial (90mins)</h2>
-    <h1 class="text-danger">$1170</h1>
-    <p>- Design to promote mature and demanding skin. The treatment is to enhance firming and moisture balance.</p>
-    </div>
-  
-
-  </div>
 
 </main>
 
