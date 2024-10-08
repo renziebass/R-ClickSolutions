@@ -376,11 +376,11 @@ $row5 = mysqli_fetch_assoc($result5);
                 $sql="SELECT *
                 FROM (SELECT
                         tb_transactions.id,
-                        tb_transactions.time,
                         tb_transactions.date
                         FROM tb_transactions WHERE tb_transactions.status='paid') AS A
                 JOIN (SELECT
                         tb_payments.id,
+                        tb_payments.time,
                         SUM(tb_cart.quantity) as items,
                         CONCAT(FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2)) AS total2,
                         tb_payments.total,
@@ -392,7 +392,7 @@ $row5 = mysqli_fetch_assoc($result5);
                         GROUP BY tb_payments.id) AS B
                 ON A.id=B.id
                 GROUP BY A.id
-                ORDER BY A.time DESC";
+                ORDER BY B.time DESC";
                                                                                     
                 $result = mysqli_query($db,$sql);
 
