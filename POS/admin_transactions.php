@@ -19,7 +19,8 @@ FORMAT(SUM(tb_cart.price*tb_cart.quantity - tb_products.capital*tb_cart.quantity
 FROM tb_transactions
 INNER JOIN tb_cart ON tb_transactions.id=tb_cart.transaction_id
 LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id
-WHERE tb_transactions.status='paid' AND tb_transactions.date='".$_GET['date']."'";
+RIGHT JOIN tb_payments ON tb_transactions.id=tb_payments.id
+WHERE tb_transactions.status='paid' AND tb_payments.date='".$_GET['date']."'";
 $result5=mysqli_query($db,$sql5);
 $row5 = mysqli_fetch_assoc($result5);
 ?>
