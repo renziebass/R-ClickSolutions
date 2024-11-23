@@ -361,6 +361,7 @@ if(!empty($_GET['payment'])){
               JOIN (SELECT
                   tb_cart.product_id,
                   SUM(tb_cart.quantity) AS quantity,
+                  tb_cart.date,
                   FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2) AS total
                   FROM tb_cart WHERE tb_cart.transaction_id='".$_GET['id']."'
                   GROUP BY tb_cart.product_id) AS B
@@ -376,6 +377,7 @@ if(!empty($_GET['payment'])){
                 JOIN (SELECT
                     tb_cart.product_id,
                     SUM(tb_cart.quantity) AS quantity,
+                    tb_cart.date,
                     FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2) AS total
                     FROM tb_cart WHERE tb_cart.transaction_id=''
                     GROUP BY tb_cart.product_id) AS B
@@ -405,7 +407,16 @@ if(!empty($_GET['payment'])){
                           data-1="<?php echo $items['id']; ?>"
                           data-2="<?php echo $items['specification']; ?>"
                           data-3="<?php echo $items['quantity']; ?>"
-                          <?php echo $btn_void;?>>
+                          <?php 
+                          $tr_date=date_create($items['date']);
+                          $cur_date=date_create($_GET['date']);
+                          $diff=date_diff($tr_date,$cur_date);
+                          if($diff->format('%a') === '0'){
+                            $btn_void=null;
+                          } else {
+                            $btn_void="hidden";
+                          }
+                          echo $btn_void;?>>
                           <span>
                             <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
                             <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>

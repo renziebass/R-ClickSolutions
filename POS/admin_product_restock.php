@@ -43,6 +43,19 @@ $Restock = mysqli_query($db, $sql4);
 header("Location: admin_product_restock.php?search=".$_GET['search']."");
 
 }
+
+if(!empty($_GET['qty2'])){
+  $sql3a = "UPDATE tb_products
+  SET tb_products.stocks=tb_products.stocks-'".$_GET['qty2']."',tb_products.available=tb_products.available-'".$_GET['qty2']."'
+  WHERE tb_products.id='" .$id. "'";
+  $CancelRestock = mysqli_query($db, $sql3a);
+  
+  $sql4a = "DELETE FROM `tb_restock_history` WHERE tb_restock_history.product_id='" .$id. "' AND tb_restock_history.date = '".$_GET['date']."'";
+  $DeleteRestock = mysqli_query($db, $sql4a);
+          
+  header("Location: admin_product_restock.php?search=".$_GET['search']."");
+  
+  }
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -353,6 +366,7 @@ header("Location: admin_product_restock.php?search=".$_GET['search']."");
             <tr class="text-muted">
               <th scope="col">Date</th>
               <th scope="col">QTY</th>
+              <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
@@ -376,6 +390,32 @@ header("Location: admin_product_restock.php?search=".$_GET['search']."");
             <tr class="<?php echo $items['textcolor']; ?>">
                 <td><?php echo $items['date']; ?></td>
                 <td><?php echo $items['qty']; ?></td>
+                <td>
+
+                <button type="button" title="Cancel Restock" class="btn btn-sm p-0 m-0" 
+                          onclick="btn_cancel(this.getAttribute('data-1'), this.getAttribute('data-2'), 
+                          this.getAttribute('data-3'))"
+                          data-1="<?php echo $id; ?>"
+                          data-2="<?php echo $items['date']; ?>"
+                          data-3="<?php echo $items['qty']; ?>"
+                          <?php 
+                          $tr_date=date_create($items['date']);
+                          $cur_date=date_create(date("Y-m-d H:i:s"));
+                          $diff=date_diff($tr_date,$cur_date);
+                          if($diff->format('%a') === '0'){
+                            $btn_cancel=null;
+                          } else {
+                            $btn_cancel="hidden";
+                          }
+                          echo $btn_cancel;?>>
+                          <span>
+                            <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
+                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
+                            </svg>
+                          </span>
+                        </button>
+
+                </td>
             </tr>
             <?php
             } 
@@ -391,6 +431,28 @@ header("Location: admin_product_restock.php?search=".$_GET['search']."");
 <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 <script>
+  function btn_cancel(data_1,data_2,data_3) {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-danger",
+          cancelButton: "btn btn-secondary me-1"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: "DELETE "+data_3+" STOCKS ?",
+        showCancelButton: true,
+        confirmButtonText: "Delete",
+        cancelButtonText: "Cancel",
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = window.location.href+'&qty2='+data_3+'&date='+data_2;
+        } else {
+          result.dismiss === Swal.DismissReason.cancel
+        }
+      });
+    }
   function init(){
     document.getElementById("search").focus();
     }
