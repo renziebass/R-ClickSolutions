@@ -282,22 +282,27 @@ if(!empty($_GET['payment'])){
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
   <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="cashier_dashboard.php">R-Click Solutions POS: <i><?php echo $company_name; ?></i></a>
   <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-end">
-    <?php
-      if(empty($row2['name'])) {
-      $name ="NEW TRANSACTION";
-      $SaveButton = null;
-      } else {
-      $name = $row2['name'];
-      $SaveButton = "disabled";
-      }
-      echo $name;
-    ?>
+   CASHIER
   </a>
 </header>
 
 <div class="position-fixed top-20 end-0 translate-bottom p-1 bg-white">
 
   <div class="container">
+  <div class="row">
+      <h4 class="text-center text-danger"> 
+        <?php
+          if(empty($row2['name'])) {
+          $name ="NEW TRANSACTION";
+          $SaveButton = null;
+          } else {
+          $name = $row2['name'];
+          $SaveButton = "disabled";
+          }
+          echo $name;
+        ?>
+      </h4>
+    </div>
     <div class="row">
       <div class="col">
         <div class="card-body">

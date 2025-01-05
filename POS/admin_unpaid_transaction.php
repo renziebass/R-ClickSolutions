@@ -4,6 +4,12 @@ if((empty($_GET['id']))) {
   header("Location: admin_unpaid_transactions.php");
 }
 
+$isMob = is_numeric(strpos(strtolower($_SERVER["HTTP_USER_AGENT"]), "mobile")); 
+if($isMob){ 
+  $newTR_loc = "admin_new_transaction";
+}else{ 
+  $newTR_loc = "admin_new_transaction2";
+}
 
 $sql1="SELECT   
 tb_transactions.name,
@@ -257,7 +263,7 @@ if (mysqli_num_rows($result) > 0) {
              onclick="btn_modify(this.getAttribute('data-1'),this.getAttribute('data-2'),this.getAttribute('data-3'))"
               data-1="<?php echo $row1['name']; ?>"
               data-2="<?php echo $_GET['id']; ?>"
-              data-3="<?php echo date("Y-m-d"); ?>" hidden>
+              data-3="<?php echo date("Y-m-d"); ?>" >
              <span data-feather="edit" class="align-text-bottom" ></button>
     </div>
   
@@ -381,7 +387,7 @@ if (mysqli_num_rows($result) > 0) {
         reverseButtons: true
       }).then((result) => {
         if (result.isConfirmed) {
-          location.href='admin_new_transaction2.php?id='+data_2+'&date='+data_3;
+          location.href='<?php echo $newTR_loc;?>.php?id='+data_2+'&date='+data_3;
         } else {
           result.dismiss === Swal.DismissReason.cancel
         }

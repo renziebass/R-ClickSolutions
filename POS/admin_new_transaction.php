@@ -1,93 +1,129 @@
 <?php
 include('user_session.php');
+$dateS=date_create(date("Y-m-d"));
+$TR = $_SESSION['id']."-".date_format($dateS,"Ymd")."-".date("His");
+
+$btn_disc = "hidden";
+$btn_save = "hidden";
+$btn_cash = "hidden";
+$btn_gcash = "hidden";
+$disc_msg = null;
+$btn_void = null;
+
 $sql1 = "SELECT
-tb_products.id,
 CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)
-AS specification
+AS specification,
+tb_products.product_brand
 FROM tb_products";
-$search = "renzie";
-
-$sql2="SELECT
-SUM(tb_cart.quantity) AS items,
-SUM(tb_cart.price*tb_cart.quantity) AS total2,
-FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2) AS total,
-tb_transactions.name
-FROM tb_cart
-LEFT JOIN tb_transactions ON tb_cart.transaction_id=tb_transactions.id
-WHERE tb_cart.transaction_id='" .$_GET['id']. "'
-GROUP BY tb_cart.transaction_id";
-$result2=mysqli_query($db,$sql2);
-$row2 = mysqli_fetch_assoc($result2);
-
 $result1=mysqli_query($db,$sql1);
+
+$sql3 = "SELECT * FROM `tb_product_category`";
+$result3=mysqli_query($db,$sql3);
+
+$sql4 = "SELECT * FROM `tb_products`";
+$result4=mysqli_query($db,$sql4);
+
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   if (!empty($_POST["search"])) {
     $search = $_POST["search"];
     header("Cache-Control: no cache");
   } else {
-    $search = null;
+    $search = "renzie";
   }
+} else {
+  $search = "renzie";
 }
 
-function validateInput($data) {
-  $data = trim($data);
-  $data = stripslashes($data);
-  $data = htmlspecialchars($data);
-  return $data;
+if(!empty($_GET['id'])) {
+
+  $sql2="SELECT
+  SUM(tb_cart.quantity) AS items,
+  SUM(tb_cart.price*tb_cart.quantity) AS total2,
+  FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2) AS total,
+  tb_transactions.name
+  FROM tb_cart
+  LEFT JOIN tb_transactions ON tb_cart.transaction_id=tb_transactions.id
+  WHERE tb_cart.transaction_id='" .$_GET['id']. "'
+  GROUP BY tb_cart.transaction_id";
+  $result2=mysqli_query($db,$sql2);
+  $row2 = mysqli_fetch_assoc($result2);
+
+  if(empty($row2['total2'])) {
+    $DeleteTR = "DELETE FROM tb_transactions WHERE tb_transactions.id='" .$_GET['id']. "'";
+    $X = mysqli_query($db, $DeleteTR);
+  }
+
+  $cart_button = "btn_qty"; 
+} else {
+  $cart_button = "btn_tr";
 }
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-  if (empty($_POST["product_id"])) {
-    $product_id_err = "* ";
-  } else {
-    $product_id = validateInput($_POST["product_id"]);
-  }
-  if (empty($_POST["quantity"])) {
-    $quantity_err = "* ";
-  } else {
-    $quantity = validateInput($_POST["quantity"]);
-  }
-  if (empty($_POST["price"])) {
-    $price_err = "* ";
-  } else {
-    $price = validateInput($_POST["price"]);
-    $total = $price * $quantity;
-  }
+if(empty($row2['total2'])) {
+  $total ="0";
+} else {
+  
+  $btn_save = null;
+  $btn_cash = null;
+  $btn_gcash = null;
+  $btn_disc = null;
 
-  if (empty($_POST["product_id2"])) {
-    $product_id2_err = "* ";
-  } else {
-    $product_id2 = validateInput($_POST["product_id2"]);
-  }
-  if (empty($_POST["quantity2"])) {
-    $quantity2_err = "* ";
-  } else {
-    $quantity2 = validateInput($_POST["quantity2"]);
-  }
-  if (empty($_POST["name"])) {
-    $name_err = "* ";
-  } else {
-    $name = validateInput($_POST["name"]);
-  }
-  if (empty($_POST["payment"])) {
-    $payment_err = "* ";
-  } else {
-    $payment = validateInput($_POST["payment"]);
-  }
+
+    if(!empty($_GET['disc'])){
+      $cart_button = null;
+      $btn_save = "hidden";
+      $btn_void = "hidden";
+      $btn_disc = "hidden";
+    
+      $sql2d="SELECT * FROM tb_discount WHERE tb_discount.id <= '".$_GET['disc']."'";
+      $result2d=mysqli_query($db,$sql2d);
+      $row2d = mysqli_fetch_assoc($result2d);
+      
+      
+      if ($row2d['cap'] <= $row2['total2'] * $row2d['percent']) {
+        $less = $row2d['cap'];
+      } else {
+        $less = $row2['total2'] * $row2d['percent'];
+      }
+    
+      $disc_msg = "Discount ".$less;
+      
+      $total = $row2['total2'] - $less;
+    } else {
+      $total = $row2['total2'];
+    }
+}
+$sql2b="SELECT * FROM tb_discount WHERE tb_discount.min <= '".$total."'";
+$result2b=mysqli_query($db,$sql2b);
+
+$sql2c="SELECT * FROM tb_payment_methods";
+$result2c=mysqli_query($db,$sql2c);
+
   
+
+
+if ($_SERVER["REQUEST_METHOD"] == "GET") {
+  if(!empty($_GET["product_id2"]) && !empty($_GET["quantity2"])) {
+
+      $sql6a = "DELETE FROM `tb_cart`
+      WHERE tb_cart.transaction_id='" .$_GET['id']. "'
+      AND tb_cart.product_id='" .$_GET['product_id2']. "'";
+
+      $sql6b = "UPDATE tb_products
+      SET tb_products.available=tb_products.available+'" .$_GET['quantity2']. "'
+      WHERE tb_products.id='" .$_GET['product_id2']. "'";
+
+      $DeleteProduct = mysqli_query($db, $sql6a);
+      $ReturnProduct = mysqli_query($db, $sql6b);
+     
+      header("refresh:0.1;url=admin_new_transaction.php?id=".$_GET['id']."&date=".$_GET['date']."");
   
-  if(!empty($_POST["product_id"]) && !empty($_POST["price"] && !empty($_POST["quantity"])))
-  {
-    try {
-        $sql5check = "SELECT tb_products.available
-        FROM tb_products
-        WHERE tb_products.id='$product_id'";
-        $resultcheck=mysqli_query($db,$sql5check);
-        $itemResult = mysqli_fetch_assoc($resultcheck);
+}
+if(!empty($_GET["product_id"]) && !empty($_GET["price"] && !empty($_GET["quantity"]))) {
 
         $sql5b="SELECT tb_products.disc
         FROM tb_products
-        WHERE tb_products.id='$product_id'";
+        WHERE tb_products.id='".$_GET["product_id"]."'";
         $checkdisc=mysqli_query($db,$sql5b);
         $row5 = mysqli_fetch_assoc($checkdisc);
 
@@ -97,93 +133,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $checktr=mysqli_query($db,$sql5ccheck);
         $resulttr = mysqli_fetch_assoc($checktr);
 
-        $price2 = $price-$row5['disc'];
-   
+        $price2 = $_GET["price"]-$row5['disc'];
+        $total = $_GET["price"] * $_GET["quantity"];
+
         $sql4 = "INSERT INTO `tb_cart` (`transaction_id`, `date`, `product_id`, `quantity`, `price`, `total`)
-        VALUES ('" .$_GET['id']. "', '".$_GET['date']."', '$product_id', '$quantity', '$price2', '$total')";
+        VALUES ('" .$_GET['id']. "', '".$_GET['date']."', '".$_GET["product_id"]."', '".$_GET["quantity"]."', '$price2', '$total')";
 
         $sql4b = "UPDATE tb_products
-        SET tb_products.available=tb_products.available-'$quantity'
-        WHERE tb_products.id='$product_id'";
+        SET tb_products.available=tb_products.available-'".$_GET["quantity"]."'
+        WHERE tb_products.id='".$_GET["product_id"]."'";
 
         function function_sound() {
         echo "<script>
-              var audio = new Audio('https://rclickpos.com/beep.wav');
+              var audio = new Audio('https://rclicksolutions.com/POS/beep.wav');
               audio.play();
               </script>";
-        header("Refresh:0");
+        header("refresh:0.1;url=admin_new_transaction.php?id=".$_GET['id']."&date=".$_GET['date']."");
         }
 
         if(empty($resulttr['id'])) {
-
           $sql8a = "INSERT INTO tb_transactions (id, date,time, status) VALUES
           ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','unpaid')";
           $SaveTRa = mysqli_query($db, $sql8a);
-
         }
 
-        if ($itemResult['available'] > $quantity) {
-          $AddProduct = mysqli_query($db, $sql4);
-          $UpdateProduct = mysqli_query($db, $sql4b);
-          function_sound();
+        $AddProduct = mysqli_query($db, $sql4);
+        $UpdateProduct = mysqli_query($db, $sql4b);
+        function_sound();
 
-        } elseif ($itemResult['available'] >= $quantity) {
-          $AddProduct = mysqli_query($db, $sql4);
-          $UpdateProduct = mysqli_query($db, $sql4b);
-          function_sound();
-
-        } else {
-          echo '<script>alert("Stocks not enough!")</script>';
-            header("Refresh:0");
-        }
-
-    
-        
-    }
-    catch(PDOException $e)
-      {
-        echo $sql1 . "<br>" . $e->getMessage();
-      }
-    $db=null;
-  }
-  if(!empty($_POST["product_id2"]) && !empty($_POST["quantity2"]))
-  {
-    try {
-
-        $sql6a = "DELETE FROM `tb_cart`
-        WHERE tb_cart.transaction_id='" .$_GET['id']. "'
-        AND tb_cart.product_id='$product_id2'";
-
-        $sql6b = "UPDATE tb_products
-        SET tb_products.available=tb_products.available+'$quantity2'
-        WHERE tb_products.id='$product_id2'";
-
-
-        $DeleteProduct = mysqli_query($db, $sql6a);
-        $ReturnProduct = mysqli_query($db, $sql6b);
-        header("Refresh:0");
-      
-        
-    }
-    catch(PDOException $e)
-      {
-        echo $sql1 . "<br>" . $e->getMessage();
-      }
-    $db=null;
   }
   if(!empty($_POST["name"]))
   {
     try {
-
-        $sql8 = "UPDATE tb_transactions 
-        SET tb_transactions.name='" . $name . "'
-        WHERE tb_transactions.id='" .$_GET['id']. "'";
-
-        $SaveTR = mysqli_query($db, $sql8);
-
-        header("refresh:0.5;url=admin_dashboard.php");
       
-        
     }
     catch(PDOException $e)
       {
@@ -191,114 +173,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       }
     $db=null;
   }
-  if(!empty($_POST["payment"]))
-  {
-   
-    
-    try {
 
-      $sqlcheck1 = "SELECT * FROM tb_transactions
-      WHERE tb_transactions.id='" .$_GET['id']. "'";
-      $TRcheck = mysqli_query($db, $sqlcheck1);
-      $resultCheck1 = mysqli_fetch_assoc($TRcheck);
+}
+if(!empty($_GET['name'])){
+
+    $sql8 = "UPDATE tb_transactions 
+    SET tb_transactions.name='" . $_GET['name'] . "'
+    WHERE tb_transactions.id='" .$_GET['id']. "'";
+    $SaveTR = mysqli_query($db, $sql8);
+
+    header("refresh:0.5;url=admin_dashboard.php");
+
+}
+if(!empty($_GET['payment'])){
 
       $sqlcheck2 = "SELECT * FROM tb_payments
       WHERE tb_payments.id='" .$_GET['id']. "'";
       $Paymentcheck = mysqli_query($db, $sqlcheck2);
       $resultCheck2 = mysqli_fetch_assoc($Paymentcheck);
 
-      if(empty($resultCheck1) && empty($resultCheck2))  {
+      if(empty($resultCheck2))  {
 
-        $sql9="INSERT INTO tb_payments (id, date,time, total, payment, change1)
-        VALUES ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','" . $row2['total'] . "','" . $_POST["payment"] . "','" . $_POST["payment"]-$row2['total2'] . "')";
+        $sql9="INSERT INTO tb_payments (id, date,time, total, payment, payment1, change1)
+        VALUES ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','" . $total . "','" . $_GET["payment"] . "','".$_GET['payment1']."','" . $_GET["payment"]-$total . "')";
 
         $sql10 = "UPDATE tb_transactions 
         SET tb_transactions.status='paid'
         WHERE tb_transactions.id='".$_GET['id']."'";
 
-
-        if ($_POST["payment"] > $row2['total2']) {
-
-        $change=$_POST["payment"]-$row2['total2'];
         $SaveTR2a = mysqli_query($db, $sql9);
         $SaveTR2b = mysqli_query($db, $sql10);
-        function function_alert($message) {
-        echo "<script>alert('Change is P $message');</script>";
-        }
-        function_alert($change);
-        header( "refresh:0.5;url=admin_dashboard.php" );
-        } elseif ($_POST["payment"] >= $row2['total2']) {
 
-        $change="NO CHANGE";
-        $SaveTR2a = mysqli_query($db, $sql9);
-        $SaveTR2b = mysqli_query($db, $sql10);
-        function function_alert($message) {
-        echo "<script>alert('$message');</script>";
-        }
-        function_alert($change);
-        header( "refresh:0.5;url=admin_dashboard.php" );
-        } else {
-
-        function function_alert($message) {
-        echo "<script>alert('Payment not enought! Total is $message');</script>";
-        }
-        function_alert($row2['total2']);
-        header("Refresh:0");
-
-        }
-        
-      } else {
-
-        $sql9="INSERT INTO tb_payments (id, date,time, total, payment, change1)
-        VALUES ('" .$_GET['id']. "','".$_GET['date']."','".date("H:i:s")."','" . $row2['total'] . "','" . $_POST["payment"] . "','" . $_POST["payment"]-$row2['total2'] . "')";
-
-        $sql10 = "UPDATE tb_transactions
-        SET tb_transactions.status='paid',tb_transactions.date='".$_GET['date']."'
-        WHERE tb_transactions.id='" .$_GET['id']. "'";
-
-
-        if ($_POST["payment"] > $row2['total2']) {
-
-        $change=$_POST["payment"]-$row2['total2'];
-        $SaveTR2a = mysqli_query($db, $sql9);
-        $SaveTR2b = mysqli_query($db, $sql10);
-        function function_alert($message) {
-        echo "<script>alert('Change is P $message');</script>";
-        }
-        function_alert($change);
-        header( "refresh:0.5;url=admin_dashboard.php" );
-        } elseif ($_POST["payment"] >= $row2['total2']) {
-
-        $change="NO CHANGE";
-        $SaveTR2a = mysqli_query($db, $sql9);
-        $SaveTR2b = mysqli_query($db, $sql10);
-        function function_alert($message) {
-        echo "<script>alert('$message');</script>";
-        }
-        function_alert($change);
-        header( "refresh:0.5;url=admin_dashboard.php" );
-        } else {
-
-        function function_alert($message) {
-        echo "<script>alert('Payment not enought! Total is $message');</script>";
-        }
-        function_alert($row2['total2']);
-        header("Refresh:0");
-
-        }
-
-      }
-
+        header( "refresh:0.5;url=admin_new_transaction.php?date=".$_GET['date']."" );
       
- 
-    }
-    catch(PDOException $e)
-      {
-        echo $sql1 . "<br>" . $e->getMessage();
       }
-    $db=null;
-  }
 }
+
 ?>
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
@@ -309,371 +219,166 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.111.3">
-    <title>NEW TRANSACTION</title>
+    <title>
+      <?php
+      if(empty($row2['name'])) {
+      $name ="NEW TRANSACTION";
+      } else {
+      $name = $row2['name'];
+      $btn_save = "hidden";
+      }
+      echo $name;
+      ?>
+      </title>
  
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-
     <style>
-     
-      .datalistOptions {
-        width: 100%;
-      }
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
-      }
+    .navbar-brand {
+      padding-top: .75rem;
+      padding-bottom: .75rem;
+      background-color: rgba(0, 0, 0, .25);
+      box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+    }
+    .navbar .navbar-toggler {
+      top: .25rem;
+      right: 1rem;
+    }
 
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
-      }
-
-      .b-example-divider {
-        width: 100%;
-        height: 3rem;
-        background-color: rgba(0, 0, 0, .1);
-        border: solid rgba(0, 0, 0, .15);
-        border-width: 1px 0;
-        box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
-      }
-
-      .b-example-vr {
-        flex-shrink: 0;
-        width: 1.5rem;
-        height: 100vh;
-      }
-
-      .bi {
-        vertical-align: -.125em;
-        fill: currentColor;
-      }
-
-      .nav-scroller {
-        position: relative;
-        z-index: 2;
-        height: 2.75rem;
-        overflow-y: hidden;
-      }
-
-      .nav-scroller .nav {
-        display: flex;
-        flex-wrap: nowrap;
-        padding-bottom: 1rem;
-        margin-top: -1px;
-        overflow-x: auto;
-        text-align: center;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-      }
-
-      .btn-bd-primary {
-        --bd-violet-bg: #712cf9;
-        --bd-violet-rgb: 112.520718, 44.062154, 249.437846;
-
-        --bs-btn-font-weight: 600;
-        --bs-btn-color: var(--bs-white);
-        --bs-btn-bg: var(--bd-violet-bg);
-        --bs-btn-border-color: var(--bd-violet-bg);
-        --bs-btn-hover-color: var(--bs-white);
-        --bs-btn-hover-bg: #6528e0;
-        --bs-btn-hover-border-color: #6528e0;
-        --bs-btn-focus-shadow-rgb: var(--bd-violet-rgb);
-        --bs-btn-active-color: var(--bs-btn-hover-color);
-        --bs-btn-active-bg: #5a23c8;
-        --bs-btn-active-border-color: #5a23c8;
-      }
-      .bd-mode-toggle {
-        z-index: 1500;
-      }
-      body {
-  font-size: .875rem;
-}
-
-.feather {
-  width: 16px;
-  height: 16px;
-}
-
-/*
- * Sidebar
- */
-
-.sidebar {
-  position: fixed;
-  top: 0;
-  /* rtl:raw:
-  right: 0;
-  */
-  bottom: 0;
-  /* rtl:remove */
-  left: 0;
-  z-index: 100; /* Behind the navbar */
-  padding: 48px 0 0; /* Height of navbar */
-  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-}
-
-
-.sidebar-sticky {
-  height: calc(100vh - 48px);
-  overflow-x: hidden;
-  overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
-}
-
-.sidebar .nav-link {
-  font-weight: 500;
-  color: #333;
-}
-
-.sidebar .nav-link .feather {
-  margin-right: 4px;
-  color: #727272;
-}
-
-.sidebar .nav-link.active {
-  color: #2470dc;
-}
-
-.sidebar .nav-link:hover .feather,
-.sidebar .nav-link.active .feather {
-  color: inherit;
-}
-
-.sidebar-heading {
-  font-size: .75rem;
-}
-
-/*
- * Navbar
- */
-
-.navbar-brand {
-  padding-top: .75rem;
-  padding-bottom: .75rem;
-  background-color: rgba(0, 0, 0, .25);
-  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
-}
-
-.navbar .navbar-toggler {
-  top: .25rem;
-  right: 1rem;
-}
-
-.navbar .form-control {
-  padding: .75rem 1rem;
-}
-
-.form-control-dark {
-  color: #fff;
-  background-color: rgba(255, 255, 255, .1);
-  border-color: rgba(255, 255, 255, .1);
-}
-
-.form-control-dark:focus {
-  border-color: transparent;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
-}
-
+    .navbar .form-control {
+      padding: .75rem 1rem;
+    }
+    .autocomplete-items {
+      position: absolute;
+      border: 1px solid #d4d4d4;
+      border-bottom: none;
+      border-top: none;
+      z-index: 99;
+      /*position the autocomplete items to be the same width as the container:*/
+      top: 100%;
+      left: 0;
+      right: 0;
+    }
+    .autocomplete {
+      position: relative;
+      display: inline-block;
+    }
+    .autocomplete-items div {
+      padding: 10px;
+      cursor: pointer;
+      background-color: #fff; 
+      border-bottom: 1px solid #d4d4d4; 
+    }
+    .autocomplete-items div:hover {
+      background-color: #e9e9e9; 
+    }
+    .autocomplete-active {
+      background-color: DodgerBlue !important; 
+      color: #ffffff; 
+    }
+  
   </style>
-
   </head>
   <body>
   
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">R-Click POS</a>
-  <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="admin_dashboard.php">R-Click Solutions POS: <i><?php echo $company_name; ?></i></a>
+ 
 </header>
 
-<div class="container-fluid">
-  <div class="row">
-    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-body-tertiary sidebar collapse">
-      <div class="position-sticky pt-3 sidebar-sticky">
-      <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="admin_dashboard.php">
-              <span data-feather="home" class="align-text-bottom"></span>
-              Dashboard
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_yearly_history.php">
-              <span data-feather="file" class="align-text-bottom"></span>
-              Paid Transactions
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_unpaid_transactions.php">
-              <span data-feather="file" class="align-text-bottom"></span>
-              Unpaid Transactions
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_products.php">
-              <span data-feather="shopping-cart" class="align-text-bottom"></span>
-              Products
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_inventory.php">
-              <span data-feather="bar-chart-2" class="align-text-bottom"></span>
-              Inventory
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_users.php">
-              <span data-feather="users" class="align-text-bottom"></span>
-              Users
-            </a>
-          </li>
-        </ul>
-
-        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
-          <span>Quick Links</span>
-        </h6>
-        <ul class="nav flex-column mb-5">
-          <li class="nav-item">
-            <a class="nav-link" href="admin_productqr.php?product_id=20230419234321&line=1">
-              <span data-feather="file-text" class="align-text-bottom"></span>
-              QR Generator
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_add_products.php">
-              <span data-feather="file-text" class="align-text-bottom"></span>
-              Add new product
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_product_restock.php?search=a">
-              <span data-feather="file-text" class="align-text-bottom"></span>
-              Re-stock product
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_add_category.php">
-              <span data-feather="file-text" class="align-text-bottom"></span>
-              Add new category
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_add_supplier.php">
-              <span data-feather="file-text" class="align-text-bottom"></span>
-              Add new supplier
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_add_mc.php">
-              <span data-feather="file-text" class="align-text-bottom"></span>
-              Add new brand & model
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admin_add_user.php">
-              <span data-feather="file-text" class="align-text-bottom"></span>
-              Add new user
-            </a>
-          </li>
-        </ul>
-        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
-          <span>Account</span>
-        </h6>
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-              <span data-feather="user" class="align-text-bottom"></span>
-              <strong><?php echo $name; ?></strong>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                <li><a class="dropdown-item" href="admin_settings.php">Settings</a></li>
-                <li><a class="dropdown-item" href="signout.php">Sign out</a></li>
-            </ul>
-          </li>
-        </ul>
+<main class="ms-sm-auto" >
+  <div class="container-fluid">
+  <div class="row mt-3">
+      <h4 class="text-center text-danger"> 
+        <?php
+          if(empty($row2['name'])) {
+          $name ="NEW TRANSACTION";
+          $SaveButton = null;
+          } else {
+          $name = $row2['name'];
+          $SaveButton = "disabled";
+          }
+          echo $name;
+        ?>
+      </h4>
+    </div>
+    <div class="row">
+<div class="col">
+<div class="">
+    <div class="row" id="click">
+      <div class="col">
+        <div class="card-body">
+          <div class="float-end">
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-list-check" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3.854 2.146a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 3.293l1.146-1.147a.5.5 0 0 1 .708 0m0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 7.293l1.146-1.147a.5.5 0 0 1 .708 0m0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0"/>
+            </svg>
+          </div>
+              <h6 class="text-muted fw-normal" title="Number of Customers">Items</h6>
+              <h3 class="">
+                <?php
+                if(empty($row2['items'])) {
+                $items ="0";
+                } else {
+                $items = $row2['items'];
+                }
+                echo $items;
+                ?>
+              </h3>
+                  
+        </div>
       </div>
-    </nav>
-
-    <main class="col-md-9 ms-sm-auto col-lg-10">
       
-      <div class="text-center pt-3 ">
-      <h5><?php
-                  if(empty($row2['name'])) {
-                  $name ="New Transaction";
-                  $SaveButton = null;
-                  } else {
-                  $name = $row2['name'];
-                  $SaveButton = "disabled";
-                  }
-                  echo $name;
-                  ?></h5>
-       
-      </div>
-      <div class="container">
-        <div class="row">
-          
-          <div class="container border rounded shadow">
-            <div class="row  border-bottom">
-              <div class="col">
-                <div class="card-body p-2">
-                  <div class="float-end">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-receipt-cutoff" viewBox="0 0 16 16">
-                      <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5M11.5 4a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
-                      <path d="M2.354.646a.5.5 0 0 0-.801.13l-.5 1A.5.5 0 0 0 1 2v13H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H15V2a.5.5 0 0 0-.053-.224l-.5-1a.5.5 0 0 0-.8-.13L13 1.293l-.646-.647a.5.5 0 0 0-.708 0L11 1.293l-.646-.647a.5.5 0 0 0-.708 0L9 1.293 8.354.646a.5.5 0 0 0-.708 0L7 1.293 6.354.646a.5.5 0 0 0-.708 0L5 1.293 4.354.646a.5.5 0 0 0-.708 0L3 1.293zm-.217 1.198.51.51a.5.5 0 0 0 .707 0L4 1.707l.646.647a.5.5 0 0 0 .708 0L6 1.707l.646.647a.5.5 0 0 0 .708 0L8 1.707l.646.647a.5.5 0 0 0 .708 0L10 1.707l.646.647a.5.5 0 0 0 .708 0L12 1.707l.646.647a.5.5 0 0 0 .708 0l.509-.51.137.274V15H2V2.118l.137-.274z"/>
-                    </svg>
-                  </div>
-                    <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Items</h6>
-                    <h3 class=""><?php
-                      if(empty($row2['items'])) {
-                      $items ="0";
-                      } else {
-                      $items = $row2['items'];
-                      }
-                      echo $items;
-                      ?></h3>
-                    <p class="mb-0 text-muted">
-                </div>
-              </div>
-              <div class="col">
-                <div class="card-body p-2">
-                  <div class="float-end">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-receipt-cutoff" viewBox="0 0 16 16">
-                      <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5M11.5 4a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
-                      <path d="M2.354.646a.5.5 0 0 0-.801.13l-.5 1A.5.5 0 0 0 1 2v13H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H15V2a.5.5 0 0 0-.053-.224l-.5-1a.5.5 0 0 0-.8-.13L13 1.293l-.646-.647a.5.5 0 0 0-.708 0L11 1.293l-.646-.647a.5.5 0 0 0-.708 0L9 1.293 8.354.646a.5.5 0 0 0-.708 0L7 1.293 6.354.646a.5.5 0 0 0-.708 0L5 1.293 4.354.646a.5.5 0 0 0-.708 0L3 1.293zm-.217 1.198.51.51a.5.5 0 0 0 .707 0L4 1.707l.646.647a.5.5 0 0 0 .708 0L6 1.707l.646.647a.5.5 0 0 0 .708 0L8 1.707l.646.647a.5.5 0 0 0 .708 0L10 1.707l.646.647a.5.5 0 0 0 .708 0L12 1.707l.646.647a.5.5 0 0 0 .708 0l.509-.51.137.274V15H2V2.118l.137-.274z"/>
-                    </svg>
-                  </div>
-                    <h6 class="text-muted fw-normal mt-0" title="Number of Customers">Total</h6>
-                    <h3 class=""><?php
-                      if(empty($row2['total'])) {
-                      $total ="0";
-                      $DeleteTR = "DELETE FROM tb_transactions WHERE tb_transactions.id='" .$_GET['id']. "'";
-                      $X = mysqli_query($db, $DeleteTR);
-                      } else {
-                      $total = $row2['total'];
-                      }
-                      echo $total;
-                      ?></h3>
-                  </div>
-              </div>
+      <div class="col">
+        <div class="card-body">
+            <div class="float-end text-success">
+              <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-currency-exchange" viewBox="0 0 16 16">
+                <path d="M0 5a5 5 0 0 0 4.027 4.905 6.5 6.5 0 0 1 .544-2.073C3.695 7.536 3.132 6.864 3 5.91h-.5v-.426h.466V5.05q-.001-.07.004-.135H2.5v-.427h.511C3.236 3.24 4.213 2.5 5.681 2.5c.316 0 .59.031.819.085v.733a3.5 3.5 0 0 0-.815-.082c-.919 0-1.538.466-1.734 1.252h1.917v.427h-1.98q-.004.07-.003.147v.422h1.983v.427H3.93c.118.602.468 1.03 1.005 1.229a6.5 6.5 0 0 1 4.97-3.113A5.002 5.002 0 0 0 0 5m16 5.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0m-7.75 1.322c.069.835.746 1.485 1.964 1.562V14h.54v-.62c1.259-.086 1.996-.74 1.996-1.69 0-.865-.563-1.31-1.57-1.54l-.426-.1V8.374c.54.06.884.347.966.745h.948c-.07-.804-.779-1.433-1.914-1.502V7h-.54v.629c-1.076.103-1.808.732-1.808 1.622 0 .787.544 1.288 1.45 1.493l.358.085v1.78c-.554-.08-.92-.376-1.003-.787zm1.96-1.895c-.532-.12-.82-.364-.82-.732 0-.41.311-.719.824-.809v1.54h-.005zm.622 1.044c.645.145.943.38.943.796 0 .474-.37.8-1.02.86v-1.674z"/>
+              </svg>
             </div>
-            <div class="row">
-          <table class="table table-hover table-sm table-borderless m-1">
-          <thead>
-            <tr class="text-muted">
-              <th scope="col">Specification</th>
-              <th scope="col">QTY</th>
-              <th scope="col">SRP</th>
-              <th scope="col">Total</th>
-              <th scope="col"></th>
-            </tr>
-            </tr>
-          </thead>
+                <h6 class="text-muted fw-normal " title="Number of Customers">Total</h6>
+                <h3 class=" text-success">
+                  <?php
+                  echo $total;
+                  ?>
+                </h3>
+                <div>
+                <p class="text-danger text-end" title="Remove Discount" <?php if(empty($_GET['disc'])) { echo "hidden"; }?>>
+                <?php echo $disc_msg; ?>
+                  <span>
+                    <button class="btn btn-sm p-0 m-0"
+                    onclick="location.href='admin_new_transaction.php?id=<?php echo $_GET['id'];?>&date=<?php echo  $_GET['date']?>'"> 
+                      <svg class="text-danger" xmlns="http://www.w3.org/2000/svg" width="27" height="30" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                      </svg>
+                    </button>
+                  </span>
+                </p>
+                
+                </div>
+                
+        </div>
+      </div>
+    </div>
+    <table class="table table-hover table-sm table-borderless mt-2 mb-5">
           <tbody>
             <?php
-                $sql="SELECT *
+            if(!empty($_GET['id'])) {
+              $sql="SELECT *
+              FROM (SELECT
+                  tb_products.id,
+                  CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)AS specification,
+                  FORMAT(tb_products.price, 2) AS price
+                  FROM tb_cart LEFT JOIN tb_products ON tb_cart.product_id=tb_products.id) AS A
+              JOIN (SELECT
+                  tb_cart.product_id,
+                  SUM(tb_cart.quantity) AS quantity,
+                  tb_cart.date,
+                  FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2) AS total
+                  FROM tb_cart WHERE tb_cart.transaction_id='".$_GET['id']."'
+                  GROUP BY tb_cart.product_id) AS B
+              ON A.id=B.product_id
+              GROUP BY B.product_id";
+            } else {
+              $sql="SELECT *
                 FROM (SELECT
                     tb_products.id,
                     CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model)AS specification,
@@ -682,201 +387,72 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 JOIN (SELECT
                     tb_cart.product_id,
                     SUM(tb_cart.quantity) AS quantity,
+                    tb_cart.date,
                     FORMAT(SUM(tb_cart.price*tb_cart.quantity), 2) AS total
-                    FROM tb_cart WHERE tb_cart.transaction_id='".$_GET['id']."'
+                    FROM tb_cart WHERE tb_cart.transaction_id=''
                     GROUP BY tb_cart.product_id) AS B
                 ON A.id=B.product_id
                 GROUP BY B.product_id";
-                                                                                    
-                $result = mysqli_query($db,$sql);
+            }
+
                 
-                if (mysqli_num_rows($result) > 0) 
-                {
-                  $button="";
-                foreach($result as $items)
-                {
+                                                                                    
+            $result = mysqli_query($db,$sql);
+                
+            if (mysqli_num_rows($result) > 0) 
+            {
+              $button="";
+            foreach($result as $items)
+            {
             ?>
             <tr>
-                <td><?php echo $items['specification']; ?></td>
-                <td><?php echo $items['quantity']; ?></td>
-                <td><?php echo $items['price']; ?></td>
-                <td><?php echo $items['total']; ?></td>
-                <td></td>
-                <td>
-        
-                  <button type="button" class="btn btn-sm p-0 m-0" data-bs-toggle="modal" data-bs-target="#exampleModal2" data-bs1="<?php echo $items['id']; ?>" data-bs2="DELETE & RETURN <?php echo $items['specification']; ?>?" data-bs3="<?php echo $items['quantity']; ?>">
-                    <span>
-                      <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
-                      <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
-                      </svg>
-                    </span>
-                  </button>
+              <td><?php echo $items['specification']; ?></td>
+              <td><?php echo $items['quantity']; ?></td>
+              <td><?php echo $items['price']; ?></td>
+              <td><?php echo $items['total']; ?></td>
+              <td>
+              <button type="button" title="Void & Return Product" class="btn btn-sm p-0 m-0" 
+                          onclick="btn_void(this.getAttribute('data-1'), this.getAttribute('data-2'), 
+                          this.getAttribute('data-3'))"
+                          data-1="<?php echo $items['id']; ?>"
+                          data-2="<?php echo $items['specification']; ?>"
+                          data-3="<?php echo $items['quantity']; ?>"
+                          >
+                          <span>
+                            <svg  class="text-danger" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-square-fill" viewBox="0 0 16 16">
+                            <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
+                            </svg>
+                          </span>
+                        </button>
 
-                  <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                        <h1 class="modal-title fs-5 text-danger" id="exampleModalLabel"></h1>
-                        </div>
-                        <div class="modal-body">
-                            <form method="post" enctype="multipart/form-data">
-                              <div class="mb-3">
-
-                                <input type="hidden" id="product_id2" name="product_id2" class="form-control">
-                                <input type="hidden" id="quantity2" name="quantity2" class="form-control">
-                                
-                              </div>
-                            
-                          </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                          <button type="submit" class="btn btn-sm btn-danger">REMOVE</button>
-                          </form>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                </td>
+              </td>
+           
             </tr>
             <?php
             } 
             } else {
               $button="disabled";
-              
             }
             ?>
           </tbody>
-          <script>
-            const exampleModal = document.getElementById('exampleModal2')
-            if (exampleModal) {
-              exampleModal.addEventListener('show.bs.modal', event => {
-                // Button that triggered the modal
-                const button = event.relatedTarget
-                // Extract info from data-bs-* attributes
-                const recipient = button.getAttribute('data-bs1')
-                const recipient2 = button.getAttribute('data-bs2')
-                const recipient3 = button.getAttribute('data-bs3')
-                // If necessary, you could initiate an Ajax request here
-                // and then do the updating in a callback.
-
-                // Update the modal's content.
-                const modalTitle = exampleModal.querySelector('.modal-title')
-                const modalBodyInput1 = document.getElementById('product_id2')
-                const modalBodyInput2 = document.getElementById('quantity2')
-            
-
-                modalTitle.textContent = `${recipient2}`
-                modalBodyInput1.value = recipient
-                modalBodyInput2.value = recipient3
-              })
-            }
-          </script>
-        </table>
-             
-               
-            </div>
-           
-            
+        </table>   
+  </div>
+    <form method="post" enctype="multipart/form-data" autocomplete=off>
+      <div>
+          <div class="input-group mt-3">
+          <button class="btn btn-secondary" id="button-addon2"><span data-feather="camera" class="align-text-end"></button>
+          
+          <div class="autocomplete col">
+          <input id="search" onkeyup="this.value = this.value.toUpperCase();" name="search" class="form-control" list="datalistOptions" id="exampleDataList" placeholder="ALT + X to Search Product">
           </div>
-             
-        </div>
-      </div>
-
-    
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center m-2">
-      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal4" <?php echo $button;?><?php echo $SaveButton;?>>SAVE</button>
-      <div class="modal fade" id="exampleModal4" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
-                      <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                          <h6 class="modal-title" id="exampleModalLabel">SAVE TRANSACTION</h6>
-                          </div>
-                          <div class="modal-body">
-                            <form method="post" enctype="multipart/form-data">
-                              <div class="mb-3">
-                                
-                              <label for="validationDefault01" class="form-label">Unpaid Transaction: Customer Name</label>
-                              <input onkeyup="this.value = this.value.toUpperCase();" type="text" name="name" class="form-control" id="validationDefault01" required>
-                                
-                              </div>
-                            
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-sm btn-danger">Save</button>
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-      <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal5" <?php echo $button;?>>PAY</button>
-      <div class="modal fade" id="exampleModal5" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
-                      <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                          <h6 class="modal-title" id="exampleModalLabel">PAY TRANSACTION</h6>
-                          </div>
-                          <div class="modal-body">
-                            <form method="post" enctype="multipart/form-data">
-                              <div class="mb-3">
-                                
-                              <label for="validationDefault01" class="form-label">Payment Amount</label>
-                              <input type="number" name="payment" class="form-control" id="validationDefault01" required>
-                                
-                              </div>
-                            
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-sm btn-success">PAY</button>
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
            
-      </div>
-     
-      <h6 class="mt-5">Add Products</h6>
-      <form method="post" enctype="multipart/form-data">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center mt-3">
-          <div class="input-group">
-            <input id="search" onkeyup="this.value = this.value.toUpperCase();" name="search" class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Type to search product...">
-            <script>
-              window.onload = init;
-              function init(){
-              document.getElementById("search").focus();
-              }
-            </script>
-            <datalist id="datalistOptions">
-              <?php while($row1 = mysqli_fetch_array($result1)):;?>
-              <option value="<?php echo $row1['id'];?>"><?php echo $row1['specification'];?></option>
-              <?php endwhile; ?>
-            </datalist>
-            <script>
-              window.onload = init;
-              function init(){
-              document.getElementById("search").focus();
-              }
-            </script>
-            <button class="btn btn-secondary" type="submit" id="button-addon2">SEARCH <span data-feather="search" class="align-text-end"></button>
+            <button class="btn btn-secondary" type="submit" id="button-addon2"><span data-feather="search" class="align-text-end"></button>
           </div>
       </div>
       </form>
-      <h6 class="mt-3">
-        <?php
-         if(empty($_POST["search"])) {
-          $text = "";
-          } else {
-          $text = "Result for the keyword ' ".$search." '";
-          }
-          echo $text;
-        ?>
-      </h6>
-        <table class="table table-hover table-sm">
+    <table class="table table-hover table-borderless table-sm mt-3 mb-5" id="tblFocus">
           <thead>
-            <tr>
+            <tr class="text-muted">
               <th scope="col">Specification</th>
               <th scope="col">Stocks</th>
               <th scope="col">SRP</th>
@@ -891,6 +467,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 tb_products.disc,
                 CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) AS specification,
                 CONCAT(tb_products.available,'/',tb_products.stocks) AS stocks,
+                tb_products.available,
                 CONCAT(tb_products.price) AS price,
                 CASE WHEN tb_products.available=0
                 THEN 'text-danger' ELSE null END AS textcolor
@@ -899,7 +476,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 OR tb_products.mc_brand LIKE '%".$search."%' 
                 OR tb_products.mc_model LIKE '%".$search."%' 
                 OR tb_products.product_brand LIKE '%".$search."%'
-                OR tb_products.id LIKE '%".$search."%'";
+                OR tb_products.id LIKE '%".$search."%'
+                OR CONCAT(tb_products.category,' ',tb_products.product_brand,' ',tb_products.mc_brand,' ',tb_products.mc_model) LIKE '%".$search."%'";
                                                                                     
                 $resultb = mysqli_query($db,$sqlb);
 
@@ -908,41 +486,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 foreach($resultb as $itemsb)
                 {
             ?>
-            <tr class="<?php echo $itemsb['textcolor']; ?>" data-bs-toggle="modal" data-bs-target="#exampleModal3" data-bs-whatever="<?php echo $itemsb['specification']; ?>" data-bs-whatever2="<?php echo $itemsb['id']; ?>" data-bs-whatever3="<?php echo $itemsb['price']; ?>"> 
-            <span>
-                  <div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
-                      <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                          <h1 class="modal-title fs-5" id="exampleModalLabel"></h1>
-                          </div>
-                          <div class="modal-body">
-                            <form method="post" enctype="multipart/form-data">
-                              <div class="mb-3">
-                                <label for="validationDefault01" class="col-form-label">Quantity :</label>
-                                <input type="hidden" id="product_id" name="product_id" class="form-control">
-                                <input type="hidden" id="price" name="price" class="form-control">
-                                <input type="number" name="quantity" for="validationDefault01" class="form-control" maxlength="2" required>
-                                
-                              </div>
-                       
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-sm btn-danger">Add</button>
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </span>
+            <tr class="<?php echo $itemsb['textcolor']; ?>"
+            title="Click to add-to-Cart"
+            onclick="<?php echo $cart_button;?>(this.getAttribute('data-1'), this.getAttribute('data-2'), 
+            this.getAttribute('data-3'), this.getAttribute('data-4'))"
+            data-1="<?php echo $itemsb['specification']; ?>" 
+            data-2="<?php echo $itemsb['id']; ?>" 
+            data-3="<?php echo $itemsb['price']; ?>"
+            data-4="<?php echo $itemsb['available']; ?>"> 
+
                 <td><?php echo $itemsb['specification']; ?></td>
                 <td><?php echo $itemsb['stocks']; ?></td>
                 <td><?php echo $itemsb['price']; ?></td>
                 <td><?php echo $itemsb['disc']; ?></td>
-                <td>
-                  
-                </td>
             </tr>
             <?php
             } 
@@ -950,37 +506,406 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ?>
           </tbody>
           <script>
-            const exampleModal2 = document.getElementById('exampleModal3')
-            if (exampleModal2) {
-              exampleModal2.addEventListener('show.bs.modal', event => {
-                // Button that triggered the modal
-                const button = event.relatedTarget
-                // Extract info from data-bs-* attributes
-                const recipient = button.getAttribute('data-bs-whatever')
-                const recipient2 = button.getAttribute('data-bs-whatever2')
-                const recipient3 = button.getAttribute('data-bs-whatever3')
-                // If necessary, you could initiate an Ajax request here
-                // and then do the updating in a callback.
-
-                // Update the modal's content.
-                const modalTitle = exampleModal2.querySelector('.modal-title')
-                const modalBodyInput1 = document.getElementById('product_id')
-                const modalBodyInput2 = document.getElementById('price')
-            
-
-                modalTitle.textContent = `${recipient}`
-                modalBodyInput1.value = recipient2
-                modalBodyInput2.value = recipient3
-              })
-            }
+             
           </script>
         </table>
-      </div>
-    </main>
+      
+    </div> 
+    </div>
   </div>
+   
+  
+</main>
+
+
+<div class="position-fixed bottom-0 end-0 translate-bottom p-3 bg-white">
+<form>
+<button type="button" class="btn btn-success btn-sm" accesskey="c" onclick="window.open('admin_new_transaction.php?id=<?php echo $TR;?>&date=<?php echo date('Y-m-d')?>')" <?php echo $button;?>>NEW TR</button>
+    <button type="button" class="btn btn-danger btn-sm" accesskey="m" onclick="btn_save()" <?php echo $btn_save;?>>SAVE</button>
+    <button type="button" class="btn btn-warning btn-sm" accesskey="," onclick="btn_disc()" <?php echo $btn_disc;?>>DISCOUNT</button>
+    <button type="button" class="btn btn-success btn-sm" accesskey="." onclick="btn_cash()" <?php echo $btn_cash;?>>CASH</button>
+    <button type="button" class="btn btn-primary btn-sm" accesskey="/" onclick="btn_other()" <?php echo $btn_gcash;?>>OTHER</button>
+</form>
 </div>
 
+  <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+  <script>
+    var input = document.getElementById('search');
+    var input2 = document.getElementById('click');
+    var message = document.getElementsByClassName('table')[0];
+    input.addEventListener('focus', function() {
+        message.style.display = 'none';
+    });
+    input.addEventListener('focusout', function() {
+        message.style.display = 'none';
+    });
+    input2.addEventListener('click', function() {
+        message.style.display = '';
+    });
 
+
+    window.onload = init;
+    function init(){
+    document.getElementById("search").focus();
+    }
+    
+    function btn_save() {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-secondary me-1"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: "Enter Customer Name",
+        input: "text",
+        showCancelButton: true,
+        confirmButtonText: "Save",
+        cancelButtonText: "Cancel",
+        reverseButtons: true,
+        inputValidator: (result) => {
+          if (!result) {
+            return "Enter name!";
+          } else {
+          }
+        },
+        inputAttributes: {
+        maxlength: "30"
+      }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          swalWithBootstrapButtons.fire({
+            title: "Saved "+result.value.toUpperCase(),
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500
+          }).then((result2) => {
+            if (result2.dismiss === swalWithBootstrapButtons.DismissReason.timer) {
+              window.location.href = window.location.href+'&name='+result.value.toUpperCase();
+            }
+           });
+        } else {
+          result.dismiss === Swal.DismissReason.cancel
+        }
+      });
+    }
+    function btn_void(data_1,data_2,data_3) {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-danger",
+          cancelButton: "btn btn-secondary me-1"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: "VOID "+data_2+" ?",
+        showCancelButton: true,
+        confirmButtonText: "Void",
+        cancelButtonText: "Cancel",
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = window.location.href+'&product_id2='+data_1+'&quantity2='+data_3;
+        } else {
+          result.dismiss === Swal.DismissReason.cancel
+        }
+      });
+    }
+    function btn_qty(data_1,data_2,data_3,data_4) {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-secondary me-1"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: data_1,
+        input: "number",
+        footer: '<h6 class="text-white text-center">Available stocks: '+data_4+'</h6>',
+        showCancelButton: true,
+        confirmButtonText: "Add to Cart",
+        cancelButtonText: "Cancel",
+        reverseButtons: true,
+        inputValidator: (result) => {
+          if (!result) {
+            return "Enter quantity!";
+          } else {
+          }
+          var formattedNumber = ("0" + result).slice(-2);
+          if (formattedNumber < data_4) {
+          } else if (formattedNumber <= data_4) {
+          } else {
+            return "stocks not enough!";
+          }
+        },
+        inputAttributes: {
+        maxlength: "10"
+      }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = window.location.href+'&price='+data_3+'&product_id='+data_2+'&quantity='+result.value;
+        } else {
+          result.dismiss === Swal.DismissReason.cancel
+        }
+      });
+    }
+    function btn_tr(data_1,data_2,data_3,data_4) {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-secondary me-1"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: "Create New Transaction?",
+        showCancelButton: true,
+        confirmButtonText: "Create",
+        cancelButtonText: "Cancel",
+        reverseButtons: true
+      }).then((result1) => {
+        if (result1.isConfirmed) {
+            swalWithBootstrapButtons.fire({
+              title: data_1,
+              input: "number",
+              footer: '<h6 class="text-white text-center">Available stocks: '+data_4+'</h6>',
+              showCancelButton: true,
+              confirmButtonText: "Add to Cart",
+              cancelButtonText: "Cancel",
+              reverseButtons: true,
+              inputValidator: (result2) => {
+                if (!result2) {
+                  return "Enter quantity!";
+                } else {
+                }
+                var formattedNumber = ("0" + result2).slice(-2);
+                if (formattedNumber < data_4) {
+                } else if (formattedNumber <= data_4) {
+                } else {
+                  return "stocks not enough!";
+                }
+              },
+              inputAttributes: {
+              maxlength: "10"
+            }
+            }).then((result2) => {
+              if (result2.isConfirmed) {
+                window.location.href = window.location.href+'&price='+data_3+'&product_id='+data_2+'&quantity='+result2.value+'&id=<?php echo $TR;?>';
+              } else {
+                result.dismiss === Swal.DismissReason.cancel
+              }
+            });
+        } else {
+          result.dismiss === Swal.DismissReason.cancel
+        }
+      });
+    }
+    function btn_cash() {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-secondary me-1"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: "<?php echo "Cash to pay : P " . $total ."";?>",
+        input: "number",
+        showCancelButton: true,
+        confirmButtonText: "Pay",
+        cancelButtonText: "Cancel",
+        reverseButtons: true,
+        inputValidator: (result) => {
+          if (!result) {
+            return "Enter payment!";
+          } else {
+          }
+          if (result > <?php echo $total;?>) {
+          } else if (result >= <?php echo $total;?>) {
+          } else {
+            return "Payment not enough!";
+          }
+        }
+      }).then((result) => {
+  
+        change = result.value - <?php echo $total ;?>;
+        if (result.isConfirmed) {
+          swalWithBootstrapButtons.fire({
+            title: "Change is P "+change.toFixed(2),
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500
+          }).then((result2) => {
+            if (result2.dismiss === swalWithBootstrapButtons.DismissReason.timer) {
+              window.location.href = window.location.href+'&payment='+result.value+'&payment1=CASH';
+            }
+           });
+        } else {
+          result.dismiss === Swal.DismissReason.cancel
+        }
+      });
+    }
+    function btn_other() {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-secondary me-1"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: "SELECT PAYMENT",
+        input: "select",
+        inputOptions: {
+        OPTIONS : {
+          <?php while($row2c = mysqli_fetch_array($result2c)):;?>
+          <?php echo $row2c['options'];?>: "<?php echo $row2c['options'];?>",
+          <?php endwhile; ?>
+          }
+        },
+        showCancelButton: true,
+        confirmButtonText: "Received, Confirm",
+        cancelButtonText: "Cancel",
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          swalWithBootstrapButtons.fire({
+            title: "No Change! Confirm on Online-Banking",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500
+          }).then((result2) => {
+            if (result2.dismiss === swalWithBootstrapButtons.DismissReason.timer) {
+              window.location.href = window.location.href+'&payment=<?php echo $total ;?>&payment1='+result.value;
+            }
+           });
+        } else {
+          result.dismiss === Swal.DismissReason.cancel
+        }
+      });
+    }
+    function btn_disc() {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-success",
+          cancelButton: "btn btn-secondary me-1"
+        },
+        buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+        title: "SELECT DISCOUNT",
+        input: "select",
+        inputOptions: {
+        VOUCHERS : {
+          <?php while($row2b = mysqli_fetch_array($result2b)):;?>
+          <?php echo $row2b['id'];?>: "<?php echo $row2b['description'];?>",
+          <?php endwhile; ?>
+          }
+        },
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = window.location.href+'&disc='+result.value;
+        } else {
+          result.dismiss === Swal.DismissReason.cancel
+        }
+      });
+    }
+    function autocomplete(inp, arr) {
+            var currentFocus;
+            inp.addEventListener("input", function(e) {
+                var a, b, i, val = this.value;
+                closeAllLists();
+                if (!val) { return false;}
+                currentFocus = -1;
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(a);
+                for (i = 0; i < arr.length; i++) {
+                  if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                    b = document.createElement("DIV");
+                    b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                    b.innerHTML += arr[i].substr(val.length);
+                    b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                    b.addEventListener("click", function(e) {
+                        inp.value = this.getElementsByTagName("input")[0].value;
+                        closeAllLists();
+                    });
+                    a.appendChild(b);
+                  }
+                }
+            });
+            inp.addEventListener("keydown", function(e) {
+                var x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                if (e.keyCode == 40) {
+                  currentFocus++;
+                  addActive(x);
+                } else if (e.keyCode == 38) {
+                  currentFocus--;
+                  addActive(x);
+                } else if (e.keyCode == 13) {
+                  
+                  if (currentFocus > -1) {
+                    if (x) x[currentFocus].click();
+                  }
+                  if (inp.value == "") {
+                    e.preventDefault();
+                  }
+                }
+            });
+            function addActive(x) {
+              if (!x) return false;
+              removeActive(x);
+              if (currentFocus >= x.length) currentFocus = 0;
+              if (currentFocus < 0) currentFocus = (x.length - 1);
+              x[currentFocus].classList.add("autocomplete-active");
+            }
+            function removeActive(x) {
+              for (var i = 0; i < x.length; i++) {
+                x[i].classList.remove("autocomplete-active");
+              }
+            }
+            function closeAllLists(elmnt) {
+              var x = document.getElementsByClassName("autocomplete-items");
+              for (var i = 0; i < x.length; i++) {
+                if (elmnt != x[i] && elmnt != inp) {
+                  x[i].parentNode.removeChild(x[i]);
+                }
+              }
+            }
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+                
+            });
+          }
+          var specification = [
+            <?php while($row1 = mysqli_fetch_array($result1)):;?>
+            "<?php echo $row1['specification'];?>",
+            <?php endwhile; ?>
+          ];
+          var category = [
+            <?php while($row3 = mysqli_fetch_array($result3)):;?>
+            "<?php echo $row3['category'];?>",
+            <?php endwhile; ?>
+          ];
+          var pb = [
+            <?php while($row4 = mysqli_fetch_array($result4)):;?>
+            "<?php echo $row4['product_brand'];?>",
+            <?php endwhile; ?>
+          ];
+
+          autocomplete(document.getElementById("search"), category.concat(specification, pb));
+   
+    
+  </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>

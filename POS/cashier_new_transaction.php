@@ -287,6 +287,20 @@ if(!empty($_GET['payment'])){
 
 <main class="ms-sm-auto" >
   <div class="container-fluid">
+  <div class="row mt-3">
+      <h4 class="text-center text-danger"> 
+        <?php
+          if(empty($row2['name'])) {
+          $name ="NEW TRANSACTION";
+          $SaveButton = null;
+          } else {
+          $name = $row2['name'];
+          $SaveButton = "disabled";
+          }
+          echo $name;
+        ?>
+      </h4>
+    </div>
     <div class="row">
 <div class="col">
 <div class="">
@@ -519,7 +533,7 @@ if(!empty($_GET['payment'])){
 
 <div class="position-fixed bottom-0 end-0 translate-bottom p-3 bg-white">
 <form>
-<button type="button" class="btn btn-success btn-sm" accesskey="c" onclick="window.open('cashier_new_transaction2.php?id=<?php echo $TR;?>&date=<?php echo date('Y-m-d')?>')" <?php echo $button;?>>NEW TR</button>
+<button type="button" class="btn btn-success btn-sm" accesskey="c" onclick="window.open('cashier_new_transaction.php?id=<?php echo $TR;?>&date=<?php echo date('Y-m-d')?>')" <?php echo $button;?>>NEW TR</button>
     <button type="button" class="btn btn-danger btn-sm" accesskey="m" onclick="btn_save()" <?php echo $btn_save;?>>SAVE</button>
     <button type="button" class="btn btn-warning btn-sm" accesskey="," onclick="btn_disc()" <?php echo $btn_disc;?>>DISCOUNT</button>
     <button type="button" class="btn btn-success btn-sm" accesskey="." onclick="btn_cash()" <?php echo $btn_cash;?>>CASH</button>
