@@ -36,6 +36,7 @@ SUM(tb_cart.price*tb_cart.quantity - tb_products.capital*tb_cart.quantity) AS pr
 SUM(tb_products.capital*tb_cart.quantity) AS capital,
 CONCAT(DATE_FORMAT(tb_transactions.date,'%M %d,%Y'),'  ',tb_transactions.time) AS date_time,
 tb_transactions.date,
+tb_transactions.name,
 CONCAT(FORMAT(tb_payments.payment, 2)) AS payment,
 tb_payments.change1
 FROM tb_cart
@@ -300,6 +301,11 @@ if (mysqli_num_rows($result) > 0) {
         ?>
       </h6>
       <div class="table" id="page">
+      <h6 class="text-center text-success">
+        <?php
+          echo $row1['name'];
+        ?>
+      </h6>
       <h6 class="text-center mb-1">
       <?php
       if(empty($row1['date_time'])) {
