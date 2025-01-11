@@ -336,7 +336,7 @@ $row6 = mysqli_fetch_assoc($result6);
                 tb_products.price,
                 CASE WHEN tb_products.available=0
                 THEN 'text-danger' ELSE null END AS textcolor
-                FROM tb_products";
+                FROM tb_products ORDER BY specification";
                                                                                     
                 $result = mysqli_query($db,$sql);
 
