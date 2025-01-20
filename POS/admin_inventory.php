@@ -345,7 +345,7 @@ $row6 = mysqli_fetch_assoc($result6);
                 foreach($result as $items)
                 {
             ?>
-            <tr class="<?php echo $items['textcolor']; ?>" onclick="location.href='admin_product.php?id=<?php echo $items['id'];?>'">
+            <tr class="<?php echo $items['textcolor']; ?>">
                 <td><?php echo $items['specification']; ?></td>
                 <td><?php echo $items['stocks']; ?></td>
                 <td><?php echo $items['price']; ?></td>
