@@ -33,7 +33,6 @@ function WaiterUi() {
   const { logout } = useContext(AuthContext);
   const [menuItems, setMenuItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [heldOrders, setHeldOrders] = useState([]);
   const [orderNotes, setOrderNotes] = useState({});
   const [discount, setDiscount] = useState(0);
   const [isMobileCartOpen, setIsMobileCartOpen] = useState(false);
@@ -113,11 +112,11 @@ const fetchOrderlist = async (orderId) => {
   try {
     const response = await fetch(`http://localhost:3306/api/order-items?order_id=${orderId}`);
     const data = await response.json();
-    console.log('Fetched cart data:', data); // 🔍 LOG IT HERE
 
     if (data.success) {
       setCart(data.data);
       setErrorMessage('');
+      console.log(data.data)
     } else {
       setErrorMessage(data.message);
     }
@@ -200,6 +199,9 @@ const createOrder = async () => {
     alert('Table number required for dine-in');
     return false;
   }
+  if (!order_type) {
+    alert('Order type required!')
+  }
 
   try {
     const response = await fetch('http://localhost:3306/api/new-order', {
@@ -210,11 +212,13 @@ const createOrder = async () => {
 
     const data = await response.json();
     if (data.success) {
+      fetchPendingOrders();
       setOrderDetails((prev) => ({
         ...prev,
         order_id: data.data.order_id,
       }));
       return data.data.order_id;
+      
     } else {
       setErrorMessage(data.message);
       return false;
@@ -316,8 +320,8 @@ const updateOrderTable = async () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        order_id: orderDetails.table_id,
-        table_id: orderDetails.order_id,
+        order_id: orderDetails.order_id,
+        table_id: orderDetails.table_id,
       }),
     });
     
@@ -365,7 +369,7 @@ const removeFromCart = async (menuItemId) => {
       setErrorMessage('Failed to remove item');
     }
 };
-  
+
 const calculateTotal = () => {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
 };
@@ -377,23 +381,39 @@ const addNote = (itemId, note) => {
     });
 };
 
-const holdOrder = () => {
-    if (cart.length > 0) {
-      setHeldOrders([...heldOrders, { 
-        items: cart, 
-        notes: orderNotes, 
-        tableNumber,
-        orderType,
-        timestamp: new Date()
-      }]);
-      setCart([]);
-      setOrderNotes({});
-    }
-};
-
-const sendToKitchen = () => {
+const sendToKitchen = async() => {
     // Implement kitchen queue logic here
-    alert('Order sent to kitchen!');
+    try {
+      const response = await fetch('http://localhost:3306/api/send-to-kitchen', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: orderDetails.order_id,
+        }),
+      });
+      
+  
+      const data = await response.json();
+      if (data.success) {
+        /*
+        setOrderDetails({
+          order_id: "",
+          order_type: "",
+          table_id: "",
+          // add other fields you use in orderDetails
+        });
+        fetchPendingOrders();
+        fetchOrderlist();
+        */
+       alert('sent to kitchen')
+      } else {
+        setErrorMessage(data.message);
+      }
+    } catch (err) {
+      console.error('Error sending to kitchen:', err);
+      setErrorMessage('Failed sending to kitchen');
+    }
+   
 };
 
 useEffect(() => {
@@ -430,7 +450,7 @@ useEffect(() => {
             <span className="flex items-center gap-2 text-white">
               <span className="min-w-0 text-end">
                 <span className="block truncate text-sm/5 font-medium">
-                  {user?.id}
+                  {user?.name}
                 </span>
                 <span className="block truncate text-xs/5 font-normal">
                   {user?.role}
@@ -559,10 +579,25 @@ useEffect(() => {
                 value={orderDetails.order_id}
                 onChange={(e) => {
                   const orderId = e.target.value;
-                  fetchOrderDetails(orderId);
+                  if (orderId === "") {
+                    setOrderDetails({
+                      order_id: '',
+                      user_id: user.id,
+                      table_id: '',
+                      menu_item_id: '',
+                      quantity: 1,
+                      order_type: '',
+                      // add more fields if needed
+                    });
+                    setCart([]); // Optionally clear cart
+                  } else {
+                    fetchOrderDetails(orderId);
+                  }
                 }}
               >
-                <option value="" selected disabled hidden>Select Orders</option>
+                <option value="" selected disabled
+                >Select Orders</option>
+                <option value="">New Order</option>
 
                 {orders.map((orderslist) => (
                   <option
@@ -578,7 +613,7 @@ useEffect(() => {
                 className="p-2 border rounded m-2"
                 value={orderDetails.order_type}
                 onChange={(e) => setOrderDetails({...orderDetails, order_type: e.target.value})}
-                hidden={orderDetails.order_id !== null}
+                hidden={orderDetails.order_id !== ""}
               >
                 <option value="" selected disabled hidden>Order type</option>
                 <option value="dine-in">Dine-in</option>
@@ -616,23 +651,34 @@ useEffect(() => {
             {/* Cart Items */}
             <div className="h-screen overflow-y-auto p-2">
               {cart.map(item => (
-                <div key={item.id} className="mb-1 rounded-lg p-3">
+                <div key={item.id} className="mb-1 p-1 border-b border-gray-200">
                   <div className="flex justify-between items-start">
                     <div>
                       <h4 className="font-bold">{item.name}</h4>
                       <p className="text-gray-600">₱{item.price.toFixed(2)}</p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3"
+                    hidden={item.status === 'preparing'}>
                       <button 
-                        className="px-2 py-1 bg-gray-200 rounded"
+                        className="px-3 py-1 bg-gray-200 rounded text-lg"
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
                       >-</button>
                       <span>{item.quantity}</span>
                       <button 
-                        className="px-2 py-1 bg-gray-200 rounded"
+                        className="px-3 py-1 bg-gray-200 rounded text-lg"
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
                       >+</button>
                     </div>
+                    <div className='flex items-center gap-3'
+                    hidden={item.status === 'queued'}>
+                    <p className="text-yellow-500">
+                      {item.status}
+                    </p>
+                    <button hidden={item.status === 'preparing'}
+                      className="p-2 bg-green-500 rounded hover:bg-blue-700">
+                    Serve</button>
+                    </div>
+                   
                   </div>
                   
                   <div className="flex gap-2">
@@ -642,11 +688,15 @@ useEffect(() => {
                       className="flex-1 p-2 text-xs border rounded"
                       value={orderNotes[item.id] || ''}
                       onChange={(e) => addNote(item.id, e.target.value)}
+                      hidden={item.status === 'preparing'}
                     />
+                    
                     <button 
-                      className="text-red-500"
+                      className="text-red-500 px-5"
                       onClick={() => removeFromCart(item.id)}
-                    >Remove</button>
+                      hidden={item.status === 'preparing'}>
+                    Remove</button>
+
                   </div>
                 </div>
               ))}
@@ -661,16 +711,11 @@ useEffect(() => {
 
               <div className="flex gap-2">
                 <button 
-                  className="flex-1 bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600"
-                  onClick={holdOrder}
-                >
-                  Hold Order
-                </button>
-                <button 
                   className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-                  onClick={sendToKitchen}
-                >
-                  Send to Kitchen
+                  onClick={() => {
+                  sendToKitchen();
+                }}
+              >Send to Kitchen
                 </button>
               </div>
             </div>

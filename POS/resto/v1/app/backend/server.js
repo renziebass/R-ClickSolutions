@@ -139,6 +139,7 @@ app.get('/api/fetch-pending-orders', (req, res) => {
         ELSE id
     END AS identifier
 FROM orders
+WHERE orders.status='pending'
 `;
 
 db.query(query, (err, results) => {
@@ -506,7 +507,8 @@ app.get('/api/order-items', (req, res) => {
     menu_items.id, 
     menu_items.name, 
     menu_items.price,
-    order_items.quantity
+    order_items.quantity,
+    order_items.status
   FROM order_items 
   JOIN menu_items ON order_items.menu_item_id = menu_items.id
   WHERE order_items.order_id = ?;
@@ -646,6 +648,32 @@ app.post('/api/delete-order-item', (req, res) => {
       success: true,
       message: 'Order item removed successfully',
     });
+  });
+});
+
+// send to kitchen
+app.post('/api/send-to-kitchen', (req, res) => {
+  const { order_id } = req.body;
+
+  if (!order_id == null) {
+    return res.status(400).json({
+      success: false,
+      message: 'order_id required',
+    });
+  }
+
+  const query = `UPDATE order_items SET status = 'preparing' WHERE order_id = ?`;
+
+  db.query(query, [order_id], (err, result) => {
+    if (err) {
+      console.error('DB Error:', err);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to send to kitchen',
+      });
+    }
+
+    res.json({ success: true, message: 'sent to kitchen' });
   });
 });
 
