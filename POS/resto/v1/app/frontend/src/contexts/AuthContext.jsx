@@ -10,7 +10,7 @@ export const useRequireAuth = () => {
 
   useEffect(() => {
     if (!user) {
-      navigate('/');
+      navigate('/login');
     }
   }, [user, navigate]);
 

@@ -11,11 +11,15 @@ import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import './css/tailwind.css'
 import WaiterUi from './pages/WaiterUi';
+import ChefUi from './pages/ChefUi'
+import CashierUi from './pages/CashierUi'
 
 function App() {
   const location = useLocation();
   const isLoginPage = location.pathname === '/';
   const isWaiterUi = location.pathname === '/WaiterUi';
+  const ifChefui = location.pathname === '/ChefUi';
+  const isCashierUi = location.pathname === '/CashierUi';
 
   // Show Admin_NavBar on admin pages only
   const showAdminNavBar = [
@@ -64,6 +68,16 @@ function App() {
               <Route path='/WaiterUi' element={
                 <ProtectedRoute allowedRoles={['waiter']}>
                   <WaiterUi/>
+                </ProtectedRoute>
+              }/>
+              <Route path='/ChefUi' element={
+                <ProtectedRoute allowedRoles={['chef']}>
+                  <ChefUi/>
+                </ProtectedRoute>
+              }/>
+              <Route path='/CashierUi' element={
+                <ProtectedRoute allowedRoles={'cashier'}>
+                  <CashierUi/>
                 </ProtectedRoute>
               }/>
             </Routes>
