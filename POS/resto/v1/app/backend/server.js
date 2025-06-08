@@ -2,11 +2,17 @@ const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
 require('dotenv').config();
+const uploadRouter = require('./routes/upload');
+const pingRoute = require('./routes/ping');
+
+
+
 
 const app = express();
 app.use(cors());
+/*app.use('/api', pingRoute);*/
 
-
+app.use('/api', uploadRouter);
 app.use(express.json());
 
 const db = mysql.createConnection({
@@ -14,16 +20,31 @@ const db = mysql.createConnection({
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
-  port: process.env.DB_PORT
+  port: process.env.DB_PORT,
+
 });
 
-db.connect(err => {
-  if (err) {
-    console.error('DB connection error:', err);
-    return;
-  }
-  console.log('Connected to remote MySQL DB');
+db.connect((err) => {
+  if (err) throw err;
+  console.log("✅ Connected to MySQL");
+
+  // 🔧 Force timezone to Asia/Manila
+  db.query("SET time_zone = '+08:00';", (err) => {
+    if (err) {
+      console.error("❌ Failed to set timezone:", err);
+    } else {
+      console.log("✅ Timezone set to +08:00");
+
+      // 🔍 Verify it's actually set
+      db.query("SELECT NOW(), @@session.time_zone;", (err, results) => {
+        if (err) throw err;
+        console.log("🕒 NOW():", results[0]['NOW()']);
+        console.log("🌍 Time zone:", results[0]['@@session.time_zone']);
+      });
+    }
+  });
 });
+
 
 setInterval(() => {
     db.query('SELECT 1');
@@ -268,7 +289,8 @@ app.post('/api/update-menu-items', (req, res) => {
     description, 
     category, 
     price, 
-    capital_price 
+    capital_price,
+    image_url,
   } = req.body;
 
   // Validation
@@ -281,13 +303,13 @@ app.post('/api/update-menu-items', (req, res) => {
 
   const query = `
     UPDATE menu_items 
-    SET name = ?, description = ?, category = ?, price = ?, capital_price = ?
+    SET name = ?, description = ?, category = ?, price = ?, capital_price = ?, image_url = ?
     WHERE id = ?
   `;
 
   db.query(
     query, 
-    [name.trim(), description, category, price, capital_price, id],
+    [name.trim(), description, category, price, capital_price, image_url, id],
     (err, result) => {
       if (err) {
         console.error('Database error:', err);
@@ -306,7 +328,8 @@ app.post('/api/update-menu-items', (req, res) => {
           description,
           category,
           price,
-          capital_price
+          capital_price,
+          image_url,
         }
       });
     }
@@ -952,7 +975,7 @@ app.post('/api/new-order', (req, res) => {
 // add order items
 app.post('/api/add-order-item', (req, res) => {
   const { order_id, menu_item_id, quantity, price } = req.body;
-
+  
   if (!order_id || !menu_item_id || !quantity || !price) {
     return res.status(400).json({
       success: false,
@@ -960,8 +983,7 @@ app.post('/api/add-order-item', (req, res) => {
     });
   }
 
-  // Step 1: Check if the item already exists in the order
-  const checkQuery = `SELECT quantity FROM order_items WHERE order_id = ? AND menu_item_id = ?`;
+  const checkQuery = `SELECT quantity, status FROM order_items WHERE order_id = ? AND menu_item_id = ?`;
 
   db.query(checkQuery, [order_id, menu_item_id], (err, results) => {
     if (err) {
@@ -982,40 +1004,67 @@ app.post('/api/add-order-item', (req, res) => {
         if (err) {
           console.error('Error reverting order status:', err);
         }
-        callback(); // Continue response after trying to revert
+        callback(); // Proceed even if reverting fails
       });
     };
 
     if (results.length > 0) {
-      // Step 2: If item exists, update quantity
-      const newQuantity = results[0].quantity + quantity;
+      const { quantity: existingQuantity, status } = results[0];
 
-      const updateQuery = `
-        UPDATE order_items
-        SET quantity = ?, updated_at = CURRENT_TIMESTAMP()
-        WHERE order_id = ? AND menu_item_id = ?
-      `;
+      if (status === 'queued') {
+        // Update quantity only if status is 'queued'
+        const newQuantity = existingQuantity + quantity;
 
-      db.query(updateQuery, [newQuantity, order_id, menu_item_id], (err) => {
-        if (err) {
-          console.error('Database error (update):', err);
-          return res.status(500).json({
-            success: false,
-            message: 'Error updating item quantity',
-          });
-        }
+        const updateQuery = `
+          UPDATE order_items
+          SET quantity = ?, updated_at = CURRENT_TIMESTAMP()
+          WHERE order_id = ? AND menu_item_id = ?
+        `;
 
-        // Step 3: Revert order status if needed
-        revertOrderStatus(() => {
-          return res.json({
-            success: true,
-            message: 'Order item quantity updated and order status reverted (if needed)',
+        db.query(updateQuery, [newQuantity, order_id, menu_item_id], (err) => {
+          if (err) {
+            console.error('Database error (update):', err);
+            return res.status(500).json({
+              success: false,
+              message: 'Error updating item quantity',
+            });
+          }
+
+          revertOrderStatus(() => {
+            return res.json({
+              success: true,
+              message: 'Order item quantity updated (status was queued)',
+            });
           });
         });
-      });
+
+      } else {
+        // Insert new item if status is 'preparing', 'ready', or 'served'
+        const insertQuery = `
+          INSERT INTO order_items (order_id, menu_item_id, quantity, price, status)
+          VALUES (?, ?, ?, ?, 'queued')
+        `;
+
+        db.query(insertQuery, [order_id, menu_item_id, quantity, price], (err) => {
+          if (err) {
+            console.error('Database error (insert on existing non-queued):', err);
+            return res.status(500).json({
+              success: false,
+              message: 'Error inserting new order item (existing item not queued)',
+            });
+          }
+
+          revertOrderStatus(() => {
+            return res.status(201).json({
+              success: true,
+              message: 'New order item inserted (existing item was not queued)',
+            });
+          });
+        });
+      }
 
     } else {
-      // Step 4: Insert new item
+      // No existing item, insert new
       const insertQuery = `
         INSERT INTO order_items (order_id, menu_item_id, quantity, price, status)
         VALUES (?, ?, ?, ?, 'queued')
@@ -1023,18 +1072,17 @@ app.post('/api/add-order-item', (req, res) => {
 
       db.query(insertQuery, [order_id, menu_item_id, quantity, price], (err) => {
         if (err) {
-          console.error('Database error (insert):', err);
+          console.error('Database error (insert new):', err);
           return res.status(500).json({
             success: false,
             message: 'Error adding new order item',
           });
         }
 
-        // Step 5: Revert order status if needed
         revertOrderStatus(() => {
           return res.status(201).json({
             success: true,
-            message: 'Order item added and order status reverted (if needed)',
+            message: 'Order item added (new)',
           });
         });
       });
@@ -1055,11 +1103,13 @@ app.get('/api/order-items', (req, res) => {
 
   const query = `
   SELECT 
-    menu_items.id, 
+    menu_items.id AS menu_id, 
     menu_items.name, 
     menu_items.price,
     order_items.quantity,
-    order_items.status
+    order_items.status,
+    order_items.updated_at,
+    order_items.id AS order_id
   FROM order_items 
   JOIN menu_items ON order_items.menu_item_id = menu_items.id
   WHERE order_items.order_id = ?;
@@ -1092,7 +1142,7 @@ app.get('/api/order-items-chef', (req, res) => {
     order_items.quantity,
     order_items.status,
     order_items.updated_at,
-    order_items.order_id,
+    order_items.id,
     order_items.menu_item_id,
     order_items.note,
      CASE 
@@ -1106,7 +1156,7 @@ app.get('/api/order-items-chef', (req, res) => {
   JOIN order_items ON orders.id=order_items.order_id
   JOIN menu_items ON order_items.menu_item_id = menu_items.id
   WHERE order_items.status NOT IN ('ready', 'served', 'cancelled')
-  AND menu_items.category NOT IN ('BEVERAGES', 'DESSERTS')
+  AND menu_items.category NOT IN ('BEVERAGES', 'DESSERT')
   ORDER BY order_items.updated_at ASC
 `;
 
@@ -1137,7 +1187,7 @@ app.get('/api/order-items-drinks', (req, res) => {
     order_items.quantity,
     order_items.status,
     order_items.updated_at,
-    order_items.order_id,
+    order_items.id,
     order_items.menu_item_id,
     order_items.note,
      CASE 
@@ -1151,8 +1201,8 @@ app.get('/api/order-items-drinks', (req, res) => {
   JOIN order_items ON orders.id=order_items.order_id
   JOIN menu_items ON order_items.menu_item_id = menu_items.id
   WHERE order_items.status NOT IN ('ready', 'served', 'cancelled')
-  AND menu_items.category = 'BEVERAGES'
-  ORDER BY order_items.updated_at ASC
+  AND menu_items.category IN ('BEVERAGES','DESSERT')
+  ORDER BY order_items.updated_at ASC;
 `;
 
 
@@ -1429,7 +1479,7 @@ app.post('/api/update-order-item', (req, res) => {
   const query = `
     UPDATE order_items
     SET quantity = ?
-    WHERE order_id = ? AND menu_item_id = ?
+    WHERE order_id = ? AND id = ?
   `;
 
   db.query(query, [quantity, order_id, menu_item_id], (err, result) => {
@@ -1548,12 +1598,12 @@ app.post('/api/save-payment', (req, res) => {
       }
 
       // Step 3: Save discount if applicable
-      if (Number.isInteger(discount_id)) {
+      if (Number.isInteger(discounted_amount)) {
         const save_discount = `
-          INSERT INTO order_discounts (order_id, discount_id, amount)
-          VALUES (?, ?, ?)
+          INSERT INTO order_discounts (order_id, amount)
+          VALUES (?, ?)
         `;
-        db.query(save_discount, [order_id, discount_id, discount_total], (err) => {
+        db.query(save_discount, [order_id, discount_total], (err) => {
           if (err) {
             console.error('DB Error (save discount):', err);
             return res.status(500).json({
@@ -1607,24 +1657,26 @@ app.post('/api/update-order-table', (req, res) => {
 
 // update order status (kitchen: done)
 app.post('/api/update-order-status-done', (req, res) => {
-  const { order_id, menu_item_id } = req.body;
+  const { id, menu_item_id} = req.body;
 
-  if (!order_id || !menu_item_id == null) {
+  if (!id || !menu_item_id) {
     return res.status(400).json({
       success: false,
-      message: 'order_id, menu_item_id are required',
+      message: 'all fields are required',
     });
   }
 
   const query = `UPDATE order_items SET status = 'ready'
-  WHERE order_items.order_id = ? AND order_items.menu_item_id = ?`;
+  WHERE 
+  order_items.id = ? 
+  AND order_items.menu_item_id = ?`;
 
-  db.query(query, [order_id, menu_item_id], (err, result) => {
+  db.query(query, [id, menu_item_id], (err, result) => {
     if (err) {
       console.error('DB Error:', err);
       return res.status(500).json({
         success: false,
-        message: 'Failed to status',
+        message: 'Failed update to status',
       });
     }
 
@@ -1647,10 +1699,10 @@ app.post('/api/update-order-status-serve', (req, res) => {
   const updateItemQuery = `
     UPDATE order_items 
     SET status = 'served', updated_at = CURRENT_TIMESTAMP()
-    WHERE order_id = ? AND menu_item_id = ?
+    WHERE id = ?
   `;
 
-  db.query(updateItemQuery, [order_id, menu_item_id], (err, result) => {
+  db.query(updateItemQuery, [menu_item_id], (err, result) => {
     if (err) {
       console.error('DB Error:', err);
       return res.status(500).json({
@@ -1722,7 +1774,7 @@ app.post('/api/delete-order-item', (req, res) => {
 
   const deleteQuery = `
     DELETE FROM order_items 
-    WHERE order_id = ? AND menu_item_id = ?
+    WHERE id = ? AND menu_item_id = ?
   `;
 
   db.query(deleteQuery, [order_id, menu_item_id], (err, result) => {
@@ -1817,3 +1869,4 @@ const PORT = process.env.PORT;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running at http://0.0.0.0:${PORT}`);
 });
+

@@ -21,6 +21,7 @@ export default function Admin_Menu() {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const dropdownRef = useRef()
+  const [isLoadingMenuItems, setIsLoadingMenuItems] = useState(false);
 
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState([]);
@@ -72,6 +73,35 @@ const [isLoading, setIsLoading] = useState(false);
 const [errorMessage, setErrorMessage] = useState('');
 const printRef = useRef();
 
+const [file, setFile] = useState(null);
+const [uploadedUrl, setUploadedUrl] = useState('');
+const [uploading, setUploading] = useState(false);
+
+
+const handleUpload = async () => {
+  if (!file) return;
+
+  const imgformData = new FormData();
+  imgformData.append('file', file);
+
+  setUploading(true);
+  try {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/upload`, {
+      method: 'POST',
+      body: imgformData,
+    });
+
+    const data = await response.json();
+    setUploadedUrl(data.url);
+    setFormData({ ...formData, image_url: data.url });
+  } catch (err) {
+    console.error('Upload failed:', err);
+  } finally {
+    setUploading(false);
+  }
+};
+
+
 const handlePrint = () => {
 alert('Printing is disabled for this demo. Contact Mr. Renzie Operario Bassig @09772332632 for more information.');
 /*const printContents = printRef.current.innerHTML;
@@ -106,7 +136,7 @@ const fetchCategory = async () => {
 
 // fetch menu items
 const fetchMenuItems = async () => {
-  setIsLoading(true);
+  setIsLoadingMenuItems(true);
   try {
     const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/menu-items`);
     const data = await response.json();
@@ -120,7 +150,7 @@ const fetchMenuItems = async () => {
     setErrorMessage('Error fetching menu items');
     console.error('Error:', error);
   } finally {
-    setIsLoading(false);
+    setIsLoadingMenuItems(false);
   }
 };
 
@@ -298,22 +328,29 @@ const handleAddDiscount = async () => {
 };
 
 const handleUpdateMenuItem = async () => {
-  // Add validation with better checks
-  if (!formData.name.trim() || 
-      !formData.category.trim() || 
-      !Number(formData.price) || 
-      !Number(formData.capital_price)) {
-    setErrorMessage('Please fill in all required fields');
-    return;
-  }
-
-  // Validate price and capital price are positive numbers
-  if (Number(formData.price) <= 0 || Number(formData.capital_price) <= 0) {
-    setErrorMessage('Prices must be greater than 0');
-    return;
-  }
-
   setIsLoading(true);
+  // Add validation with better 
+
+ // Safely access and trim fields
+  const name = formData.name?.trim() || '';
+  const category = formData.category?.trim() || '';
+  const price = Number(formData.price);
+  const capital_price = Number(formData.capital_price);
+
+  // Validate required fields
+  if (!name || !category || !price || !capital_price) {
+    setErrorMessage('Please fill in all required fields');
+    setIsLoading(false);
+    return;
+  }
+
+  if (price <= 0 || capital_price <= 0) {
+    setErrorMessage('Prices must be greater than 0');
+    setIsLoading(false);
+    return;
+  }
+
+  
   try {
     const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-menu-items`, {
       method: 'POST',
@@ -344,6 +381,8 @@ const handleUpdateMenuItem = async () => {
     setIsLoading(false);
   }
 };
+
+
 
   return (
     <div className="p-4 space-y-4">
@@ -572,14 +611,19 @@ const handleUpdateMenuItem = async () => {
         <div className="relative bg-gray-200 p-4 rounded shadow space-y-4 text-xs md:text-sm">
         <button
           className="absolute top-2 right-2 text-gray-600 hover:text-black"
-          onClick={() => setEditingItem(null)}
+          onClick={() => {
+                          setFile(null);
+                          setUploadedUrl(null);
+                          setFormData({ ...formData, image_url: '' });
+                          setEditingItem(null);
+                        }}
           title="Close"
         >
           ✕
         </button>
         <h3 className="">Edit Menu Item</h3>
       
-          <div className="grid grid-cols-3 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-2">
             <div className="w-auto relative col-span-2" ref={dropdownRef}>
               <input
                 type="text"
@@ -624,6 +668,7 @@ const handleUpdateMenuItem = async () => {
               value={formData.price}
               onChange={(e) => setFormData({...formData, price: parseFloat(e.target.value)})}
             />
+            
             <input
               type="text"
               placeholder="Description"
@@ -631,7 +676,70 @@ const handleUpdateMenuItem = async () => {
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value.toUpperCase()})}
             />
+             <div className="col-span-2">
+              <div className="flex items-center justify-between gap-4">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      setFile(file);
+                      setUploadedUrl(null); // Reset preview
+                    }
+                  }}
+                  className="text-sm file:mr-2 file:py-1 file:px-3 file:border-0 file:bg-blue-600 file:text-white file:rounded file:cursor-pointer"
+                />
+
+                {file && (
+                  <button
+                    onClick={handleUpload}
+                    disabled={!file || uploading}
+                    className={`px-3 py-1 rounded text-white ${
+                      uploading ? 'bg-gray-400' : 'bg-green-600 hover:bg-green-700'
+                    }`}
+                  >
+                    {uploading ? 'Uploading...' : 'Upload'}
+                  </button>
+                )}
+              </div>
+            </div>
+
+               <div className="flex justify-center col-span-2">
+                
+                <div className='grid grid-row'>
+                  <div>
+                    {uploadedUrl && (
+                    <div className="relative">
+                      <img
+                        src={uploadedUrl}
+                        alt="Uploaded"
+                        className="h-32 w-32 object-cover rounded border"
+                        
+                      />
+                      <button
+                         onClick={() => {
+                          setFile(null);
+                          setUploadedUrl(null);
+                          setFormData({ ...formData, image_url: '' });
+                        }}
+                        className="absolute top-0 right-0 mt-1 mr-1 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full hover:bg-red-700"
+                        title="Remove image"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  )}
+                  </div>
+                  <div>
+                   
+                  </div>
+                </div>
+              </div>
+
+
           </div>
+         
           <div className="flex justify-end-safe">
             <button
               disabled={isLoading}
@@ -712,23 +820,49 @@ const handleUpdateMenuItem = async () => {
             </tr>
           </thead>
           <tbody>
-            {filteredItems.map((item) => (
-              <tr className="border-b-1 border-gray-200 hover:bg-gray-200" key={item.id}>
-                <td className="p-2">{item.name}</td>
-                <td className="p-2">{item.category}</td>
-                <td className="p-2 hidden md:table-cell"><p className="text-sm font-medium mt-1">₱{item.capital_price.toFixed(2)}</p></td>
-                <td className="p-2">₱{item.price.toFixed(2)}</td>
-                <td className="p-2 flex gap-2 print:hidden">  
-                  <button className={`${item.is_available === 1 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'} px-2 py-1 rounded text-xs hover:bg-blue-500 hover:text-white`} 
-                    onClick={() => disableMenu(item.id)}>{item.is_available === 1 ? 'Disable' : 'Enable'}
-                  </button>
-                  <button className="px-2 py-1 rounded text-xs bg-gray-200 hover:bg-blue-600"
-                  onClick={() => handleEditClick(item)}
-                  >Edit</button>
-                </td>
+             {isLoadingMenuItems ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-4">
+                    fetching menu items…
+                  </td>
+                </tr>
+              ) : (
+               
+                filteredItems.map(item => (
+                  <tr
+                    key={item.id}
+                    className="border-b hover:bg-gray-200 transition-colors"
+                  >
+                    <td className="p-2">{item.name}</td>
+                    <td className="p-2">{item.category}</td>
+                    <td className="p-2 hidden md:table-cell">
+                      <p className="text-sm font-medium">₱{item.capital_price.toFixed(2)}</p>
+                    </td>
+                    <td className="p-2">₱{item.price.toFixed(2)}</td>
 
-              </tr>
-            ))}
+                    {/* actions */}
+                    <td className="p-2 flex gap-2 print:hidden">
+                      <button
+                        onClick={() => disableMenu(item.id)}
+                        className={`px-2 py-1 rounded text-xs ${
+                          item.is_available
+                            ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                            : 'bg-green-100 text-green-700 hover:bg-green-200'
+                        }`}
+                      >
+                        {item.is_available ? 'Disable' : 'Enable'}
+                      </button>
+
+                      <button
+                        onClick={() => handleEditClick(item)}
+                        className="px-2 py-1 rounded text-xs bg-gray-200 hover:bg-blue-600 hover:text-white"
+                      >
+                        Edit
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
           </tbody>
         </table>
         
@@ -741,19 +875,21 @@ const handleUpdateMenuItem = async () => {
                 className="border rounded-lg p-4 shadow hover:shadow-md transition"
               >
                 <img
-                  src=""
+                  src={item.image_url}
                   alt={item.name}
                   className="w-full h-32 object-cover rounded mb-2"
                 />
-                <h3 className="font-semibold text-lg">{item.name}</h3>
+                <p className="font-semibold text-lg">{item.name}</p>
                 <p className="text-sm text-gray-500">{item.category}</p>
-                <p className="text-sm font-medium mt-1">₱{item.capital_price.toFixed(2)}</p>
-                <p className="text-sm font-medium mt-1">₱{item.price.toFixed(2)}</p>
-                <p className={`text-xs mt-1 ${item.status === 1 ? 'text-green-600' : 'text-red-600'}`}>{item.status}</p>
-                <div className="flex gap-2 mt-3 print:hidden">
-                  <button className="text-blue-500 hover:underline text-sm">Edit</button>
-                  <button className="text-red-500 hover:underline text-sm"
-                  onClick={() => disableMenu(item.id)}>Disable</button>
+                <p className="text-sm">Capital :<strong>₱ {item.capital_price.toFixed(2)}</strong>, Price :<strong>₱{item.price.toFixed(2)}</strong></p>
+                <p className={`text-xs ${item.status === 1 ? 'text-green-600' : 'text-red-600'}`}>{item.status}</p>
+                <div className="flex gap-2 mt-2 print:hidden justify-end">
+                  <button className={`${item.is_available === 1 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'} px-2 py-1 rounded text-xs hover:bg-blue-500 hover:text-white`} 
+                    onClick={() => disableMenu(item.id)}>{item.is_available === 1 ? 'Disable' : 'Enable'}
+                  </button>
+                  <button className="px-2 py-1 rounded text-xs bg-gray-200 hover:bg-blue-600"
+                  onClick={() => handleEditClick(item)}
+                  >Edit</button>
                 </div>
               </div>
             ))}

@@ -7,6 +7,15 @@ import {
     PrinterIcon
   } from "@heroicons/react/24/outline";
 import.meta.env.VITE_API_BASE_URL
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(relativeTime);
+dayjs.extend(utc);
+dayjs.extend(timezone)
+dayjs.tz.setDefault("Asia/Taipei")
 
 
 
@@ -199,7 +208,7 @@ useEffect(() => {
                     <th className="p-2">Total</th>
                     <th className="p-2 hidden md:table-cell">Discount</th>
                     <th className="p-2">Status</th>
-                    <th className="p-2">Created @</th>
+                    <th className="p-2">Date/Time</th>
                     </tr>
                 </thead>
                <tbody>
@@ -222,7 +231,7 @@ useEffect(() => {
                       <td className="p-2">₱{parseFloat(order.total_amount).toFixed(2)}</td>
                       <td className="p-2 hidden sm:table-cell">₱{parseFloat(order.discount_total).toFixed(2)}</td>
                       <td className="p-2">{order.status}</td>
-                      <td className="p-2">{new Date(order.created_at).toLocaleString()}</td>
+                      <td className="p-2">{dayjs.tz(order.created_at).format('MM/DD/YYYY - HH:mm')}</td>
                     </tr>
                   ))
                 )}

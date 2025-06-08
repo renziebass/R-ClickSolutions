@@ -17,6 +17,7 @@ const userRoles = [
   
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   
   const [selectedItem, setSelectedItem] = useState(null)
   const [isOpen, setIsOpen] = useState(false)
@@ -65,7 +66,7 @@ const userRoles = [
   }
   
   const fetchUsers = async () => {
-    setIsLoading(true);
+    setIsLoadingUsers(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/users`);
       const data = await response.json();
@@ -79,13 +80,14 @@ const userRoles = [
       setErrorMessage('Error fetching users');
       console.error('Error:', error);
     } finally {
-      setIsLoading(false);
+      setIsLoadingUsers(false);
     }
   };
 
   const handleAddUser = async () => {
     // Add validation with better checks
-    if (!newUser.name.trim() || 
+    alert('Adding is disabled for this demo. Contact Mr. Renzie Operario Bassig @09772332632 for more information.');
+    /*if (!newUser.name.trim() || 
         !newUser.email.trim() || 
         !newUser.password_hash.trim() || 
         !newUser.role.trim()) {
@@ -126,6 +128,7 @@ const userRoles = [
     } finally {
       setIsLoading(false);
     }
+  */
   };
 
   const handleUpdateUser = async () => {
@@ -170,8 +173,9 @@ const userRoles = [
   };
 
   const disableUser = async (userId) => {
-  
-    try {
+  alert('this feature disabled for this demo. Contact Mr. Renzie Operario Bassig @09772332632 for more information.');
+    /*
+  try {
       const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/disable-user`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -191,6 +195,7 @@ const userRoles = [
       console.error('Error updating user:', err);
       setErrorMessage('Failed to user');
     }
+      */
 };
 
   const filteredUsers = Users.filter((user) => {
@@ -439,7 +444,15 @@ return (
         </tr>
       </thead>
       <tbody>
-        {filteredUsers.map((user) => (
+        {isLoadingUsers ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-4">
+                    fetching users…
+                  </td>
+                </tr>
+              ) : (
+               
+        filteredUsers.map((user) => (
           <tr key={user.id} className="border-b hover:bg-gray-100">
             <td className="p-2">{user.name}</td>
             <td className="p-2 hidden sm:table-cell">{user.email}</td>
@@ -457,7 +470,8 @@ return (
               </button>
             </td>
           </tr>
-        ))}
+        ))
+              )}
       </tbody>
     </table>
     )}

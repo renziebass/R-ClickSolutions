@@ -76,8 +76,8 @@ function Login() {
     <div className="flex items-center justify-center h-screen">
       <form onSubmit={handleLogin} className="bg-white p-6 rounded w-full sm:w-80">
         <img 
-                      className=" object-cover h-40 w-40 mx-auto"
-                      src="src/assets/R-Click Profile White BG.png"
+                      className=" object-cover mx-auto"
+                      src="./assets/rclicklogo.png"
                       alt="R-Click Solutions Logo"
                     />
         <p className="text-l mb-4 text-center">R-Click Solutions - Resto POS</p>

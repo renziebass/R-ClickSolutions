@@ -6,7 +6,7 @@ import "@fontsource/inter";
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-  <BrowserRouter>
+    <BrowserRouter basename="/POS/resto/v1/">
     <App />
   </BrowserRouter>
 </StrictMode>,

@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 
 export const AuthContext = createContext(null);
 
-// Custom hook to require authentication
 export const useRequireAuth = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -18,15 +17,21 @@ export const useRequireAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const [user, setUser] = useState(() => {
+    // Try to get user from localStorage on first load
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
   const login = (userData) => {
     setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData)); // ✅ Save to localStorage
   };
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('user'); // ✅ Clear from localStorage
     navigate('/login');
   };
 

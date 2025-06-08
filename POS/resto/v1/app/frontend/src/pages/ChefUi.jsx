@@ -11,11 +11,21 @@ import {
     ViewColumnsIcon,
     XMarkIcon,
   } from "@heroicons/react/24/outline";
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(relativeTime);
+dayjs.extend(utc);
+dayjs.extend(timezone)
+dayjs.tz.setDefault("Asia/Taipei")
 
 
 
 const ChefUi = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingDoneItemId, setLoadingDoneItemId] = useState(null); //Done Queue loading
   const [currentTime, setCurrentTime] = useState(new Date());
   const [lastRefreshTime, setLastRefreshTime] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -53,17 +63,18 @@ const ChefUi = () => {
     console.error('Error:', error);
   } finally {
     setIsLoading(false);
+    
   }
   };
 
-  const handleMarkDone = async (orderId, menuItemId) => {
-    setIsLoading(true);
+  const handleMarkDone = async (Id, menuItemId) => {
+
     try {
     const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-order-status-done`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        order_id: orderId,
+        id: Id,
         menu_item_id: menuItemId,
       }),
     });
@@ -77,7 +88,7 @@ const ChefUi = () => {
     console.error('Error updating table:', err);
     setErrorMessage('Failed to update table');
   } finally {
-    setIsLoading(false);
+
   }
   };
 
@@ -106,7 +117,7 @@ const ChefUi = () => {
                     </span>
                     <img 
                       className="h-10 w-10 rounded-full object-cover"
-                      src="src/assets/RENZIE.png"
+                      src="assets/RENZIE.png"
                       alt="User Avatar"
                     />
                     <ChevronDownIcon className="h-5 w-5" />
@@ -171,14 +182,18 @@ const ChefUi = () => {
         <p className="text-gray-500 text-center">No items in queue. 🎉</p>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {queue.map((item) => (
+          {queue.map((item) => {
+          const isLoadingDone = loadingDoneItemId === item.order_id-item.menu_item_id;
+
+          return (
             <div 
-            key={item.name}
+            key={item.id}
             className={`rounded-lg shadow p-4 space-y-2 border ${
                 item.status === 'queued'
                   ? 'bg-gray-50 text-gray-300 border-gray-300'
                   : 'bg-white text-black border'
               }`}>
+                
               <div className={`grid grid-cols-2 text-xs${
                     item.status === 'queued'
                     ? 'text-gray-300'
@@ -188,16 +203,8 @@ const ChefUi = () => {
                     {item.identifier}
                     </div>
                     <div className='text-end'>
-                        {
-                      (() => {
-                        const formattedTime = new Date(item.updated_at).toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                          hour24: true,
-                        });
-                        return formattedTime;
-                      })()
-                    }
+                       {dayjs.tz(item.updated_at).fromNow()}
+                       
                     </div>
               </div>
               <div className="text-start">{item.quantity} - {item.name} </div>
@@ -207,13 +214,23 @@ const ChefUi = () => {
               
               <button
                 hidden={['queued', 'served'].includes(item.status)}
-                onClick={() => handleMarkDone(item.order_id, item.menu_item_id)}
+
+                onClick={() => {
+                const uniqueId =item.order_id-item.menu_item_id;
+                setLoadingDoneItemId(uniqueId);
+                handleMarkDone(item.id, item.menu_item_id).finally(() => {
+                  setLoadingDoneItemId(null);
+                });
+              }}
+
                 className="mt-2 bg-green-600 hover:bg-green-700 text-white text-sm py-2 px-3 rounded"
 >
-              Done Preparing
+                {isLoadingDone ? 'Removing...' : 'Done Preparing'}
               </button>
             </div>
-          ))}
+          )
+        }
+          )}
         </div>
       )}
     </div>

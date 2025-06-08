@@ -136,7 +136,7 @@ function NavBar() {
                 <span className="flex p-3 items-center gap-2 hover:border-l-2 border-white">
                   <span>
                     <img className="h-10 w-10 rounded-full object-cover "
-                      src="src/assets/RENZIE.png"
+                      src="assets/RENZIE.png"
                       alt="User Avatar"
                     />
                   </span>

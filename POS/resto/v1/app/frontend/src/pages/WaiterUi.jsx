@@ -12,7 +12,16 @@ import {
     ArrowPathIcon,
     QueueListIcon
   } from "@heroicons/react/24/outline";
-import.meta.env.VITE_API_BASE_URL
+import.meta.env.VITE_API_BASE_URL;
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(relativeTime);
+dayjs.extend(utc);
+dayjs.extend(timezone)
+dayjs.tz.setDefault("Asia/Taipei")
 
 
 
@@ -44,7 +53,7 @@ function WaiterUi() {
   const [orderNotes, setOrderNotes] = useState({});
   const [discount, setDiscount] = useState(0);
   const [isMobileCartOpen, setIsMobileCartOpen] = useState(false);
-  const [loadingItemId, setLoadingItemId] = useState(null);
+
   const [errorMessage, setErrorMessage] = useState('');
   const [category, setCategory] = useState('all');
   const [availability, setAvailability] = useState('all');
@@ -53,14 +62,43 @@ function WaiterUi() {
   const [isFormOpen, setIsFormOpen] = useState(true);
   const [queue, setQueue] = useState([]);
   const [lastRefreshTime, setLastRefreshTime] = useState('');
+  const [isLoadingOrderList, setIsLoadingOrderList] = useState(false);
+  const [isLoadingCategoryList, setIsLoadingCategoryList] = useState(false);
+  const [isLoadingSend, setIsLoadingSend] = useState(false);
+  const [isLoadingMenuItems, setIsLoadingMenuItems] = useState(false);
+  const [isLoadingDrinkQueue, setIsLoadingDrinkQueue] = useState(false);
+  const [loadingItemId, setLoadingItemId] = useState(null); //Add to Cart loading
+  const [loadingDoneItemId, setLoadingDoneItemId] = useState(null); //Done Queue loading
+  const [loadingServerId, setLoadingServerId] = useState(null);
+  
 
 const handleSignOut = (e) => {
     e.preventDefault();
     logout();
 };
 
+//fetch categories
+const fetchCategory = async () => {
+    setIsLoadingCategoryList(true);
+  try {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/categories`); // Update the API endpoint
+    const data = await response.json();
+    if (data.success) {
+      setCategoryItems(data.data);
+      setErrorMessage('');
+    } else {
+      setErrorMessage(data.message);
+    }
+  } catch (error) {
+    setErrorMessage('Error fetching categories');
+    console.error('Error:', error);
+  } finally {
+      setIsLoadingCategoryList(false);
+  }
+};
+
 const fetchQueuelist = async () => {
- 
+    setIsLoadingDrinkQueue(true);
   try {
     const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-items-drinks`);
     const data = await response.json();
@@ -75,27 +113,9 @@ const fetchQueuelist = async () => {
   } catch (error) {
     setErrorMessage('Error fetching orders');
     console.error('Error:', error);
+    } finally {
+      setIsLoadingDrinkQueue(false);
   } 
-  };
-
-//fetch categories
-const fetchCategory = async () => {
-
-  try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/categories`); // Update the API endpoint
-    const data = await response.json();
-    if (data.success) {
-      setCategoryItems(data.data);
-      setErrorMessage('');
-    } else {
-      setErrorMessage(data.message);
-    }
-  } catch (error) {
-    setErrorMessage('Error fetching categories');
-    console.error('Error:', error);
-  } finally {
-
-  }
 };
   
 const fetchAvailableTables = async () => {
@@ -137,7 +157,7 @@ const fetchPendingOrders = async () => {
 };
 
 const fetchOrderlist = async (orderId) => {
- 
+  setIsLoadingOrderList(true)
   try {
     const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-items?order_id=${orderId}`);
     const data = await response.json();
@@ -152,7 +172,7 @@ const fetchOrderlist = async (orderId) => {
     setErrorMessage('Error fetching orders');
     console.error('Error:', error);
   } finally {
-
+      setIsLoadingOrderList(false)
   }
 };
 
@@ -193,7 +213,7 @@ const fetchOrderDetails = async (orderId) => {
 };
 
 const fetchMenuItems = async () => {
-
+    setIsLoadingMenuItems(true);
   try {
     const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/menu-items`);
     const data = await response.json();
@@ -207,7 +227,7 @@ const fetchMenuItems = async () => {
     setErrorMessage('Error fetching menu items');
     console.error('Error:', error);
   } finally {
- 
+      setIsLoadingMenuItems(false);
   }
 };
 
@@ -221,6 +241,7 @@ const filteredItems = menuItems.filter(item => {
 });
   
 const createOrder = async () => {
+
   const { user_id, order_type, table_id } = orderDetails;
 
   if (order_type === 'dine-in' && !table_id) {
@@ -261,6 +282,7 @@ const createOrder = async () => {
 };
 
 const addToCart = async (item) => {
+
     let orderId = orderDetails.order_id;
   
     // Create order only if not created yet
@@ -335,7 +357,7 @@ const updateQuantity = async (menuItemId, newQty) => {
         // Update local cart state
         setCart((prevCart) =>
           prevCart.map((item) =>
-            item.id === menuItemId ? { ...item, quantity: newQty } : item
+            item.order_id === menuItemId ? { ...item, quantity: newQty } : item
           )
         );
       } else {
@@ -379,13 +401,13 @@ const updateOrderTable = async () => {
   }
 };
 
-const removeFromCart = async (menuItemId) => {
+  const removeFromCart = async (orderId,menuItemId) => {
     try {
       const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/delete-order-item`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          order_id: orderDetails.order_id,
+          order_id: orderId,
           menu_item_id: menuItemId,
         }),
       });
@@ -394,10 +416,10 @@ const removeFromCart = async (menuItemId) => {
       if (data.success) {
       
       setCart((prevCart) => {
-      const updatedCart = prevCart.filter((item) => item.id !== menuItemId);
+          const updatedCart = prevCart.filter((item) => item.menu_id !== menuItemId);
 
       if (updatedCart.length === 0) {
-        fetchPendingOrders();
+            fetchOrderDetails(orderDetails.order_id);
       }
 
       return updatedCart;
@@ -411,7 +433,7 @@ const removeFromCart = async (menuItemId) => {
     }
 };
 
-const handleMarkServe = async (menuItemId) => {
+  const handleMarkServe = async (orderId) => {
     //setQueue(queue.filter((item) => item.order_id !== orderId));
     // Optionally send update to backend
     try {
@@ -420,7 +442,7 @@ const handleMarkServe = async (menuItemId) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         order_id: orderDetails.order_id,
-        menu_item_id: menuItemId,
+          menu_item_id: orderId,
       }),
     });
   
@@ -436,7 +458,7 @@ const handleMarkServe = async (menuItemId) => {
   }
   };
 
-const handleMarkDone = async (orderId, menuItemId) => {
+  const handleMarkDone = async (Id, menuItemId) => {
     //setQueue(queue.filter((item) => item.order_id !== orderId));
     // Optionally send update to backend
     try {
@@ -444,7 +466,7 @@ const handleMarkDone = async (orderId, menuItemId) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        order_id: orderId,
+          id: Id,
         menu_item_id: menuItemId,
       }),
     });
@@ -463,18 +485,20 @@ const handleMarkDone = async (orderId, menuItemId) => {
 const calculateTotal = () => {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
 };
+
 const addNote = (itemId, note) => {
     setOrderNotes({
       ...orderNotes,
       [itemId]: note
     });
 };
+
 const sendToKitchen = async() => {
-    // Implement kitchen queue logic here
+    setIsLoadingSend(true);
     try {
 
       const items = cart.map((item) => ({
-        menu_item_id: item.id,
+        menu_item_id: item.menu_id,
         note: orderNotes[item.id] || '',
       }));
 
@@ -500,6 +524,8 @@ const sendToKitchen = async() => {
     } catch (err) {
       console.error('Error sending to kitchen:', err);
       setErrorMessage('Failed sending to kitchen');
+    } finally {
+       setIsLoadingSend(false);
     }
    
 };
@@ -562,7 +588,7 @@ useEffect(() => {
               </span>
               <img 
                 className="h-10 w-10 rounded-full object-cover"
-                src="src/assets/RENZIE.png"
+                src="assets/RENZIE.png"
                 alt="User Avatar"
               />
               <ChevronDownIcon className="h-5 w-5" />
@@ -576,7 +602,7 @@ useEffect(() => {
            
               <MenuItem>
                 <a className="flex items-center gap-2 px-2 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  onClick={() => setIsFormOpen(false)}
+                  onClick={() => { setIsFormOpen(false); fetchQueuelist(); }}
                   hidden={!isFormOpen}>
                   <QueueListIcon className="size-5 text-gray-600" />
                   Drinks Queue
@@ -625,8 +651,12 @@ useEffect(() => {
         {/* Categories - Horizontal scroll on mobile */}
         <div className="lg:w-1/6 bg-gray-800 p-4 overflow-x-auto lg:overflow-y-auto flex flex-col lg:flex-col gap-2 ">
           <div className="flex lg:flex-col gap-2 min-w-max">
-              <button className={`p-3 lg:p-2 rounded whitespace-nowrap ${activeCategory === category.name
-                    ? 'bg-blue-600 text-white' 
+              { isLoadingCategoryList ? (
+                <div className='text-center w-full text-white'>fetching all categories..</div>
+              ) : (
+                <>
+                  <button className={`p-3 lg:p-2 rounded whitespace-nowrap ${activeCategory === 'all'
+                    ? 'bg-white text-dark'
                     : 'bg-gray-700 text-white hover:bg-gray-600'
                 }`}
                 onClick={() => setActiveCategory('all')}>
@@ -644,6 +674,9 @@ useEffect(() => {
                 {category.name}
               </button>
             ))}
+                </>
+              )}
+             
           </div>
         </div>
 
@@ -659,11 +692,16 @@ useEffect(() => {
           />
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto max-h-[calc(100vh-150px)]">
-           {filteredItems.map(item => {
+              { isLoadingMenuItems ? (
+                <div className='text-center w-full col-span-4'>fetching menu items..</div>
+              ) : (
+                 
+              filteredItems.map(item => {
                 const isOut = item.is_available == 0;
                 const isOrderPaid = orderDetails.order_status === 'paid';
                 const isDisabled = isOut || isOrderPaid;
                 const isLoading = loadingItemId === item.id;
+                
 
               return (
                 <button
@@ -685,7 +723,11 @@ useEffect(() => {
                     disabled={isDisabled}
                 >
                   <div className="h-24 md:h-32 bg-gray-200 rounded-md">
-                    {/* Add product image here */}
+                      <img
+                      src={item.image_url}
+                      alt={item.name}
+                      className="w-full h-24 md:h-32 object-cover rounded mb-2"
+                      />
                   </div>
                     {isLoading ? (
                       'Adding...'
@@ -697,7 +739,7 @@ useEffect(() => {
                     )}
                 </button>
               );
-            })}
+              }) )}
 
 
           </div>
@@ -739,7 +781,7 @@ useEffect(() => {
                       menu_item_id: '',
                       quantity: 1,
                       order_type: '',
-                      // add more fields if needed
+                        
                     });
                     setCart([]); // Optionally clear cart
                   } else {
@@ -801,7 +843,7 @@ useEffect(() => {
                 Update Table
               </button>
 
-              <button className='hidden md:block p-2 bg-blue-600 text-white rounded hover:bg-blue-700 w-min'
+                  <button className='hidden md:block p-2 rounded w-min bg-gray-200 hover:bg-[#2B4F4B] hover:text-white'
               onClick={() => fetchOrderDetails(orderDetails.order_id)}>
                 <ArrowPathIcon className="h-6 w-6" />
               </button>
@@ -811,23 +853,28 @@ useEffect(() => {
 
             {/* Cart Items */}
             <div className="p-2 overflow-y-auto h-screen max-h-[calc(100vh-150px)] mb-15">
-              {cart.map(item => (
-                <div key={item.id} className="mb-1 p-1 border-b border-gray-200">
+                {isLoadingOrderList ? (
+                  <div className='text-center w-full'>fetching cart items..</div>
+                ) : (
+                  cart.map(item => {
+                  const isUpdatingServe = loadingServerId === item.order_id;
+                  return (
+                  <div key={item.order_id} className="mb-1 p-1 border-b border-gray-200">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h4 className="font-bold">{item.name}</h4>
+                        <h4 className="font-bold"><span className='text-red-500'>{item.quantity} - </span>{item.name}</h4>
                       <p className="text-gray-600">₱{item.price.toFixed(2)}</p>
                     </div>
                     <div className="flex items-center gap-3"
                     hidden={['preparing', 'ready','served'].includes(item.status)}>
                       <button 
                         className="px-3 py-1 bg-gray-200 rounded text-lg"
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => updateQuantity(item.order_id, item.quantity - 1)}
                       >-</button>
                       <span>{item.quantity}</span>
                       <button 
                         className="px-3 py-1 bg-gray-200 rounded text-lg"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.order_id, item.quantity + 1)}
                       >+</button>
                     </div>
                     <div className='flex items-center gap-3'
@@ -843,9 +890,21 @@ useEffect(() => {
                     </p>
                     <button 
                     hidden={['preparing', 'queued', 'served'].includes(item.status)}
-                    onClick={() => handleMarkServe(item.id)}
+                          onClick={() => {
+                                    setLoadingServerId(item.order_id);
+                                    handleMarkServe(item.order_id).finally(() => {
+                                    setLoadingServerId(null);
+                                    });
+                          }}
                       className="p-2 bg-green-500 rounded hover:bg-blue-700">
-                    Serve</button>
+                          {isUpdatingServe ? ('Updating...') : ('Serve')}
+                          </button>
+                          <button
+                            className="text-red-500"
+                            onClick={() => removeFromCart(item.order_id, item.menu_id)}
+                            hidden={['ready', 'served'].includes(item.status)}>
+                            Remove
+                          </button>
                     </div>
                    
                   </div>
@@ -855,28 +914,28 @@ useEffect(() => {
                       type="text"
                       placeholder="Add note..."
                       className="flex-1 p-2 text-xs border rounded"
-                      value={orderNotes[item.id] || ''}
-                      onChange={(e) => addNote(item.id, e.target.value)}
-                    hidden={['preparing', 'ready','served'].includes(item.status)}
+                        value={orderNotes[item.order_id] || ''}
+                        onChange={(e) => addNote(item.order_id, e.target.value)}
+                        hidden={['preparing', 'ready', 'served'].includes(item.status)}
                     />
                     
                     <button 
                       className="text-red-500 px-5"
-                      onClick={() => removeFromCart(item.id)}
-                      hidden={['preparing', 'ready','served'].includes(item.status)}>
+                        onClick={() => removeFromCart(item.order_id, item.menu_id)}
+                        hidden={['preparing', 'ready', 'served'].includes(item.status)}>
                     Remove</button>
 
                   </div>
                 </div>
-              ))}
+                );
+                }))}
             </div>
 
             {/* Order Actions */}
-            <div className="p-1 bg-gray-50 sticky bottom-0"
-              hidden={
-                cart.length === 0 ||
-                cart.some(item => ['preparing', 'ready', 'served'].includes(item.status))
-              }
+            <div className="p-1 bg-gray-50 sticky bottom-5"
+              hidden={!cart.some(item => item.status === 'queued')}
+
+
               > 
               <span className='text-sm font-bold hidden lg:inline'>
                 Subtotal: ₱{calculateTotal().toFixed(2)}
@@ -886,7 +945,7 @@ useEffect(() => {
                   onClick={() => {
                   sendToKitchen();
                 }}
-              >Send to Kitchen
+              > {isLoadingSend ? 'Sending...' : 'Send to Kitchen'}
                 </button>
        
             </div>
@@ -919,11 +978,16 @@ useEffect(() => {
         Beverages Queue / Todo
       </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {queue.map((item) => (
+            {  isLoadingDrinkQueue ? (
+            <p className="text-gray-500 text-center col-end-2">Loading Drinks Queue...</p>
+          ) : (
+            queue.map((item) => {
+          const isLoadingDone = loadingDoneItemId === item.id;
+
+          return (
             <div 
-            key={item.order_id}
-            className={`rounded-lg shadow p-4 space-y-2 border ${
-                item.status === 'queued'
+                key={item.id}
+                className={`rounded-lg shadow p-4 space-y-2 border ${item.status === 'queued'
                   ? 'bg-gray-50 text-gray-300 border-gray-300'
                   : 'bg-white text-black border'
               }`}>
@@ -936,16 +1000,7 @@ useEffect(() => {
                     {item.identifier}
                     </div>
                     <div className='text-end'>
-                        {
-                      (() => {
-                        const formattedTime = new Date(item.updated_at).toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                          hour24: true,
-                        });
-                        return formattedTime;
-                      })()
-                    }
+                   {dayjs.tz(item.updated_at).fromNow()}
                     </div>
               </div>
               <div className="text-start">{item.quantity} - {item.name} </div>
@@ -954,13 +1009,20 @@ useEffect(() => {
               >Notes: {item.note}</div>
               <button
                 hidden={['queued', 'served'].includes(item.status)}
-                onClick={() => handleMarkDone(item.order_id, item.menu_item_id)}
+                  onClick={() => {
+                    
+                    setLoadingDoneItemId(item.id);
+                    handleMarkDone(item.id,item.menu_item_id).finally(() => {
+                      setLoadingDoneItemId(null);
+                    });
+                  }}
                 className="mt-2 bg-green-600 hover:bg-green-700 text-white text-sm py-2 px-3 rounded"
               >
-                Done Preparing
+                  {isLoadingDone ? 'Removing...' : 'Done Preparing'}
               </button>
             </div>
-          ))}
+            )
+}))}
         </div>
         </div>
       )}

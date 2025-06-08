@@ -13,7 +13,16 @@ import {
   QueueListIcon
 } from "@heroicons/react/24/outline";
 import PaymentModal from '../components/PaymentModal';
-import.meta.env.VITE_API_BASE_URL
+import.meta.env.VITE_API_BASE_URL;
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(relativeTime);
+dayjs.extend(utc);
+dayjs.extend(timezone)
+dayjs.tz.setDefault("Asia/Taipei")
 
 
 function CashierUi() {
@@ -47,7 +56,7 @@ function CashierUi() {
   const [discount, setDiscount] = useState(null);
 
   const [isMobileCartOpen, setIsMobileCartOpen] = useState(false);
-  const [loadingItemId, setLoadingItemId] = useState(null);
+
   const [errorMessage, setErrorMessage] = useState('');
   const [category, setCategory] = useState('all');
   const [availability, setAvailability] = useState('all');
@@ -56,14 +65,25 @@ function CashierUi() {
   const [isFormOpen, setIsFormOpen] = useState(true);
   const [queue, setQueue] = useState([]);
   const [lastRefreshTime, setLastRefreshTime] = useState('');
+  const [isLoadingOrderList, setIsLoadingOrderList] = useState(false);
+  const [isLoadingCategoryList, setIsLoadingCategoryList] = useState(false);
+  const [isLoadingSend, setIsLoadingSend] = useState(false);
+  const [isLoadingPayment, setIsLoadingPayment] = useState(false);
+  const [isLoadingMenuItems, setIsLoadingMenuItems] = useState(false);
+  const [isLoadingDrinkQueue, setIsLoadingDrinkQueue] = useState(false);
+  const [loadingItemId, setLoadingItemId] = useState(null); //Add to Cart loading
+  const [loadingDoneItemId, setLoadingDoneItemId] = useState(null); //Done Queue loading
+  const [loadingServerId, setLoadingServerId] = useState(null);
+  
 
   const handleSignOut = (e) => {
     e.preventDefault();
     logout();
   };
 
+//fetch categories
   const fetchCategory = async () => {
-    
+    setIsLoadingCategoryList(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/categories`); // Update the API endpoint
       const data = await response.json();
@@ -77,12 +97,12 @@ function CashierUi() {
       setErrorMessage('Error fetching categories');
       console.error('Error:', error);
     } finally {
-      
+      setIsLoadingCategoryList(false);
     }
   };
 
   const fetchQueuelist = async () => {
-
+    setIsLoadingDrinkQueue(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-items-drinks`);
       const data = await response.json();
@@ -97,10 +117,12 @@ function CashierUi() {
     } catch (error) {
       setErrorMessage('Error fetching orders');
       console.error('Error:', error);
+    } finally {
+      setIsLoadingDrinkQueue(false);
     }
   };
 
-  const fetchDiscounts = async () => {
+  /*const fetchDiscounts = async () => {
   
     try {
       const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/discounts`); // Update the API endpoint
@@ -118,6 +140,7 @@ function CashierUi() {
 
     }
   };
+  */
 
   const fetchAvailableTables = async () => {
 
@@ -158,7 +181,7 @@ function CashierUi() {
   };
 
   const fetchOrderlist = async (orderId) => {
-
+    setIsLoadingOrderList(true)
     try {
       const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-items?order_id=${orderId}`);
       const data = await response.json();
@@ -173,7 +196,7 @@ function CashierUi() {
       setErrorMessage('Error fetching orders');
       console.error('Error:', error);
     } finally {
-
+      setIsLoadingOrderList(false)
     }
   };
 
@@ -198,6 +221,7 @@ function CashierUi() {
           order_type: order.type ?? '',
           order_status: order.status ?? '',
         });
+        
         setTableNumber(order.table_id ?? '');
         fetchOrderlist(order.id ?? '');
         setErrorMessage('');
@@ -213,7 +237,7 @@ function CashierUi() {
   };
 
   const fetchMenuItems = async () => {
-
+    setIsLoadingMenuItems(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/menu-items`);
       const data = await response.json();
@@ -227,7 +251,7 @@ function CashierUi() {
       setErrorMessage('Error fetching menu items');
       console.error('Error:', error);
     } finally {
-
+      setIsLoadingMenuItems(false);
     }
   };
 
@@ -336,6 +360,7 @@ function CashierUi() {
   };
 
   const updateQuantity = async (menuItemId, newQty) => {
+ 
     if (newQty < 1) {
       removeFromCart(menuItemId); // Optional: auto-remove if quantity goes below 1
       return;
@@ -355,9 +380,9 @@ function CashierUi() {
       const data = await response.json();
       if (data.success) {
         // Update local cart state
-        setCart((prevCart) =>
+       setCart((prevCart) =>
           prevCart.map((item) =>
-            item.id === menuItemId ? { ...item, quantity: newQty } : item
+            item.order_id === menuItemId ? { ...item, quantity: newQty } : item
           )
         );
       } else {
@@ -401,13 +426,13 @@ function CashierUi() {
     }
   };
 
-  const removeFromCart = async (menuItemId) => {
+  const removeFromCart = async (orderId,menuItemId) => {
     try {
       const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/delete-order-item`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          order_id: orderDetails.order_id,
+          order_id: orderId,
           menu_item_id: menuItemId,
         }),
       });
@@ -416,10 +441,10 @@ function CashierUi() {
       if (data.success) {
 
         setCart((prevCart) => {
-          const updatedCart = prevCart.filter((item) => item.id !== menuItemId);
+          const updatedCart = prevCart.filter((item) => item.menu_id !== menuItemId);
 
           if (updatedCart.length === 0) {
-            fetchPendingOrders();
+            fetchOrderDetails(orderDetails.order_id);
           }
 
           return updatedCart;
@@ -433,7 +458,7 @@ function CashierUi() {
     }
   };
 
-  const handleMarkServe = async (menuItemId) => {
+  const handleMarkServe = async (orderId) => {
     //setQueue(queue.filter((item) => item.order_id !== orderId));
     // Optionally send update to backend
     try {
@@ -442,7 +467,7 @@ function CashierUi() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           order_id: orderDetails.order_id,
-          menu_item_id: menuItemId,
+          menu_item_id: orderId,
         }),
       });
 
@@ -458,7 +483,7 @@ function CashierUi() {
     }
   };
 
-  const handleMarkDone = async (orderId, menuItemId) => {
+  const handleMarkDone = async (Id, menuItemId) => {
     //setQueue(queue.filter((item) => item.order_id !== orderId));
     // Optionally send update to backend
     try {
@@ -466,7 +491,7 @@ function CashierUi() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          order_id: orderId,
+          id: Id,
           menu_item_id: menuItemId,
         }),
       });
@@ -492,13 +517,14 @@ function CashierUi() {
       [itemId]: note
     });
   };
+
   const sendToKitchen = async() => {
-    // Implement kitchen queue logic here
+    setIsLoadingSend(true);
     try {
 
       const items = cart.map((item) => ({
-        menu_item_id: item.id,
-        note: orderNotes[item.id] || '',
+        menu_item_id: item.menu_id,
+        note: orderNotes[item.menu_id] || '',
       }));
 
 
@@ -523,12 +549,14 @@ function CashierUi() {
     } catch (err) {
       console.error('Error sending to kitchen:', err);
       setErrorMessage('Failed sending to kitchen');
+    } finally {
+       setIsLoadingSend(false);
     }
 
   };
-
+  
   const handlePaymentConfirmed = async (method, cash = null, change = null) => {
-
+    setIsLoadingPayment(true);
     // continue logic: save payment, clear cart, etc.
     try {
       const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/save-payment`, {
@@ -536,11 +564,11 @@ function CashierUi() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           order_id: orderDetails.order_id,
-          total_amount: calculateTotal().toFixed(2),
-          discount_total: (calculateTotal() * (discount?.value / 100)).toFixed(2),
-          discounted_amount: (calculateTotal() - (calculateTotal() * (discount / 100))).toFixed(2),
+          total_amount: (calculateTotal() - (discount?.value || 0)).toFixed(2),
+          /*discount_total: (calculateTotal() * (discount?.value )).toFixed(2),*/
+          discount_total: (discount?.value || 0).toFixed(2),
+          discounted_amount: (calculateTotal() - (discount?.value || 0)).toFixed(2),
           user_id: user.id,
-          discount_id: discount?.id
         }),
       });
 
@@ -553,18 +581,22 @@ function CashierUi() {
           menu_item_id: '',
           quantity: 1,
           order_type: '',
-          // add more fields if needed
+  
         });
         setCart([]);
-        sendToKitchen();
         fetchPendingOrders();
-        alert(`Payment successful!\nAmount: ₱${calculateTotal().toFixed(2)}\nDiscount: ${discount}%`);
+        
+        alert(`Payment successful!\nAmount: ₱${(calculateTotal() - (discount?.value || 0)).toFixed(2)}\nDiscount: ${(discount?.value || 0).toFixed(2)}`);
+        
       } else {
         setErrorMessage(data.message);
       }
     } catch (err) {
       console.error('Error updating quantity:', err);
       setErrorMessage('Failed to update quantity');
+    } finally {
+      setIsLoadingPayment(false);
+      setIsPaymentModalOpen(false);
     }
 
   };
@@ -573,7 +605,6 @@ function CashierUi() {
     fetchQueuelist();
     fetchMenuItems();
     fetchCategory();
-    fetchDiscounts();
     fetchPendingOrders();
     if (orderDetails.order_type === '') {
       fetchAvailableTables();
@@ -628,7 +659,7 @@ function CashierUi() {
               </span>
               <img
                 className="h-10 w-10 rounded-full object-cover"
-                src="src/assets/RENZIE.png"
+                src="assets/RENZIE.png"
                 alt="User Avatar"
               />
               <ChevronDownIcon className="h-5 w-5" />
@@ -642,7 +673,7 @@ function CashierUi() {
 
               <MenuItem>
                 <a className="flex items-center gap-2 px-2 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  onClick={() => setIsFormOpen(false)}
+                  onClick={() => { setIsFormOpen(false); fetchQueuelist(); }}
                   hidden={!isFormOpen}>
                   <QueueListIcon className="size-5 text-gray-600" />
                   Drinks Queue
@@ -691,25 +722,32 @@ function CashierUi() {
           {/* Categories - Horizontal scroll on mobile */}
           <div className="lg:w-1/6 bg-gray-800 p-4 overflow-x-auto lg:overflow-y-auto flex flex-col lg:flex-col gap-2 ">
             <div className="flex lg:flex-col gap-2 min-w-max">
-              <button className={`p-3 lg:p-2 rounded whitespace-nowrap ${activeCategory === category.name
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-700 text-white hover:bg-gray-600'
-                }`}
-                onClick={() => setActiveCategory('all')}>
-                ALL
-              </button>
-              {CategoryItems.map(category => (
-                <button
-                  key={category.name}
-                  className={`p-3 lg:p-2 rounded whitespace-nowrap ${activeCategory === category.name
-                      ? 'bg-white text-dark'
-                      : 'bg-gray-700 text-white hover:bg-white hover:text-black'
-                    }`}
-                  onClick={() => setActiveCategory(category.name)}
-                >
-                  {category.name}
-                </button>
-              ))}
+              { isLoadingCategoryList ? (
+                <div className='text-center w-full text-white'>fetching all categories..</div>
+              ) : (
+                <>
+                  <button className={`p-3 lg:p-2 rounded whitespace-nowrap ${activeCategory === 'all'
+                    ? 'bg-white text-dark'
+                    : 'bg-gray-700 text-white hover:bg-gray-600'
+                  }`}
+                  onClick={() => setActiveCategory('all')}>
+                    ALL
+                  </button>
+                  {CategoryItems.map(category => (
+                    <button
+                      key={category.name}
+                      className={`p-3 lg:p-2 rounded whitespace-nowrap ${activeCategory === category.name
+                          ? 'bg-white text-dark'
+                          : 'bg-gray-700 text-white hover:bg-white hover:text-black'
+                        }`}
+                      onClick={() => setActiveCategory(category.name)}
+                    >
+                      {category.name}
+                    </button>
+                  ))}
+                </>
+              )}
+             
             </div>
           </div>
 
@@ -725,7 +763,11 @@ function CashierUi() {
             />
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-y-auto max-h-[calc(100vh-150px)]">
-              {filteredItems.map(item => {
+              { isLoadingMenuItems ? (
+                <div className='text-center w-full col-span-4'>fetching menu items..</div>
+              ) : (
+                 
+              filteredItems.map(item => {
                 const isOut = item.is_available == 0;
                 const isOrderPaid = orderDetails.order_status === 'paid';
                 const isDisabled = isOut || isOrderPaid;
@@ -751,7 +793,11 @@ function CashierUi() {
                     disabled={isDisabled}
                   >
                     <div className="h-24 md:h-32 bg-gray-200 rounded-md">
-                      {/* Add product image here */}
+                      <img
+                      src={item.image_url}
+                      alt={item.name}
+                      className="w-full h-24 md:h-32 object-cover rounded mb-2"
+                      />
                     </div>
                     {isLoading ? (
                       'Adding...'
@@ -763,7 +809,7 @@ function CashierUi() {
                     )}
                   </button>
                 );
-              })}
+              }) )}
 
 
             </div>
@@ -805,7 +851,7 @@ function CashierUi() {
                         menu_item_id: '',
                         quantity: 1,
                         order_type: '',
-                        // add more fields if needed
+                        
                       });
                       setCart([]); // Optionally clear cart
                     } else {
@@ -867,7 +913,7 @@ function CashierUi() {
                     Update Table
                   </button>
 
-                  <button className='hidden md:block p-2 bg-blue-600 text-white rounded hover:bg-blue-700 w-min'
+                  <button className='hidden md:block p-2 rounded w-min bg-gray-200 hover:bg-[#2B4F4B] hover:text-white'
                     onClick={() => fetchOrderDetails(orderDetails.order_id)}>
                     <ArrowPathIcon className="h-6 w-6" />
                   </button>
@@ -877,23 +923,28 @@ function CashierUi() {
 
               {/* Cart Items */}
               <div className="p-2 overflow-y-auto h-screen max-h-[calc(100vh-150px)] mb-15">
-                {cart.map(item => (
-                  <div key={item.id} className="mb-1 p-1 border-b border-gray-200">
+                {isLoadingOrderList ? (
+                  <div className='text-center w-full'>fetching cart items..</div>
+                ) : (
+                  cart.map(item => {
+                  const isUpdatingServe = loadingServerId === item.order_id;
+                  return (
+                  <div key={item.order_id} className="mb-1 p-1 border-b border-gray-200">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="font-bold">{item.name}</h4>
+                        <h4 className="font-bold"><span className='text-red-500'>{item.quantity} - </span>{item.name}</h4>
                         <p className="text-gray-600">₱{item.price.toFixed(2)}</p>
                       </div>
                       <div className="flex items-center gap-3"
                         hidden={['preparing', 'ready','served'].includes(item.status)}>
                         <button
                           className="px-3 py-1 bg-gray-200 rounded text-lg"
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => updateQuantity(item.order_id, item.quantity - 1)}
                         >-</button>
                         <span>{item.quantity}</span>
                         <button
                           className="px-3 py-1 bg-gray-200 rounded text-lg"
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.order_id, item.quantity + 1)}
                         >+</button>
                       </div>
                       <div className='flex items-center gap-3'
@@ -907,12 +958,28 @@ function CashierUi() {
                         }>
                           {item.status}
                         </p>
+                        
                         <button
                           hidden={['preparing', 'queued', 'served'].includes(item.status)}
-                          onClick={() => handleMarkServe(item.id)}
+                          onClick={() => {
+                                    setLoadingServerId(item.order_id);
+                                    handleMarkServe(item.order_id).finally(() => {
+                                    setLoadingServerId(null);
+                                    });
+                          }}
                           className="p-2 bg-green-500 rounded hover:bg-blue-700">
-                          Serve</button>
+                          {isUpdatingServe ? ('Updating...') : ('Serve')}
+                          </button>
+                           <button
+                            className="text-red-500"
+                            onClick={() => removeFromCart(item.order_id, item.menu_id)}
+                            hidden={['ready', 'served'].includes(item.status)}>
+                            Remove
+                          </button>
+                              
+                          
                       </div>
+                      
 
                     </div>
 
@@ -921,37 +988,39 @@ function CashierUi() {
                         type="text"
                         placeholder="Add note..."
                         className="flex-1 p-2 text-xs border rounded"
-                        value={orderNotes[item.id] || ''}
-                        onChange={(e) => addNote(item.id, e.target.value)}
+                        value={orderNotes[item.menu_id] || ''}
+                        onChange={(e) => addNote(item.menu_id, e.target.value)}
                         hidden={['preparing', 'ready', 'served'].includes(item.status)}
                       />
 
                       <button
                         className="text-red-500 px-5"
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => removeFromCart(item.order_id, item.menu_id)}
                         hidden={['preparing', 'ready', 'served'].includes(item.status)}>
-                        Remove</button>
+                        Remove
+                      </button>
 
                     </div>
                   </div>
-                ))}
+                );
+                }))}
               </div>
 
               {/* Order Actions */}
-              <div className='p-1 bg-gray-50 sticky bottom-0'
+              <div className='p-1 bg-gray-50 sticky bottom-5'
                 hidden={
                   cart.length === 0 || orderDetails.order_status === 'paid'}
               >
                 <div className="p-2 bg-gray-50">
                   <div className='w-full text-end'
                     hidden={
-
-                      cart.some(item => ['preparing', 'ready', 'served'].includes(item.status))
-                    }>
+                      cart.some(item => ['preparing', 'ready'].includes(item.status))
+                    }
+                    >
                     Sub Total: ₱ {calculateTotal().toFixed(2)}
-                    <span>{discount?.value > 0 && ` - ₱ ${(calculateTotal() * (discount?.value / 100)).toFixed(2)}`}</span>
                   </div>
                   <select
+                    hidden
                     className="p-2 border rounded w-full"
                     value={discount ? JSON.stringify(discount) : ""}
                     onChange={(e) => {
@@ -970,6 +1039,25 @@ function CashierUi() {
                       </option>
                     ))}
                   </select>
+                  <input
+                  type="number"
+                  hidden={cart.some(item =>
+                    ['queued', 'preparing', 'ready'].includes(item.status)
+                  )}
+                  className="p-2 border rounded w-full"
+                  value={discount?.value ?? ""}
+                  placeholder="Discount amount"
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "") {
+                      setDiscount(null); // clear discount
+                    } else {
+                      setDiscount({ value: Number(value) }); // set as object with value key
+                    }
+                  }}
+                />
+
+                  
 
 
                 </div>
@@ -977,21 +1065,25 @@ function CashierUi() {
                   <button
                     className="w-full bg-yellow-500 text-white py-2 rounded hover:bg-blue-600"
                     onClick={() => { sendToKitchen(); }}
-                    hidden={
-                      cart.some(item => ['preparing', 'ready', 'served'].includes(item.status))
-                    }
-                  >Send to Kitchen
+                    hidden={!cart.some(item => item.status === 'queued')}
+
+                  >
+                  {isLoadingSend ? 'Sending...' : 'Send to Kitchen'}
                   </button>
                   <button
+                    hidden={
+                      cart.some(item => ['queued','preparing', 'ready',].includes(item.status))
+                    }
                     className="w-full bg-green-500 text-white py-2 rounded hover:bg-blue-600"
                     onClick={() => setIsPaymentModalOpen(true)}
-                  >Pay ₱ {calculateTotal() - (calculateTotal() * ((discount?.value || 0) / 100)).toFixed(2)}
+                  >Pay ₱ {(calculateTotal() - (discount?.value || 0)).toFixed(2)}
                   </button>
                   <PaymentModal
                     isOpen={isPaymentModalOpen}
-                    totalAmount={calculateTotal() - (calculateTotal() * ((discount?.value || 0) / 100)).toFixed(2)}
+                    totalAmount={Number(calculateTotal() - (discount?.value || 0))}
                     onClose={() => setIsPaymentModalOpen(false)}
                     onPaymentConfirmed={handlePaymentConfirmed}
+                    isLoadingPayment={isLoadingPayment}
                   />
 
                 </div>
@@ -1001,6 +1093,7 @@ function CashierUi() {
         </div>
       )}
       {!isFormOpen && (
+        
         <div className="p-4 flex-1 bg-gray-100 overflow-y-auto">
           <div className="text-center border-b-1 p-1">
             <div className="text-l text-gray-600">
@@ -1024,9 +1117,15 @@ function CashierUi() {
             Beverages Queue / Todo
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {queue.map((item) => (
+            {  isLoadingDrinkQueue ? (
+            <p className="text-gray-500 text-center col-end-2">Loading Drinks Queue...</p>
+          ) : (
+            queue.map((item) => {
+          const isLoadingDone = loadingDoneItemId === item.id;
+
+          return (
               <div
-                key={item.order_id}
+                key={item.id}
                 className={`rounded-lg shadow p-4 space-y-2 border ${item.status === 'queued'
                     ? 'bg-gray-50 text-gray-300 border-gray-300'
                     : 'bg-white text-black border'
@@ -1039,16 +1138,7 @@ function CashierUi() {
                     {item.identifier}
                   </div>
                   <div className='text-end'>
-                    {
-                      (() => {
-                        const formattedTime = new Date(item.updated_at).toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                          hour24: true,
-                        });
-                        return formattedTime;
-                      })()
-                    }
+                    {dayjs.tz(item.updated_at).fromNow()}
                   </div>
                 </div>
                 <div className="text-start">{item.quantity} - {item.name} </div>
@@ -1057,13 +1147,20 @@ function CashierUi() {
                 >Notes: {item.note}</div>
                 <button
                   hidden={['queued', 'served'].includes(item.status)}
-                  onClick={() => handleMarkDone(item.order_id, item.menu_item_id)}
+                  onClick={() => {
+                    
+                    setLoadingDoneItemId(item.id);
+                    handleMarkDone(item.id,item.menu_item_id).finally(() => {
+                      setLoadingDoneItemId(null);
+                    });
+                  }}
                   className="mt-2 bg-green-600 hover:bg-green-700 text-white text-sm py-2 px-3 rounded"
                 >
-                  Done Preparing
+                  {isLoadingDone ? 'Removing...' : 'Done Preparing'}
                 </button>
               </div>
-            ))}
+            )
+}))}
           </div>
         </div>
       )}

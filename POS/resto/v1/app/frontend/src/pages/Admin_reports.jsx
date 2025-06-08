@@ -179,7 +179,7 @@ const ResponsivePieChart = ({ data, colorMap }) => {
   };
 
   const fetchReportDetails1 = async () => {
- 
+  setIsLoading(true);
   try {
     const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-report-details1?date1=${selectedDates.date1}&date2=${selectedDates.date2}`);
     const data = await response.json();
@@ -315,7 +315,7 @@ const ResponsivePieChart = ({ data, colorMap }) => {
     setErrorMessage('Error fetching Data');
     console.error('Error:', error);
   } finally {
- 
+     setIsLoading(false);
   }
   };
 
@@ -334,31 +334,8 @@ const ResponsivePieChart = ({ data, colorMap }) => {
     <div className="p-4 space-y-6">
       <div className='grid grid-cols-2'>
         <h1 className="text-l">Admin Reports</h1>
-        <div className="flex justify-end">
-          <button className="p-2 bg-gray-200 rounded hover:bg-[#2B4F4B] hover:text-white" onClick={handlePrint}><PrinterIcon className="size-5" /></button>
-        </div>
-      </div>
-      {/* Filters */}
-      <div className="gap-1  items-center text-sm grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6">
-        <p>From:</p>
-        <input type="date"
-        className="border p-2 rounded-md w-full md:w-auto" 
-        value={selectedDates.date1}
-        min={MinMaxDates.date1}
-        onChange={(e) => setSelectedDates({ ...selectedDates, date1: e.target.value })}
-        />
-        <p className=''>To:</p>
-        <input type="date"
-        className="border p-2 rounded-md w-full md:w-auto"
-        value={selectedDates.date2}
-        max={MinMaxDates.date2}
-        onChange={(e) => setSelectedDates({ ...selectedDates, date2: e.target.value })} 
-        />
-        <button className='p-2 bg-gray-200 rounded hover:bg-[#2B4F4B] hover:text-white text-sm'
-          onClick={fetchReportDetails1}>
-          Fetch Report
-        </button>
-        <button className='p-2 bg-gray-200 rounded hover:bg-[#2B4F4B] hover:text-white text-sm'
+        <div className="flex justify-end gap-1">
+          <button className='p-2 bg-gray-200 rounded hover:bg-[#2B4F4B] hover:text-white text-sm'
           onClick={handleDemo}>
           Monthly Report
         </button>
@@ -366,10 +343,49 @@ const ResponsivePieChart = ({ data, colorMap }) => {
           onClick={handleDemo}>
           Yearly Report
         </button>
+          <button className="p-2 bg-gray-200 rounded hover:bg-[#2B4F4B] hover:text-white" onClick={handlePrint}><PrinterIcon className="size-5" /></button>
+        </div>
+      </div>
+      {/* Filters */}
+      <div className="gap-1 text-sm flex items-center">
+       
+          <p>From:</p>
+          <input type="date"
+          className="border p-2 rounded-md " 
+          value={selectedDates.date1}
+          min={MinMaxDates.date1}
+          onChange={(e) => setSelectedDates({ ...selectedDates, date1: e.target.value })}
+          />
+          <p className=''>To:</p>
+          <input type="date"
+          className="border p-2 rounded-md"
+          value={selectedDates.date2}
+          max={MinMaxDates.date2}
+          onChange={(e) => setSelectedDates({ ...selectedDates, date2: e.target.value })} 
+          />
+          <button className='p-2 bg-gray-200 rounded hover:bg-[#2B4F4B] hover:text-white text-sm'
+          onClick={fetchReportDetails1}>
+          Fetch Report
+          </button>
+  
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+      { isLoading ? 
+      (
+        <div className="h-100 flex items-center justify-center">
+          <p className="text-gray-600 animate-pulse">Creating report...</p>
+        </div>
+      ) : ReportDetails4.length === 0 ? (
+        <div className="h-100 flex items-center justify-center ">
+          <p className="text-red-500 italic text-center">
+            Set both <span className="underline">From Date</span> and <span className="underline">To Date</span> to generate a report.
+          </p>
+        </div>
+      ) :
+      (
+        <>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
 
         <div className="p-2">
           <div>
@@ -550,6 +566,11 @@ const ResponsivePieChart = ({ data, colorMap }) => {
         </div>
  
       </div>
+        
+        </>
+      )
+
+      }
 
 
     </div>

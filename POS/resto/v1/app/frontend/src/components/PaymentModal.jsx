@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 
-const PaymentModal = ({ isOpen, onClose, totalAmount, onPaymentConfirmed }) => {
+const PaymentModal = ({ isOpen, onClose, totalAmount, onPaymentConfirmed, isLoadingPayment}) => {
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [cashReceived, setCashReceived] = useState('');
   const [change, setChange] = useState(0);
+  
 
   const handleCashInput = (e) => {
     const value = parseFloat(e.target.value);
@@ -21,7 +22,7 @@ const PaymentModal = ({ isOpen, onClose, totalAmount, onPaymentConfirmed }) => {
       return;
     }
     onPaymentConfirmed('cash', parseFloat(cashReceived), change);
-    onClose();
+    setCashReceived('');
   };
 
   const handleOtherPayment = (method) => {
@@ -64,7 +65,7 @@ const PaymentModal = ({ isOpen, onClose, totalAmount, onPaymentConfirmed }) => {
             </p>
             <div className="flex justify-between">
               <button onClick={() => setSelectedMethod(null)} className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Back</button>
-              <button onClick={handleConfirmCash} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Confirm Payment</button>
+              <button onClick={handleConfirmCash} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">{isLoadingPayment ? 'Saving payment...' : 'Confirm'}</button>
             </div>
           </>
         )}
