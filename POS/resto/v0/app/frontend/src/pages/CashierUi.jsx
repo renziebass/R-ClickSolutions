@@ -929,79 +929,85 @@ function CashierUi() {
                   cart.map(item => {
                   const isUpdatingServe = loadingServerId === item.order_id;
                   return (
-                  <div key={item.order_id} className="mb-1 p-1 border-b border-gray-200">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-bold"><span className='text-red-500'>{item.quantity} - </span>{item.name}</h4>
-                        <p className="text-gray-600">₱{item.price.toFixed(2)}</p>
+                 <div key={item.order_id} className="mb-1 p-1 border-b border-gray-200">
+                    <div className="flex justify-between">
+                      <div className='flex gap-3 grow items-center'>
+                        {/* Remove Button */}
+                        <div className="w-9 flex-none">
+                          <button
+                            className="px-3 py-1 bg-red-500 rounded text-lg text-white"
+                            onClick={() => removeFromCart(item.order_id, item.menu_id)}
+                            hidden={['ready', 'served'].includes(item.status)}
+                          >
+                            x
+                          </button>
+                        </div>
+
+                        {/* Item Info */}
+                        <div className='grow text-left'>
+                          <p className="font-bold text-base">{item.name}</p>
+                          <p className="text-gray-600">
+                            ₱{item.price.toFixed(2)} <strong>X {item.quantity}</strong>
+                          </p>
+                        </div>
+
+                        {/* Quantity Controls */}
+                      
                       </div>
-                      <div className="flex items-center gap-3"
-                        hidden={['preparing', 'ready','served'].includes(item.status)}>
-                        <button
-                          className="px-3 py-1 bg-gray-200 rounded text-lg"
-                          onClick={() => updateQuantity(item.order_id, item.quantity - 1)}
-                        >-</button>
-                        <span>{item.quantity}</span>
-                        <button
-                          className="px-3 py-1 bg-gray-200 rounded text-lg"
-                          onClick={() => updateQuantity(item.order_id, item.quantity + 1)}
-                        >+</button>
-                      </div>
-                      <div className='flex items-center gap-3'
+
+                      {/* Status and Serve Button */}
+                      <div className='flex items-center gap-1'
                         hidden={item.status === 'queued'}>
                         <p className={
                           item.status === 'queued' ? 'text-black-500' :
-                            item.status === 'preparing' ? 'text-yellow-500' :
-                              item.status === 'ready' ? 'text-blue-500' :
-                                item.status === 'served' ? 'text-green-500' :
-                                  'text-gray-500'
+                          item.status === 'preparing' ? 'text-yellow-500' :
+                          item.status === 'ready' ? 'text-blue-500' :
+                          item.status === 'served' ? 'text-green-500' :
+                          'text-gray-500'
                         }>
                           {item.status}
                         </p>
-                        
                         <button
                           hidden={['preparing', 'queued', 'served'].includes(item.status)}
                           onClick={() => {
-                                    setLoadingServerId(item.order_id);
-                                    handleMarkServe(item.order_id).finally(() => {
-                                    setLoadingServerId(null);
-                                    });
+                            setLoadingServerId(item.order_id);
+                            handleMarkServe(item.order_id).finally(() => {
+                              setLoadingServerId(null);
+                            });
                           }}
-                          className="p-2 bg-green-500 rounded hover:bg-blue-700">
-                          {isUpdatingServe ? ('Updating...') : ('Serve')}
-                          </button>
-                           <button
-                            className="text-red-500"
-                            onClick={() => removeFromCart(item.order_id, item.menu_id)}
-                            hidden={['ready', 'served'].includes(item.status)}>
-                            Remove
-                          </button>
-                              
-                          
+                          className="p-2 bg-green-500 rounded hover:bg-blue-700 text-white text-sm"
+                        >
+                          {isUpdatingServe ? 'Updating...' : 'Serve'}
+                        </button>
                       </div>
-                      
-
                     </div>
 
-                    <div className="flex gap-2">
+                    {/* Notes Input */}
+                    <div className="flex gap-2 my-3"
+                    hidden={['preparing', 'ready', 'served'].includes(item.status)}>
                       <input
                         type="text"
-                        placeholder="Add note..."
-                        className="flex-1 p-2 text-xs border rounded"
+                        placeholder="Add note then send to kitchen..."
+                        className="flex-1 p-2 text-xs border rounded border-gray-200"
                         value={orderNotes[item.menu_id] || ''}
                         onChange={(e) => addNote(item.menu_id, e.target.value)}
-                        hidden={['preparing', 'ready', 'served'].includes(item.status)}
                       />
-
-                      <button
-                        className="text-red-500 px-5"
-                        onClick={() => removeFromCart(item.order_id, item.menu_id)}
-                        hidden={['preparing', 'ready', 'served'].includes(item.status)}>
-                        Remove
-                      </button>
-
+                      <div
+                          className="flex items-center gap-2 w-auto flex-none"
+                        >
+                          <button
+                            className="px-3 py-1 bg-gray-200 rounded text-lg"
+                            onClick={() => updateQuantity(item.order_id, item.quantity - 1)}
+                          >-</button>
+                          <span>{item.quantity}</span>
+                          <button
+                            className="px-3 py-1 bg-gray-200 rounded text-lg"
+                            onClick={() => updateQuantity(item.order_id, item.quantity + 1)}
+                          >+</button>
+                        </div>
                     </div>
                   </div>
+
                 );
                 }))}
               </div>
