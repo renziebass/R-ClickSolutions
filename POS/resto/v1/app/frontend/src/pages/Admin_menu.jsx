@@ -44,6 +44,7 @@ useEffect(() => {
 const handleSelect = (item) => {
   setSelectedItem(item)
   setNewMenuItem({...newMenuItem, category: item})
+  setFormData({...formData, category: item})
   setQuery(item)
   setIsOpen(false)
 }
