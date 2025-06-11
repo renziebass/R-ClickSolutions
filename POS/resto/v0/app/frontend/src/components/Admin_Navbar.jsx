@@ -208,8 +208,9 @@ function NavBar() {
                   </span>
                 </span>
                 <span>
-                  <img className="h-10 w-10 rounded-full object-cover"
-                    src="src/assets/RENZIE.png"
+                  <img
+                    className="h-10 w-10 rounded-full object-cover"
+                    src="assets/RENZIE.png"
                     alt="User Avatar"
                   />
                 </span>

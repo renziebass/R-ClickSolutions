@@ -228,8 +228,22 @@ useEffect(() => {
                         {order.table_id ? `Table ${order.table_id}` : order.type}
                       </td>
                       <td className="p-2 hidden sm:table-cell">{order.items || '-'}</td>
-                      <td className="p-2">₱{parseFloat(order.total_amount).toFixed(2)}</td>
-                      <td className="p-2 hidden sm:table-cell">₱{parseFloat(order.discount_total).toFixed(2)}</td>
+                      <td className="p-2">
+                        ₱{
+                        (Number(order.total_amount)).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                        })
+                        }
+                      </td>
+                      <td className="p-2 hidden sm:table-cell">
+                        ₱{
+                        (Number(order.discount_total)).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                        })
+                        }
+                      </td>
                       <td className="p-2">{order.status}</td>
                       <td className="p-2">{dayjs.tz(order.created_at).format('MM/DD/YYYY - HH:mm')}</td>
                     </tr>

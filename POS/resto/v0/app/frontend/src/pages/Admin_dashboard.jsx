@@ -191,15 +191,33 @@ useEffect(() => {
 
             <div className="border-t-1 border-gray-300 py-2">
               <div className="grid grid-cols-2 text-sm">
-                <p className="text-end">₱ {salesData1?.gross_sales ?? 0}</p>
+                <p className="text-end">
+                  ₱ 
+                  {(Number(salesData1?.gross_sales ?? 0)).toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                  })}
+                </p>
                 <p className="text-gray-500 text-start ml-2"> Gross</p>
               </div>
               <div className="grid grid-cols-2 text-sm">
-                <p className="text-end">₱ {salesData1?.total_discounts ?? 0}</p>
+                <p className="text-end">
+                  ₱
+                  {(Number(salesData1?.total_discounts ?? 0)).toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                  })}
+                  </p>
                 <p className="text-gray-500 text-start ml-2"> Discounts</p>
               </div>
               <div className="grid grid-cols-2 text-sm">
-                <p className="text-end">₱ {salesData1?.net_sales ?? 0}</p>
+                <p className="text-end">
+                  ₱
+                  {(Number(salesData1?.net_sales ?? 0)).toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                  })}
+                  </p>
                 <p className="text-gray-500 text-start ml-2"> Net</p>
               </div>
             </div>
@@ -230,7 +248,12 @@ useEffect(() => {
                   <li key={item.menu_item} className="flex justify-between items-center text-sm text-gray-500">
                     <span className="text-start">{item.menu_item}</span>
                     <span className="text-end">
-                      {item.total_quantity} order(s), ₱ {item.total_revenue.toFixed(2)}
+                      {item.total_quantity} order(s), ₱ {
+                      (Number(item.total_revenue)).toLocaleString('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2
+                      })
+                      }
                     </span>
                   </li>
                 );

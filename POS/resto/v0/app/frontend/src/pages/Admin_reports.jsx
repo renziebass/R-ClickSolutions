@@ -464,7 +464,14 @@ const ResponsivePieChart = ({ data, colorMap }) => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis />
-              <Tooltip />
+              <Tooltip
+                  formatter={(value) =>
+                    (Number(value)).toLocaleString('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })
+                  }
+                />
               
               <Line type="monotone" dataKey="total" stroke="#2B4F4B" strokeWidth={2} />
             </LineChart>
@@ -477,7 +484,7 @@ const ResponsivePieChart = ({ data, colorMap }) => {
 
         <div className="p-4 bg-gray-50 rounded-md">
           <p className="mb-4">Sales Data</p>
-          <div className='h-96 overflow-y-auto'>
+          <div className='min-h-auto max-h-96 overflow-y-auto'>
                <table className='w-full text-sm text-center'>
             <thead>
               <tr className='text-gray-600 text-sm sticky top-0 bg-gray-50'>
@@ -493,10 +500,38 @@ const ResponsivePieChart = ({ data, colorMap }) => {
              {ReportDetails4.map((data) => (
                 <tr className="text-gray-700 hover:bg-gray-100">
                   <td className="p-2">{new Date(data.payment_date).toLocaleDateString()}</td>
-                  <td className="p-2">{data.dine_in_sales}</td>
-                  <td className="p-2">{data.take_out_sales}</td>
-                  <td className="p-2">{data.delivery_sales}</td>
-                  <td className="p-2">{data.total_sales}</td>
+                  <td className="p-2">
+                    ₱{
+                      (Number(data.dine_in_sales)).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })
+                      }
+                    </td>
+                  <td className="p-2">
+                    ₱{
+                    (Number(data.take_out_sales)).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })
+                    }
+                    </td>
+                  <td className="p-2">
+                    ₱{
+                    (Number(data.delivery_sales)).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })
+                    }
+                  </td>
+                  <td className="p-2">
+                    ₱{
+                    (Number(data.total_sales)).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })
+                    }
+                  </td>
                   <td className="p-2">{data.best_seller}</td>
                 </tr>
               ))}
@@ -527,9 +562,27 @@ const ResponsivePieChart = ({ data, colorMap }) => {
                     <tr className="text-gray-700 hover:bg-gray-100">
                       <td className="p-2">{data.menu_item}</td>
                       <td className="p-2">{data.total_quantity}</td>
-                      <td className="p-2 hidden sm:table-cell">{data.capital_total}</td>
-                      <td className="p-2">{data.total_revenue}</td>
-                      <td className="p-2">{data.gross_profit}</td>
+                      <td className="p-2 hidden sm:table-cell">
+                        ₱{
+                        (Number(data.capital_total)).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                        })
+                        }</td>
+                      <td className="p-2">
+                        ₱{
+                        (Number(data.total_revenue)).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                        })
+                        }</td>
+                      <td className="p-2">
+                        ₱{
+                        (Number(data.gross_profit)).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                        })
+                        }</td>
                     </tr>
                   ))}
                 </tbody>
@@ -555,9 +608,27 @@ const ResponsivePieChart = ({ data, colorMap }) => {
                     <tr className="text-gray-700 hover:bg-gray-100">
                       <td className="p-2">{data.menu_item}</td>
                       <td className="p-2">{data.total_quantity}</td>
-                      <td className="p-2 hidden sm:table-cell">{data.capital_total}</td>
-                      <td className="p-2">{data.total_revenue}</td>
-                      <td className="p-2">{data.gross_profit}</td>
+                      <td className="p-2 hidden sm:table-cell">
+                        ₱{
+                        (Number(data.capital_total)).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                        })
+                        }</td>
+                      <td className="p-2">
+                        ₱{
+                        (Number(data.total_revenue)).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                        })
+                        }</td>
+                      <td className="p-2">
+                        ₱{
+                        (Number(data.gross_profit)).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                        })
+                        }</td>
                     </tr>
                   ))}
                 </tbody>
