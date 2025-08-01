@@ -14,14 +14,13 @@ import {
   } from "@heroicons/react/24/outline";
 import.meta.env.VITE_API_BASE_URL;
 import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import relativeTime from 'dayjs/plugin/relativeTime';
 
-dayjs.extend(relativeTime);
 dayjs.extend(utc);
-dayjs.extend(timezone)
-dayjs.tz.setDefault("Asia/Taipei")
+dayjs.extend(timezone);
+dayjs.extend(relativeTime);
 
 
 
@@ -409,6 +408,7 @@ const updateOrderTable = async () => {
         body: JSON.stringify({
           order_id: orderId,
           menu_item_id: menuItemId,
+          order: orderDetails.order_id,
         }),
       });
   
@@ -863,13 +863,13 @@ useEffect(() => {
                     <div className="flex justify-between">
                       <div className='flex gap-3 grow items-center'>
                         {/* Remove Button */}
-                        <div className="w-9 flex-none">
+                        <div className="w-8 flex-none">
                       <button 
-                            className="px-3 py-1 bg-red-500 rounded text-lg text-white"
+                            className="p-1 bg-red-500 rounded text-lg text-white"
                             onClick={() => removeFromCart(item.order_id, item.menu_id)}
                             hidden={['ready', 'served'].includes(item.status)}
                           >
-                            x
+                            <XMarkIcon className="size-5" />
                           </button>
                     </div>
 
@@ -990,12 +990,13 @@ useEffect(() => {
       </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {  isLoadingDrinkQueue ? (
-            <p className="text-gray-500 text-center col-end-2">Loading Drinks Queue...</p>
+            <p className="text-gray-500 text-center col-span-3 mt-5">Loading Queue...</p>
           ) : (
             queue.map((item) => {
           const isLoadingDone = loadingDoneItemId === item.id;
 
           return (
+
             <div 
                 key={item.id}
                 className={`rounded-lg shadow p-4 space-y-2 border ${item.status === 'queued'
@@ -1011,7 +1012,7 @@ useEffect(() => {
                     {item.identifier}
                     </div>
                     <div className='text-end'>
-                   {dayjs.tz(item.updated_at).fromNow()}
+                    {dayjs.utc(item.updated_at).tz('Asia/Manila').fromNow()}  
                     </div>
               </div>
               <div className="text-start">{item.quantity} - {item.name} </div>
@@ -1031,6 +1032,7 @@ useEffect(() => {
               >
                   {isLoadingDone ? 'Removing...' : 'Done Preparing'}
               </button>
+              
             </div>
             )
 }))}

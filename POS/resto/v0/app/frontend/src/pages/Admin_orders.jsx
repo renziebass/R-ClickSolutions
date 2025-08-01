@@ -4,22 +4,26 @@ import { useEffect } from "react";
 import { filterOrders } from "../utils/filterOrders";
 import {
     ArrowPathIcon,
-    PrinterIcon
+    PrinterIcon,
+    XMarkIcon,
   } from "@heroicons/react/24/outline";
 import.meta.env.VITE_API_BASE_URL
 import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import relativeTime from 'dayjs/plugin/relativeTime';
 
-dayjs.extend(relativeTime);
 dayjs.extend(utc);
-dayjs.extend(timezone)
-dayjs.tz.setDefault("Asia/Taipei")
+dayjs.extend(timezone);
+dayjs.extend(relativeTime);
 
 
 
 const Admin_orders = () => {
+const [isFormOpen, setIsFormOpen] = useState(true);
+const [formOrder, setFormOrder] = useState([]);
+const [cart, setCart] = useState([]);
+const [orderDetails, setOrderDetails] = useState([]);
 const [errorMessage, setErrorMessage] = useState('');
 const [filters, setFilters] = useState({
   dateRange: "today",
@@ -69,11 +73,63 @@ const fetchOrders = async () => {
   }
 };
 
+// fetch order details 
+const fetchOrderDetails = async (orderId) => {
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-details?order_id=${orderId}`);
+      const data = await response.json();
+
+    if (data.success) {
+      const order = data.data[0];
+
+      setOrderDetails(order);
+      
+      setErrorMessage('');
+    } else {
+      setErrorMessage(data.message);
+    }
+  } catch (error) {
+    setErrorMessage('Error fetching orders');
+    console.error('Error:', error);
+  } finally {
+    fetchOrderlist(orderId);
+  }
+};
+
+const fetchOrderlist = async (orderId) => {
+
+  try {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-items?order_id=${orderId}`);
+    const data = await response.json();
+
+    if (data.success) {
+      setCart(data.data);
+      setErrorMessage('');
+    } else {
+      setErrorMessage(data.message);
+    }
+  } catch (error) {
+    setErrorMessage('Error fetching orders');
+    console.error('Error:', error);
+  } finally {
+
+  }
+};
+
+const handleOpenOrder = (orderId) => {
+  setIsFormOpen(false);
+  setFormOrder(orderId);
+  fetchOrderDetails(orderId.order_id);
+  };
+
 useEffect(() => {
   fetchOrders();
 }, []);
   return (
     <>
+    {isFormOpen && (
+    <div>
     <div className="p-4 space-y-4">
       <div className='grid grid-cols-2'>
         <h1 className="text-l">Filter Orders</h1>
@@ -209,6 +265,7 @@ useEffect(() => {
                     <th className="p-2 hidden md:table-cell">Discount</th>
                     <th className="p-2">Status</th>
                     <th className="p-2">Date/Time</th>
+                    <th className=""></th>
                     </tr>
                 </thead>
                <tbody>
@@ -222,8 +279,9 @@ useEffect(() => {
                   </tr>
                 ) : (
                   filteredOrders.map((order) => (
-                    <tr key={order.id} className="border-t border-gray-100 text-gray-500">
-                      <td className="p-2 hidden md:table-cell">{order.id}</td>
+                    <tr key={order.order_id} className="border-t border-gray-100 text-gray-500 hover:bg-gray-200"
+                    onClick={() => handleOpenOrder(order)}>
+                      <td className="p-2 hidden md:table-cell">{order.order_id}</td>
                       <td className="p-2">
                         {order.table_id ? `Table ${order.table_id}` : order.type}
                       </td>
@@ -245,7 +303,14 @@ useEffect(() => {
                         }
                       </td>
                       <td className="p-2">{order.status}</td>
-                      <td className="p-2">{dayjs.tz(order.created_at).format('MM/DD/YYYY - HH:mm')}</td>
+                      <td className="p-2">{dayjs.utc(order.created_at).tz('Asia/Manila').format('MM/DD/YYYY - HH:mm:ss')}</td>
+                      <td>
+                        <button
+                        hidden={order.status === 'paid' || order.items >= 0}
+                        className=" bg-red-500 rounded text-white hover:bg-[#2B4F4B] hover:text-white">
+                          <XMarkIcon className="size-5"/>
+                        </button>
+                      </td>
                     </tr>
                   ))
                 )}
@@ -253,6 +318,114 @@ useEffect(() => {
 
             </table>
     </div>
+    </div>
+    )}
+    {!isFormOpen && (
+    <div className="p-4 space-y-4">
+      <div>
+        <div className='grid grid-cols-2'>
+          
+          <h1 className="text-l">Order Details</h1>
+          
+          <div className="flex justify-end gap-2">
+            <button
+            className="p-2 bg-red-500 rounded text-white hover:bg-[#2B4F4B] hover:text-white">
+              <XMarkIcon className="size-5" onClick={() => setIsFormOpen(true)} />
+            </button>
+             <button
+                  onClick={() => {
+                    fetchOrderDetails(orderDetails.id);
+                  }}
+                  className="p-2 bg-gray-200 rounded hover:bg-[#2B4F4B] hover:text-white"
+                >
+                  <ArrowPathIcon className="size-5" />
+                </button>
+            <button className="p-2 bg-gray-200 rounded hover:bg-[#2B4F4B] hover:text-white" onClick={handlePrint}><PrinterIcon className="size-5" /></button>
+          </div>
+        </div>
+            <div className="py-2 text-center">
+              <div className="grid grid-cols-3 text-center mt-3">
+                <div>
+                  <p>{dayjs.utc(orderDetails.created_at).tz('Asia/Manila').format('MM/DD/YYYY - HH:mm:ss')}</p>
+                  <p className="text-xs text-gray-500">Date/Time</p>
+                </div>
+                <div>
+                  <p>{orderDetails?.id ?? ''}</p>
+                  <p className="text-xs text-gray-500">Order ID</p>
+                </div>
+                <div>
+                  <p>{orderDetails?.type ?? ''}</p>
+                  <p className="text-xs text-gray-500">Type</p>
+                </div>
+                <div>
+                  <p>{orderDetails?.status ?? ''}</p>
+                  <p className="text-xs text-gray-500">Status</p>
+                </div>
+                <div>
+                  <p>  ₱
+                  {(Number(orderDetails?.total_amount ?? 0)).toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                  })}</p>
+                  <p className="text-xs text-gray-500">Total</p>
+                </div>
+                <div>
+                  <p>  ₱
+                  {(Number(orderDetails?.discount_total ?? 0)).toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                  })}</p>
+                  <p className="text-xs text-gray-500">Discount</p>
+                </div>
+
+              </div>
+            </div>
+      </div>
+      <div>
+        <h1 className="text-l">Order List</h1>
+            <div className="flex justify-end mt-3">
+              <table className="table-auto min-w-full w-full text-xs md:text-sm text-left">
+                <thead className="">
+                    <tr className="">
+                    <th className="p-2">Time</th>
+                    <th className="p-2">QTY</th>
+                    <th className="p-2">Name</th>
+                    <th className="p-2">Total</th>
+                    <th className="p-2">Discount</th>
+                    <th className="p-2">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {cart.map((order, idx) => (
+                  <tr key={order.id || idx}>
+                    <td className="p-2">{order.updated_at ? dayjs.utc(order.updated_at).tz('Asia/Manila').format('HH:mm:ss') : '-'}</td>
+                    <td className="p-2">{order.quantity || '-'}</td>
+                    <td className="p-2">{order.name || '-'}</td>
+                    <td className="p-2">
+                      ₱{(Number(order.quantity * order.price || 0)).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })}
+                    </td>
+                    <td className="p-2">
+                      ₱{(Number(order.discount_total || 0)).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })}
+                    </td>
+                    <td className="p-2">{order.status || '-'}</td>
+                  </tr>
+                ))}
+                </tbody>
+                </table>
+            </div>
+            <div>
+              
+            </div>
+      </div>
+
+    </div>
+    )}
     </>
   );
 };

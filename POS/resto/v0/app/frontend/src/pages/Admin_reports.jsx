@@ -20,17 +20,18 @@ import {
 import.meta.env.VITE_API_BASE_URL
 
 const COLORS = [
-  '#121816', // Darkest
-  '#192421',
-  '#1F312E',
-  '#253F3C',
-  '#2B4F4B',
-  '#4F706E',
-  '#748F8D',
-  '#9AAEAC',
-  '#C1CDCB',
-  '#E5EBEA'  // Lightest
+ '#2B4F4B', // Deep teal (brand base)
+  '#F28F3B', // Warm orange (friendly, contrasting)
+  '#4F706E', // Slate green (neutral balance)
+  '#E4572E', // Vivid coral red (energy & distinction)
+  '#9AAEAC', // Soft green-gray (calming mid-tone)
+  '#76B041', // Fresh green (stands out on dark UI)
+  '#C1CDCB', // Pale gray-blue (neutral relief)
+  '#3F88C5', // Soft blue (cool balance)
+  '#B63E6A', // Deep rose (rich contrast)
+  '#FFD23F'  // Bright yellow-gold (highlight color)
 ];
+
 
 
   
@@ -109,6 +110,7 @@ const ResponsivePieChart = ({ data, colorMap }) => {
           data={data}
           dataKey="total_quantity"
           outerRadius="60%"
+          innerRadius="28%"
           label={({ ...args }) => renderResponsiveLabel({ ...args, chartWidth: 400 })}
           labelLine={true}
         >

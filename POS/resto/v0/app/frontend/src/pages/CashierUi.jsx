@@ -15,14 +15,13 @@ import {
 import PaymentModal from '../components/PaymentModal';
 import.meta.env.VITE_API_BASE_URL;
 import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import relativeTime from 'dayjs/plugin/relativeTime';
 
-dayjs.extend(relativeTime);
 dayjs.extend(utc);
-dayjs.extend(timezone)
-dayjs.tz.setDefault("Asia/Taipei")
+dayjs.extend(timezone);
+dayjs.extend(relativeTime);
 
 
 function CashierUi() {
@@ -434,6 +433,7 @@ function CashierUi() {
         body: JSON.stringify({
           order_id: orderId,
           menu_item_id: menuItemId,
+          order: orderDetails.order_id,
         }),
       });
 
@@ -773,6 +773,7 @@ function CashierUi() {
                 const isDisabled = isOut || isOrderPaid;
                 const isLoading = loadingItemId === item.id;
 
+
                 return (
                   <button
                     key={item.id}
@@ -876,7 +877,7 @@ function CashierUi() {
                 <select
                   className="p-2 border rounded"
                   value={orderDetails.order_type}
-                  onChange={(e) => setOrderDetails({...orderDetails, order_type: e.target.value })}
+                  onChange={(e) => setOrderDetails({...orderDetails, order_type: e.target.value})}
                   hidden={orderDetails.order_id !== ""}
                 >
                   <option value="" selected disabled hidden>Order type</option>
@@ -889,7 +890,7 @@ function CashierUi() {
                   <select
                     className="p-2 border rounded"
                     value={orderDetails.table_id}
-                    onChange={(e) => setOrderDetails({...orderDetails, table_id: Number(e.target.value) })}
+                    onChange={(e) => setOrderDetails({...orderDetails, table_id: Number(e.target.value)})}
                   >
                     <option value="" selected disabled hidden>Table #</option>
                     {vacantTables.map((item, index) => (
@@ -933,13 +934,13 @@ function CashierUi() {
                     <div className="flex justify-between">
                       <div className='flex gap-3 grow items-center'>
                         {/* Remove Button */}
-                        <div className="w-9 flex-none">
+                        <div className="w-8 flex-none">
                           <button
-                            className="px-3 py-1 bg-red-500 rounded text-lg text-white"
+                            className="p-1 bg-red-500 rounded text-lg text-white"
                             onClick={() => removeFromCart(item.order_id, item.menu_id)}
                             hidden={['ready', 'served'].includes(item.status)}
                           >
-                            x
+                            <XMarkIcon className="size-5" />
                           </button>
                         </div>
 
@@ -1124,19 +1125,21 @@ function CashierUi() {
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {  isLoadingDrinkQueue ? (
-            <p className="text-gray-500 text-center col-end-2">Loading Drinks Queue...</p>
+            <p className="text-gray-500 text-center col-span-3 mt-5">Loading Queue...</p>
           ) : (
             queue.map((item) => {
           const isLoadingDone = loadingDoneItemId === item.id;
 
           return (
+       
               <div
                 key={item.id}
                 className={`rounded-lg shadow p-4 space-y-2 border ${item.status === 'queued'
                     ? 'bg-gray-50 text-gray-300 border-gray-300'
                     : 'bg-white text-black border'
                   }`}>
-                <div className={`grid grid-cols-2 text-xs${item.status === 'queued'
+                <div className={`grid grid-cols-2 text-xs${
+                  item.status === 'queued'
                     ? 'text-gray-300'
                     : 'text-red-500'
                   }`}>
@@ -1144,7 +1147,7 @@ function CashierUi() {
                     {item.identifier}
                   </div>
                   <div className='text-end'>
-                    {dayjs.tz(item.updated_at).fromNow()}
+                     {dayjs.utc(item.updated_at).tz('Asia/Manila').fromNow()} 
                   </div>
                 </div>
                 <div className="text-start">{item.quantity} - {item.name} </div>
@@ -1164,7 +1167,8 @@ function CashierUi() {
                 >
                   {isLoadingDone ? 'Removing...' : 'Done Preparing'}
                 </button>
-              </div>
+   
+            </div>
             )
 }))}
           </div>

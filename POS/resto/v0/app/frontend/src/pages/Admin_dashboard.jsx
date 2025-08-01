@@ -3,7 +3,15 @@ import ReactToPrint from 'react-to-print';
 import {
     PrinterIcon
   } from "@heroicons/react/24/outline";
-import.meta.env.VITE_API_BASE_URL
+import.meta.env.VITE_API_BASE_URL;
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(relativeTime);
 
 function Admin_dashboard(){
 
@@ -266,15 +274,12 @@ useEffect(() => {
             <p className="text-l mb-4">Kitchen Queue</p>
             <ul className="space-y-4">
               {kitchenQueue.map((item) => {
-                const updatedAt = new Date(item.updated_at);
-                const now = new Date();
-                const diffMs = now - updatedAt;
-                const diffMins = Math.floor(diffMs / 60000);
+
                 return (
                   <li key={item.updated_at} className="flex justify-between items-center text-sm text-gray-500">
                     <span className="text-start">{item.identifier}: {item.menu_item_name}</span>
                     <span className="text-end">
-                      {diffMins} min(s) ago
+                      {dayjs(item.updated_at).tz('Asia/Manila').fromNow()}
                     </span>
                   </li>
                 );
@@ -286,16 +291,13 @@ useEffect(() => {
           <div className="border-t-1 border-gray-300 py-4">
             <p className="text-l mb-4">Drinks Queue</p>
            <ul className="space-y-4">
-              {drinksQueue.map((item) => {
-                const updatedAt = new Date(item.updated_at);
-                const now = new Date();
-                const diffMs = now - updatedAt;
-                const diffMins = Math.floor(diffMs / 60000);
+             {drinksQueue.map((item) => {
+
                 return (
                   <li key={item.updated_at} className="flex justify-between items-center text-sm text-gray-500">
                     <span className="text-start">{item.identifier}: {item.menu_item_name}</span>
                     <span className="text-end">
-                      {diffMins} min(s) ago
+                      {dayjs(item.updated_at).tz('Asia/Manila').fromNow()}
                     </span>
                   </li>
                 );
