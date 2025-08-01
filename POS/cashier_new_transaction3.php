@@ -630,13 +630,13 @@ if(!empty($_GET['payment'])){
         inputValidator: (result) => {
           if (!result) {
             return "Enter quantity!";
-          } else {
           }
-          var formattedNumber = ("0" + result).slice(-2);
-          if (formattedNumber < data_4) {
-          } else if (formattedNumber <= data_4) {
-          } else {
-            return "stocks not enough!";
+
+          const qty = parseInt(result, 10);
+          if (isNaN(qty) || qty <= 0) {
+            return "Invalid quantity!";
+          } else if (qty > data_4) {
+            return "Stocks not enough!";
           }
         },
         inputAttributes: {
