@@ -693,28 +693,30 @@ if(!empty($_GET['payment'])){
       }).then((result1) => {
         if (result1.isConfirmed) {
             swalWithBootstrapButtons.fire({
-              title: data_1,
-              input: "number",
-              footer: '<h6 class="text-white text-center">Available stocks: '+data_4+'</h6>',
-              showCancelButton: true,
-              confirmButtonText: "Add to Cart",
-              cancelButtonText: "Cancel",
-              reverseButtons: true,
-              inputValidator: (result2) => {
-                if (!result2) {
-                  return "Enter quantity!";
-                } else {
-                }
-                var formattedNumber = ("0" + result2).slice(-2);
-                if (formattedNumber < data_4) {
-                } else if (formattedNumber <= data_4) {
-                } else {
-                  return "stocks not enough!";
-                }
-              },
-              inputAttributes: {
-              maxlength: "10"
-            }
+            title: data_1,
+            input: "number",
+            footer: '<h6 class="text-white text-center">Available stocks: '+data_4+'</h6>',
+            showCancelButton: true,
+            confirmButtonText: "Add to Cart",
+            cancelButtonText: "Cancel",
+            reverseButtons: true,
+            inputValidator: (result) => {
+              if (!result) {
+                return "Enter quantity!";
+              }
+              const stock = parseInt(data_4, 10);   // ✅ force integer
+              const qty = parseInt(result, 10);     // ✅ force integer
+              console.log("DEBUG => stock:", stock, typeof stock, "| qty:", qty, typeof qty);
+              if (isNaN(qty) || qty <= 0) {
+                return "Invalid quantity!";
+              } else if (qty > stock) {
+                return `Stocks not enough! (qty: ${qty}, stock: ${stock}, raw: "${data_4}")`;
+              }
+            },
+            inputAttributes: {
+            min: 1,
+            max: data_4
+          }
             }).then((result2) => {
               /////////////////////
           
