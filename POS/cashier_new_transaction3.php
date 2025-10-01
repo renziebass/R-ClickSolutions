@@ -640,7 +640,8 @@ if(!empty($_GET['payment'])){
           }
         },
         inputAttributes: {
-        maxlength: "10"
+        min: 1,
+        max: data_4
       }
       }).then((result) => {
         if (result.isConfirmed) {
