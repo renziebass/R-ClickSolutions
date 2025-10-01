@@ -631,8 +631,9 @@ if(!empty($_GET['payment'])){
           if (!result) {
             return "Enter quantity!";
           }
-          const stock = Number(data_4);
-          const qty = Number(result);
+          const stock = parseInt(data_4, 10);   // ✅ force integer
+          const qty = parseInt(result, 10);     // ✅ force integer
+          console.log("DEBUG => stock:", stock, typeof stock, "| qty:", qty, typeof qty);
           if (isNaN(qty) || qty <= 0) {
             return "Invalid quantity!";
           } else if (qty > stock) {
