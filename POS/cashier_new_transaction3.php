@@ -632,7 +632,7 @@ if(!empty($_GET['payment'])){
             return "Enter quantity!";
           }
           const stock = Number(data_4);
-          const qty = parseInt(result, 10);
+          const qty = Number(result);
           if (isNaN(qty) || qty <= 0) {
             return "Invalid quantity!";
           } else if (qty > stock) {
