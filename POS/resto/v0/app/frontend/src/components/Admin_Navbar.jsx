@@ -111,7 +111,7 @@ function NavBar() {
             Resto POS
           </div>
           <div className="text-xs text-center mb-5 text-white">
-            Inciongs Bistro & Cafe
+            {user?.company_name}-{user?.company_id}
           </div>
           <nav className="flex-1 px-2">
             {links.map((link) => (
@@ -142,7 +142,7 @@ function NavBar() {
                   </span>
                   <span className="min-w-0 mx-auto text-end">
                     <span className="block truncate text-sm/5 font-medium text-white">
-                      {user?.name}
+                      {user?.username}
                     </span>
                     <span className="block truncate text-xs/5 font-normal text-white">
                       {user?.role}
@@ -201,7 +201,7 @@ function NavBar() {
               <span className="flex min-w-0 items-center gap-1 hover:">
                 <span className="min-w-0 text-end">
                   <span className="block truncate text-sm/5 font-medium text-white">
-                    {user?.name}
+                    {user?.username}
                   </span>
                   <span className="block truncate text-xs/5 font-normal text-white">
                     {user?.role}

@@ -12,6 +12,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { useRequireAuth } from '../contexts/AuthContext';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -40,6 +41,7 @@ const [isLoading, setIsLoading] = useState(false);
 const [orders, setOrders] = useState([]);
 const filteredOrders = filterOrders(orders, filters);
 const printRef = useRef();
+const user = useRequireAuth();
 
 const handlePrint = () => {
 alert('Printing is disabled for this demo. Contact Mr. Renzie Operario Bassig @09772332632 for more information.');
@@ -57,7 +59,7 @@ window.location.reload();
 const fetchOrders = async () => {
   setIsLoading(true);
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-admin-orders`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-admin-orders?company_id=${user?.company_id}`);
     const data = await response.json();
     if (data.success) {
       setOrders(data.data);
@@ -77,7 +79,7 @@ const fetchOrders = async () => {
 const fetchOrderDetails = async (orderId) => {
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-details?order_id=${orderId}`);
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-details?order_id=${orderId}&company_id=${user?.company_id}`);
       const data = await response.json();
 
     if (data.success) {
@@ -100,7 +102,7 @@ const fetchOrderDetails = async (orderId) => {
 const fetchOrderlist = async (orderId) => {
 
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-items?order_id=${orderId}`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-items?order_id=${orderId}&company_id=${user?.company_id}`);
     const data = await response.json();
 
     if (data.success) {

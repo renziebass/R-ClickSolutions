@@ -17,7 +17,8 @@ import {
 import {
     PrinterIcon
   } from "@heroicons/react/24/outline";
-import.meta.env.VITE_API_BASE_URL
+import.meta.env.VITE_API_BASE_URL;
+import { useRequireAuth } from '../contexts/AuthContext';
 
 const COLORS = [
  '#2B4F4B', // Deep teal (brand base)
@@ -50,6 +51,7 @@ function Admin_reports(){
   const [ReportDetails4, setReportDetails4] = useState([]);
   const [menuItemsSummary1, setMenuItemsSummary1] = useState([]);
   const [menuItemsSummary2, setMenuItemsSummary2] = useState([]);
+  const user = useRequireAuth();
 
   const BarChartData = [
     {
@@ -154,7 +156,7 @@ const ResponsivePieChart = ({ data, colorMap }) => {
 
   const fetchDates = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-dates`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-dates?company_id=${user?.company_id}`);
     const data = await response.json();
 
     if (data.success) {
@@ -183,7 +185,7 @@ const ResponsivePieChart = ({ data, colorMap }) => {
   const fetchReportDetails1 = async () => {
   setIsLoading(true);
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-report-details1?date1=${selectedDates.date1}&date2=${selectedDates.date2}`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-report-details1?date1=${selectedDates.date1}&date2=${selectedDates.date2}&company_id=${user?.company_id}`);
     const data = await response.json();
 
     if (data.success) {
@@ -205,7 +207,7 @@ const ResponsivePieChart = ({ data, colorMap }) => {
   const fetchReportDetails2 = async () => {
  
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-report-details2?date1=${selectedDates.date1}&date2=${selectedDates.date2}`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-report-details2?date1=${selectedDates.date1}&date2=${selectedDates.date2}&company_id=${user?.company_id}`);
     const data = await response.json();
 
     if (data.success) {
@@ -225,7 +227,7 @@ const ResponsivePieChart = ({ data, colorMap }) => {
 
   const fetchReportDetails3 = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-report-details3?date1=${selectedDates.date1}&date2=${selectedDates.date2}`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-report-details3?date1=${selectedDates.date1}&date2=${selectedDates.date2}&company_id=${user?.company_id}`);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -264,7 +266,7 @@ const ResponsivePieChart = ({ data, colorMap }) => {
   const fetchReportDetails4 = async () => {
  
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-report-details4?date1=${selectedDates.date1}&date2=${selectedDates.date2}`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-report-details4?date1=${selectedDates.date1}&date2=${selectedDates.date2}&company_id=${user?.company_id}`);
     const data = await response.json();
 
     if (data.success) {
@@ -285,7 +287,7 @@ const ResponsivePieChart = ({ data, colorMap }) => {
   const fetchMenuItemsSummary1 = async () => {
   
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-menu-items-summary1?date1=${selectedDates.date1}&date2=${selectedDates.date2}`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-menu-items-summary1?date1=${selectedDates.date1}&date2=${selectedDates.date2}&company_id=${user?.company_id}`);
     const data = await response.json();
     if (data.success) {
       setMenuItemsSummary1(data.data);
@@ -305,7 +307,7 @@ const ResponsivePieChart = ({ data, colorMap }) => {
   const fetchMenuItemsSummary2 = async () => {
   
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-menu-items-summary2?date1=${selectedDates.date1}&date2=${selectedDates.date2}`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-menu-items-summary2?date1=${selectedDates.date1}&date2=${selectedDates.date2}&company_id=${user?.company_id}`);
     const data = await response.json();
     if (data.success) {
       setMenuItemsSummary2(data.data);

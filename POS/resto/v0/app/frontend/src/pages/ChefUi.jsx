@@ -52,7 +52,7 @@ const ChefUi = () => {
   const fetchOrderlist = async () => {
     setIsLoading(true);
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-list-chef`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-list-chef?company_id=${user?.company_id}`);
     const data = await response.json();
 
     if (data.success) {
@@ -75,7 +75,7 @@ const ChefUi = () => {
   const fetchqueuedlist = async () => {
     setIsLoading(true);
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-items-chef`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-items-chef?company_id=${user?.company_id}`);
     const data = await response.json();
 
     if (data.success) {
@@ -97,7 +97,7 @@ const ChefUi = () => {
   const handleMarkDone = async (Id, menuItemId) => {
 
     try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-order-status-done`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-order-status-done?company_id=${user?.company_id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

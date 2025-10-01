@@ -84,7 +84,7 @@ function CashierUi() {
   const fetchCategory = async () => {
     setIsLoadingCategoryList(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/categories`); // Update the API endpoint
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/categories?company_id=${user?.company_id}`); // Update the API endpoint
       const data = await response.json();
       if (data.success) {
         setCategoryItems(data.data);
@@ -103,7 +103,7 @@ function CashierUi() {
   const fetchQueuelist = async () => {
     setIsLoadingDrinkQueue(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-items-drinks`);
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-items-drinks?company_id=${user?.company_id}`);
       const data = await response.json();
 
       if (data.success) {
@@ -144,7 +144,7 @@ function CashierUi() {
   const fetchAvailableTables = async () => {
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-tables`); // Update the API endpoint
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-tables?company_id=${user?.company_id}`); // Update the API endpoint
       const data = await response.json();
       if (data.success) {
         setVacantTables(data.data);
@@ -163,7 +163,7 @@ function CashierUi() {
   const fetchPendingOrders = async () => {
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-pending-orders`); // Update the API endpoint
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-pending-orders?company_id=${user?.company_id}`); // Update the API endpoint
       const data = await response.json();
       if (data.success) {
         setOrders(data.data);
@@ -182,7 +182,7 @@ function CashierUi() {
   const fetchOrderlist = async (orderId) => {
     setIsLoadingOrderList(true)
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-items?order_id=${orderId}`);
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-items?order_id=${orderId}&company_id=${user?.company_id}`);
       const data = await response.json();
 
       if (data.success) {
@@ -202,7 +202,7 @@ function CashierUi() {
   const fetchOrderDetails = async (orderId) => {
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-details?order_id=${orderId}`);
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-details?order_id=${orderId}&company_id=${user?.company_id}`);
       const data = await response.json();
       setOrderDetails({
         order_id: '',
@@ -238,7 +238,7 @@ function CashierUi() {
   const fetchMenuItems = async () => {
     setIsLoadingMenuItems(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/menu-items`);
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/menu-items?company_id=${user?.company_id}`);
       const data = await response.json();
       if (data.success) {
         setMenuItems(data.data);
@@ -277,7 +277,7 @@ function CashierUi() {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/new-order`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/new-order?company_id=${user?.company_id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id, order_type, table_id }),
@@ -316,7 +316,7 @@ function CashierUi() {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/add-order-item`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/add-order-item?company_id=${user?.company_id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -366,7 +366,7 @@ function CashierUi() {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-order-item`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-order-item?company_id=${user?.company_id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -396,7 +396,7 @@ function CashierUi() {
   const updateOrderTable = async () => {
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-order-table`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-order-table?company_id=${user?.company_id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -427,7 +427,7 @@ function CashierUi() {
 
   const removeFromCart = async (orderId,menuItemId) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/delete-order-item`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/delete-order-item?company_id=${user?.company_id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -462,7 +462,7 @@ function CashierUi() {
     //setQueue(queue.filter((item) => item.order_id !== orderId));
     // Optionally send update to backend
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-order-status-serve`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-order-status-serve?company_id=${user?.company_id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -487,7 +487,7 @@ function CashierUi() {
     //setQueue(queue.filter((item) => item.order_id !== orderId));
     // Optionally send update to backend
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-order-status-done`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-order-status-done?company_id=${user?.company_id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -528,7 +528,7 @@ function CashierUi() {
       }));
 
 
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/send-to-kitchen`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/send-to-kitchen?company_id=${user?.company_id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -559,7 +559,7 @@ function CashierUi() {
     setIsLoadingPayment(true);
     // continue logic: save payment, clear cart, etc.
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/save-payment`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/save-payment?company_id=${user?.company_id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

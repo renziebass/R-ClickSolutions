@@ -669,8 +669,8 @@ if(!empty($_GET['payment'])){
         buttonsStyling: false
       });
       swalWithBootstrapButtons.fire({
-        title: data_1,
-        input: "text",
+       title: data_1,
+        input: "number",
         footer: '<h6 class="text-white text-center">Available stocks: '+data_4+'</h6>',
         showCancelButton: true,
         confirmButtonText: "Add to Cart",
@@ -679,13 +679,13 @@ if(!empty($_GET['payment'])){
         inputValidator: (result) => {
           if (!result) {
             return "Enter quantity!";
-          } else {
           }
-          var formattedNumber = ("0" + result).slice(-2);
-          if (formattedNumber < data_4) {
-          } else if (formattedNumber <= data_4) {
-          } else {
-            return "stocks not enough!";
+          const stock = Number(data_4);
+          const qty = parseInt(result, 10);
+          if (isNaN(qty) || qty <= 0) {
+            return "Invalid quantity!";
+          } else if (qty > stock) {
+            return "Stocks not enough!";
           }
         },
         inputAttributes: {

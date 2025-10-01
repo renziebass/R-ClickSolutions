@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { useRequireAuth } from '../contexts/AuthContext';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -24,6 +25,7 @@ const [menuItemsSummary, setMenuItemsSummary] = useState([]);
 const [kitchenQueue, setKitchenQueue] = useState([]);
 const [drinksQueue, setDrinksQueue] = useState([]);
 const printRef = useRef();
+const user = useRequireAuth();
 
 const handlePrint = () => {
 alert('Printing is disabled for this demo. Contact Mr. Renzie Operario Bassig @09772332632 for more information.');
@@ -40,7 +42,7 @@ window.location.reload();
 const fetchSalesData1 = async () => {
   
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-sales-data1`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-sales-data1?company_id=${user?.company_id}`);
     const data = await response.json();
     if (data.success) {
       setSalesData1(data.data[0]);
@@ -49,7 +51,7 @@ const fetchSalesData1 = async () => {
       setErrorMessage(data.message);
     }
   } catch (error) {
-    setErrorMessage('Error fetching Sales Data');
+    setErrorMessage('Error fetching Sales Data - f');
     console.error('Error:', error);
   } finally {
  
@@ -59,7 +61,7 @@ const fetchSalesData1 = async () => {
 const fetchTopSellingItem = async () => {
   
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-top-selling-item`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-top-selling-item?company_id=${user?.company_id}`);
     const data = await response.json();
     if (data.success) {
       setTopSellingItem(data.data[0]);
@@ -78,7 +80,7 @@ const fetchTopSellingItem = async () => {
 const fetchPendingNumbers = async () => {
   
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-pending-numbers`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-pending-numbers?company_id=${user?.company_id}`);
     const data = await response.json();
     if (data.success) {
       setPendingNumbers(data.data[0]);
@@ -97,7 +99,7 @@ const fetchPendingNumbers = async () => {
 const fetchMenuItemsSummary = async () => {
   
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-menu-items-summary`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-menu-items-summary?company_id=${user?.company_id}`);
     const data = await response.json();
     if (data.success) {
       setMenuItemsSummary(data.data);
@@ -116,7 +118,7 @@ const fetchMenuItemsSummary = async () => {
 const fetchKitchenQueue = async () => {
   
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-kitchen-queue`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-kitchen-queue?company_id=${user?.company_id}`);
     const data = await response.json();
     if (data.success) {
       setKitchenQueue(data.data);
@@ -135,7 +137,7 @@ const fetchKitchenQueue = async () => {
 const fetchDrinksQueue = async () => {
   
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-drinks-queue`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-drinks-queue?company_id=${user?.company_id}`);
     const data = await response.json();
     if (data.success) {
       setDrinksQueue(data.data);

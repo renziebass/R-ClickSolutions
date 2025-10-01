@@ -80,7 +80,7 @@ const handleSignOut = (e) => {
 const fetchCategory = async () => {
     setIsLoadingCategoryList(true);
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/categories`); // Update the API endpoint
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/categories?company_id=${user?.company_id}`); // Update the API endpoint
     const data = await response.json();
     if (data.success) {
       setCategoryItems(data.data);
@@ -99,7 +99,7 @@ const fetchCategory = async () => {
 const fetchQueuelist = async () => {
     setIsLoadingDrinkQueue(true);
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-items-drinks`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-items-drinks?company_id=${user?.company_id}`);
     const data = await response.json();
 
     if (data.success) {
@@ -120,7 +120,7 @@ const fetchQueuelist = async () => {
 const fetchAvailableTables = async () => {
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-tables`); // Update the API endpoint
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-tables?company_id=${user?.company_id}`); // Update the API endpoint
       const data = await response.json();
       if (data.success) {
         setVacantTables(data.data);
@@ -139,7 +139,7 @@ const fetchAvailableTables = async () => {
 const fetchPendingOrders = async () => {
  
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-pending-orders`); // Update the API endpoint
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/fetch-pending-orders?company_id=${user?.company_id}`); // Update the API endpoint
     const data = await response.json();
     if (data.success) {
       setOrders(data.data);
@@ -158,7 +158,7 @@ const fetchPendingOrders = async () => {
 const fetchOrderlist = async (orderId) => {
   setIsLoadingOrderList(true)
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-items?order_id=${orderId}`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-items?order_id=${orderId}&company_id=${user?.company_id}`);
     const data = await response.json();
 
     if (data.success) {
@@ -178,7 +178,7 @@ const fetchOrderlist = async (orderId) => {
 const fetchOrderDetails = async (orderId) => {
  
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-details?order_id=${orderId}`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/order-details?order_id=${orderId}&company_id=${user?.company_id}`);
     const data = await response.json();
     setOrderDetails({
       order_id: '',
@@ -214,7 +214,7 @@ const fetchOrderDetails = async (orderId) => {
 const fetchMenuItems = async () => {
     setIsLoadingMenuItems(true);
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/menu-items`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/menu-items?company_id=${user?.company_id}`);
     const data = await response.json();
     if (data.success) {
       setMenuItems(data.data);
@@ -253,7 +253,7 @@ const createOrder = async () => {
   }
 
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/new-order`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/new-order&company_id=${user?.company_id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_id, order_type, table_id }),
@@ -292,7 +292,7 @@ const addToCart = async (item) => {
     }
   
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/add-order-item`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/add-order-item&company_id=${user?.company_id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

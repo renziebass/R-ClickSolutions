@@ -4,7 +4,8 @@ import {
     ArrowPathIcon,
     PrinterIcon
   } from "@heroicons/react/24/outline";
-import.meta.env.VITE_API_BASE_URL
+import.meta.env.VITE_API_BASE_URL;
+import { useRequireAuth } from '../contexts/AuthContext';
 
 export default function Admin_Menu() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -30,6 +31,7 @@ export default function Admin_Menu() {
   setEditingItem(item);
   setFormData(item);
   };
+  const user = useRequireAuth();
 
 useEffect(() => {
   const handler = (e) => {
@@ -119,7 +121,7 @@ window.location.reload();
 const fetchCategory = async () => {
   setIsLoading(true);
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/categories`); // Update the API endpoint
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/categories?company_id=${user?.company_id}`); // Update the API endpoint
     const data = await response.json();
     if (data.success) {
       setCategoryItems(data.data);
@@ -139,7 +141,7 @@ const fetchCategory = async () => {
 const fetchMenuItems = async () => {
   setIsLoadingMenuItems(true);
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/menu-items`);
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/menu-items?company_id=${user?.company_id}`);
     const data = await response.json();
     if (data.success) {
       setMenuItems(data.data);
@@ -158,7 +160,7 @@ const fetchMenuItems = async () => {
 const disableMenu = async (ItemId) => {
   
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/disable-menu`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/disable-menu?company_id=${user?.company_id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

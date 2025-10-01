@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import.meta.env.VITE_API_BASE_URL
+import.meta.env.VITE_API_BASE_URL;
+import { useRequireAuth } from '../contexts/AuthContext';
 
 const userRoles = [
     'Admin',
@@ -38,11 +39,13 @@ const userRoles = [
 
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState([]);
+  const user = useRequireAuth();
     
   const handleEditClick = (item) => {
   setEditingItem(item);
   setFormData(item);
   };
+
 
   useEffect(() => {
     setNewUser(prev => ({
@@ -68,7 +71,7 @@ const userRoles = [
   const fetchUsers = async () => {
     setIsLoadingUsers(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/users`);
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/users?company_id=${user?.company_id}`);
       const data = await response.json();
       if (data.success) {
         setUsers(data.data);
@@ -97,7 +100,7 @@ const userRoles = [
   
     setIsLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/users`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/users?company_id=${user?.company_id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -144,7 +147,7 @@ const userRoles = [
   
     setIsLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-users`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-users?company_id=${user?.company_id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
