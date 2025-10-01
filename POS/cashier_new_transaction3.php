@@ -637,7 +637,7 @@ if(!empty($_GET['payment'])){
           if (isNaN(qty) || qty <= 0) {
             return "Invalid quantity!";
           } else if (qty > stock) {
-            return `Stocks not enough! (qty: ${qty}, stock: ${stock}, raw: "${data_4}")`;
+            return `Stocks not enough!`;
           }
         },
         inputAttributes: {
@@ -710,7 +710,7 @@ if(!empty($_GET['payment'])){
               if (isNaN(qty) || qty <= 0) {
                 return "Invalid quantity!";
               } else if (qty > stock) {
-                return `Stocks not enough! (qty: ${qty}, stock: ${stock}, raw: "${data_4}")`;
+                return `Stocks not enough!`;
               }
             },
             inputAttributes: {
