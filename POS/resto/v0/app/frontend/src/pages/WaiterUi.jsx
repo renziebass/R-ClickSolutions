@@ -253,7 +253,7 @@ const createOrder = async () => {
   }
 
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/new-order&company_id=${user?.company_id}`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/new-order?company_id=${user?.company_id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_id, order_type, table_id }),
@@ -292,7 +292,7 @@ const addToCart = async (item) => {
     }
   
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/add-order-item&company_id=${user?.company_id}`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/add-order-item?company_id=${user?.company_id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -341,7 +341,7 @@ const updateQuantity = async (menuItemId, newQty) => {
     }
   
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-order-item`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-order-item?company_id=${user?.company_id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -371,7 +371,7 @@ const updateQuantity = async (menuItemId, newQty) => {
 const updateOrderTable = async () => {
 
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-order-table`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-order-table?company_id=${user?.company_id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -402,7 +402,7 @@ const updateOrderTable = async () => {
 
   const removeFromCart = async (orderId,menuItemId) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/delete-order-item`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/delete-order-item?company_id=${user?.company_id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -437,7 +437,7 @@ const updateOrderTable = async () => {
     //setQueue(queue.filter((item) => item.order_id !== orderId));
     // Optionally send update to backend
     try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-order-status-serve`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-order-status-serve?company_id=${user?.company_id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -462,7 +462,7 @@ const updateOrderTable = async () => {
     //setQueue(queue.filter((item) => item.order_id !== orderId));
     // Optionally send update to backend
     try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-order-status-done`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/update-order-status-done?company_id=${user?.company_id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -503,7 +503,7 @@ const sendToKitchen = async() => {
       }));
 
 
-      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/send-to-kitchen`, {
+      const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/api/send-to-kitchen?company_id=${user?.company_id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
