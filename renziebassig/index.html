@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Renzie Bassig — Automation Specialist Developer</title>
+  <title>Renzie Bassig — AI & Automation Specialist</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -31,14 +31,26 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-weight: 400;
       line-height: 1.7;
       overflow-x: hidden;
     }
     a { color: inherit; text-decoration: none; }
     img { display: block; max-width: 100%; }
+    
     section { width: 100%; }
+
+    .image-container {
+
+    width: 250px;        /* controls size */
+    aspect-ratio: 1/1;   /* keeps it square */
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+
+    }
     .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
 
     /* ===== SCROLLBAR ===== */
@@ -73,10 +85,11 @@
       display: flex; align-items: center; justify-content: space-between; width: 100%;
     }
     .nav-logo {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800; font-size: 1.25rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500; font-size: 1.25rem;
       letter-spacing: -0.02em;
       color: var(--text);
+      margin-right: 60px;
     }
     .nav-logo span { color: var(--amber); }
     .nav-links {
@@ -212,18 +225,19 @@
       50% { opacity: 0.5; transform: scale(0.8); }
     }
     .hero-name {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: clamp(3.2rem, 8vw, 6.5rem);
-      font-weight: 800;
+      font-weight: 600;
       line-height: 1.0;
       letter-spacing: -0.03em;
       color: #fff;
+      margin-top: 38px;
       margin-bottom: 12px;
       opacity: 0; animation: fadeUp 0.7s 0.25s forwards;
     }
     .hero-name .accent { color: var(--amber); }
     .hero-title {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: clamp(1.1rem, 2.5vw, 1.5rem);
       font-weight: 600;
       color: var(--teal);
@@ -282,7 +296,7 @@
     }
     .stat { display: flex; flex-direction: column; }
     .stat-num {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: 2rem; font-weight: 800;
       color: #fff; line-height: 1;
     }
@@ -304,7 +318,7 @@
       background: var(--amber);
     }
     .section-title {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: clamp(2rem, 4vw, 3rem);
       font-weight: 700;
       letter-spacing: -0.02em;
@@ -431,14 +445,14 @@
     }
     .service-card:hover .service-icon { background: rgba(255,192,104,0.18); }
     .service-name {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: 1.1rem; font-weight: 700;
       color: #fff; margin-bottom: 10px;
     }
     .service-desc { font-size: 0.9rem; color: var(--text-muted); line-height: 1.7; }
     .service-num {
       position: absolute; top: 24px; right: 24px;
-      font-family: 'Syne', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: 2.5rem; font-weight: 800;
       color: rgba(255,255,255,0.04);
       line-height: 1;
@@ -490,7 +504,7 @@
     .tag-teal  { background: rgba(45,212,191,0.10); color: var(--teal);  border: 1px solid rgba(45,212,191,0.25); }
     .tag-blue  { background: rgba(100,140,255,0.10); color: #7fa8ff;     border: 1px solid rgba(100,140,255,0.25); }
     .project-title {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: 1.05rem; font-weight: 700;
       color: #fff; margin-bottom: 8px;
     }
@@ -514,7 +528,7 @@
     }
     .skills-categories { display: flex; flex-direction: column; gap: 28px; }
     .skill-group-title {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: 0.75rem; font-weight: 700;
       color: var(--teal);
       letter-spacing: 0.1em; text-transform: uppercase;
@@ -574,7 +588,7 @@
     .testi-quote {
       font-size: 2.5rem; line-height: 1;
       color: var(--amber); margin-bottom: 16px;
-      font-family: Georgia, serif;
+      font-family: Inter, serif;
     }
     .testi-text { font-size: 0.925rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 24px; font-style: italic; }
     .testi-author { display: flex; align-items: center; gap: 12px; }
@@ -598,7 +612,7 @@
       margin-top: 56px;
     }
     .contact-info-title {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: 1.5rem; font-weight: 700;
       color: #fff; margin-bottom: 12px;
     }
@@ -630,7 +644,7 @@
       border-radius: 10px;
       padding: 13px 16px;
       color: var(--text);
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: 0.95rem;
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
@@ -646,7 +660,7 @@
       display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       padding: 14px 36px;
       background: var(--amber); color: #0a0a0f;
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: 0.95rem; font-weight: 600;
       border: none; border-radius: 10px; cursor: pointer;
       transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
@@ -666,7 +680,7 @@
       flex-wrap: wrap; gap: 24px;
     }
     .footer-logo {
-      font-family: 'Syne', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-weight: 800; font-size: 1.2rem;
     }
     .footer-logo span { color: var(--amber); }
@@ -726,6 +740,117 @@
     }
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+    /* ===== TABS COMPONENT ===== */
+    .tabs-wrapper { margin-top: 48px; }
+    .tabs-nav {
+      display: flex; gap: 8px; border-bottom: 2px solid var(--border);
+      overflow-x: auto; padding-bottom: 0; margin-bottom: 36px;
+      scroll-behavior: smooth;
+    }
+    .tabs-nav::-webkit-scrollbar { height: 4px; }
+    .tabs-nav::-webkit-scrollbar-track { background: transparent; }
+    .tabs-nav::-webkit-scrollbar-thumb { background: var(--amber-dim); border-radius: 2px; }
+    .tab-btn {
+      position: relative;
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.3s;
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--amber); }
+    .tab-btn::after {
+      content: '';
+      position: absolute; bottom: -2px; left: 0; right: 0;
+      height: 2px;
+      background: var(--amber);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .tab-btn.active::after { transform: scaleX(1); }
+    .tab-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 6px;
+      background: rgba(255,192,104,0.15);
+      border: 1px solid rgba(255,192,104,0.3);
+      border-radius: 99px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--amber);
+      flex-shrink: 0;
+    }
+    .tab-btn.active .tab-badge {
+      background: rgba(255,192,104,0.25);
+      border-color: rgba(255,192,104,0.5);
+    }
+    .tabs-content { position: relative; }
+    .tab-panel {
+      display: none;
+      opacity: 0;
+      animation: fadeIn 0.4s ease forwards;
+    }
+    .tab-panel.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .tab-container {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px 32px;
+    }
+    .container-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+    .container-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+    .container-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .container-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .container-item:hover {
+      background: rgba(255,192,104,0.05);
+      border-color: rgba(255,192,104,0.2);
+      transform: translateY(-2px);
+    }
+    .container-item-icon { font-size: 1.2rem; flex-shrink: 0; }
+    .container-item-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+
     /* ===== RESPONSIVE ===== */
     @media (max-width: 900px) {
       .about-grid, .skills-layout, .contact-grid { grid-template-columns: 1fr; gap: 40px; }
@@ -748,7 +873,7 @@
   <nav id="navbar">
     <div class="container">
       <div class="nav-inner">
-        <a href="#hero" class="nav-logo">R<span>.</span>Bassig</a>
+        <a href="#hero" class="nav-logo">Renzie <span>Bassig</span></a>
         <ul class="nav-links">
           <li><a href="#about">About</a></li>
           <li><a href="#services">Services</a></li>
@@ -788,7 +913,10 @@
           <span class="dot"></span>
           Available for Freelance Work
         </div>
-        <h1 class="hero-name">Renzie<br><span class="accent">Bassig</span></h1>
+        <div class="image-container">
+            <img src="assets/renziebassig-professional_profile.png" alt="">
+        </div>
+        <h5 class="hero-name">Renzie <span class="accent">Bassig</span> </h5>
         <p class="hero-title">⚡ Automation Specialist Developer</p>
         <p class="hero-tagline">
           Helping businesses automate, optimize, and scale through smart technical solutions.
@@ -902,85 +1030,210 @@
   <section id="portfolio" class="section-pad">
     <div class="container">
       <div class="portfolio-header reveal">
-        <div class="section-tag">Portfolio</div>
+        <div class="section-tag">Portfolio Breakdown</div>
         <h2 class="section-title">Work That <span class="hl">Speaks for Itself</span></h2>
         <p class="section-sub">A curated selection of projects that showcase technical depth, creative thinking, and real-world impact.</p>
       </div>
-      <div class="portfolio-grid">
-
-        <div class="project-card reveal reveal-delay-1">
-          <div class="project-thumb thumb-1">
-            <span>🎵</span>
-          </div>
-          <div class="project-body">
-            <div class="project-tags">
-              <span class="tag tag-amber">Automation</span>
-              <span class="tag tag-teal">Android</span>
-            </div>
-            <h3 class="project-title">Android Bluetooth Spotify Automation</h3>
-            <p class="project-desc">Designed and deployed an Android automation workflow that auto-launches Spotify and configures playback settings upon Bluetooth device connection — eliminating manual steps every commute.</p>
-            <a href="#contact" class="project-link">
-              Learn More
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-          </div>
+  
+      <div class="tabs-wrapper reveal reveal-delay-1">
+        <!-- TAB BUTTONS -->
+        <div class="tabs-nav">
+          <button class="tab-btn active" data-tab="tab-1" onclick="switchTab(event)">
+            <span>🤖 Automation</span>
+            <span class="tab-badge">8</span>
+          </button>
+          <button class="tab-btn" data-tab="tab-2" onclick="switchTab(event)">
+            <span>🔧 Support</span>
+            <span class="tab-badge">15</span>
+          </button>
+          <button class="tab-btn" data-tab="tab-3" onclick="switchTab(event)">
+            <span>⚙️ Systems</span>
+            <span class="tab-badge">12</span>
+          </button>
+          <button class="tab-btn" data-tab="tab-4" onclick="switchTab(event)">
+            <span>🌐 Web</span>
+            <span class="tab-badge">6</span>
+          </button>
+          <button class="tab-btn" data-tab="tab-5" onclick="switchTab(event)">
+            <span>💡 Consulting</span>
+            <span class="tab-badge">9</span>
+          </button>
         </div>
 
-        <div class="project-card reveal reveal-delay-2">
-          <div class="project-thumb thumb-2">
-            <span>📐</span>
-          </div>
-          <div class="project-body">
-            <div class="project-tags">
-              <span class="tag tag-blue">Design</span>
-              <span class="tag tag-amber">Visualization</span>
+        <!-- TAB CONTENT -->
+        <div class="tabs-content">
+          <!-- Tab 1: Automation -->
+          <div id="tab-1" class="tab-panel active">
+            <div class="tab-container">
+              <div class="container-title">🤖 Android & Workflow Automation</div>
+              <p class="container-desc">Specialized automation solutions that eliminate manual tasks and streamline repetitive workflows.</p>
+              <div class="container-list">
+                <div class="container-item">
+                  <div class="container-item-icon">⚡</div>
+                  <div class="container-item-text"><strong>App Event Automation</strong><br>Trigger workflows based on app notifications, screens, or events</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">🔄</div>
+                  <div class="container-item-text"><strong>Repetitive Task Loop</strong><br>Automate recurring actions across multiple apps</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">📊</div>
+                  <div class="container-item-text"><strong>Data Collection Flow</strong><br>Auto-collect and organize data from various sources</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">🌐</div>
+                  <div class="container-item-text"><strong>Cross-App Integration</strong><br>Connect apps that don't have native integrations</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">⏰</div>
+                  <div class="container-item-text"><strong>Scheduled Execution</strong><br>Run automations on set schedules or conditions</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">🛡️</div>
+                  <div class="container-item-text"><strong>Error Handling</strong><br>Built-in safeguards and retry mechanisms</div>
+                </div>
+              </div>
             </div>
-            <h3 class="project-title">Trailer Design Blueprint Visualization</h3>
-            <p class="project-desc">Created detailed blueprint visualizations for a custom trailer design project, translating physical measurements and engineering specs into accurate, reviewable digital representations.</p>
-            <a href="#contact" class="project-link">
-              Learn More
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
+          </div>
+
+          <!-- Tab 2: Technical Support -->
+          <div id="tab-2" class="tab-panel">
+            <div class="tab-container">
+              <div class="container-title">🔧 Technical Support & Troubleshooting</div>
+              <p class="container-desc">Comprehensive technical support for device, software, and connectivity issues across platforms.</p>
+              <div class="container-list">
+                <div class="container-item">
+                  <div class="container-item-icon">📱</div>
+                  <div class="container-item-text"><strong>Device Diagnostics</strong><br>Identify hardware and OS issues quickly</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">🐛</div>
+                  <div class="container-item-text"><strong>App Troubleshooting</strong><br>Fix crashes, freezes, and compatibility problems</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">🌐</div>
+                  <div class="container-item-text"><strong>Connectivity Issues</strong><br>WiFi, Bluetooth, and network debugging</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">🔐</div>
+                  <div class="container-item-text"><strong>Security & Permissions</strong><br>Fix permission errors and security issues</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">💾</div>
+                  <div class="container-item-text"><strong>Data Recovery</strong><br>Recover lost files and configure backups</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">📋</div>
+                  <div class="container-item-text"><strong>Documentation</strong><br>All fixes documented for future reference</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 3: System Optimization -->
+          <div id="tab-3" class="tab-panel">
+            <div class="tab-container">
+              <div class="container-title">⚙️ System Optimization & Setup</div>
+              <p class="container-desc">Fine-tune your systems for performance, reliability, and efficiency.</p>
+              <div class="container-list">
+                <div class="container-item">
+                  <div class="container-item-icon">⚡</div>
+                  <div class="container-item-text"><strong>Performance Tuning</strong><br>Optimize speed, reduce lag, manage resources</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">🛠️</div>
+                  <div class="container-item-text"><strong>Environment Setup</strong><br>Configure development/production environments</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">🔧</div>
+                  <div class="container-item-text"><strong>Configuration Refinement</strong><br>Customize settings for your workflow</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">📊</div>
+                  <div class="container-item-text"><strong>Resource Management</strong><br>Monitor and optimize CPU, memory, storage</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">🔄</div>
+                  <div class="container-item-text"><strong>Update & Maintenance</strong><br>Keep systems current and secure</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">📈</div>
+                  <div class="container-item-text"><strong>Scaling Strategy</strong><br>Plan for growth and increased usage</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 4: Web & Digital -->
+          <div id="tab-4" class="tab-panel">
+            <div class="tab-container">
+              <div class="container-title">🌐 Web & Digital Assistance</div>
+              <p class="container-desc">Web tools, digital workspace setup, and online presence optimization.</p>
+              <div class="container-list">
+                <div class="container-item">
+                  <div class="container-item-icon">🌍</div>
+                  <div class="container-item-text"><strong>Web Setup</strong><br>Domain, hosting, SSL, and basic web config</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">🎨</div>
+                  <div class="container-item-text"><strong>HTML/CSS Tweaks</strong><br>Minor site customization and styling</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">🔌</div>
+                  <div class="container-item-text"><strong>Tool Integrations</strong><br>Connect your apps and platforms</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">📝</div>
+                  <div class="container-item-text"><strong>CMS Configuration</strong><br>WordPress, Shopify, or custom setup</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">📋</div>
+                  <div class="container-item-text"><strong>Workspace Organization</strong><br>Set up digital workflows and systems</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">🔍</div>
+                  <div class="container-item-text"><strong>SEO Basics</strong><br>Optimize content and metadata</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 5: Consulting -->
+          <div id="tab-5" class="tab-panel">
+            <div class="tab-container">
+              <div class="container-title">💡 Technical Consulting & Strategy</div>
+              <p class="container-desc">Strategic guidance on automation, systems, and technology decisions.</p>
+              <div class="container-list">
+                <div class="container-item">
+                  <div class="container-item-icon">🎯</div>
+                  <div class="container-item-text"><strong>Automation Strategy</strong><br>Identify and plan automation opportunities</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">🔬</div>
+                  <div class="container-item-text"><strong>Tech Stack Review</strong><br>Evaluate and recommend tools</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">📚</div>
+                  <div class="container-item-text"><strong>Technical Training</strong><br>Teach tools and best practices</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">🚀</div>
+                  <div class="container-item-text"><strong>Growth Planning</strong><br>Scale your systems sustainably</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">💼</div>
+                  <div class="container-item-text"><strong>Process Audit</strong><br>Review workflows for optimization</div>
+                </div>
+                <div class="container-item">
+                  <div class="container-item-icon">🛡️</div>
+                  <div class="container-item-text"><strong>Security Consulting</strong><br>Best practices and risk assessment</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
-        <div class="project-card reveal reveal-delay-3">
-          <div class="project-thumb thumb-3">
-            <span>📺</span>
-          </div>
-          <div class="project-body">
-            <div class="project-tags">
-              <span class="tag tag-teal">Tech Support</span>
-              <span class="tag tag-amber">Troubleshooting</span>
-            </div>
-            <h3 class="project-title">TV Streaming Error Troubleshooting</h3>
-            <p class="project-desc">Diagnosed and resolved persistent buffering, authentication, and codec errors on smart TV streaming platforms — restoring uninterrupted service and documenting root-cause findings for the client.</p>
-            <a href="#contact" class="project-link">
-              Learn More
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-          </div>
-        </div>
-
-        <div class="project-card reveal reveal-delay-4">
-          <div class="project-thumb thumb-4">
-            <span>⛵</span>
-          </div>
-          <div class="project-body">
-            <div class="project-tags">
-              <span class="tag tag-blue">Design</span>
-              <span class="tag tag-teal">Visualization</span>
-            </div>
-            <h3 class="project-title">Boat Design Visualization</h3>
-            <p class="project-desc">Developed a detailed 3D-style visualization of a custom boat layout, helping the client communicate design intent to builders and stakeholders with accuracy and clarity.</p>
-            <a href="#contact" class="project-link">
-              Learn More
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-          </div>
-        </div>
-
       </div>
+   
     </div>
   </section>
 
@@ -1317,6 +1570,22 @@
       toast.textContent = msg;
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    // TABS FUNCTIONALITY
+    function switchTab(e) {
+      const button = e.target.closest('.tab-btn');
+      if (!button) return;
+
+      const tabId = button.dataset.tab;
+      
+      // Remove active from all buttons and panels
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+      
+      // Add active to clicked button and corresponding panel
+      button.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
     }
   </script>
 </body>
