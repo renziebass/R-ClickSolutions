@@ -1044,17 +1044,17 @@
           </button>
           <button class="tab-btn" data-tab="tab-2" onclick="switchTab(event)">
             <span>Make.com</span>
-            <span class="tab-badge">15</span>
+            <span class="tab-badge">2</span>
           </button>
           <button class="tab-btn" data-tab="tab-3" onclick="switchTab(event)">
-            <span>HighLevel</span>
-            <span class="tab-badge">12</span>
-          </button>
-          <button class="tab-btn" data-tab="tab-4" onclick="switchTab(event)">
             <span>n8n</span>
+            <span class="tab-badge">5</span>
+          </button>
+          <button class="tab-btn disabled" data-tab="tab-4" onclick="switchTab(event)">
+            <span>Highlevel</span>
             <span class="tab-badge">6</span>
           </button>
-          <button class="tab-btn" data-tab="tab-5" onclick="switchTab(event)">
+          <button class="tab-btn disabled" data-tab="tab-5" onclick="switchTab(event)">
             <span>💡 Consulting</span>
             <span class="tab-badge">9</span>
           </button>
@@ -1062,7 +1062,7 @@
 
         <!-- TAB CONTENT -->
         <div class="tabs-content">
-          <!-- Tab 1: Automation -->
+          <!-- Tab 1:  -->
           <div id="tab-1" class="tab-panel active">
             <div class="tab-container">
               <div class="container-title">Zapier Projects</div>
@@ -1121,105 +1121,151 @@
             </div>
           </div>
 
-          <!-- Tab 2: Technical Support -->
+          <!-- Tab 2: -->
           <div id="tab-2" class="tab-panel">
             <div class="tab-container">
-              <div class="container-title">🔧 Technical Support & Troubleshooting</div>
-              <p class="container-desc">Comprehensive technical support for device, software, and connectivity issues across platforms.</p>
-              <div class="container-list">
-                <div class="container-item">
-                  <div class="container-item-icon">📱</div>
-                  <div class="container-item-text"><strong>Device Diagnostics</strong><br>Identify hardware and OS issues quickly</div>
+              <div class="container-title">Make Projects</div>
+                <div class="portfolio-grid">
+
+                    <div class="project-card reveal reveal-delay-1">
+                    <div class="project-thumb thumb-1">
+                        <img src="assets/make/make_1.png" alt="">
+                    </div>
+                    <div class="project-body">
+
+                        <h3 class="project-title">Automated Xero Ledger Report Sync to Asana</h3>
+                        <p class="project-desc">Built a Make.com automation that detects completed tasks in Asana, retrieves transaction-level financial data from Xero using the Account Transactions report as a substitute for the unavailable General Ledger Detail API, formats the data into a downloadable CSV report matching Xero’s manual export layout, and automatically uploads the file as an attachment to the completed Asana task.</p>
+                        <a href="#contact" class="project-link">
+                        Learn More
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </a>
+                    </div>
+                    </div>
+
+                    <div class="project-card reveal reveal-delay-1">
+                    <div class="project-thumb thumb-1">
+                        <img src="assets/make/make_2.png" alt="">
+                    </div>
+                    <div class="project-body">
+
+                        <h3 class="project-title">AI-Powered Gmail Attachment Processing System</h3>
+                        <p class="project-desc">Developed a Make.com automation that monitors incoming emails in Gmail, extracts and analyzes file attachments using OpenAI API-powered AI, generates intelligent descriptive filenames based on document content, renames and uploads files to Google Drive, logs processing activity into Google Sheets, and sends automated processing summaries for streamlined document management.</p>
+                        <a href="#contact" class="project-link">
+                        Learn More
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </a>
+                    </div>
+                    </div>
+                   
+
                 </div>
-                <div class="container-item">
-                  <div class="container-item-icon">🐛</div>
-                  <div class="container-item-text"><strong>App Troubleshooting</strong><br>Fix crashes, freezes, and compatibility problems</div>
-                </div>
-                <div class="container-item">
-                  <div class="container-item-icon">🌐</div>
-                  <div class="container-item-text"><strong>Connectivity Issues</strong><br>WiFi, Bluetooth, and network debugging</div>
-                </div>
-                <div class="container-item">
-                  <div class="container-item-icon">🔐</div>
-                  <div class="container-item-text"><strong>Security & Permissions</strong><br>Fix permission errors and security issues</div>
-                </div>
-                <div class="container-item">
-                  <div class="container-item-icon">💾</div>
-                  <div class="container-item-text"><strong>Data Recovery</strong><br>Recover lost files and configure backups</div>
-                </div>
-                <div class="container-item">
-                  <div class="container-item-icon">📋</div>
-                  <div class="container-item-text"><strong>Documentation</strong><br>All fixes documented for future reference</div>
-                </div>
-              </div>
             </div>
           </div>
 
-          <!-- Tab 3: System Optimization -->
-          <div id="tab-3" class="tab-panel">
+          <!-- Tab 3: -->
+         <div id="tab-3" class="tab-panel">
             <div class="tab-container">
-              <div class="container-title">⚙️ System Optimization & Setup</div>
-              <p class="container-desc">Fine-tune your systems for performance, reliability, and efficiency.</p>
-              <div class="container-list">
-                <div class="container-item">
-                  <div class="container-item-icon">⚡</div>
-                  <div class="container-item-text"><strong>Performance Tuning</strong><br>Optimize speed, reduce lag, manage resources</div>
+              <div class="container-title">n8n Projects</div>
+                <div class="portfolio-grid">
+
+                    <div class="project-card reveal reveal-delay-1">
+                    <div class="project-thumb thumb-1">
+                        <img src="assets/n8n/n8n_1.png" alt="">
+                    </div>
+                    <div class="project-body">
+                        <h3 class="project-title">Knowledge-Based Facebook Customer Support AI Agent</h3>
+                        <p class="project-desc">Built an AI-powered customer support agent in n8n that automatically responds to customer inquiries from a Facebook page using a document-based knowledge system. The workflow processes incoming webhook events, retrieves information from connected knowledge base documents, generates context-aware responses using the Google Gemini AI model, and sends automated replies back to customers in real time.</p>
+                        <a href="#contact" class="project-link">
+                        Learn More
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </a>
+                    </div>
+                    </div>
+
+                    
+                    <div class="project-card reveal reveal-delay-1">
+                    <div class="project-thumb thumb-1">
+                        <img src="assets/n8n/n8n_2.png" alt="">
+                    </div>
+                    <div class="project-body">
+                        <h3 class="project-title">AI Jobs Scraper + Resume Optimizer</h3>
+                        <p class="project-desc">Developed an end-to-end AI-powered recruitment assistance workflow in n8n that automatically scrapes job listings from multiple online job platforms, extracts and analyzes key requirements, qualifications, skills, and responsibilities using AI models. The workflow compares job descriptions against a candidate’s resume, identifies skill gaps and optimization opportunities, and generates tailored resume enhancements to better align with specific job postings. It also provides keyword recommendations for ATS (Applicant Tracking System) optimization, highlights missing qualifications, and creates customized resume summaries and experience descriptions. The automated system significantly reduces manual job search and resume customization efforts while increasing the likelihood of passing ATS screenings and attracting recruiter attention.</p>
+                        <a href="#contact" class="project-link">
+                        Learn More
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </a>
+                    </div>
+                    </div>
+
+                    <div class="project-card reveal reveal-delay-1">
+                    <div class="project-thumb thumb-1">
+                        <img src="assets/n8n/n8n_3.png" alt="">
+                    </div>
+                    <div class="project-body">
+                        <h3 class="project-title">Automated YouTube Shorts and Facebook Reels Creator</h3>
+                        <p class="project-desc">Built an AI-powered content automation system in n8n that automatically generates and publishes short-form videos for YouTube Shorts and Facebook Reels. The workflow uses Google Gemini to create engaging video concepts and scripts, processes structured AI outputs, authenticates with Google Cloud using JWT and OAuth token exchange, and generates videos through an AI video generation API. The automation continuously monitors the video generation process, retrieves completed videos, converts them into upload-ready files, and automatically publishes the content to YouTube and Facebook. This end-to-end workflow eliminates manual video creation and distribution, enabling consistent, scalable social media content production.</p>
+                        <a href="#contact" class="project-link">
+                        Learn More
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </a>
+                    </div>
+                    </div>
+
+                    
+                    <div class="project-card reveal reveal-delay-1">
+                    <div class="project-thumb thumb-1">
+                        <img src="assets/n8n/n8n_4.png" alt="">
+                    </div>
+                    <div class="project-body">
+                        <h3 class="project-title">AI Appointment Setter</h3>
+                        <p class="project-desc">Built an AI-powered appointment scheduling system in n8n for a wellness center using Vapi voice AI and Airtable. The workflow handles inbound appointment calls, allowing clients to book, reschedule, and cancel appointments through natural voice conversations. Call details, appointment information, customer interactions, and booking statuses are automatically logged and synchronized with Airtable for centralized record management. The system streamlines appointment operations, reduces administrative workload, and provides real-time updates across the wellness center's scheduling process.</p>
+                        <a href="#contact" class="project-link">
+                        Learn More
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </a>
+                    </div>
+                    </div>
+
+                    <div class="project-card reveal reveal-delay-1">
+                    <div class="project-thumb thumb-1">
+                        <img src="assets/n8n/n8n_5.png" alt="">
+                    </div>
+                    <div class="project-body">
+                        <h3 class="project-title">Retrieval Augmented Generationr</h3>
+                        <p class="project-desc">Developed a Retrieval-Augmented Generation (RAG) system in n8n that enables AI-powered question answering using a centralized document knowledge base. The workflow automatically monitors Google Drive for new, updated, and deleted files to keep the knowledge base synchronized. Documents are processed and converted into vector embeddings using Google Vertex AI and stored in Supabase Vector Store for semantic search. An AI Agent retrieves the most relevant information from the vector database before generating responses. This approach improves answer accuracy and reduces AI hallucinations by grounding responses in actual company documents. The solution provides scalable knowledge management and instant access to organizational information.</p>
+                        <a href="#contact" class="project-link">
+                        Learn More
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </a>
+                    </div>
+                    </div>
+  
+
                 </div>
-                <div class="container-item">
-                  <div class="container-item-icon">🛠️</div>
-                  <div class="container-item-text"><strong>Environment Setup</strong><br>Configure development/production environments</div>
-                </div>
-                <div class="container-item">
-                  <div class="container-item-icon">🔧</div>
-                  <div class="container-item-text"><strong>Configuration Refinement</strong><br>Customize settings for your workflow</div>
-                </div>
-                <div class="container-item">
-                  <div class="container-item-icon">📊</div>
-                  <div class="container-item-text"><strong>Resource Management</strong><br>Monitor and optimize CPU, memory, storage</div>
-                </div>
-                <div class="container-item">
-                  <div class="container-item-icon">🔄</div>
-                  <div class="container-item-text"><strong>Update & Maintenance</strong><br>Keep systems current and secure</div>
-                </div>
-                <div class="container-item">
-                  <div class="container-item-icon">📈</div>
-                  <div class="container-item-text"><strong>Scaling Strategy</strong><br>Plan for growth and increased usage</div>
-                </div>
-              </div>
             </div>
           </div>
 
-          <!-- Tab 4: Web & Digital -->
-          <div id="tab-4" class="tab-panel">
+          <!-- Tab 4:  -->
+         <div id="tab-4" class="tab-panel">
             <div class="tab-container">
-              <div class="container-title">🌐 Web & Digital Assistance</div>
-              <p class="container-desc">Web tools, digital workspace setup, and online presence optimization.</p>
-              <div class="container-list">
-                <div class="container-item">
-                  <div class="container-item-icon">🌍</div>
-                  <div class="container-item-text"><strong>Web Setup</strong><br>Domain, hosting, SSL, and basic web config</div>
+              <div class="container-title">GHL Projects</div>
+                <div class="portfolio-grid">
+
+                    <div class="project-card reveal reveal-delay-1">
+                    <div class="project-thumb thumb-1">
+                        <img src="assets/n8n/n8n_1.png" alt="">
+                    </div>
+                    <div class="project-body">
+                        <h3 class="project-title">Knowledge-Based Facebook Customer Support AI Agent</h3>
+                        <p class="project-desc">Built an AI-powered customer support agent in n8n that automatically responds to customer inquiries from a Facebook page using a document-based knowledge system. The workflow processes incoming webhook events, retrieves information from connected knowledge base documents, generates context-aware responses using the Google Gemini AI model, and sends automated replies back to customers in real time.</p>
+                        <a href="#contact" class="project-link">
+                        Learn More
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </a>
+                    </div>
+                    </div>
+
                 </div>
-                <div class="container-item">
-                  <div class="container-item-icon">🎨</div>
-                  <div class="container-item-text"><strong>HTML/CSS Tweaks</strong><br>Minor site customization and styling</div>
-                </div>
-                <div class="container-item">
-                  <div class="container-item-icon">🔌</div>
-                  <div class="container-item-text"><strong>Tool Integrations</strong><br>Connect your apps and platforms</div>
-                </div>
-                <div class="container-item">
-                  <div class="container-item-icon">📝</div>
-                  <div class="container-item-text"><strong>CMS Configuration</strong><br>WordPress, Shopify, or custom setup</div>
-                </div>
-                <div class="container-item">
-                  <div class="container-item-icon">📋</div>
-                  <div class="container-item-text"><strong>Workspace Organization</strong><br>Set up digital workflows and systems</div>
-                </div>
-                <div class="container-item">
-                  <div class="container-item-icon">🔍</div>
-                  <div class="container-item-text"><strong>SEO Basics</strong><br>Optimize content and metadata</div>
-                </div>
-              </div>
             </div>
           </div>
 
