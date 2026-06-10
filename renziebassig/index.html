@@ -866,37 +866,15 @@
       .footer-inner { flex-direction: column; text-align: center; align-items: center; }
     }
   </style>
-  <script>
-    let emailjsReady = false;
-    
-    // Dynamically load EmailJS library
-    function loadEmailJS() {
-      const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/index.min.js';
-      script.type = 'text/javascript';
-      
-      script.onload = function() {
-        console.log('EmailJS library loaded from CDN');
-        if (typeof emailjs !== 'undefined') {
-          emailjs.init('hC4-pm10_mBhtCaa_');
-          emailjsReady = true;
-          console.log('EmailJS initialized successfully');
-        }
-      };
-      
-      script.onerror = function() {
-        console.error('Failed to load EmailJS from CDN');
-      };
-      
-      document.head.appendChild(script);
-    }
-    
-    // Load EmailJS when DOM is ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', loadEmailJS);
-    } else {
-      loadEmailJS();
-    }
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function() {
+      emailjs.init({
+        publicKey: 'hC4-pm10_mBhtCaa_'
+      });
+      window.emailjsReady = true;
+      console.log('EmailJS initialized successfully');
+    })();
   </script>
 </head>
 <body>
@@ -1650,8 +1628,8 @@
 
     // CONTACT FORM
     function handleSubmit() {
-      if (!emailjsReady || typeof emailjs === 'undefined') {
-        console.error('EmailJS not ready', { emailjsReady, emailjsDefined: typeof emailjs });
+      if (!window.emailjsReady || typeof emailjs === 'undefined') {
+        console.error('EmailJS not ready');
         showToast('⚠️ Email service is loading... Please wait a moment and try again.');
         return;
       }
@@ -1676,7 +1654,7 @@
         from_email: email,
         subject: subject,
         message: msg
-      }, 'hC4-pm10_mBhtCaa_').then((response) => {
+      }).then((response) => {
         console.log('Email sent successfully:', response);
         document.getElementById('nameInput').value = '';
         document.getElementById('emailInput').value = '';
