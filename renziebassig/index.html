@@ -866,7 +866,28 @@
       .footer-inner { flex-direction: column; text-align: center; align-items: center; }
     }
   </style>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/index.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/index.min.js" async></script>
+  <script>
+    let emailjsReady = false;
+    
+    // Wait for emailjs library to load
+    function initEmailJS() {
+      if (typeof emailjs !== 'undefined' && !emailjsReady) {
+        emailjs.init('hC4-pm10_mBhtCaa_');
+        emailjsReady = true;
+        console.log('EmailJS initialized successfully');
+      } else if (typeof emailjs === 'undefined') {
+        setTimeout(initEmailJS, 100);
+      }
+    }
+    
+    // Start checking for emailjs after DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initEmailJS);
+    } else {
+      initEmailJS();
+    }
+  </script>
 </head>
 <body>
 
@@ -1619,8 +1640,9 @@
 
     // CONTACT FORM
     function handleSubmit() {
-      if (typeof emailjs === 'undefined') {
-        showToast('❌ Email service not loaded. Please refresh and try again.');
+      if (!emailjsReady || typeof emailjs === 'undefined') {
+        console.error('EmailJS not ready', { emailjsReady, emailjsDefined: typeof emailjs });
+        showToast('⚠️ Email service is loading... Please wait a moment and try again.');
         return;
       }
       
@@ -1680,10 +1702,7 @@
       document.getElementById(tabId).classList.add('active');
     }
 
-    // Initialize EmailJS after all scripts are loaded
-    if (typeof emailjs !== 'undefined') {
-      emailjs.init('hC4-pm10_mBhtCaa_');
-    }
+    // Initialize EmailJS after all scripts are loaded - REMOVED (moved to head)
   </script>
 </body>
 </html>
