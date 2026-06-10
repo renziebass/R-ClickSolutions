@@ -1642,15 +1642,16 @@
         from_email: email,
         subject: subject,
         message: msg
-      }).then(() => {
+      }, 'hC4-pm10_mBhtCaa_').then((response) => {
+        console.log('Email sent successfully:', response);
         document.getElementById('nameInput').value = '';
         document.getElementById('emailInput').value = '';
         document.getElementById('subjectInput').value = '';
         document.getElementById('messageInput').value = '';
         showToast('✅ Message sent! I\'ll get back to you within 24 hours.');
       }).catch(err => {
+        console.error('EmailJS Error:', err);
         showToast('❌ Failed to send. Please try again.');
-        console.error(err);
       });
     }
 
