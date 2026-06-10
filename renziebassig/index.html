@@ -867,11 +867,6 @@
     }
   </style>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/index.min.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      emailjs.init('hC4-pm10_mBhtCaa_');
-    });
-  </script>
 </head>
 <body>
 
@@ -1624,6 +1619,11 @@
 
     // CONTACT FORM
     function handleSubmit() {
+      if (typeof emailjs === 'undefined') {
+        showToast('❌ Email service not loaded. Please refresh and try again.');
+        return;
+      }
+      
       const name = document.getElementById('nameInput').value.trim();
       const email = document.getElementById('emailInput').value.trim();
       const subject = document.getElementById('subjectInput').value.trim();
@@ -1678,6 +1678,11 @@
       // Add active to clicked button and corresponding panel
       button.classList.add('active');
       document.getElementById(tabId).classList.add('active');
+    }
+
+    // Initialize EmailJS after all scripts are loaded
+    if (typeof emailjs !== 'undefined') {
+      emailjs.init('hC4-pm10_mBhtCaa_');
     }
   </script>
 </body>
