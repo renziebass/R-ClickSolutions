@@ -866,6 +866,10 @@
       .footer-inner { flex-direction: column; text-align: center; align-items: center; }
     }
   </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/index.min.js"></script>
+  <script>
+    emailjs.init('hC4-pm10_mBhtCaa_');
+  </script>
 </head>
 <body>
 
@@ -1620,7 +1624,9 @@
     function handleSubmit() {
       const name = document.getElementById('nameInput').value.trim();
       const email = document.getElementById('emailInput').value.trim();
+      const subject = document.getElementById('subjectInput').value.trim();
       const msg = document.getElementById('messageInput').value.trim();
+      
       if (!name || !email || !msg) {
         showToast('⚠️ Please fill in all required fields.');
         return;
@@ -1629,11 +1635,23 @@
         showToast('⚠️ Please enter a valid email address.');
         return;
       }
-      document.getElementById('nameInput').value = '';
-      document.getElementById('emailInput').value = '';
-      document.getElementById('subjectInput').value = '';
-      document.getElementById('messageInput').value = '';
-      showToast('✅ Message sent! I\'ll get back to you within 24 hours.');
+
+      emailjs.send('service_jbvuqpb', 'template_10ilghr', {
+        to_email: 'renziebassig@gmail.com',
+        from_name: name,
+        from_email: email,
+        subject: subject,
+        message: msg
+      }).then(() => {
+        document.getElementById('nameInput').value = '';
+        document.getElementById('emailInput').value = '';
+        document.getElementById('subjectInput').value = '';
+        document.getElementById('messageInput').value = '';
+        showToast('✅ Message sent! I\'ll get back to you within 24 hours.');
+      }).catch(err => {
+        showToast('❌ Failed to send. Please try again.');
+        console.error(err);
+      });
     }
 
     function showToast(msg) {
