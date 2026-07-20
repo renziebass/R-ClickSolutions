@@ -68,14 +68,19 @@
     section { width: 100%; }
 
     .image-container {
+      width: 250px;
+      aspect-ratio: 1/1;
+      border-radius: 50%;
+      overflow: hidden;
+      display: block;
+      margin: 0 auto;
+    }
 
-    width: 250px;        /* controls size */
-    aspect-ratio: 1/1;   /* keeps it square */
-    border-radius: 50%;
-    object-fit: cover;
-    display: block;
-    margin: 0 auto;
-
+    .image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
     .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
 
@@ -176,15 +181,16 @@
     .mobile-menu .nav-cta { align-self: flex-start; color: #0a0a0f !important; }
 
     .theme-toggle {
+      opacity: 0.6;
       position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 1200;
-      width: 52px; height: 52px; border: 3px solid var(--border);
+      border: 3px solid var(--border);
       border-radius: 999px; background: var(--theme-toggle-bg); color: var(--theme-toggle-text);
       display: grid; place-items: center; cursor: pointer;
-      font-size: 1.8rem;
+      font-size: 1.4rem;
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16); backdrop-filter: blur(12px);
       transition: transform 0.2s ease, background-color 0.25s ease, color 0.25s ease;
     }
-    .theme-toggle:hover { transform: translateX(-50%) translateY(-2px); }
+    .theme-toggle:hover { transform: translateX(-50%) translateY(-2px); opacity: 1; }
     .theme-toggle:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
 
     /* ===== HERO ===== */
@@ -242,38 +248,62 @@
       max-width: 800px;
     }
     .hero-badge {
+      justify-content: center;
       display: inline-flex; align-items: center; gap: 8px;
-      padding: 6px 16px;
-      border: 1px solid rgba(255,192,104,0.3);
+      padding: 2px 16px;
+      border: 1px solid rgba(10, 247, 109, 0.3);
       border-radius: 99px;
-      background: rgba(255,192,104,0.07);
+      background: rgba(0, 241, 72, 0.07);
       font-size: 0.8rem; font-weight: 500;
-      color: var(--amber);
       letter-spacing: 0.04em;
-      margin-bottom: 28px;
+      margin-bottom: 20px;
+      margin-top: 12px;
       opacity: 0; animation: fadeUp 0.7s 0.1s forwards;
     }
     .hero-badge .dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--amber);
-      animation: pulse 2s infinite;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: rgba(10, 247, 109, 0.641);
+      animation: pulse 1s infinite;
     }
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.5; transform: scale(0.8); }
     }
     .hero-name {
-      font-family: 'Inter', sans-serif;
-      font-size: clamp(3.2rem, 8vw, 6.5rem);
-      font-weight: 600;
-      line-height: 1.0;
-      letter-spacing: -0.03em;
-      color: var(--hero-name-color);
-      margin-top: 38px;
-      margin-bottom: 12px;
-      opacity: 0; animation: fadeUp 0.7s 0.25s forwards;
-    }
-    .hero-name .accent { color: var(--amber); }
+    text-align: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(3.2rem, 8vw, 6.5rem);
+    font-weight: 600;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    color: var(--hero-name-color);
+    margin-top: 38px;
+    margin-bottom: 12px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.25s forwards;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 1.2em;
+    width: 100%;
+  }
+
+  .hero-name .accent {
+    color: var(--amber);
+  }
+
+  .typing-cursor {
+    display: inline-block;
+    color: var(--amber);
+    font-weight: 700;
+    margin-left: 4px;
+    animation: blinkCursor 0.8s step-end infinite;
+  }
+
+  @keyframes blinkCursor {
+    50% { opacity: 0; }
+  }
     .hero-title {
       font-family: 'Inter', sans-serif;
       font-size: clamp(1.1rem, 2.5vw, 1.5rem);
@@ -282,17 +312,23 @@
       letter-spacing: 0.02em;
       margin-bottom: 24px;
       opacity: 0; animation: fadeUp 0.7s 0.4s forwards;
+      text-align: center;
     }
     .hero-tagline {
+      font-style: italic;
       font-size: clamp(1rem, 1.8vw, 1.2rem);
+      text-align: center;
       color: var(--text-muted);
       font-weight: 300;
       max-width: 560px;
       line-height: 1.8;
       margin-bottom: 44px;
       opacity: 0; animation: fadeUp 0.7s 0.55s forwards;
+      margin: 0 auto;
     }
     .hero-actions {
+      margin-top: 24px;
+      justify-content: center;
       display: flex; gap: 16px; flex-wrap: wrap;
       opacity: 0; animation: fadeUp 0.7s 0.7s forwards;
     }
@@ -329,6 +365,8 @@
       transform: translateY(-2px);
     }
     .hero-stats {
+      margin-bottom: 24px;
+      justify-content: center;
       display: flex; gap: 40px; margin-top: 60px; flex-wrap: wrap;
       opacity: 0; animation: fadeUp 0.7s 0.85s forwards;
     }
@@ -430,22 +468,9 @@
     }
     .about-text p { color: var(--text-muted); line-height: 1.85; margin-bottom: 18px; }
     .about-text p:last-child { margin-bottom: 0; }
-    .about-highlights {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 12px; margin-top: 28px;
-    }
-    .highlight-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 12px 16px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-size: 0.85rem; font-weight: 500;
-      color: var(--text-muted);
-      transition: border-color 0.2s, color 0.2s;
-    }
-    .highlight-item:hover { border-color: rgba(255,192,104,0.3); color: var(--text); }
-    .highlight-item .icon { font-size: 1rem; }
+
+ 
+
 
     /* ===== SERVICES ===== */
     #services { background: var(--bg); }
@@ -899,7 +924,6 @@
     @media (max-width: 600px) {
       .section-pad { padding: 72px 0; }
       .hero-stats { gap: 24px; }
-      .about-highlights { grid-template-columns: 1fr; }
       .footer-inner { flex-direction: column; text-align: center; align-items: center; }
     }
   </style>
@@ -961,10 +985,13 @@
           Available for Freelance Work
         </div>
         <div class="image-container">
-            <img src="assets/renziebassig-professional_profile.png" alt="">
+          <img src="assets/Professional Profile.gif" alt="Renzie Bassig animated profile">
         </div>
-        <h5 class="hero-name">Renzie <span class="accent">Bassig</span> </h5>
-        <p class="hero-title">⚡AI & Automation Specialist</p>
+        <h5 class="hero-name" id="heroName">
+          <span id="heroNameText"></span>
+          <span class="typing-cursor" aria-hidden="true">|</span>
+        </h5>
+        <p class="hero-title">⚡IT Professional | AI & Automation Specialist</p>
         <p class="hero-tagline">
           Helping businesses automate, optimize, and scale through smart technical solutions.
         </p>
@@ -1014,19 +1041,12 @@
             I'm Renzie Bassig — a Technical Virtual Assistant and Automation Specialist and Developer with a passion for transforming complex, repetitive workflows into seamless, smart systems. I thrive at the intersection of technology and efficiency, helping individuals and businesses reclaim their time through well-crafted automations.
           </p>
           <p>
-            With hands-on expertise in Android automation, system troubleshooting, and digital integrations, I bring a methodical and solution-oriented mindset to every project. From diagnosing technical issues to architecting automated workflows, I approach every challenge with precision and curiosity.
+            With hands-on expertise in Workflow automation, system troubleshooting, and digital integrations, I bring a methodical and solution-oriented mindset to every project. From diagnosing technical issues to architecting automated workflows, I approach every challenge with precision and curiosity.
           </p>
           <p>
             Whether it's setting up end-to-end automation pipelines, resolving device and software conflicts, or building tools that connect disparate systems — I'm your go-to technical partner for making things work smarter, not harder.
           </p>
-          <div class="about-highlights">
-            <div class="highlight-item"><span class="icon">⚡</span> Android Automation</div>
-            <div class="highlight-item"><span class="icon">🔧</span> System Troubleshooting</div>
-            <div class="highlight-item"><span class="icon">🌐</span> Web & Digital Tools</div>
-            <div class="highlight-item"><span class="icon">🎯</span> Process Optimization</div>
-            <div class="highlight-item"><span class="icon">📡</span> Tech Integrations</div>
-            <div class="highlight-item"><span class="icon">💡</span> Problem Solving</div>
-          </div>
+
         </div>
       </div>
     </div>
@@ -1046,26 +1066,32 @@
         <div class="service-card reveal reveal-delay-1">
           <span class="service-num">01</span>
           <div class="service-icon">🤖</div>
-          <h3 class="service-name">Automation Setup</h3>
-          <p class="service-desc">Android automation, workflow orchestration, app integrations, and event-triggered systems that run without constant manual input — freeing you to focus on what matters.</p>
+          <h3 class="service-name">Automation Strategy</h3>
+          <p class="service-desc">Planning and implementing automation solutions, workflow orchestration, app integrations, and event-triggered systems that run without constant manual input — freeing you to focus on what matters.</p>
         </div>
         <div class="service-card reveal reveal-delay-2">
           <span class="service-num">02</span>
           <div class="service-icon">🔧</div>
-          <h3 class="service-name">Technical Support</h3>
-          <p class="service-desc">Device troubleshooting, app diagnostics, system error resolution, and IT support for a wide range of platforms — fast, reliable, and documented for future reference.</p>
+          <h3 class="service-name">Tech Stack Review</h3>
+          <p class="service-desc">Evaluating and optimizing your technology stack to ensure it meets your business needs and provides the best possible performance and user experience.</p>
         </div>
         <div class="service-card reveal reveal-delay-3">
           <span class="service-num">03</span>
           <div class="service-icon">⚙️</div>
-          <h3 class="service-name">System Optimization</h3>
-          <p class="service-desc">Performance tuning, environment setup, resource management, and configuration refinement so your systems run at peak efficiency and reliability.</p>
+          <h3 class="service-name">Process Optimization</h3>
+          <p class="service-desc">Streamlining workflows, identifying bottlenecks, and implementing improvements to enhance efficiency and productivity across your operations.</p>
         </div>
         <div class="service-card reveal reveal-delay-4">
           <span class="service-num">04</span>
           <div class="service-icon">🌐</div>
-          <h3 class="service-name">Web & Digital Assistance</h3>
-          <p class="service-desc">Basic web setup, tool integrations, CMS configuration, digital workspace organization, and tech-stack coordination to keep your online presence running smoothly.</p>
+          <h3 class="service-name">Website & Funnels Development</h3>
+          <p class="service-desc">Custom website design and development, along with sales funnel creation, to drive traffic, engagement, and conversions for your business.</p>
+        </div>
+          <div class="service-card reveal reveal-delay-2">
+          <span class="service-num">05</span>
+          <div class="service-icon">🎯</div>
+          <h3 class="service-name">Growth Planning</h3>
+          <p class="service-desc">Strategic planning and execution to drive sustainable growth and expansion for your business.</p>
         </div>
       </div>
     </div>
@@ -1100,10 +1126,6 @@
           <button class="tab-btn disabled" data-tab="tab-4" onclick="switchTab(event)">
             <span>Highlevel</span>
             <span class="tab-badge">6</span>
-          </button>
-          <button class="tab-btn disabled" data-tab="tab-5" onclick="switchTab(event)">
-            <span>💡 Consulting</span>
-            <span class="tab-badge">9</span>
           </button>
         </div>
 
@@ -1316,39 +1338,7 @@
             </div>
           </div>
 
-          <!-- Tab 5: Consulting -->
-          <div id="tab-5" class="tab-panel">
-            <div class="tab-container">
-              <div class="container-title">💡 Technical Consulting & Strategy</div>
-              <p class="container-desc">Strategic guidance on automation, systems, and technology decisions.</p>
-              <div class="container-list">
-                <div class="container-item">
-                  <div class="container-item-icon">🎯</div>
-                  <div class="container-item-text"><strong>Automation Strategy</strong><br>Identify and plan automation opportunities</div>
-                </div>
-                <div class="container-item">
-                  <div class="container-item-icon">🔬</div>
-                  <div class="container-item-text"><strong>Tech Stack Review</strong><br>Evaluate and recommend tools</div>
-                </div>
-                <div class="container-item">
-                  <div class="container-item-icon">📚</div>
-                  <div class="container-item-text"><strong>Technical Training</strong><br>Teach tools and best practices</div>
-                </div>
-                <div class="container-item">
-                  <div class="container-item-icon">🚀</div>
-                  <div class="container-item-text"><strong>Growth Planning</strong><br>Scale your systems sustainably</div>
-                </div>
-                <div class="container-item">
-                  <div class="container-item-icon">💼</div>
-                  <div class="container-item-text"><strong>Process Audit</strong><br>Review workflows for optimization</div>
-                </div>
-                <div class="container-item">
-                  <div class="container-item-icon">🛡️</div>
-                  <div class="container-item-text"><strong>Security Consulting</strong><br>Best practices and risk assessment</div>
-                </div>
-              </div>
-            </div>
-          </div>
+       
         </div>
       </div>
    
@@ -1406,50 +1396,7 @@
             </div>
           </div>
         </div>
-        <div class="skill-bars reveal reveal-delay-2" id="skillBars">
-          <div class="skill-bar-item">
-            <div class="skill-bar-top">
-              <span class="skill-bar-name">Android Automation</span>
-              <span class="skill-bar-pct">92%</span>
-            </div>
-            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="92"></div></div>
-          </div>
-          <div class="skill-bar-item">
-            <div class="skill-bar-top">
-              <span class="skill-bar-name">Troubleshooting & Diagnostics</span>
-              <span class="skill-bar-pct">95%</span>
-            </div>
-            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="95"></div></div>
-          </div>
-          <div class="skill-bar-item">
-            <div class="skill-bar-top">
-              <span class="skill-bar-name">Technical Support</span>
-              <span class="skill-bar-pct">90%</span>
-            </div>
-            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="90"></div></div>
-          </div>
-          <div class="skill-bar-item">
-            <div class="skill-bar-top">
-              <span class="skill-bar-name">System Setup & Optimization</span>
-              <span class="skill-bar-pct">88%</span>
-            </div>
-            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="88"></div></div>
-          </div>
-          <div class="skill-bar-item">
-            <div class="skill-bar-top">
-              <span class="skill-bar-name">Web Tools & Integrations</span>
-              <span class="skill-bar-pct">80%</span>
-            </div>
-            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="80"></div></div>
-          </div>
-          <div class="skill-bar-item">
-            <div class="skill-bar-top">
-              <span class="skill-bar-name">Problem Solving & Strategy</span>
-              <span class="skill-bar-pct">96%</span>
-            </div>
-            <div class="skill-bar-track"><div class="skill-bar-fill" data-width="96"></div></div>
-          </div>
-        </div>
+     
       </div>
     </div>
   </section>
@@ -1609,7 +1556,7 @@
     </div>
   </footer>
 
-  <button id="themeToggle" class="theme-toggle" aria-label="Toggle color mode" title="Toggle color mode">☀️</button>
+  <button id="themeToggle" class="theme-toggle" aria-label="Toggle color mode" title="Toggle color mode">🌤️</button>
 
   <!-- BACK TO TOP -->
   <button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">↑</button>
@@ -1623,7 +1570,7 @@
     function updateThemeButton(theme) {
       if (!themeToggle) return;
       const isDark = theme === 'dark';
-      themeToggle.innerHTML = isDark ? '☀️' : '🌙';
+      themeToggle.innerHTML = isDark ? '🌤️' : '🌙';
       themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
       themeToggle.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
     }
@@ -1753,6 +1700,22 @@
     }
 
     // Initialize EmailJS after all scripts are loaded - REMOVED (moved to head)
+    const heroNameText = document.getElementById('heroNameText');
+    if (heroNameText) {
+      const fullText = 'Renzie Bassig';
+      let index = 0;
+      heroNameText.textContent = '';
+
+      const typingInterval = setInterval(() => {
+        heroNameText.textContent = fullText.slice(0, index + 1);
+        index += 1;
+
+        if (index >= fullText.length) {
+          clearInterval(typingInterval);
+          heroNameText.innerHTML = 'Renzie <span class="accent">Bassig</span>';
+        }
+      }, 100);
+    }
   </script>
 </body>
 </html>
