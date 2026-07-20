@@ -104,8 +104,8 @@
     #navbar {
       position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
       height: var(--nav-h);
-      display: flex; align-items: center;
       transition: background 0.4s, box-shadow 0.4s;
+      padding-top: 16px;;
     }
     #navbar.scrolled {
       background: var(--nav-bg);
@@ -120,7 +120,7 @@
       font-weight: 500; font-size: 1.25rem;
       letter-spacing: -0.02em;
       color: var(--text);
-      margin-right: 60px;
+    
     }
     .nav-logo span { color: var(--amber); }
     .nav-links {
@@ -167,6 +167,7 @@
     .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
     .mobile-menu {
       display: none;
+      justify-content: center; align-items: center;
       position: fixed; top: var(--nav-h); left: 0; right: 0;
       background: var(--nav-menu-bg);
       backdrop-filter: blur(24px);
@@ -178,7 +179,7 @@
     .mobile-menu.open { display: flex; }
     .mobile-menu a { font-size: 1.1rem; font-weight: 500; color: var(--text-muted); transition: color 0.2s; }
     .mobile-menu a:hover { color: var(--amber); }
-    .mobile-menu .nav-cta { align-self: flex-start; color: #0a0a0f !important; }
+    .mobile-menu .nav-cta { align-self: flex-center; color: #0a0a0f !important; }
 
     .theme-toggle {
       opacity: 0.6;
@@ -445,7 +446,7 @@
       width: 180px; height: 180px;
       border-radius: 50%;
       border: 1px solid rgba(255,192,104,0.2);
-      top: -30px; right: -30px;
+      top: -30px; right: -10px;
       animation: spin 20s linear infinite;
     }
     .about-deco::before {
@@ -463,7 +464,7 @@
       width: 100px; height: 100px;
       border: 1px solid rgba(45,212,191,0.2);
       border-radius: 50%;
-      bottom: -20px; left: -20px;
+      bottom: -20px; left: -10px;
       animation: spin 14s linear infinite reverse;
     }
     .about-text p { color: var(--text-muted); line-height: 1.85; margin-bottom: 18px; }
