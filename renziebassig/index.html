@@ -509,7 +509,6 @@
       font-size: clamp(1.2rem, 2.5vw, 1.5rem);
       font-weight: 600;
       letter-spacing: 0.02em;
-      opacity: 0;
       animation: fadeUp 0.7s 0.4s forwards;
       text-align: center;
       padding: 20px;
@@ -530,15 +529,11 @@
     }
 
     .hero-tagline {
-      margin-top: 24px;
       font-style: italic;
-      font-size: clamp(1.2rem, 1.8vw, 1.2rem);
+      margin-top: 24px;
       text-align: center;
-      color: var(--amber);
-      font-weight: 300;
-      max-width: 560px;
-      line-height: 1.8;
       margin-bottom: 44px;
+      
     }
 
     .hero-actions {
@@ -2021,9 +2016,9 @@
             </div>
 
         </div>
-        <p class="hero-tagline">
+        <h2 class="hero-tagline">
           Helping businesses automate, optimize, and scale through smart technical solutions.
-        </p>
+        </h2>
         <div class="hero-actions">
           <a href="#portfolio" class="btn-primary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -3336,10 +3331,8 @@
         if (index >= fullText.length) {
           clearInterval(typingInterval);
           heroNameText.innerHTML = 'Renzie <span class="accent">Bassig</span>';
-        }
-      }, 100);
-    }
-    const check1 = document.getElementById("checkMark1");
+
+          const check1 = document.getElementById("checkMark1");
     const check2 = document.getElementById("checkMark2");
 
     // Start first check immediately
@@ -3358,6 +3351,11 @@
         }, 3000); // Duration of second GIF
 
     }, 4000); // Duration of first GIF
+        }
+      }, 180);
+      
+    }
+    
   </script>
 </body>
 
