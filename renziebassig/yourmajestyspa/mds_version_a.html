@@ -1,0 +1,3963 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Majesty Day Spa — Luxury Massage, Facials & Spa Experiences in Downtown Fort Lauderdale</title>
+  <meta name="description"
+    content="Relax near Las Olas with couples massages, HydraFacials, body treatments, and private spa escapes designed for total relaxation.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lato:wght@300;400;700&family=Great+Vibes&display=swap"
+    rel="stylesheet">
+  <style>
+    @layer tokens-base, eyebrow-crown, buttons, nav, mobile-floating-actions, hero, specials, service-cards, bands, ranked, gift, shop, cart-drawer, standard, testimonials, contact, footer, reveal, responsive;
+
+    @layer tokens-base {
+    /* ============================================================
+   MAJESTY DAY SPA — brand tokens
+   Earthy luxury with royal touches. Deep emerald / sage /
+   warm sand / soft ivory as the base; charcoal for text;
+   gold strictly as accent (hairlines, small icons, rules).
+   Type: Cormorant Garamond (headings, semibold) / Lato (body)
+   / Great Vibes (script, reserved for "Majesty" & "Royal").
+   ============================================================ */
+    :root {
+      --emerald: #0F3D3E;
+      --emerald-2: #14494A;
+      --emerald-3: #1B5A5B;
+      --emerald-deep: #0A2C2D;
+      --sage: #A3B9A5;
+      --sand: #E8D9C5;
+      --sand-2: #F0E6D6;
+      --ivory: #F7F3ED;
+      --charcoal: #232323;
+      --gold: #D4AF37;
+      --gold-lt: #E7CE7E;
+      --gold-dp: #A8862A;
+
+      /* semantic */
+      --ink: var(--emerald);
+      --ink-2: var(--emerald-2);
+      --ink-3: var(--emerald-3);
+      --paper: #FFFFFF;
+      --text: var(--charcoal);
+      --text-soft: #6A6A66;
+      --line: rgba(35, 35, 35, .13);
+      --line-gold: rgba(212, 175, 55, .4);
+      --on-dark: rgba(247, 243, 237, .78);
+
+      --f-display: 'Cormorant Garamond', Garamond, Georgia, serif;
+      --f-body: 'Lato', 'Open Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --f-accent: 'Cormorant Garamond', Georgia, serif;
+      --f-script: 'Great Vibes', cursive;
+
+      --pad: clamp(1.25rem, 5vw, 4.5rem);
+      --sec: clamp(4.5rem, 9vw, 8.5rem);
+      --max: 1220px;
+      --r: 2px;
+      --ease: cubic-bezier(.22, .61, .36, 1);
+      --shadow: 0 18px 50px -28px rgba(15, 61, 62, .45);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 84px;
+      -webkit-text-size-adjust: 100%
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--text);
+      font-family: var(--f-body);
+      font-weight: 400;
+      font-size: clamp(1rem, .96rem + .2vw, 1.06rem);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    img {
+      max-width: 100%;
+      display: block
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none
+    }
+
+    button {
+      font: inherit;
+      color: inherit
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: var(--f-display);
+      font-weight: 600;
+      line-height: 1.12;
+      margin: 0;
+      letter-spacing: .005em
+    }
+
+    h1 {
+      font-size: clamp(2.3rem, 1.4rem + 4.2vw, 4.5rem)
+    }
+
+    h2 {
+      font-size: clamp(1.9rem, 1.3rem + 2.6vw, 3.1rem)
+    }
+
+    h3 {
+      font-size: clamp(1.15rem, 1.02rem + .5vw, 1.45rem)
+    }
+
+    p {
+      margin: 0 0 1rem
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 3px;
+      border-radius: 2px
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: var(--max);
+      margin-inline: auto;
+      padding-inline: var(--pad)
+    }
+
+    .section {
+      padding-block: var(--sec);
+      position: relative
+    }
+
+    .section--dark {
+      background: var(--emerald);
+      color: var(--ivory)
+    }
+
+    .section--dark h2,
+    .section--dark h3 {
+      color: #fff
+    }
+
+    .section--paper {
+      background: var(--paper)
+    }
+
+    .section--sand {
+      background: var(--sand-2)
+    }
+
+    } /* end tokens-base */
+
+    @layer eyebrow-crown {
+    /* --- eyebrow + crown rule (signature) --- */
+    .eyebrow {
+      font-family: var(--f-body);
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .34em;
+      text-transform: uppercase;
+      color: var(--gold-dp);
+      display: flex;
+      align-items: center;
+      gap: .85rem;
+      margin: 0 0 1.1rem
+    }
+
+    .section--dark .eyebrow {
+      color: var(--gold)
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 1px;
+      background: currentColor;
+      opacity: .6;
+      flex: none
+    }
+
+    .eyebrow.is-center {
+      justify-content: center
+    }
+
+    .eyebrow.is-center::after {
+      content: "";
+      width: 34px;
+      height: 1px;
+      background: currentColor;
+      opacity: .6;
+      flex: none
+    }
+
+    .crown-rule {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 2.2rem 0;
+      color: var(--line-gold)
+    }
+
+    .crown-rule::before,
+    .crown-rule::after {
+      content: "";
+      height: 1px;
+      flex: 1;
+      background: currentColor
+    }
+
+    .crown-rule svg {
+      width: 20px;
+      height: 20px;
+      color: var(--gold);
+      opacity: .9;
+      flex: none
+    }
+
+    .lede {
+      font-family: var(--f-body);
+      font-weight: 300;
+      color: var(--text-soft);
+      max-width: 62ch;
+      font-size: clamp(1rem, .95rem + .3vw, 1.15rem)
+    }
+
+    .section--dark .lede {
+      color: rgba(247, 243, 237, .78)
+    }
+
+    .script {
+      font-family: var(--f-script);
+      font-weight: 400;
+      font-style: normal;
+      letter-spacing: .01em;
+      line-height: 1.1;
+      color: var(--gold)
+    }
+
+    .section--dark .script {
+      color: var(--gold-lt)
+    }
+
+    .center {
+      text-align: center
+    }
+
+    .center .lede {
+      margin-inline: auto
+    }
+
+    .center .eyebrow {
+      justify-content: center
+    }
+
+    .center .eyebrow::after {
+      content: "";
+      width: 34px;
+      height: 1px;
+      background: currentColor;
+      opacity: .6;
+      flex: none
+    }
+
+    } /* end eyebrow-crown */
+
+    @layer buttons {
+    /* --- buttons --- (gold stays an accent: hairlines + icons, never a large fill) */
+    .btn {
+      --bg: var(--emerald);
+      --fg: var(--ivory);
+      --bd: var(--emerald);
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+      padding: .95rem 1.9rem;
+      border: 1px solid var(--bd);
+      background: var(--bg);
+      color: var(--fg);
+      font-size: .74rem;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      border-radius: var(--r);
+      cursor: pointer;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px transparent;
+      transition: transform .45s var(--ease), box-shadow .45s var(--ease), background-color .35s var(--ease), color .35s var(--ease), border-color .35s var(--ease);
+    }
+
+    .btn svg {
+      width: 15px;
+      height: 15px;
+      flex: none;
+      color: var(--gold);
+      transition: color .35s var(--ease)
+    }
+
+    .btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(105deg, transparent 30%, rgba(212, 175, 55, .28), transparent 70%);
+      transform: translateX(-120%);
+      transition: transform .8s var(--ease)
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: inset 0 0 0 1px var(--gold), 0 14px 30px -18px rgba(15, 61, 62, .7)
+    }
+
+    .btn:hover::after {
+      transform: translateX(120%)
+    }
+
+    .btn--ghost {
+      --bg: transparent;
+      --fg: var(--emerald);
+      --bd: var(--line-gold)
+    }
+
+    .btn--ghost:hover {
+      --bg: var(--sand);
+      --fg: var(--emerald);
+      --bd: var(--gold);
+      box-shadow: 0 14px 30px -20px rgba(15, 61, 62, .55)
+    }
+
+    /* on emerald backgrounds the fill flips to sand so the button still reads */
+    .on-dark .btn,
+    .section--dark .btn {
+      --bg: var(--sand);
+      --fg: var(--emerald);
+      --bd: var(--sand)
+    }
+
+    .on-dark .btn svg,
+    .section--dark .btn svg {
+      color: var(--gold-dp)
+    }
+
+    .on-dark .btn:hover,
+    .section--dark .btn:hover {
+      --bg: var(--ivory);
+      --bd: var(--gold)
+    }
+
+    .on-dark .btn--ghost,
+    .section--dark .btn--ghost {
+      --bg: transparent;
+      --fg: var(--ivory);
+      --bd: rgba(212, 175, 55, .55)
+    }
+
+    .on-dark .btn--ghost svg,
+    .section--dark .btn--ghost svg {
+      color: var(--gold-lt)
+    }
+
+    .on-dark .btn--ghost:hover,
+    .section--dark .btn--ghost:hover {
+      --bg: rgba(163, 185, 165, .14);
+      --fg: #fff;
+      --bd: var(--gold)
+    }
+
+    .btn--sm {
+      padding: .72rem 1.25rem;
+      font-size: .68rem
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .85rem;
+      margin-top: 2rem
+    }
+
+    .center .btn-row {
+      justify-content: center
+    }
+
+    .link-gold {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--gold-dp);
+      border-bottom: 1px solid var(--line-gold);
+      padding-bottom: .3rem;
+      transition: gap .35s var(--ease), color .35s var(--ease)
+    }
+
+    .link-gold:hover {
+      gap: .85rem;
+      color: var(--ink)
+    }
+
+    } /* end buttons */
+
+    @layer nav {
+    /* ============ NAV ============ */
+    .nav {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 90;
+      transition: background-color .5s var(--ease), box-shadow .5s var(--ease), backdrop-filter .5s var(--ease)
+    }
+
+    .nav__in {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      height: 78px;
+      transition: height .5s var(--ease)
+    }
+
+    .nav.is-stuck {
+      background: rgba(247, 243, 237, .92);
+      backdrop-filter: blur(14px) saturate(1.3);
+      box-shadow: 0 1px 0 var(--line)
+    }
+
+    .nav.is-stuck .nav__in {
+      height: 66px
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      margin-right: auto;
+      color: #fff;
+      transition: color .4s var(--ease)
+    }
+
+    .nav .brand {
+      align-self: flex-start;
+      padding-top: 6px;
+      transition: padding-top .5s var(--ease)
+    }
+
+    .nav.is-stuck .brand {
+      padding-top: 3px
+    }
+
+    .brand__logo {
+      height: 100px;
+      width: auto;
+      display: block;
+      transition: height .5s var(--ease)
+    }
+
+    .nav.is-stuck .brand__logo {
+      height: 78px
+    }
+
+    .nav.is-stuck .brand {
+      color: var(--emerald)
+    }
+
+    .nav:not(.is-stuck) .nav__cta .btn {
+      --bg: var(--sand);
+      --fg: var(--emerald);
+      --bd: var(--sand)
+    }
+
+    .nav:not(.is-stuck) .nav__cta .btn svg {
+      color: var(--gold-dp)
+    }
+
+    .brand svg {
+      width: 26px;
+      height: 26px;
+      color: var(--gold);
+      flex: none
+    }
+
+    .brand b {
+      font-family: var(--f-script);
+      font-weight: 400;
+      font-size: 1.55rem;
+      letter-spacing: .01em;
+      line-height: .9;
+      display: block;
+      color: inherit
+    }
+
+    .brand small {
+      display: block;
+      font-size: .54rem;
+      letter-spacing: .36em;
+      text-transform: uppercase;
+      opacity: .7;
+      font-weight: 700;
+      margin-top: .3rem
+    }
+
+    .menu {
+      display: flex;
+      align-items: center;
+      gap: 1.9rem;
+      list-style: none;
+      margin: 0;
+      padding: 0
+    }
+
+    .menu a {
+      font-size: .72rem;
+      font-weight: 400;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, .85);
+      position: relative;
+      padding-block: .35rem;
+      transition: color .35s var(--ease)
+    }
+
+    .nav.is-stuck .menu a {
+      color: var(--text)
+    }
+
+    .menu a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 1px;
+      width: 0;
+      background: var(--gold);
+      transition: width .4s var(--ease)
+    }
+
+    .menu a:hover::after,
+    .menu a.is-active::after {
+      width: 100%
+    }
+
+    .menu a:hover,
+    .menu a.is-active {
+      color: var(--gold)
+    }
+
+    .nav__cta {
+      display: flex;
+      align-items: center;
+      gap: .6rem
+    }
+
+    .cart-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(255, 255, 255, .35);
+      background: transparent;
+      color: #fff;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all .35s var(--ease)
+    }
+
+    .nav.is-stuck .cart-btn {
+      border-color: var(--line);
+      color: var(--ink)
+    }
+
+    .cart-btn:hover {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--ink)
+    }
+
+    .cart-btn svg {
+      width: 17px;
+      height: 17px
+    }
+
+    .cart-count {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      min-width: 19px;
+      height: 19px;
+      padding: 0 4px;
+      border-radius: 10px;
+      background: var(--gold);
+      color: var(--ink);
+      font-size: .65rem;
+      font-weight: 700;
+      line-height: 19px;
+      text-align: center;
+      transform: scale(0);
+      transition: transform .35s var(--ease)
+    }
+
+    .cart-count.is-on {
+      transform: scale(1)
+    }
+
+    .burger {
+      display: none;
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(255, 255, 255, .35);
+      background: none;
+      border-radius: 50%;
+      cursor: pointer;
+      position: relative
+    }
+
+    .nav.is-stuck .burger {
+      border-color: var(--line)
+    }
+
+    .burger span {
+      position: absolute;
+      left: 12px;
+      width: 18px;
+      height: 1px;
+      background: #fff;
+      transition: all .35s var(--ease)
+    }
+
+    .nav.is-stuck .burger span {
+      background: var(--ink)
+    }
+
+    .burger span:nth-child(1) {
+      top: 17px
+    }
+
+    .burger span:nth-child(2) {
+      top: 23px
+    }
+
+    .burger.is-open span:nth-child(1) {
+      top: 20px;
+      transform: rotate(45deg)
+    }
+
+    .burger.is-open span:nth-child(2) {
+      top: 20px;
+      transform: rotate(-45deg)
+    }
+
+    } /* end nav */
+
+    @layer mobile-floating-actions {
+    /* ============ MOBILE FLOATING ACTIONS ============ */
+    .mobile-fab {
+      display: none;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 80;
+      pointer-events: none
+    }
+
+    .mobile-fab__ai,
+    .mobile-fab__call {
+      pointer-events: auto;
+      width: 39px;
+      height: 39px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: none;
+      background: var(--emerald);
+      color: var(--gold);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, .28);
+      cursor: pointer;
+      transition: background-color .35s var(--ease), color .35s var(--ease)
+    }
+
+    .mobile-fab__ai {
+      position: absolute;
+      left: 1rem;
+      bottom: calc(1rem + env(safe-area-inset-bottom))
+    }
+
+    .mobile-fab__ai svg,
+    .mobile-fab__call svg {
+      width: 17px;
+      height: 17px
+    }
+
+    /* over a dark section the buttons flip to the site's on-dark palette so they stay visible */
+    .mobile-fab.is-on-dark .mobile-fab__ai,
+    .mobile-fab.is-on-dark .mobile-fab__call {
+      background: var(--sand);
+      color: var(--emerald)
+    }
+
+    .mobile-fab__actions {
+      position: absolute;
+      right: 1rem;
+      bottom: calc(1rem + env(safe-area-inset-bottom));
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: .5rem
+    }
+
+    .mobile-fab__book {
+      padding: .54rem .94rem;
+      font-size: .51rem;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, .22)
+    }
+
+    .mobile-fab.is-on-dark .mobile-fab__book {
+      --bg: var(--sand);
+      --fg: var(--emerald);
+      --bd: var(--sand)
+    }
+
+    .mobile-fab.is-on-dark .mobile-fab__book svg {
+      color: var(--gold-dp)
+    }
+
+    .drawer-nav {
+      position: fixed;
+      inset: 0;
+      z-index: 88;
+      background: var(--ink);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: .4rem;
+      padding: 6rem var(--pad) 3rem;
+      clip-path: inset(0 0 100% 0);
+      transition: clip-path .6s var(--ease);
+      visibility: hidden
+    }
+
+    .drawer-nav.is-open {
+      clip-path: inset(0 0 0 0);
+      visibility: visible
+    }
+
+    .drawer-nav a {
+      font-family: var(--f-display);
+      font-size: 1.75rem;
+      color: #fff;
+      padding: .55rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .09);
+      transition: color .3s var(--ease), padding-left .3s var(--ease)
+    }
+
+    .drawer-nav a:hover {
+      color: var(--gold);
+      padding-left: .6rem
+    }
+
+    .drawer-nav .btn {
+      margin-top: 1.8rem;
+      align-self: flex-start
+    }
+
+    } /* end mobile-floating-actions */
+
+    @layer hero {
+    /* ============ HERO ============ */
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: flex;
+      align-items: flex-center;
+      overflow: hidden;
+      isolation: isolate;
+      background: rgb(0, 0, 0);
+
+    }
+
+    .hero__media {
+      position: absolute;
+      inset: 0;
+      z-index: -2
+    }
+
+    .hero__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: .40;
+      transform: scale(1.08);
+      animation: heroZoom 18s var(--ease) forwards
+    }
+
+    @keyframes heroZoom {
+      to {
+        transform: scale(1)
+      }
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(180deg, rgba(0, 0, 0, .35) 0%, rgba(0, 0, 0, .15) 30%, rgba(0, 0, 0, .05) 60%, rgba(0, 0, 0, .05) 100%)
+    }
+
+    .hero__in {
+      padding-block: 8rem 3.4rem;
+      width: 100%;
+      min-width: 0;
+      text-align: center
+    }
+
+    .hero__pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: .5rem;
+      margin-bottom: 1.7rem
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .42rem 1rem;
+      border: 1px solid rgba(212, 175, 55, .4);
+      border-radius: 100px;
+      font-size: .64rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--gold-lt);
+      background: rgba(212, 175, 55, .07);
+      transition: all .35s var(--ease)
+    }
+
+    .pill:hover {
+      background: rgba(212, 175, 55, .18);
+      border-color: var(--gold)
+    }
+
+    .hero h1 {
+      color: #fff;
+      width: 100%;
+      font-size: clamp(2.6rem, 1.6rem + 4.6vw, 5rem);
+      text-shadow: 0 2px 30px rgba(0, 0, 0, .35)
+    }
+
+    .hero h1 em {
+      font-family: var(--f-script);
+      font-style: normal;
+      font-weight: 400;
+      color: var(--gold-lt);
+      font-size: 1.08em;
+      line-height: 1.15
+    }
+
+    .hero__line1 {
+
+    }
+
+    .hero__line2 {
+      display: block;
+      white-space: nowrap;
+      font-size: min(clamp(1rem, 4.7vw, 4.2rem), calc((100vw - 2 * var(--pad)) / 15))
+    }
+
+    .hero__line3 {
+      display: block;
+      margin: .6rem auto 0;
+      white-space: nowrap;
+      color: var(--gold);
+     
+
+
+    }
+
+    .hero__tag {
+      font-family: var(--f-body);
+      font-weight: 300;
+      color: rgba(255, 255, 255, .86);
+      max-width: 52ch;
+      margin-inline: auto;
+      margin-top: 1.5rem;
+      font-size: clamp(1rem, .94rem + .35vw, 1.18rem)
+    }
+
+    .hero__tag a {
+      color: var(--gold-lt);
+      border-bottom: 1px solid rgba(235, 212, 138, .4);
+      transition: border-color .3s
+    }
+
+    .hero__tag a:hover {
+      border-color: var(--gold-lt)
+    }
+
+    .hero__note {
+      font-size: .70rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: white;
+      margin-top: 1.6rem
+    }
+
+    .hero .btn-row {
+      justify-content: center
+    }
+
+    .hero__bar {
+      margin-top: 3.2rem;
+      padding-top: 1.6rem;
+      border-top: 1px solid rgba(255, 255, 255, .14);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.4rem 2.6rem;
+      align-items: center
+    }
+
+    .hero__stat {
+      display: flex;
+      flex-direction: column;
+      gap: .15rem
+    }
+
+    .hero__stat b {
+      font-family: var(--f-display);
+      font-size: 1.35rem;
+      color: #fff;
+      font-weight: 600
+    }
+
+    .hero__stat span {
+      font-size: .64rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, .55)
+    }
+
+    .stars {
+      color: var(--gold);
+      letter-spacing: .15em;
+      font-size: 1rem
+    }
+
+    .scroll-cue {
+      position: absolute;
+      right: var(--pad);
+      bottom: 2.6rem;
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      color: rgba(255, 255, 255, .45);
+      font-size: .62rem;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      writing-mode: vertical-rl
+    }
+
+    .scroll-cue::after {
+      content: "";
+      width: 1px;
+      height: 52px;
+      background: linear-gradient(var(--gold), transparent);
+      animation: cue 2.4s ease-in-out infinite
+    }
+
+    @keyframes cue {
+
+      0%,
+      100% {
+        opacity: .25;
+        transform: scaleY(.4);
+        transform-origin: top
+      }
+
+      50% {
+        opacity: 1;
+        transform: scaleY(1)
+      }
+    }
+
+    } /* end hero */
+
+    @layer specials {
+    /* ============ SPECIALS ============ */
+    .split {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: clamp(2rem, 5vw, 4.5rem);
+      align-items: center
+    }
+
+    .frame {
+      position: relative;
+      padding: 14px
+    }
+
+    .frame::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: 1px solid var(--line-gold);
+      transform: translate(16px, 16px);
+      transition: transform .6s var(--ease)
+    }
+
+    .frame:hover::before {
+      transform: translate(8px, 8px)
+    }
+
+    .frame img {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/5;
+      object-fit: cover;
+      filter: saturate(1.02)
+    }
+
+    .special-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.1rem;
+      margin-top: 3.4rem
+    }
+
+    .special {
+      position: relative;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, .13);
+      background: rgba(255, 255, 255, .03);
+      display: flex;
+      flex-direction: column;
+      transition: transform .5s var(--ease), border-color .5s var(--ease), background-color .5s var(--ease);
+      overflow: hidden
+    }
+
+    .special:hover {
+      transform: translateY(-6px);
+      border-color: var(--line-gold);
+      background: rgba(212, 175, 55, .06)
+    }
+
+    .special__img {
+      position: relative;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      background: var(--ink-3)
+    }
+
+    .special__img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 1.1s var(--ease);
+      opacity: .92
+    }
+
+    .special:hover .special__img img {
+      transform: scale(1.07)
+    }
+
+    .special__body {
+      padding: 1.6rem 1.6rem 1.9rem
+    }
+
+    .special__tag {
+      font-size: .62rem;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: .9rem
+    }
+
+    .special h3 {
+      font-size: 1.25rem;
+      margin-bottom: .5rem
+    }
+
+    .special p {
+      font-size: .92rem;
+      color: rgba(247, 243, 237, .72);
+      margin: 0
+    }
+
+    .special__price {
+      margin-top: 1.2rem;
+      font-family: var(--f-display);
+      color: var(--gold-lt);
+      font-size: 1.1rem
+    }
+
+    .special__price s {
+      color: rgba(247, 243, 237, .42);
+      font-size: .85rem;
+      margin-left: .5rem
+    }
+
+    } /* end specials */
+
+    @layer service-cards {
+    /* ============ SERVICE CARDS ============ */
+    .svc-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: .6rem;
+      margin-top: 3rem
+    }
+
+    .svc-tab-btn {
+      display: inline-flex;
+      flex: none;
+      align-items: center;
+      gap: .5rem;
+      padding: .65rem 1.3rem;
+      border: 1px solid var(--line-gold);
+      border-radius: 100px;
+      background: transparent;
+      color: var(--text);
+      font-family: var(--f-body);
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background-color .35s var(--ease), color .35s var(--ease), border-color .35s var(--ease)
+    }
+
+    .svc-tab-btn:hover {
+      border-color: var(--gold)
+    }
+
+    .svc-tab-btn.is-active {
+      background: var(--emerald);
+      border-color: var(--emerald);
+      color: var(--ivory)
+    }
+
+    .svc-tab-count {
+      font-size: .64rem;
+      opacity: .6
+    }
+
+    .svc-tabs__hint {
+      display: none;
+      align-items: center;
+      justify-content: flex-end;
+      gap: .3rem;
+      margin: .5rem 0 0;
+      font-size: .75rem;
+      color: var(--gold)
+    }
+
+    .svc-tabs__hint svg {
+      width: 11px;
+      height: 11px;
+      flex: none
+    }
+
+    .svc-tab-panel[hidden] {
+      display: none
+    }
+
+    .svc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+      gap: 1.4rem;
+      margin-top: 2.6rem
+    }
+
+    .svc {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      text-align: left;
+      padding: 0;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: transform .55s var(--ease), box-shadow .55s var(--ease), border-color .55s var(--ease)
+    }
+
+    .svc:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow);
+      border-color: var(--line-gold)
+    }
+
+    .svc__img {
+      position: relative;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      background: var(--ink-3)
+    }
+
+    .svc__img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 1.1s var(--ease);
+      opacity: .95
+    }
+
+    .svc:hover .svc__img img {
+      transform: scale(1.07)
+    }
+
+    .svc__icon {
+      position: absolute;
+      left: 1.1rem;
+      bottom: 1.1rem;
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      background: rgba(15, 61, 62, .72);
+      backdrop-filter: blur(6px);
+      border: 1px solid var(--line-gold);
+      color: var(--gold);
+      transition: background-color .45s var(--ease), color .45s var(--ease)
+    }
+
+    .svc:hover .svc__icon {
+      background: var(--gold);
+      color: var(--ink)
+    }
+
+    .svc__icon svg {
+      width: 22px;
+      height: 22px
+    }
+
+    .svc__body {
+      padding: 1.5rem 1.5rem 1.6rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1
+    }
+
+    .svc__meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem .8rem;
+      align-items: baseline;
+      margin: .6rem 0 0;
+      font-size: .72rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--text-soft)
+    }
+
+    .svc__price {
+      font-family: var(--f-display);
+      font-size: 1.15rem;
+      color: var(--gold-dp);
+      letter-spacing: 0;
+      text-transform: none
+    }
+
+    .svc__panel {
+      margin-top: 1rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid var(--line)
+    }
+
+    .svc__panel p {
+      font-size: .9rem;
+      color: var(--text-soft);
+      margin: 0 0 .55rem
+    }
+
+    .svc__panel p b {
+      color: var(--text);
+      font-weight: 500
+    }
+
+    } /* end service-cards */
+
+    @layer bands {
+    /* ============ BANDS ============ */
+    .band {
+      position: relative;
+      padding: clamp(2.6rem, 5vw, 4.2rem);
+      border: 1px solid var(--line-gold);
+      background: linear-gradient(135deg, rgba(212, 175, 55, .1), transparent 55%), var(--sand)
+    }
+
+    .section--dark .band {
+      background: linear-gradient(135deg, rgba(212, 175, 55, .12), transparent 55%), var(--ink-2)
+    }
+
+    .band__grid {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: clamp(1.6rem, 4vw, 3.5rem);
+      align-items: center
+    }
+
+    } /* end bands */
+
+    @layer ranked {
+    /* ============ RANKED (most loved) ============ */
+    .rank {
+      display: grid;
+      gap: 0;
+      margin-top: 3.4rem;
+      border-top: 1px solid var(--line)
+    }
+
+    .rank__row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: clamp(1rem, 3vw, 2.6rem);
+      align-items: center;
+      padding: clamp(1.4rem, 3vw, 2.2rem) 0;
+      border-bottom: 1px solid var(--line);
+      position: relative;
+      transition: padding-left .5s var(--ease)
+    }
+
+    .rank__row::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(212, 175, 55, .08), transparent 70%);
+      opacity: 0;
+      transition: opacity .5s var(--ease)
+    }
+
+    .rank__row:hover {
+      padding-left: 1.2rem
+    }
+
+    .rank__row:hover::before {
+      opacity: 1
+    }
+
+    .rank__row>* {
+      position: relative
+    }
+
+    .rank__n {
+      font-family: var(--f-display);
+      font-weight: 600;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      color: var(--sage);
+      line-height: 1;
+      min-width: 2.4ch
+    }
+
+    .rank__row:hover .rank__n {
+      color: var(--gold)
+    }
+
+    .rank__t {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: .5rem 1rem
+    }
+
+    .rank__t h3 {
+      font-size: clamp(1.2rem, 2vw, 1.6rem)
+    }
+
+    .rank__t em {
+      font-family: var(--f-accent);
+      font-style: italic;
+      color: var(--gold-dp);
+      font-size: 1.05rem
+    }
+
+    .rank__d {
+      font-size: .92rem;
+      color: var(--text-soft);
+      margin: .4rem 0 0;
+      max-width: 56ch
+    }
+
+    .rank__cta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: .5rem;
+      text-align: right
+    }
+
+    .rank__price {
+      font-family: var(--f-display);
+      font-size: 1.1rem;
+      color: var(--ink);
+      white-space: nowrap
+    }
+
+    } /* end ranked */
+
+    @layer gift {
+    /* ============ GIFT ============ */
+    .gift {
+      position: relative;
+      overflow: hidden;
+      background: var(--ink-2);
+      border: 1px solid rgba(212, 175, 55, .28);
+      display: grid;
+      grid-template-columns: 1fr .8fr;
+      align-items: center;
+      gap: 0
+    }
+
+    .gift__body {
+      padding: clamp(2.2rem, 5vw, 4rem)
+    }
+
+    .gift__art {
+      position: relative;
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 2rem;
+      background:
+        radial-gradient(90% 90% at 50% 40%, rgba(212, 175, 55, .22), transparent 70%)
+    }
+
+    .gift-card {
+      width: min(330px, 100%);
+      aspect-ratio: 1.6/1;
+      background: #fff;
+      border: 1px solid var(--line-gold);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .9);
+      transform: rotate(-4deg);
+      transition: transform .7s var(--ease)
+    }
+
+    .gift__art:hover .gift-card {
+      transform: rotate(0deg) translateY(-6px)
+    }
+
+    .gift-card__logo {
+      width: 74px;
+      height: auto;
+      display: block
+    }
+
+    .gift-card span {
+      font-size: .6rem;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--gold-dp)
+    }
+
+    } /* end gift */
+
+    @layer shop {
+    /* ============ SHOP ============ */
+    .why {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1.2rem;
+      margin-top: 3.2rem
+    }
+
+    .why__i {
+      padding: 2rem 1.7rem;
+      border: 1px solid var(--line);
+      background: var(--sand-2);
+      transition: transform .5s var(--ease), border-color .5s var(--ease)
+    }
+
+    .why__i:hover {
+      transform: translateY(-6px);
+      border-color: var(--line-gold)
+    }
+
+    .why__i svg {
+      width: 26px;
+      height: 26px;
+      color: var(--gold-dp);
+      margin-bottom: 1.1rem
+    }
+
+    .why__i h4 {
+      font-size: .74rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      font-family: var(--f-body);
+      font-weight: 500;
+      margin-bottom: .6rem
+    }
+
+    .why__i p {
+      font-size: .9rem;
+      color: var(--text-soft);
+      margin: 0
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+      margin-top: 2.4rem
+    }
+
+    .chip {
+      padding: .72rem 1.35rem;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      cursor: pointer;
+      font-size: .72rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      transition: all .38s var(--ease)
+    }
+
+    .chip:hover {
+      border-color: var(--gold);
+      color: var(--ink);
+      background: rgba(212, 175, 55, .09);
+      transform: translateY(-3px)
+    }
+
+    .brands {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.2rem;
+      margin-top: 2.4rem
+    }
+
+    .brand-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.7rem;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      transition: all .45s var(--ease)
+    }
+
+    .brand-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow)
+    }
+
+    .brand-card b {
+      font-family: var(--f-display);
+      font-weight: 600;
+      font-size: 1.35rem
+    }
+
+    .brand-card small {
+      display: block;
+      font-size: .7rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      margin-top: .3rem
+    }
+
+    .prod-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+      gap: 1.3rem;
+      margin-top: 3rem
+    }
+
+    .prod {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: transform .5s var(--ease), box-shadow .5s var(--ease), border-color .5s var(--ease)
+    }
+
+    .prod:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow);
+      border-color: var(--line-gold)
+    }
+
+    .prod__img {
+      aspect-ratio: 1;
+      position: relative;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(150deg, var(--sand-2), var(--sand));
+      overflow: hidden
+    }
+
+    .prod__img svg {
+      width: 64px;
+      height: 64px;
+      color: var(--gold-dp);
+      opacity: .85;
+      transition: transform .7s var(--ease)
+    }
+
+    .prod:hover .prod__img svg {
+      transform: translateY(-6px) scale(1.06)
+    }
+
+    .prod__badge {
+      position: absolute;
+      top: .85rem;
+      left: .85rem;
+      padding: .3rem .7rem;
+      background: var(--ink);
+      color: var(--gold);
+      font-size: .58rem;
+      letter-spacing: .2em;
+      text-transform: uppercase
+    }
+
+    .prod__body {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: .35rem;
+      flex: 1
+    }
+
+    .prod__brand {
+      font-size: .62rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--text-soft)
+    }
+
+    .prod__name {
+      font-family: var(--f-display);
+      font-weight: 600;
+      font-size: 1.12rem;
+      line-height: 1.3
+    }
+
+    .prod__price {
+      font-family: var(--f-display);
+      font-size: 1.1rem;
+      color: var(--gold-dp);
+      margin-top: .2rem
+    }
+
+    .prod .btn {
+      width: 100%;
+      margin-top: 1rem
+    }
+
+    .btn.is-added {
+      --bg: var(--sage);
+      --bd: var(--sage);
+      --fg: var(--emerald)
+    }
+
+    .btn.is-added svg {
+      color: var(--emerald)
+    }
+
+    } /* end shop */
+
+    @layer cart-drawer {
+    /* ============ CART DRAWER ============ */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 61, 62, .55);
+      backdrop-filter: blur(3px);
+      opacity: 0;
+      visibility: hidden;
+      transition: all .45s var(--ease);
+      z-index: 95
+    }
+
+    .overlay.is-on {
+      opacity: 1;
+      visibility: visible
+    }
+
+    .cart {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100%;
+      width: min(400px, 100%);
+      background: var(--paper);
+      z-index: 96;
+      transform: translateX(101%);
+      transition: transform .55s var(--ease);
+      display: flex;
+      flex-direction: column;
+      box-shadow: -30px 0 60px -30px rgba(0, 0, 0, .4)
+    }
+
+    .cart.is-open {
+      transform: none
+    }
+
+    .cart__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.6rem var(--pad);
+      border-bottom: 1px solid var(--line)
+    }
+
+    .cart__head h3 {
+      font-size: 1.1rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      font-family: var(--f-body);
+      font-weight: 500
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      background: none;
+      cursor: pointer;
+      border-radius: 50%;
+      transition: all .35s var(--ease)
+    }
+
+    .icon-btn:hover {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink)
+    }
+
+    .icon-btn svg {
+      width: 15px;
+      height: 15px
+    }
+
+    .cart__items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.2rem var(--pad)
+    }
+
+    .cart__empty {
+      text-align: center;
+      color: var(--text-soft);
+      padding: 3.5rem 1rem;
+      font-size: .94rem
+    }
+
+    .cart__empty svg {
+      width: 34px;
+      height: 34px;
+      color: var(--line-gold);
+      margin-bottom: 1rem
+    }
+
+    .ci {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 1rem;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--line)
+    }
+
+    .ci__thumb {
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(150deg, var(--sand-2), var(--sand))
+    }
+
+    .ci__thumb svg {
+      width: 24px;
+      height: 24px;
+      color: var(--gold-dp)
+    }
+
+    .ci b {
+      display: block;
+      font-family: var(--f-display);
+      font-weight: 600;
+      font-size: 1.02rem
+    }
+
+    .ci small {
+      font-size: .78rem;
+      color: var(--text-soft)
+    }
+
+    .ci__qty {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      margin-top: .35rem
+    }
+
+    .ci__qty button {
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--line);
+      background: none;
+      cursor: pointer;
+      line-height: 1;
+      border-radius: 2px;
+      transition: all .3s
+    }
+
+    .ci__qty button:hover {
+      background: var(--gold);
+      border-color: var(--gold)
+    }
+
+    .ci__qty span {
+      font-size: .82rem;
+      min-width: 1.6ch;
+      text-align: center
+    }
+
+    .ci__rm {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-soft);
+      font-size: .68rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      transition: color .3s
+    }
+
+    .ci__rm:hover {
+      color: #A33
+    }
+
+    .cart__foot {
+      padding: 1.4rem var(--pad) 2rem;
+      border-top: 1px solid var(--line);
+      background: var(--ivory)
+    }
+
+    .cart__total {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-family: var(--f-display);
+      font-size: 1.2rem;
+      margin-bottom: 1rem
+    }
+
+    .cart__note {
+      font-size: .76rem;
+      color: var(--text-soft);
+      margin: .9rem 0 0;
+      text-align: center
+    }
+
+    } /* end cart-drawer */
+
+    @layer standard {
+    /* ============ STANDARD (bars) ============ */
+    .bars {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 1.6rem 3rem;
+      margin-top: 3.4rem
+    }
+
+    .bar__top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: .6rem
+    }
+
+    .bar__top b {
+      font-family: var(--f-body);
+      font-weight: 400;
+      font-size: .8rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: #fff
+    }
+
+    .bar__top span {
+      font-size: .72rem;
+      color: var(--gold);
+      letter-spacing: .12em
+    }
+
+    .bar__track {
+      height: 2px;
+      background: rgba(247, 243, 237, .16);
+      position: relative;
+      overflow: hidden
+    }
+
+    .bar__fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 0;
+      background: linear-gradient(90deg, var(--sage), var(--gold));
+      transition: width 1.5s var(--ease)
+    }
+
+    .tagcloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .55rem;
+      margin-top: 2.6rem
+    }
+
+    .tag {
+      padding: .5rem 1.05rem;
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 100px;
+      font-size: .68rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: rgba(247, 243, 237, .8);
+      transition: all .35s var(--ease)
+    }
+
+    .tag:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(212, 175, 55, .1)
+    }
+
+    } /* end standard */
+
+    @layer testimonials {
+    /* ============ TESTIMONIALS ============ */
+    .quotes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(275px, 1fr));
+      gap: 1.4rem;
+      margin-top: 3.4rem
+    }
+
+    .quote {
+      padding: 2.2rem 1.9rem;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      position: relative;
+      transition: transform .5s var(--ease), box-shadow .5s var(--ease)
+    }
+
+    .quote:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow)
+    }
+
+    .quote::before {
+      content: "“";
+      position: absolute;
+      top: .2rem;
+      right: 1.2rem;
+      font-family: var(--f-accent);
+      font-size: 5rem;
+      color: var(--line-gold);
+      line-height: 1
+    }
+
+    .quote p {
+      font-family: var(--f-accent);
+      font-size: 1.15rem;
+      line-height: 1.6;
+      color: var(--text);
+      font-style: italic;
+      margin-bottom: 1.4rem
+    }
+
+    .quote footer {
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+      border-top: 1px solid var(--line);
+      padding-top: 1.1rem
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(140deg, var(--sand), var(--sage));
+      display: grid;
+      place-items: center;
+      font-family: var(--f-display);
+      font-weight: 600;
+      color: var(--emerald);
+      font-size: 1rem;
+      flex: none;
+      border: 1px solid var(--line-gold)
+    }
+
+    .quote footer b {
+      display: block;
+      font-family: var(--f-body);
+      font-weight: 700;
+      font-size: .88rem;
+      letter-spacing: .04em
+    }
+
+    .quote footer small {
+      font-size: .68rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--text-soft)
+    }
+
+    } /* end testimonials */
+
+    @layer contact {
+    /* ============ CONTACT ============ */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: clamp(2rem, 5vw, 4.5rem);
+      margin-top: 3.4rem
+    }
+
+    .field {
+      margin-bottom: 1.3rem
+    }
+
+    .field label {
+      display: block;
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      margin-bottom: .55rem
+    }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      padding: .95rem 1.05rem;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      font-family: var(--f-body);
+      font-weight: 300;
+      font-size: .98rem;
+      color: var(--text);
+      border-radius: var(--r);
+      transition: border-color .35s var(--ease), box-shadow .35s var(--ease)
+    }
+
+    .section--dark .field input,
+    .section--dark .field textarea {
+      background: rgba(255, 255, 255, .04);
+      border-color: rgba(255, 255, 255, .16);
+      color: #fff
+    }
+
+    .field input:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, .16)
+    }
+
+    .field textarea {
+      resize: vertical;
+      min-height: 130px
+    }
+
+    .field.has-error input,
+    .field.has-error textarea {
+      border-color: #C9553D
+    }
+
+    .err {
+      display: none;
+      color: #E08B78;
+      font-size: .76rem;
+      margin-top: .4rem
+    }
+
+    .field.has-error .err {
+      display: block
+    }
+
+    .form-ok {
+      display: none;
+      align-items: center;
+      gap: .7rem;
+      padding: 1rem 1.2rem;
+      border: 1px solid var(--line-gold);
+      background: rgba(212, 175, 55, .1);
+      color: var(--gold-lt);
+      font-size: .9rem;
+      margin-top: 1.2rem
+    }
+
+    .form-ok.is-on {
+      display: flex
+    }
+
+    .form-ok svg {
+      width: 18px;
+      height: 18px;
+      flex: none
+    }
+
+    .info-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 1.35rem
+    }
+
+    .info-list li {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start
+    }
+
+    .info-list svg {
+      width: 19px;
+      height: 19px;
+      color: var(--gold);
+      flex: none;
+      margin-top: .25rem
+    }
+
+    .info-list b {
+      display: block;
+      font-size: .66rem;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      color: rgba(247, 243, 237, .55);
+      font-weight: 700;
+      margin-bottom: .25rem
+    }
+
+    .info-list a,
+    .info-list p {
+      color: #fff;
+      font-size: 1rem;
+      margin: 0;
+      transition: color .3s
+    }
+
+    .info-list a:hover {
+      color: var(--gold)
+    }
+
+    .hours {
+      margin-top: 2rem;
+      padding: 1.4rem 1.5rem;
+      border: 1px solid var(--line-gold);
+      background: rgba(163, 185, 165, .08)
+    }
+
+    .hours h4 {
+      font-family: var(--f-body);
+      font-size: .66rem;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: .9rem;
+      font-weight: 500
+    }
+
+    .hours div {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: .92rem;
+      padding: .35rem 0;
+      color: rgba(247, 243, 237, .85)
+    }
+
+    } /* end contact */
+
+    @layer footer {
+    /* ============ FOOTER ============ */
+    .foot {
+      background: var(--charcoal);
+      color: rgba(247, 243, 237, .62);
+      padding-block: clamp(3rem, 6vw, 4.5rem) 0
+    }
+
+    .foot__grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: clamp(2rem, 5vw, 4rem)
+    }
+
+    .foot h4 {
+      font-family: var(--f-body);
+      font-size: .66rem;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+      font-weight: 500
+    }
+
+    .foot ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: .65rem
+    }
+
+    .foot ul a {
+      font-size: .92rem;
+      transition: color .3s var(--ease), padding-left .3s var(--ease)
+    }
+
+    .foot ul a:hover {
+      color: var(--gold);
+      padding-left: .35rem
+    }
+
+    .foot .brand {
+      color: #fff;
+      margin: 0 0 1.1rem
+    }
+
+    .foot__tag {
+      font-family: var(--f-accent);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 1.1rem;
+      color: rgba(247, 243, 237, .7);
+      max-width: 34ch
+    }
+
+    .socials {
+      display: flex;
+      gap: .6rem;
+      margin-top: 1.6rem
+    }
+
+    .socials a {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 50%;
+      transition: all .4s var(--ease)
+    }
+
+    .socials a:hover {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--ink);
+      transform: translateY(-3px)
+    }
+
+    .socials svg {
+      width: 16px;
+      height: 16px
+    }
+
+    .foot__bar {
+      margin-top: 3rem;
+      border-top: 1px solid rgba(255, 255, 255, .09);
+      padding-block: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: .8rem 2rem;
+      justify-content: space-between;
+      font-size: .78rem;
+      color: rgba(247, 243, 237, .42)
+    }
+
+    .foot__bar a:hover {
+      color: var(--gold)
+    }
+
+    } /* end footer */
+
+    @layer reveal {
+    /* ============ REVEAL ============ */
+    .rv {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity .9s var(--ease), transform .9s var(--ease)
+    }
+
+    .rv.is-in {
+      opacity: 1;
+      transform: none
+    }
+
+    .rv-d1 {
+      transition-delay: .09s
+    }
+
+    .rv-d2 {
+      transition-delay: .18s
+    }
+
+    .rv-d3 {
+      transition-delay: .27s
+    }
+
+    .rv-d4 {
+      transition-delay: .36s
+    }
+
+    } /* end reveal */
+
+    @layer responsive {
+    /* ============ RESPONSIVE ============ */
+    @media (max-width:1000px) {
+
+      .split,
+      .contact-grid,
+      .band__grid,
+      .gift,
+      .foot__grid {
+        grid-template-columns: 1fr
+      }
+
+      .gift__art {
+        order: -1;
+        min-height: 240px
+      }
+
+      .frame {
+        max-width: 460px
+      }
+
+      .foot__grid {
+        gap: 2.4rem
+      }
+    }
+
+    @media (max-width:860px) {
+      .menu {
+        display: none
+      }
+
+      .burger {
+        display: block
+      }
+
+      .nav__cta .btn {
+        display: none
+      }
+
+      .nav-call-btn {
+        display: none
+      }
+
+      .mobile-fab {
+        display: block
+      }
+
+      .hero__in {
+        padding-block: 7rem 2.6rem
+      }
+
+      .hero__in .btn-row {
+        display: none
+      }
+
+      .svc-tabs {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        margin-inline: calc(var(--pad) * -1);
+        padding-inline: var(--pad);
+        padding-bottom: .3rem
+      }
+
+      .svc-tabs::-webkit-scrollbar {
+        display: none
+      }
+
+      .svc-tabs__hint {
+        display: flex
+      }
+
+      .scroll-cue {
+        display: none
+      }
+
+      .rank__row {
+        grid-template-columns: auto 1fr;
+        row-gap: .9rem
+      }
+
+      .rank__cta {
+        grid-column: 1/-1;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%
+      }
+
+      .brand small {
+        display: none
+      }
+    }
+
+    @media (max-width:520px) {
+      .btn:not(.mobile-fab__book) {
+        width: 100%
+      }
+
+      .btn-row {
+        flex-direction: column
+      }
+
+      .hero__bar {
+        gap: 1.1rem 1.6rem
+      }
+
+      .prod-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: .85rem
+      }
+
+      .prod__body {
+        padding: .95rem
+      }
+
+      .prod__name {
+        font-size: .94rem
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important
+      }
+
+      html {
+        scroll-behavior: auto
+      }
+
+      .rv {
+        opacity: 1;
+        transform: none
+      }
+    }
+    } /* end responsive */
+  </style>
+</head>
+
+<body>
+
+  <!-- ===================== ICON SPRITE ===================== -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-crown" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8z" />
+        <path d="M5 19h14" />
+      </symbol>
+      <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path
+          d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z" />
+      </symbol>
+      <symbol id="i-ai-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4.5 3 .9-4.2A7.5 7.5 0 1 1 21 11.5z" />
+        <path d="M12 8.2l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7.7-1.8z" />
+      </symbol>
+      <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+        stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="1" />
+        <path d="M16 2v4M8 2v4M3 10h18" />
+      </symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round">
+        <path d="M12 5v14M5 12h14" />
+      </symbol>
+      <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round">
+        <path d="M18 6L6 18M6 6l12 12" />
+      </symbol>
+      <symbol id="i-bag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4H6z" />
+        <path d="M3 6h18M16 10a4 4 0 0 1-8 0" />
+      </symbol>
+      <symbol id="i-hands" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 21c-3.5-2.4-7-5-7-8.8A3.7 3.7 0 0 1 12 9.6a3.7 3.7 0 0 1 7 2.6c0 3.8-3.5 6.4-7 8.8z" />
+        <path d="M12 9.6V3M9 5.5l3-2.5 3 2.5" />
+      </symbol>
+      <symbol id="i-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 20c0-8 5-14 16-16 0 10-5 15-11 15-2.5 0-5 .3-5 1z" />
+        <path d="M9 15c2-3 5-5 8-6" />
+      </symbol>
+      <symbol id="i-drop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2.7S5.5 9.4 5.5 14a6.5 6.5 0 0 0 13 0C18.5 9.4 12 2.7 12 2.7z" />
+        <path d="M9 15a3 3 0 0 0 3 3" />
+      </symbol>
+      <symbol id="i-stone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
+        stroke-linecap="round" stroke-linejoin="round">
+        <ellipse cx="12" cy="16.5" rx="8.5" ry="4" />
+        <ellipse cx="12" cy="11" rx="6" ry="3" />
+        <ellipse cx="12" cy="6" rx="3.6" ry="2" />
+      </symbol>
+      <symbol id="i-boat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 18c1.5 1.5 3 1.5 4.5 0S10.5 16.5 12 18s3 1.5 4.5 0 3-1.5 4.5 0" />
+        <path d="M4.5 14L6 9h12l1.5 5" />
+        <path d="M12 9V4M12 4l4 2-4 1.6" />
+      </symbol>
+      <symbol id="i-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="9" width="18" height="12" rx="1" />
+        <path d="M3 13h18M12 9v12" />
+        <path d="M12 9S10.5 3 8 4s1 5 4 5zM12 9s1.5-6 4-5-1 5-4 5z" />
+      </symbol>
+      <symbol id="i-truck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 6h11v10H3zM14 9h4l3 3v4h-7" />
+        <circle cx="7" cy="18" r="2" />
+        <circle cx="17" cy="18" r="2" />
+      </symbol>
+      <symbol id="i-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" />
+        <path d="M18.5 16.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7.7-1.8z" />
+      </symbol>
+      <symbol id="i-bottle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path
+          d="M10 2h4v3.2c0 .8.3 1.5.9 2.1l.7.7c.9.9 1.4 2.1 1.4 3.3V20a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-8.7c0-1.2.5-2.4 1.4-3.3l.7-.7c.6-.6.9-1.3.9-2.1V2z" />
+        <path d="M7.4 13h9.2" />
+      </symbol>
+      <symbol id="i-jar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"
+        stroke-linejoin="round">
+        <rect x="5" y="8" width="14" height="13" rx="2" />
+        <rect x="7" y="3" width="10" height="4" rx="1" />
+        <path d="M8.5 13.5c1.5-1.5 3-1.5 4 0s2.5 1.5 3.5 0" />
+      </symbol>
+      <symbol id="i-pump" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="7" y="9" width="10" height="13" rx="2" />
+        <path d="M10 9V6h4v3" />
+        <path d="M14 6h3l1.5-3" />
+        <path d="M9.5 14h5" />
+      </symbol>
+      <symbol id="i-pad" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"
+        stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9" />
+        <circle cx="12" cy="12" r="5" />
+        <path d="M12 3v2M12 19v2M3 12h2M19 12h2" />
+      </symbol>
+      <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="4" width="20" height="16" rx="2" />
+        <path d="M22 6l-10 7L2 6" />
+      </symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+        <circle cx="12" cy="10" r="3" />
+      </symbol>
+      <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 6L9 17l-5-5" />
+      </symbol>
+      <symbol id="i-fb" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.6.4-1 1-1z" />
+      </symbol>
+      <symbol id="i-ig" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <rect x="3" y="3" width="18" height="18" rx="5" />
+        <circle cx="12" cy="12" r="4" />
+        <circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none" />
+      </symbol>
+      <symbol id="i-tt" viewBox="0 0 24 24" fill="currentColor">
+        <path
+          d="M16.5 3h-3v12.2a2.6 2.6 0 1 1-2.2-2.6v-3a5.6 5.6 0 1 0 5.2 5.6V9.4a6.6 6.6 0 0 0 3.8 1.2v-3a3.7 3.7 0 0 1-3.8-3.6z" />
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- ===================== NAV ===================== -->
+  <header class="nav" id="nav">
+    <div class="wrap nav__in">
+      <a class="brand" href="#home" aria-label="Majesty Day Spa — home">
+        <img class="brand__logo" src="assets/majesty_day_spa_logo.png" alt="" width="1024" height="1024">
+      </a>
+      <nav aria-label="Primary">
+        <ul class="menu" id="menu">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#specials">Specials</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#shop">Shop</a></li>
+          <li><a href="#standard">The Standard</a></li>
+          <li><a href="#reviews">Reviews</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="nav__cta">
+        <button class="cart-btn" id="cartBtn" aria-label="Open cart">
+          <svg>
+            <use href="#i-bag" />
+          </svg>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+        <a class="cart-btn nav-call-btn" href="tel:+17542232669" aria-label="Call Majesty Day Spa">
+          <svg>
+            <use href="#i-phone" />
+          </svg>
+        </a>
+        <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
+          rel="noopener">Book</a>
+        <button class="burger" id="burger" aria-label="Open menu"
+          aria-expanded="false"><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="drawer-nav" id="mobileNav">
+    <a href="#home">Home</a>
+    <a href="#specials">Specials</a>
+    <a href="#services">Services</a>
+    <a href="#shop">Shop</a>
+    <a href="#standard">The Standard</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#contact">Contact</a>
+    <a class="btn" href="tel:+17542232669"><svg>
+        <use href="#i-phone" />
+      </svg> Call / Text</a>
+  </div>
+
+  <div class="mobile-fab" aria-hidden="false">
+    <button type="button" class="mobile-fab__ai" id="aiChatBtn" aria-label="Chat with us">
+      <svg>
+        <use href="#i-ai-chat" />
+      </svg>
+    </button>
+    <div class="mobile-fab__actions">
+      <a class="mobile-fab__call" href="tel:+17542232669" aria-label="Call Majesty Day Spa">
+        <svg>
+          <use href="#i-phone" />
+        </svg>
+      </a>
+      <a class="btn btn--sm mobile-fab__book" href="https://go.booker.com/location/yourmajestyspa/service-menu"
+        target="_blank" rel="noopener">Book</a>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+     PHOTOGRAPHY SLOTS
+     Every <img> carries a data-shot="" note describing the
+     brief for that slot. Replace the temporary Wix-hosted
+     sources with self-hosted art in these four families:
+       1. Interiors — throne chairs, salt room, accent walls,
+          treatment rooms, decor details.
+       2. Treatments — massage, facials, body scrubs (consent
+          on file for any recognisable guest).
+       3. Close-ups — oils, salts, linens, candles, crystals.
+       4. Lifestyle — guests relaxing; cast for diverse ages,
+          genders, and body types.
+     Shoot warm and low-contrast so images sit inside the
+     emerald / sand / ivory palette rather than fighting it.
+     ========================================================== -->
+  <main>
+    <!-- ===================== HERO ===================== -->
+    <section class="hero" id="home">
+      <div class="hero__media">
+        <img
+          src="assets/majesty_3chains.png"
+          alt="Majesty Day Spa reception with throne chairs and gold accent wall"
+          data-shot="HERO — spa interior: throne chairs / accent wall, wide landscape, 2400x1200 min"
+          aria-hidden="true">
+      </div>
+      <div class="wrap hero__in on-dark">
+        <div class="hero__pills rv is-in">
+          <span class="pill">Easy booking</span>
+          <span class="pill">Gift cards</span>
+          <span class="pill">Direct-book perks</span>
+        </div>
+        <h1 class="rv is-in rv-d1 hero__line1">Luxury Massage, <br> <span class="hero__line2">Facials &amp; Spa Experiences</span></h1>
+        <h2 class="hero__line3">in Downtown Fort Lauderdale</h2>
+        <p class="hero__tag rv is-in rv-d2">Relax near Las Olas with couples <a href="#services">massages</a>, <a
+            href="#services">HydraFacials</a>, <a href="#services">body treatments</a>, and private spa escapes designed
+          for total relaxation.</p>
+        <div class="btn-row rv is-in rv-d3">
+          <a class="btn" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
+            rel="noopener"><svg>
+              <use href="#i-cal" />
+            </svg> Book</a>
+          <a class="btn btn--ghost" href="tel:+17542232669"><svg>
+              <use href="#i-phone" />
+            </svg> Call</a>
+        </div>
+        <p class="hero__note rv is-in rv-d3">Limited daily appointment slots. <br> Advance booking recommended.</p>
+        <div class="hero__bar rv is-in rv-d4">
+          <div class="hero__stat"><b class="stars">★★★★★</b><span>Rated 4.5 / 5 by 700+ clients</span></div>
+          <div class="hero__stat"><b>Couples · Solo · Group</b><span>Private suites available</span></div>
+          <div class="hero__stat"><b>Steps from Las Olas</b><span>Valet parking $5</span></div>
+        </div>
+      </div>
+      <span class="scroll-cue" aria-hidden="true">Scroll</span>
+    </section>
+
+    <!-- ===================== SPECIALS ===================== -->
+    <section class="section section--dark" id="specials">
+      <div class="wrap">
+        <div class="split">
+          <div class="rv">
+            <p class="eyebrow">Limited time</p>
+            <h2>Exclusive Spa Specials at <span class="script">Majesty</span> Day Spa</h2>
+            <div class="crown-rule" aria-hidden="true"><svg>
+                <use href="#i-crown" />
+              </svg></div>
+            <p class="lede">Discover limited-time experiences thoughtfully curated to elevate your relaxation, restore
+              your glow, and make every visit feel indulgent.</p>
+            <div class="btn-row">
+              <a class="btn" href="#specialsList">View Current Specials</a>
+              <a class="btn btn--ghost" href="https://go.booker.com/location/yourmajestyspa/service-menu"
+                target="_blank" rel="noopener">Reserve your Experience</a>
+            </div>
+          </div>
+          <div class="frame rv rv-d2">
+            <img
+              src="assets/specials_img.png"
+              alt="female guest receiving a massage in a couples suite"
+              data-shot="SPECIALS — interior: couples suite or salt room, portrait 4:5" loading="lazy">
+          </div>
+        </div>
+
+        <div class="special-grid" id="specialsList">
+          <article class="special rv">
+            <div class="special__img">
+              <img src="assets/summer_reset.png" alt="Majesty Summer Reset treatment"
+                data-shot="SPECIALS CARD — Summer Reset: massage + facial pairing, landscape 4:3" loading="lazy">
+            </div>
+            <div class="special__body">
+              <p class="special__tag">Seasonal</p>
+              <h3>Majesty Summer Reset</h3>
+              <p>80-minute full body relaxation massage paired with a hydrating express facial and cold-towel finish.</p>
+              <p class="special__price">$215 <s>$250</s></p>
+            </div>
+          </article>
+          <article class="special rv rv-d1">
+            <div class="special__img">
+              <img src="assets/couples_river.png" alt="Waterfront Couples Escape suite"
+                data-shot="SPECIALS CARD — Couples Escape: riverfront suite, landscape 4:3" loading="lazy">
+            </div>
+            <div class="special__body">
+              <p class="special__tag">For two</p>
+              <h3>Waterfront Couples Escape</h3>
+              <p>Side-by-side massage in the riverfront suite, sparkling toast, and a private lounge hour afterward.</p>
+              <p class="special__price">$395 <s>$440</s></p>
+            </div>
+          </article>
+          <article class="special rv rv-d2">
+            <div class="special__img">
+              <img src="assets/member.png" alt="Crown Society membership"
+                data-shot="SPECIALS CARD — Crown Society: lifestyle/membership, landscape 4:3" loading="lazy">
+            </div>
+            <div class="special__body">
+              <p class="special__tag">Members</p>
+              <h3>Crown Society</h3>
+              <p>A monthly treatment, priority scheduling, and member-only pricing on every add-on and retail product.</p>
+              <p class="special__price">From $109 / mo</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SERVICES ===================== -->
+    <section class="section" id="services">
+      <div class="wrap">
+        <div class="center rv">
+          <p class="eyebrow">The menu</p>
+          <h2><span class="script">Majesty</span> Day Spa Services and Experiences</h2>
+          <div class="crown-rule" aria-hidden="true"><svg>
+              <use href="#i-crown" />
+            </svg></div>
+          <p class="lede">Select a service to see what it's best for and how long to set aside.</p>
+        </div>
+
+        <div class="svc-tabs" role="tablist" aria-label="Service categories">
+          <button class="svc-tab-btn is-active" type="button" data-tab="massage" role="tab" aria-selected="true"
+            aria-controls="tab-massage" id="tabbtn-massage">Massage</button>
+          <button class="svc-tab-btn" type="button" data-tab="facials" role="tab" aria-selected="false"
+            aria-controls="tab-facials" id="tabbtn-facials">Facials</button>
+          <button class="svc-tab-btn" type="button" data-tab="body" role="tab" aria-selected="false"
+            aria-controls="tab-body" id="tabbtn-body">Body Treatments</button>
+          <button class="svc-tab-btn" type="button" data-tab="luxury" role="tab" aria-selected="false"
+            aria-controls="tab-luxury" id="tabbtn-luxury">Luxury Experiences</button>
+        </div>
+        <p class="svc-tabs__hint">Swipe for more <svg>
+            <use href="#i-arrow" />
+          </svg></p>
+
+        <!-- NOTE: placeholder service line-up per category — swap in the real menu names/durations/prices/photos when ready -->
+        <div class="svc-tab-panel" id="tab-massage" role="tabpanel" aria-labelledby="tabbtn-massage">
+          <div class="svc-grid">
+            <article class="svc rv">
+              <div class="svc__img">
+                <img src="assets/sports_massage.png" alt="Guest receiving a Swedish relaxation massage"
+                  data-shot="SERVICES/MASSAGE — Swedish: broad, flowing strokes, 4:3" loading="lazy">
+                <span class="svc__icon"><svg>
+                    <use href="#i-hands" />
+                  </svg></span>
+              </div>
+              <div class="svc__body">
+                <h3>Sports Massage</h3>
+                <div class="svc__meta"><span>50 min</span><span class="svc__price">from $150</span></div>
+                <div class="svc__panel">
+                  <p>Perfect for athletes or active guests. Combines deep tissue, assisted stretching, and targeted pressure to improve flexibility, reduce injury, and speed recovery.</p>
+                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/detail-summary/4882465"
+                    target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
+                      <use href="#i-arrow" />
+                    </svg></a>
+                </div>
+              </div>
+            </article>
+
+            <article class="svc rv rv-d1">
+              <div class="svc__img">
+                <img src="assets/prenatal_massage.png" alt="Guest receiving a deep tissue massage"
+                  data-shot="SERVICES/MASSAGE — deep tissue: hands working shoulders, 4:3" loading="lazy">
+                <span class="svc__icon"><svg>
+                    <use href="#i-hands" />
+                  </svg></span>
+              </div>
+              <div class="svc__body">
+                <h3>Prenatal Massage</h3>
+                <div class="svc__meta"><span>60 – 90 min</span><span class="svc__price">from $150</span></div>
+                <div class="svc__panel">
+                  <p>A soothing, safe escape designed for mothers-to-be. Pillows and gentle touch ease discomfort in the lower back, hips, and legs while promoting calm for you and baby.</p>
+                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/detail-summary/3904887"
+                    target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
+                      <use href="#i-arrow" />
+                    </svg></a>
+                </div>
+              </div>
+            </article>
+
+            <article class="svc rv rv-d2">
+              <div class="svc__img">
+                <img src="assets/hot_stone.png" alt="Guest receiving a hot stone massage"
+                  data-shot="SERVICES/MASSAGE — hot stone: stones + hands, 4:3" loading="lazy">
+                <span class="svc__icon"><svg>
+                    <use href="#i-hands" />
+                  </svg></span>
+              </div>
+              <div class="svc__body">
+                <h3>Hot Stone Massage</h3>
+                <div class="svc__meta"><span>2 hours</span><span class="svc__price">$210</span></div>
+                <div class="svc__panel">
+                  <p>Smooth, heated basalt stones amplify relaxation while melting away deep muscle tension. A sensory journey ideal for grounding energy and recharging the soul.</p>
+                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/detail-summary/4773861"
+                    target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
+                      <use href="#i-arrow" />
+                    </svg></a>
+                </div>
+              </div>
+            </article>
+
+            <article class="svc rv rv-d3">
+              <div class="svc__img">
+                <img src="assets/couples_massage.jpg" alt="Couple receiving a side-by-side massage"
+                  data-shot="SERVICES/MASSAGE — couples suite: two tables, 4:3" loading="lazy">
+                <span class="svc__icon"><svg>
+                    <use href="#i-hands" />
+                  </svg></span>
+              </div>
+              <div class="svc__body">
+                <h3>Couples Massage</h3>
+                <div class="svc__meta"><span>50 min</span><span class="svc__price">$300</span></div>
+                <div class="svc__panel">
+                  <p>Unwind side by side with our Wine & Couples Massage experience. Enjoy a personalized full-body relaxation session enhanced with aromatherapy, organic sugar scrub & soothing warm towels. Prepaid members Only - Call for questions. A $25 deposit is required to reserve your appointment and will be applied toward your final balance at checkout, which may include gratuity or valet parking.</p>
+                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/detail-summary/4895229"
+                    target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
+                      <use href="#i-arrow" />
+                    </svg></a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="svc-tab-panel" id="tab-facials" role="tabpanel" aria-labelledby="tabbtn-facials" hidden>
+          <div class="svc-grid">
+            <article class="svc rv">
+              <div class="svc__img">
+                <img src="assets/facial.jpg" alt="Esthetician performing a HydraFacial treatment"
+                  data-shot="SERVICES/FACIALS — HydraFacial: vortex device close-up, 4:3" loading="lazy">
+                <span class="svc__icon"><svg>
+                    <use href="#i-drop" />
+                  </svg></span>
+              </div>
+              <div class="svc__body">
+                <h3>HydraFacial</h3>
+                <div class="svc__meta"><span>60 min</span><span class="svc__price">$199 – $225</span></div>
+                <div class="svc__panel">
+                  <p><b>Best for</b> deep hydration and an instant glow using vortex technology.</p>
+                  <p><b>Ideal if</b> you want visible results before an event.</p>
+                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu?category=94388"
+                    target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
+                      <use href="#i-arrow" />
+                    </svg></a>
+                </div>
+              </div>
+            </article>
+
+            <article class="svc rv rv-d1">
+              <div class="svc__img">
+                <img src="assets/facial.jpg" alt="Esthetician performing a signature facial treatment"
+                  data-shot="SERVICES/FACIALS — signature facial: treatment close-up, 4:3" loading="lazy">
+                <span class="svc__icon"><svg>
+                    <use href="#i-drop" />
+                  </svg></span>
+              </div>
+              <div class="svc__body">
+                <h3>Signature Facial</h3>
+                <div class="svc__meta"><span>50 min</span><span class="svc__price">from $100</span></div>
+                <div class="svc__panel">
+                  <p><b>Best for</b> a customized cleanse, exfoliation, and hydration.</p>
+                  <p><b>Ideal if</b> you want a classic, relaxing facial.</p>
+                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu?category=94388"
+                    target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
+                      <use href="#i-arrow" />
+                    </svg></a>
+                </div>
+              </div>
+            </article>
+
+            <article class="svc rv rv-d2">
+              <div class="svc__img">
+                <img src="assets/facial.jpg" alt="Esthetician performing an anti-aging facial treatment"
+                  data-shot="SERVICES/FACIALS — anti-aging: serum application, 4:3" loading="lazy">
+                <span class="svc__icon"><svg>
+                    <use href="#i-drop" />
+                  </svg></span>
+              </div>
+              <div class="svc__body">
+                <h3>Anti-Aging Facial</h3>
+                <div class="svc__meta"><span>60 min</span><span class="svc__price">from $140</span></div>
+                <div class="svc__panel">
+                  <p><b>Best for</b> fine lines, firmness, and radiance.</p>
+                  <p><b>Ideal if</b> you want a targeted, results-driven treatment.</p>
+                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu?category=94388"
+                    target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
+                      <use href="#i-arrow" />
+                    </svg></a>
+                </div>
+              </div>
+            </article>
+
+            <article class="svc rv rv-d3">
+              <div class="svc__img">
+                <img src="assets/facial.jpg" alt="Esthetician performing an acne clarifying facial treatment"
+                  data-shot="SERVICES/FACIALS — acne clarifying: extraction/steam, 4:3" loading="lazy">
+                <span class="svc__icon"><svg>
+                    <use href="#i-drop" />
+                  </svg></span>
+              </div>
+              <div class="svc__body">
+                <h3>Acne Clarifying Facial</h3>
+                <div class="svc__meta"><span>50 min</span><span class="svc__price">from $110</span></div>
+                <div class="svc__panel">
+                  <p><b>Best for</b> congested or breakout-prone skin.</p>
+                  <p><b>Ideal if</b> you want a deep clean without over-drying.</p>
+                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu?category=94388"
+                    target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
+                      <use href="#i-arrow" />
+                    </svg></a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="svc-tab-panel" id="tab-body" role="tabpanel" aria-labelledby="tabbtn-body" hidden>
+          <div class="svc-grid">
+            <article class="svc rv">
+              <div class="svc__img">
+                <img
+                  src="https://static.wixstatic.com/media/c0fcbb_5c92cd88d11145e58c1227e90e4a8005~mv2.webp/v1/fill/w_280,h_400,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/image%20(5).webp"
+                  alt="Exfoliating salt scrub treatment" data-shot="SERVICES/BODY — salt scrub close-up, 4:3"
+                  loading="lazy">
+                <span class="svc__icon"><svg>
+                    <use href="#i-leaf" />
+                  </svg></span>
+              </div>
+              <div class="svc__body">
+                <h3>Exfoliating Salt Scrub</h3>
+                <div class="svc__meta"><span>50 min</span><span class="svc__price">from $85</span></div>
+                <div class="svc__panel">
+                  <p><b>Best for</b> smoothing rough skin and boosting circulation.</p>
+                  <p><b>Ideal if</b> you want silky, glowing skin.</p>
+                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
+                    rel="noopener">Book Now <svg style="width:14px;height:14px">
+                      <use href="#i-arrow" />
+                    </svg></a>
+                </div>
+              </div>
+            </article>
+
+            <article class="svc rv rv-d1">
+              <div class="svc__img">
+                <img
+                  src="https://static.wixstatic.com/media/c0fcbb_5c92cd88d11145e58c1227e90e4a8005~mv2.webp/v1/fill/w_280,h_400,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/image%20(5).webp"
+                  alt="Detox body wrap treatment" data-shot="SERVICES/BODY — wrap: linens + warm towels, 4:3"
+                  loading="lazy">
+                <span class="svc__icon"><svg>
+                    <use href="#i-leaf" />
+                  </svg></span>
+              </div>
+              <div class="svc__body">
+                <h3>Detox Body Wrap</h3>
+                <div class="svc__meta"><span>50 min</span><span class="svc__price">from $95</span></div>
+                <div class="svc__panel">
+                  <p><b>Best for</b> gentle detoxification and skin renewal.</p>
+                  <p><b>Ideal if</b> you want a lighter, refreshed feeling.</p>
+                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
+                    rel="noopener">Book Now <svg style="width:14px;height:14px">
+                      <use href="#i-arrow" />
+                    </svg></a>
+                </div>
+              </div>
+            </article>
+
+            <article class="svc rv rv-d2">
+              <div class="svc__img">
+                <img
+                  src="https://static.wixstatic.com/media/c0fcbb_5c92cd88d11145e58c1227e90e4a8005~mv2.webp/v1/fill/w_280,h_400,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/image%20(5).webp"
+                  alt="Full body renewal ritual treatment" data-shot="SERVICES/BODY — full ritual: multi-step, 4:3"
+                  loading="lazy">
+                <span class="svc__icon"><svg>
+                    <use href="#i-leaf" />
+                  </svg></span>
+              </div>
+              <div class="svc__body">
+                <h3>Full Body Renewal Ritual</h3>
+                <div class="svc__meta"><span>2 hrs</span><span class="svc__price">from $220</span></div>
+                <div class="svc__panel">
+                  <p><b>Best for</b> a complete scrub, wrap, and massage combination.</p>
+                  <p><b>Ideal if</b> you want a full spa day in one visit.</p>
+                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
+                    rel="noopener">Book Now <svg style="width:14px;height:14px">
+                      <use href="#i-arrow" />
+                    </svg></a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="svc-tab-panel" id="tab-luxury" role="tabpanel" aria-labelledby="tabbtn-luxury" hidden>
+          <div class="svc-grid">
+            <article class="svc rv">
+              <div class="svc__img">
+                <img
+                  src="https://static.wixstatic.com/media/c0fcbb_dba98a61a7d34d29bd03e42c7f03c361~mv2.webp/v1/fill/w_300,h_400,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/image%20(7).webp"
+                  alt="Couple at a waterfront spa escape" data-shot="SERVICES/LUXURY — waterfront couples suite, 4:3"
+                  loading="lazy">
+                <span class="svc__icon"><svg>
+                    <use href="#i-boat" />
+                  </svg></span>
+              </div>
+              <div class="svc__body">
+                <h3>Waterfront Couples Escape</h3>
+                <div class="svc__meta"><span>90 min</span><span class="svc__price">from $395</span></div>
+                <div class="svc__panel">
+                  <p><b>Best for</b> side-by-side massages plus a private lounge hour.</p>
+                  <p><b>Ideal if</b> you're booking for two or celebrating together.</p>
+                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
+                    rel="noopener">Book Now <svg style="width:14px;height:14px">
+                      <use href="#i-arrow" />
+                    </svg></a>
+                </div>
+              </div>
+            </article>
+
+            <article class="svc rv rv-d1">
+              <div class="svc__img">
+                <img
+                  src="https://static.wixstatic.com/media/c0fcbb_dba98a61a7d34d29bd03e42c7f03c361~mv2.webp/v1/fill/w_300,h_400,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/image%20(7).webp"
+                  alt="Sunset renewal ritual pairing" data-shot="SERVICES/LUXURY — sunset ritual: golden hour, 4:3"
+                  loading="lazy">
+                <span class="svc__icon"><svg>
+                    <use href="#i-boat" />
+                  </svg></span>
+              </div>
+              <div class="svc__body">
+                <h3>Sunset Renewal Ritual</h3>
+                <div class="svc__meta"><span>90 min</span><span class="svc__price">from $225</span></div>
+                <div class="svc__panel">
+                  <p><b>Best for</b> a body treatment and facial pairing in one indulgent session.</p>
+                  <p><b>Ideal if</b> you want variety without booking two separate visits.</p>
+                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
+                    rel="noopener">Book Now <svg style="width:14px;height:14px">
+                      <use href="#i-arrow" />
+                    </svg></a>
+                </div>
+              </div>
+            </article>
+
+            <article class="svc rv rv-d2">
+              <div class="svc__img">
+                <img
+                  src="https://static.wixstatic.com/media/c0fcbb_dba98a61a7d34d29bd03e42c7f03c361~mv2.webp/v1/fill/w_300,h_400,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/image%20(7).webp"
+                  alt="Royal spa day multi-treatment retreat" data-shot="SERVICES/LUXURY — full spa day, 4:3"
+                  loading="lazy">
+                <span class="svc__icon"><svg>
+                    <use href="#i-boat" />
+                  </svg></span>
+              </div>
+              <div class="svc__body">
+                <h3>Royal Spa Day</h3>
+                <div class="svc__meta"><span>3 hrs</span><span class="svc__price">from $450</span></div>
+                <div class="svc__panel">
+                  <p><b>Best for</b> an all-inclusive, multi-treatment retreat.</p>
+                  <p><b>Ideal if</b> it's a special occasion or milestone gift.</p>
+                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
+                    rel="noopener">Book Now <svg style="width:14px;height:14px">
+                      <use href="#i-arrow" />
+                    </svg></a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== NOT SURE ===================== -->
+    <section class="section section--paper" style="padding-block:0">
+      <div class="wrap" style="padding-bottom:var(--sec)">
+        <div class="band rv">
+          <div class="band__grid">
+            <div>
+              <p class="eyebrow">Guidance</p>
+              <h2>Not Sure What To Book?</h2>
+              <p class="lede" style="margin-top:1.2rem">Not sure which experience is right for you? Our team will guide
+                you to the perfect service based on your needs, schedule, and budget. Whether you're booking for
+                yourself or gifting someone special, we'll make the process simple and seamless.</p>
+            </div>
+            <div class="btn-row" style="margin-top:0;flex-direction:column;align-items:stretch">
+        
+              <a class="btn btn--ghost" href="tel:+17542232669"><svg>
+                  <use href="#i-phone" />
+                </svg> Call</a>
+              <a class="link-gold" style="align-self:center;margin-top:.6rem"
+                href="https://mymajestymedspa.wixforms.com/f/7472347790497023003" target="_blank" rel="noopener">Take
+                the 60-second spa match quiz <svg style="width:14px;height:14px">
+                  <use href="#i-arrow" />
+                </svg></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== MOST LOVED ===================== -->
+    <section class="section section--paper" style="padding-top:0">
+      <div class="wrap">
+        <div class="rv">
+          <p class="eyebrow">Ranked by bookings</p>
+          <h2>Our Most Loved and Popular Services</h2>
+          <p class="lede" style="margin-top:1.1rem">The three treatments our guests reserve most often, in order.</p>
+        </div>
+
+        <div class="rank">
+          <article class="rank__row rv">
+            <span class="rank__n">01</span>
+            <div>
+              <div class="rank__t">
+                <h3>The King’s Ultimate Relaxation</h3><em>2 hours</em>
+              </div>
+              <p class="rank__d">Perfect for dads, husbands, grandfathers, father figures, and hardworking men who deserve a true luxury spa experience.</p>
+            </div>
+            <div class="rank__cta">
+              <span class="rank__price">$249</span>
+              <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/package-detail-summary/504132" target="_blank"
+                rel="noopener">Book <svg style="width:13px;height:13px">
+                  <use href="#i-arrow" />
+                </svg></a>
+            </div>
+          </article>
+
+          <article class="rank__row rv rv-d1">
+            <span class="rank__n">02</span>
+            <div>
+              <div class="rank__t">
+                <h3>Sports Massage and Facial</h3><em>1 hr & 40 mins</em>
+              </div>
+              <p class="rank__d">Relieve muscle tension, improve flexibility, and support recovery, followed by a revitalizing facial that deeply cleanses, hydrates, and restores your natural glow.</p>
+            </div>
+            <div class="rank__cta">
+              <span class="rank__price">$275</span>
+              <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/package-detail-summary/494778" target="_blank"
+                rel="noopener">Book <svg style="width:13px;height:13px">
+                  <use href="#i-arrow" />
+                </svg></a>
+            </div>
+          </article>
+
+          <article class="rank__row rv rv-d2">
+            <span class="rank__n">03</span>
+            <div>
+              <div class="rank__t">
+                <h3>Recovery Hybrid</h3><em>1 hr & 20 mins</em>
+              </div>
+              <p class="rank__d">Perfect for athletes of active guests. Combines deep tissue, assisted stretching, and targeted pressure to improve flexibility, reduce injury, and speed recovery.</p>
+            </div>
+            <div class="rank__cta">
+              <span class="rank__price">$210</span>
+              <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/package-detail-summary/494772" target="_blank"
+                rel="noopener">Book <svg style="width:13px;height:13px">
+                  <use href="#i-arrow" />
+                </svg></a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== GIFT CARDS ===================== -->
+    <section class="section" style="padding-top:0">
+      <div class="wrap">
+        <div class="gift rv on-dark">
+          <div class="gift__body">
+            <p class="eyebrow" style="color:var(--gold)">Gift cards</p>
+            <h2 style="color:#fff">Give the Gift of Relaxation</h2>
+            <div class="crown-rule" aria-hidden="true"><svg>
+                <use href="#i-crown" />
+              </svg></div>
+            <p style="color:rgba(247,243,237,.78)">A thoughtful gift. A memorable experience. A moment of well-deserved
+              self-care. Majesty Day Spa gift cards can be used toward any massage, facial, body treatment, or luxury
+              spa experience, including our signature couples and oceanfront packages.</p>
+            <p style="color:rgba(247,243,237,.78)">Perfect for birthdays, anniversaries, holidays, thank-you gifts, or
+              simply showing someone they deserve to be pampered.</p>
+            <p style="font-size:1.15rem;color:var(--ivory)">Give the gift of relaxation, wellness, and <span
+                class="script" style="font-size:1.5rem">Royal</span> treatment.</p>
+            <div class="btn-row">
+              <a class="btn" href="https://go.booker.com/location/yourmajestyspa/buy/gift-certificate" target="_blank"
+                rel="noopener"><svg>
+                  <use href="#i-gift" />
+                </svg> Buy Gift Card</a>
+            </div>
+          </div>
+          <div class="gift__art">
+            <div class="gift-card">
+              <img class="gift-card__logo" src="assets/majesty_day_spa_logo.png" alt="Majesty Day Spa">
+              <span style="display:block">Day Spa · Gift Card · Fort Lauderdale</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SHOP ===================== -->
+    <section class="section section--paper" id="shop">
+      <div class="wrap">
+        <div class="center rv">
+          <p class="eyebrow">The shop</p>
+          <h2>Bring Your <span class="script">Majesty</span> Glow Home</h2>
+          <div class="crown-rule" aria-hidden="true"><svg>
+              <use href="#i-crown" />
+            </svg></div>
+          <p class="lede">Professional skincare curated by Majesty estheticians to help you maintain radiant,
+            healthy-looking skin between spa visits. Explore Skin Script, PCA SKIN, and Majesty-approved home care for
+            hydration, acne support, anti-aging, brightening, sensitive skin, and post-facial maintenance.</p>
+          <div class="btn-row">
+            <a class="btn" href="#products">Shop Skin Care</a>
+            <a class="btn btn--ghost" href="#contact">Get Skin Recommendation</a>
+            <a class="btn btn--ghost" href="#products">Shop Esthetician Favorites</a>
+          </div>
+        </div>
+
+        <!-- why shop -->
+        <div style="margin-top:var(--sec)">
+          <div class="rv">
+            <p class="eyebrow">Why shop with Majesty</p>
+          </div>
+          <div class="why">
+            <div class="why__i rv">
+              <svg>
+                <use href="#i-truck" />
+              </svg>
+              <h4>Free in-spa pickup</h4>
+              <p>Skip shipping fees and pick up your products during your next visit.</p>
+            </div>
+            <div class="why__i rv rv-d1">
+              <svg>
+                <use href="#i-spark" />
+              </svg>
+              <h4>Expert guidance</h4>
+              <p>Our licensed estheticians help you find the perfect products for your skin.</p>
+            </div>
+            <div class="why__i rv rv-d2">
+              <svg>
+                <use href="#i-crown" />
+              </svg>
+              <h4>Luxury home-care</h4>
+              <p>Professional-grade skincare curated for your Majesty glow at home.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- categories -->
+        <div style="margin-top:var(--sec)">
+          <div class="rv">
+            <p class="eyebrow">Shop by product type</p>
+            <p class="lede">Build your at-home routine with professional cleansers, serums, moisturizers, masks, SPF,
+              and treatment products selected by Majesty estheticians.</p>
+          </div>
+          <div class="chips rv rv-d1">
+            <button class="chip">Cleansers</button>
+            <button class="chip">Exfoliants</button>
+            <button class="chip">Toners</button>
+            <button class="chip">Serums</button>
+            <button class="chip">Moisturizers</button>
+            <button class="chip">SPF</button>
+            <button class="chip">Retail Masks</button>
+            <button class="chip">Eye &amp; Lip Care</button>
+            <button class="chip">Travel Kits</button>
+          </div>
+        </div>
+
+        <!-- brands -->
+        <div style="margin-top:var(--sec)">
+          <div class="rv">
+            <p class="eyebrow">Shop by brand</p>
+          </div>
+          <div class="brands">
+            <a class="brand-card rv" href="#products">
+              <span><b>Skin Script</b><small>Botanical, results-driven</small></span>
+              <svg style="width:18px;height:18px;color:var(--gold-dp)">
+                <use href="#i-arrow" />
+              </svg>
+            </a>
+            <a class="brand-card rv rv-d1" href="#products">
+              <span><b>PCA SKIN</b><small>Clinical corrective care</small></span>
+              <svg style="width:18px;height:18px;color:var(--gold-dp)">
+                <use href="#i-arrow" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- products -->
+        <div style="margin-top:var(--sec)" id="products">
+          <div class="rv">
+            <p class="eyebrow">Top selling &amp; in demand</p>
+            <h2>Esthetician Favorites</h2>
+          </div>
+          <div class="prod-grid" id="prodGrid">
+            <article class="prod rv">
+              <div class="prod__img"><span class="prod__badge">Best seller</span><svg>
+                  <use href="#i-pad" />
+                </svg></div>
+              <div class="prod__body">
+                <span class="prod__brand">Skin Script</span>
+                <span class="prod__name">Glycolic &amp; Retinol Pads</span>
+                <span class="prod__price">$35.00</span>
+                <button class="btn btn--sm add" data-name="Glycolic &amp; Retinol Pads" data-price="35"
+                  data-icon="i-pad"><svg>
+                    <use href="#i-bag" />
+                  </svg> Add to cart</button>
+              </div>
+            </article>
+            <article class="prod rv rv-d1">
+              <div class="prod__img"><svg>
+                  <use href="#i-bottle" />
+                </svg></div>
+              <div class="prod__body">
+                <span class="prod__brand">Skin Script</span>
+                <span class="prod__name">Cucumber Hydration Toner</span>
+                <span class="prod__price">$20.00</span>
+                <button class="btn btn--sm add" data-name="Cucumber Hydration Toner" data-price="20"
+                  data-icon="i-bottle"><svg>
+                    <use href="#i-bag" />
+                  </svg> Add to cart</button>
+              </div>
+            </article>
+            <article class="prod rv rv-d2">
+              <div class="prod__img"><svg>
+                  <use href="#i-pump" />
+                </svg></div>
+              <div class="prod__body">
+                <span class="prod__brand">Skin Script</span>
+                <span class="prod__name">Green Tea Citrus Cleanser</span>
+                <span class="prod__price">$17.50</span>
+                <button class="btn btn--sm add" data-name="Green Tea Citrus Cleanser" data-price="17.5"
+                  data-icon="i-pump"><svg>
+                    <use href="#i-bag" />
+                  </svg> Add to cart</button>
+              </div>
+            </article>
+            <article class="prod rv rv-d3">
+              <div class="prod__img"><span class="prod__badge">Low stock</span><svg>
+                  <use href="#i-jar" />
+                </svg></div>
+              <div class="prod__body">
+                <span class="prod__brand">PCA SKIN</span>
+                <span class="prod__name">Clarifying Toner Pads</span>
+                <span class="prod__price">$27.00</span>
+                <button class="btn btn--sm add" data-name="Clarifying Toner Pads" data-price="27"
+                  data-icon="i-jar"><svg>
+                    <use href="#i-bag" />
+                  </svg> Add to cart</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== THE MAJESTY STANDARD ===================== -->
+    <section class="section section--dark" id="standard">
+      <div class="wrap">
+        <div class="rv">
+          <p class="eyebrow">The Majesty standard</p>
+          <h2>What Our Team Is Trained In</h2>
+          <div class="crown-rule" aria-hidden="true"><svg>
+              <use href="#i-crown" />
+            </svg></div>
+          <p class="lede">Every therapist and esthetician on our floor is licensed in Florida and trained in-house on
+            the Majesty protocol before touching a guest.</p>
+        </div>
+
+        <div class="bars">
+          <div class="rv">
+            <div class="bar__top"><b>Licensed Massage Therapy</b><span>Swedish · Deep tissue · Hot stone</span></div>
+            <div class="bar__track"><span class="bar__fill" data-w="98"></span></div>
+          </div>
+          <div class="rv rv-d1">
+            <div class="bar__top"><b>Advanced Esthetics</b><span>HydraFacial · Chemical peels</span></div>
+            <div class="bar__track"><span class="bar__fill" data-w="95"></span></div>
+          </div>
+          <div class="rv rv-d2">
+            <div class="bar__top"><b>Body Rituals &amp; Detox</b><span>Wraps · Scrubs · Lymphatic</span></div>
+            <div class="bar__track"><span class="bar__fill" data-w="90"></span></div>
+          </div>
+          <div class="rv rv-d3">
+            <div class="bar__top"><b>Couples &amp; Group Experiences</b><span>Suites · Parties · Events</span></div>
+            <div class="bar__track"><span class="bar__fill" data-w="92"></span></div>
+          </div>
+          <div class="rv rv-d1">
+            <div class="bar__top"><b>Skincare Consultation</b><span>Skin Script · PCA SKIN</span></div>
+            <div class="bar__track"><span class="bar__fill" data-w="88"></span></div>
+          </div>
+          <div class="rv rv-d2">
+            <div class="bar__top"><b>Waterfront &amp; Cruise Escapes</b><span>Intracoastal · Oceanfront</span></div>
+            <div class="bar__track"><span class="bar__fill" data-w="85"></span></div>
+          </div>
+        </div>
+
+        <div class="tagcloud rv">
+          <span class="tag">Florida licensed</span>
+          <span class="tag">Prenatal certified</span>
+          <span class="tag">Couples suites</span>
+          <span class="tag">Sanitation protocol</span>
+          <span class="tag">Quiet-room policy</span>
+          <span class="tag">Valet parking</span>
+          <span class="tag">Gift cards</span>
+          <span class="tag">Crown Society memberships</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== TESTIMONIALS ===================== -->
+    <section class="section section--sand" id="reviews">
+      <div class="wrap">
+        <div class="center rv">
+          <p class="eyebrow">5-star reviews</p>
+          <h2>What Our Guests Say</h2>
+          <div class="crown-rule" aria-hidden="true"><svg>
+              <use href="#i-crown" />
+            </svg></div>
+          <p class="lede">Rated 4.5 out of 5 by more than 700 guests.</p>
+        </div>
+        <div class="quotes">
+          <article class="quote rv">
+            <p>The suite felt like a different city entirely. I came in carrying a week of desk tension and walked out
+              loose, warm, and completely unbothered.</p>
+            <footer><span class="avatar">B</span><span><b>Briana G.</b><small>Full body relaxation</small></span>
+            </footer>
+          </article>
+          <article class="quote rv rv-d1">
+            <p>We booked the waterfront couples package for our anniversary. Two hours of quiet by the river, and
+              neither of us checked a phone once.</p>
+            <footer><span class="avatar">J</span><span><b>Jacob &amp; Eli</b><small>Couples escape</small></span>
+            </footer>
+          </article>
+          <article class="quote rv rv-d2">
+            <p>My esthetician explained every step of the HydraFacial and sent me home with two products instead of ten.
+              My skin has not looked this even in years.</p>
+            <footer><span class="avatar">I</span><span><b>Ingrid J.</b><small>HydraFacial</small></span></footer>
+          </article>
+        </div>
+        <div class="center btn-row rv">
+          <a class="btn btn--ghost" href="https://www.google.com/search?q=Majesty+Day+Spa+Reviews" target="_blank"
+            rel="noopener">Read more reviews</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CONTACT ===================== -->
+    <section class="section section--dark" id="contact">
+      <div class="wrap">
+        <div class="rv">
+          <p class="eyebrow">Visit us</p>
+          <h2>Your <span class="script">Royal</span> Retreat Awaits</h2>
+          <div class="crown-rule" aria-hidden="true"><svg>
+              <use href="#i-crown" />
+            </svg></div>
+          <p class="lede">Tell us what you're after — a first massage, a gift for someone, or a full spa day — and we'll
+            match you to the right treatment and time. We reply within one business day.</p>
+        </div>
+
+        <div class="contact-grid">
+          <form class="rv" id="contactForm" novalidate>
+            <div class="field">
+              <label for="cname">Name</label>
+              <input id="cname" name="name" type="text" autocomplete="name" placeholder="Your name">
+              <span class="err">Enter your name so we know who to reply to.</span>
+            </div>
+            <div class="field">
+              <label for="cemail">Email</label>
+              <input id="cemail" name="email" type="email" autocomplete="email" placeholder="you@email.com">
+              <span class="err">Enter a valid email address, like name@email.com.</span>
+            </div>
+            <div class="field">
+              <label for="cmsg">Message</label>
+              <textarea id="cmsg" name="message" placeholder="What are you hoping to book?"></textarea>
+              <span class="err">Add a short message so we can point you to the right service.</span>
+            </div>
+            <div class="btn-row" style="margin-top:.5rem">
+              <button class="btn" type="submit"><svg>
+                  <use href="#i-mail" />
+                </svg> Send message</button>
+              <a class="btn btn--ghost" href="tel:+17542232669"><svg>
+                  <use href="#i-phone" />
+                </svg> Call / Text</a>
+            </div>
+            <p class="form-ok" id="formOk"><svg>
+                <use href="#i-check" />
+              </svg> Message sent. We'll be in touch within one business day.</p>
+          </form>
+
+          <div class="rv rv-d2">
+            <ul class="info-list">
+              <li><svg>
+                  <use href="#i-phone" />
+                </svg>
+                <div><b>Call or text</b><a href="tel:+17542232669">(754) 223-2669</a></div>
+              </li>
+              <li><svg>
+                  <use href="#i-mail" />
+                </svg>
+                <div><b>Email</b><a href="mailto:info@yourmajestyspa.com">info@yourmajestyspa.com</a></div>
+              </li>
+              <li><svg>
+                  <use href="#i-pin" />
+                </svg>
+                <div><b>Address</b><a href="https://maps.google.com/?q=511+SE+5th+Ave+Fort+Lauderdale+FL+33301"
+                    target="_blank" rel="noopener">511 SE 5th Ave, Fort Lauderdale, FL 33301</a></div>
+              </li>
+              <li><svg>
+                  <use href="#i-crown" />
+                </svg>
+                <div><b>Parking</b>
+                  <p>Valet $5 · Nu River Landing, steps from Las Olas</p>
+                </div>
+              </li>
+            </ul>
+            <div class="hours">
+              <h4>Hours of operation</h4>
+              <div><span>Monday</span><span>By appointment only</span></div>
+              <div><span>Tuesday – Sunday</span><span>10:00 AM – 7:00 PM</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="foot">
+    <div class="wrap">
+      <div class="foot__grid">
+        <div>
+          <a class="brand" href="#home"><svg>
+              <use href="#i-crown" />
+            </svg><span><b>Majesty</b><small>Day Spa</small></span></a>
+          <p class="foot__tag">Escape the ordinary and embrace tranquility — your <span class="script"
+              style="font-size:1.5rem">Royal</span> retreat awaits you.</p>
+          <div class="socials">
+            <a href="https://www.facebook.com/yourmajestyspa/" target="_blank" rel="noopener"
+              aria-label="Facebook"><svg>
+                <use href="#i-fb" />
+              </svg></a>
+            <a href="https://www.instagram.com/yourmajestyspa/" target="_blank" rel="noopener"
+              aria-label="Instagram"><svg>
+                <use href="#i-ig" />
+              </svg></a>
+            <a href="https://www.tiktok.com/@yourmajestyspa" target="_blank" rel="noopener" aria-label="TikTok"><svg>
+                <use href="#i-tt" />
+              </svg></a>
+          </div>
+        </div>
+        <div>
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#specials">Specials</a></li>
+            <li><a href="#shop">Shop skincare</a></li>
+            <li><a href="#standard">The Majesty standard</a></li>
+            <li><a href="#reviews">Reviews</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Visit</h4>
+          <ul>
+            <li><a href="tel:+17542232669">(754) 223-2669</a></li>
+            <li><a href="mailto:info@yourmajestyspa.com">info@yourmajestyspa.com</a></li>
+            <li><a href="https://maps.google.com/?q=511+SE+5th+Ave+Fort+Lauderdale+FL+33301" target="_blank"
+                rel="noopener">511 SE 5th Ave, Fort Lauderdale</a></li>
+            <li><a href="https://go.booker.com/location/yourmajestyspa/buy/gift-certificate" target="_blank"
+                rel="noopener">Gift cards</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot__bar">
+        <span>© <span id="yr">2026</span> Majesty Day Spa. All rights reserved.</span>
+        <span><a href="#home">Privacy</a> · <a href="#home">Terms</a> · <a href="#home">Shipping &amp;
+            returns</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================== CART ===================== -->
+  <div class="overlay" id="overlay"></div>
+  <aside class="cart" id="cart" aria-hidden="true" aria-label="Shopping cart">
+    <div class="cart__head">
+      <h3>Your bag</h3>
+      <button class="icon-btn" id="cartClose" aria-label="Close cart"><svg>
+          <use href="#i-close" />
+        </svg></button>
+    </div>
+    <div class="cart__items" id="cartItems"></div>
+    <div class="cart__foot">
+      <div class="cart__total"><span>Subtotal</span><span id="cartTotal">$0.00</span></div>
+      <a class="btn" style="width:100%" href="https://www.yourmajestyspa.com/shop-skincare-fort-lauderdale"
+        target="_blank" rel="noopener">Checkout</a>
+      <p class="cart__note">Free in-spa pickup at your next appointment.</p>
+    </div>
+  </aside>
+
+  <script>
+    (function () {
+      "use strict";
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---------- year ---------- */
+      document.getElementById('yr').textContent = new Date().getFullYear();
+
+      /* ---------- sticky nav ---------- */
+      var nav = document.getElementById('nav');
+      var onScroll = function () { nav.classList.toggle('is-stuck', window.scrollY > 40); };
+      onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+
+      /* ---------- mobile nav ---------- */
+      var burger = document.getElementById('burger'), mnav = document.getElementById('mobileNav');
+      var toggleNav = function (open) {
+        mnav.classList.toggle('is-open', open);
+        burger.classList.toggle('is-open', open);
+        burger.setAttribute('aria-expanded', String(open));
+        document.body.style.overflow = open ? 'hidden' : '';
+      };
+      burger.addEventListener('click', function () { toggleNav(!mnav.classList.contains('is-open')); });
+      mnav.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { toggleNav(false); }); });
+
+      /* ---------- mobile AI chat fab (placeholder — wire up to a real chat widget) ---------- */
+      var aiChatBtn = document.getElementById('aiChatBtn');
+      if (aiChatBtn) { aiChatBtn.addEventListener('click', function () { /* TODO: open AI chat widget */ }); }
+
+      /* ---------- mobile fab contrast: flip to on-dark palette over dark sections ---------- */
+      var fabEl = document.querySelector('.mobile-fab');
+      if (fabEl) {
+        var fabDarkZones = Array.prototype.slice.call(document.querySelectorAll('#home, .section--dark'));
+        var fabTicking = false;
+        var updateFabContrast = function () {
+          fabTicking = false;
+          var probeY = window.innerHeight - 45;
+          var onDark = fabDarkZones.some(function (el) {
+            var r = el.getBoundingClientRect();
+            return r.top <= probeY && r.bottom >= probeY;
+          });
+          fabEl.classList.toggle('is-on-dark', onDark);
+        };
+        var requestFabUpdate = function () {
+          if (!fabTicking) { fabTicking = true; requestAnimationFrame(updateFabContrast); }
+        };
+        updateFabContrast();
+        window.addEventListener('scroll', requestFabUpdate, { passive: true });
+        window.addEventListener('resize', requestFabUpdate);
+      }
+
+      /* ---------- scroll reveal ---------- */
+      var revealables = document.querySelectorAll('.rv:not(.is-in)');
+      if ('IntersectionObserver' in window && !reduce) {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+          });
+        }, { threshold: .14, rootMargin: '0px 0px -8% 0px' });
+        revealables.forEach(function (el) { io.observe(el); });
+      } else {
+        revealables.forEach(function (el) { el.classList.add('is-in'); });
+      }
+
+      /* ---------- progress bars ---------- */
+      var bars = document.querySelectorAll('.bar__fill');
+      if ('IntersectionObserver' in window) {
+        var bo = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) { e.target.style.width = e.target.dataset.w + '%'; bo.unobserve(e.target); }
+          });
+        }, { threshold: .4 });
+        bars.forEach(function (b) { bo.observe(b); });
+      } else {
+        bars.forEach(function (b) { b.style.width = b.dataset.w + '%'; });
+      }
+
+      /* ---------- active nav link ---------- */
+      var links = Array.prototype.slice.call(document.querySelectorAll('#menu a'));
+      var sections = links.map(function (a) { return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+      if ('IntersectionObserver' in window) {
+        var so = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) {
+              links.forEach(function (l) { l.classList.toggle('is-active', l.getAttribute('href') === '#' + e.target.id); });
+            }
+          });
+        }, { rootMargin: '-45% 0px -50% 0px' });
+        sections.forEach(function (s) { so.observe(s); });
+      }
+
+      /* ---------- service category tabs ---------- */
+      var svcTabBtns = Array.prototype.slice.call(document.querySelectorAll('.svc-tab-btn'));
+      var svcTabPanels = Array.prototype.slice.call(document.querySelectorAll('.svc-tab-panel'));
+      var svcTabOrder = svcTabBtns.map(function (b) { return b.getAttribute('data-tab'); });
+      var activateSvcTab = function (key) {
+        svcTabBtns.forEach(function (b) {
+          var active = b.getAttribute('data-tab') === key;
+          b.classList.toggle('is-active', active);
+          b.setAttribute('aria-selected', String(active));
+        });
+        svcTabPanels.forEach(function (panel) { panel.hidden = panel.id !== 'tab-' + key; });
+      };
+      svcTabBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () { activateSvcTab(btn.getAttribute('data-tab')); });
+      });
+
+      /* ---------- swipe between service categories while browsing cards ---------- */
+      var svcSwipeStartX = 0, svcSwipeStartY = 0;
+      svcTabPanels.forEach(function (panel) {
+        panel.addEventListener('touchstart', function (e) {
+          var t = e.changedTouches[0];
+          svcSwipeStartX = t.clientX;
+          svcSwipeStartY = t.clientY;
+        }, { passive: true });
+        panel.addEventListener('touchend', function (e) {
+          var t = e.changedTouches[0];
+          var dx = t.clientX - svcSwipeStartX;
+          var dy = t.clientY - svcSwipeStartY;
+          if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy)) return;
+          var idx = svcTabOrder.indexOf(document.querySelector('.svc-tab-btn.is-active').getAttribute('data-tab'));
+          var nextIdx = dx < 0 ? idx + 1 : idx - 1;
+          if (nextIdx < 0 || nextIdx >= svcTabOrder.length) return;
+          activateSvcTab(svcTabOrder[nextIdx]);
+          svcTabBtns[nextIdx].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }, { passive: true });
+      });
+
+      /* ---------- service tabs scroll hint (nudges right to reveal more categories on mobile) ---------- */
+      var svcTabsEl = document.querySelector('.svc-tabs');
+      if (svcTabsEl && !reduce) {
+        var svcTabsHinted = false, svcTabsInView = false;
+        var maybeHintSvcTabs = function () {
+          if (svcTabsHinted || !svcTabsInView) return;
+          if (svcTabsEl.scrollWidth > svcTabsEl.clientWidth + 4) {
+            svcTabsHinted = true;
+            svcTabsEl.scrollTo({ left: 56, behavior: 'smooth' });
+            setTimeout(function () { svcTabsEl.scrollTo({ left: 0, behavior: 'smooth' }); }, 550);
+          }
+        };
+        if ('IntersectionObserver' in window) {
+          var svcTabsIo = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+              svcTabsInView = e.isIntersecting;
+              if (svcTabsInView) maybeHintSvcTabs();
+            });
+          }, { threshold: .6 });
+          svcTabsIo.observe(svcTabsEl);
+        } else {
+          svcTabsInView = true;
+          maybeHintSvcTabs();
+        }
+        window.addEventListener('resize', maybeHintSvcTabs);
+      }
+
+      /* ---------- cart ---------- */
+      var cart = [], cartEl = document.getElementById('cart'), overlay = document.getElementById('overlay');
+      var itemsEl = document.getElementById('cartItems'), totalEl = document.getElementById('cartTotal');
+      var countEl = document.getElementById('cartCount');
+      var money = function (n) { return '$' + n.toFixed(2); };
+
+      function openCart(open) {
+        cartEl.classList.toggle('is-open', open);
+        overlay.classList.toggle('is-on', open);
+        cartEl.setAttribute('aria-hidden', String(!open));
+        document.body.style.overflow = open ? 'hidden' : '';
+      }
+      document.getElementById('cartBtn').addEventListener('click', function () { openCart(true); });
+      document.getElementById('cartClose').addEventListener('click', function () { openCart(false); });
+      overlay.addEventListener('click', function () { openCart(false); });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { openCart(false); toggleNav(false); }
+      });
+
+      function render() {
+        var qty = cart.reduce(function (s, i) { return s + i.qty; }, 0);
+        countEl.textContent = qty;
+        countEl.classList.toggle('is-on', qty > 0);
+
+        if (!cart.length) {
+          itemsEl.innerHTML = '<div class="cart__empty"><svg><use href="#i-bag"/></svg>' +
+            '<p>Your bag is empty.</p><p style="font-size:.86rem">Add an esthetician favorite and pick it up at your next visit.</p></div>';
+          totalEl.textContent = money(0);
+          return;
+        }
+        itemsEl.innerHTML = cart.map(function (i, idx) {
+          return '<div class="ci">' +
+            '<span class="ci__thumb"><svg><use href="#' + i.icon + '"/></svg></span>' +
+            '<div><b>' + i.name + '</b><small>' + money(i.price) + ' each</small>' +
+            '<div class="ci__qty"><button data-a="dec" data-i="' + idx + '" aria-label="Decrease quantity">–</button>' +
+            '<span>' + i.qty + '</span>' +
+            '<button data-a="inc" data-i="' + idx + '" aria-label="Increase quantity">+</button></div>' +
+            '</div>' +
+            '<button class="ci__rm" data-a="rm" data-i="' + idx + '">Remove</button>' +
+            '</div>';
+        }).join('');
+        totalEl.textContent = money(cart.reduce(function (s, i) { return s + i.price * i.qty; }, 0));
+      }
+
+      itemsEl.addEventListener('click', function (e) {
+        var b = e.target.closest('button[data-a]'); if (!b) return;
+        var i = +b.dataset.i;
+        if (b.dataset.a === 'inc') cart[i].qty++;
+        if (b.dataset.a === 'dec') { cart[i].qty--; if (cart[i].qty < 1) cart.splice(i, 1); }
+        if (b.dataset.a === 'rm') cart.splice(i, 1);
+        render();
+      });
+
+      document.querySelectorAll('.add').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var name = btn.dataset.name, price = parseFloat(btn.dataset.price), icon = btn.dataset.icon;
+          var found = cart.filter(function (i) { return i.name === name; })[0];
+          if (found) found.qty++; else cart.push({ name: name, price: price, icon: icon, qty: 1 });
+          render();
+          var html = btn.innerHTML;
+          btn.classList.add('is-added');
+          btn.innerHTML = '<svg><use href="#i-check"/></svg> Added';
+          setTimeout(function () { btn.classList.remove('is-added'); btn.innerHTML = html; }, 1400);
+        });
+      });
+      render();
+
+      /* ---------- category chips ---------- */
+      document.querySelectorAll('.chip').forEach(function (c) {
+        c.addEventListener('click', function () {
+          document.getElementById('products').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+        });
+      });
+
+      /* ---------- contact form ---------- */
+      var form = document.getElementById('contactForm'), ok = document.getElementById('formOk');
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var valid = true;
+        var checks = [
+          { id: 'cname', test: function (v) { return v.trim().length > 1; } },
+          { id: 'cemail', test: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()); } },
+          { id: 'cmsg', test: function (v) { return v.trim().length > 4; } }
+        ];
+        checks.forEach(function (c) {
+          var input = document.getElementById(c.id), field = input.closest('.field');
+          var good = c.test(input.value);
+          field.classList.toggle('has-error', !good);
+          if (!good && valid) { input.focus(); }
+          if (!good) valid = false;
+        });
+        if (!valid) { ok.classList.remove('is-on'); return; }
+        ok.classList.add('is-on');
+        form.reset();
+      });
+      form.querySelectorAll('input,textarea').forEach(function (el) {
+        el.addEventListener('input', function () { el.closest('.field').classList.remove('has-error'); });
+      });
+    })();
+  </script>
+</body>
+
+</html>
