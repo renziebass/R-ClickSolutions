@@ -387,6 +387,17 @@
       font-size: .68rem
     }
 
+    .btn--white {
+      --bg: #fff;
+      --fg: var(--emerald);
+      --bd: #fff
+    }
+
+    .btn--white:hover {
+      --bg: var(--sand);
+      --bd: var(--gold)
+    }
+
     .btn-row {
       display: flex;
       flex-wrap: wrap;
@@ -1109,13 +1120,14 @@
     .special__price {
       margin-top: 1.2rem;
       font-family: var(--f-display);
+      font-weight: 700;
       color: var(--gold-lt);
-      font-size: 1.1rem
+      font-size: 2rem
     }
 
     .special__price s {
       color: rgba(247, 243, 237, .42);
-      font-size: .85rem;
+      font-size: 1.2rem;
       margin-left: .5rem
     }
 
@@ -1275,7 +1287,8 @@
 
     .svc__price {
       font-family: var(--f-display);
-      font-size: 1.15rem;
+      font-weight: 600;
+      font-size: 1.4rem;
       color: var(--gold-dp);
       letter-spacing: 0;
       text-transform: none
@@ -1411,7 +1424,8 @@
 
     .rank__price {
       font-family: var(--f-display);
-      font-size: 1.1rem;
+      font-weight: 600;
+      font-size: 1.5rem;
       color: var(--ink);
       white-space: nowrap
     }
@@ -1447,13 +1461,8 @@
 
     .gift-card {
       width: min(330px, 100%);
-      aspect-ratio: 1.6/1;
-      background: #fff;
-      border: 1px solid var(--line-gold);
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      display: block;
+      border-radius: 12px;
       box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .9);
       transform: rotate(-4deg);
       transition: transform .7s var(--ease)
@@ -1461,19 +1470,6 @@
 
     .gift__art:hover .gift-card {
       transform: rotate(0deg) translateY(-6px)
-    }
-
-    .gift-card__logo {
-      width: 74px;
-      height: auto;
-      display: block
-    }
-
-    .gift-card span {
-      font-size: .6rem;
-      letter-spacing: .28em;
-      text-transform: uppercase;
-      color: var(--gold-dp)
     }
 
     } /* end gift */
@@ -1665,7 +1661,8 @@
 
     .prod__price {
       font-family: var(--f-display);
-      font-size: 1.1rem;
+      font-weight: 600;
+      font-size: 1.35rem;
       color: var(--gold-dp);
       margin-top: .2rem
     }
@@ -2502,10 +2499,9 @@
         <path
           d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z" />
       </symbol>
-      <symbol id="i-ai-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+      <symbol id="i-message" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
         stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 11.5a7.5 7.5 0 0 1-7.5 7.5H8l-4.5 3 .9-4.2A7.5 7.5 0 1 1 21 11.5z" />
-        <path d="M12 8.2l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7.7-1.8z" />
+        <path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       </symbol>
       <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
         stroke-linejoin="round">
@@ -2680,7 +2676,7 @@
   <div class="mobile-fab" aria-hidden="false">
     <button type="button" class="mobile-fab__ai" id="aiChatBtn" aria-label="Chat with us">
       <svg>
-        <use href="#i-ai-chat" />
+        <use href="#i-message" />
       </svg>
     </button>
     <div class="mobile-fab__actions">
@@ -2786,7 +2782,7 @@
               <h3>Majesty Summer Reset</h3>
               <p>50 min Swedish Massage and HydraFacial Classic </p>
               <p class="special__price">$215 <s>$299</s></p>
-              <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/package-detail-summary/495139" target="_blank"
+              <a class="btn btn--sm btn--white" href="https://go.booker.com/location/yourmajestyspa/package-detail-summary/495139" target="_blank"
                 rel="noopener">Book Now <svg style="width:14px;height:14px">
                   <use href="#i-arrow" />
                 </svg></a>
@@ -2802,7 +2798,7 @@
               <h3>Couples Summer Escape</h3>
               <p>A relaxing 1-hour-and-40-minute summer spa experience designed for two guests to unwind and reconnect. This package includes a 50-minute Couples Swedish Massage followed by a 50-minute Salt Lounge Experience, combining full-body relaxation with a peaceful wellness reset. Ideal for couples, anniversaries, staycations, birthdays, or a shared summer escape.</p>
               <p class="special__price">$299 <s>$350</s></p>
-              <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/package-detail-summary/506705" target="_blank"
+              <a class="btn btn--sm btn--white" href="https://go.booker.com/location/yourmajestyspa/package-detail-summary/506705" target="_blank"
                 rel="noopener">Book Now <svg style="width:14px;height:14px">
                   <use href="#i-arrow" />
                 </svg></a>
@@ -2818,7 +2814,7 @@
               <h3>Crown Society</h3>
               <p>A monthly treatment, priority scheduling, and member-only pricing on every add-on and retail product.</p>
               <p class="special__price">From $109 / mo</p>
-              <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
+              <a class="btn btn--sm btn--white" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
                 rel="noopener">Book Now <svg style="width:14px;height:14px">
                   <use href="#i-arrow" />
                 </svg></a>
@@ -2870,7 +2866,7 @@
                 <div class="svc__meta"><span>50 min</span><span class="svc__price">from $150</span></div>
                 <div class="svc__panel">
                   <p>Perfect for athletes or active guests. Combines deep tissue, assisted stretching, and targeted pressure to improve flexibility, reduce injury, and speed recovery.</p>
-                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/detail-summary/4882465"
+                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/detail-summary/4882465"
                     target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
                       <use href="#i-arrow" />
                     </svg></a>
@@ -2891,7 +2887,7 @@
                 <div class="svc__meta"><span>60 – 90 min</span><span class="svc__price">from $150</span></div>
                 <div class="svc__panel">
                   <p>A soothing, safe escape designed for mothers-to-be. Pillows and gentle touch ease discomfort in the lower back, hips, and legs while promoting calm for you and baby.</p>
-                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/detail-summary/3904887"
+                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/detail-summary/3904887"
                     target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
                       <use href="#i-arrow" />
                     </svg></a>
@@ -2912,7 +2908,7 @@
                 <div class="svc__meta"><span>2 hours</span><span class="svc__price">$210</span></div>
                 <div class="svc__panel">
                   <p>Smooth, heated basalt stones amplify relaxation while melting away deep muscle tension. A sensory journey ideal for grounding energy and recharging the soul.</p>
-                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/detail-summary/4773861"
+                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/detail-summary/4773861"
                     target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
                       <use href="#i-arrow" />
                     </svg></a>
@@ -2933,7 +2929,7 @@
                 <div class="svc__meta"><span>50 min</span><span class="svc__price">$300</span></div>
                 <div class="svc__panel">
                   <p>Unwind side by side with our Wine & Couples Massage experience. Enjoy a personalized full-body relaxation session enhanced with aromatherapy, organic sugar scrub & soothing warm towels. Prepaid members Only - Call for questions. A $25 deposit is required to reserve your appointment and will be applied toward your final balance at checkout, which may include gratuity or valet parking.</p>
-                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/detail-summary/4895229"
+                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/detail-summary/4895229"
                     target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
                       <use href="#i-arrow" />
                     </svg></a>
@@ -2959,7 +2955,7 @@
                 <div class="svc__panel">
                   <p><b>Best for</b> deep hydration and an instant glow using vortex technology.</p>
                   <p><b>Ideal if</b> you want visible results before an event.</p>
-                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu?category=94388"
+                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu?category=94388"
                     target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
                       <use href="#i-arrow" />
                     </svg></a>
@@ -2981,7 +2977,7 @@
                 <div class="svc__panel">
                   <p><b>Best for</b> a customized cleanse, exfoliation, and hydration.</p>
                   <p><b>Ideal if</b> you want a classic, relaxing facial.</p>
-                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu?category=94388"
+                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu?category=94388"
                     target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
                       <use href="#i-arrow" />
                     </svg></a>
@@ -3003,7 +2999,7 @@
                 <div class="svc__panel">
                   <p><b>Best for</b> fine lines, firmness, and radiance.</p>
                   <p><b>Ideal if</b> you want a targeted, results-driven treatment.</p>
-                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu?category=94388"
+                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu?category=94388"
                     target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
                       <use href="#i-arrow" />
                     </svg></a>
@@ -3025,7 +3021,7 @@
                 <div class="svc__panel">
                   <p><b>Best for</b> congested or breakout-prone skin.</p>
                   <p><b>Ideal if</b> you want a deep clean without over-drying.</p>
-                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu?category=94388"
+                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu?category=94388"
                     target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
                       <use href="#i-arrow" />
                     </svg></a>
@@ -3053,7 +3049,7 @@
                 <div class="svc__panel">
                   <p><b>Best for</b> smoothing rough skin and boosting circulation.</p>
                   <p><b>Ideal if</b> you want silky, glowing skin.</p>
-                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
+                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
                     rel="noopener">Book Now <svg style="width:14px;height:14px">
                       <use href="#i-arrow" />
                     </svg></a>
@@ -3077,7 +3073,7 @@
                 <div class="svc__panel">
                   <p><b>Best for</b> gentle detoxification and skin renewal.</p>
                   <p><b>Ideal if</b> you want a lighter, refreshed feeling.</p>
-                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
+                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
                     rel="noopener">Book Now <svg style="width:14px;height:14px">
                       <use href="#i-arrow" />
                     </svg></a>
@@ -3101,7 +3097,7 @@
                 <div class="svc__panel">
                   <p><b>Best for</b> a complete scrub, wrap, and massage combination.</p>
                   <p><b>Ideal if</b> you want a full spa day in one visit.</p>
-                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
+                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
                     rel="noopener">Book Now <svg style="width:14px;height:14px">
                       <use href="#i-arrow" />
                     </svg></a>
@@ -3129,7 +3125,7 @@
                 <div class="svc__panel">
                   <p><b>Best for</b> side-by-side massages plus a private lounge hour.</p>
                   <p><b>Ideal if</b> you're booking for two or celebrating together.</p>
-                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
+                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
                     rel="noopener">Book Now <svg style="width:14px;height:14px">
                       <use href="#i-arrow" />
                     </svg></a>
@@ -3153,7 +3149,7 @@
                 <div class="svc__panel">
                   <p><b>Best for</b> a body treatment and facial pairing in one indulgent session.</p>
                   <p><b>Ideal if</b> you want variety without booking two separate visits.</p>
-                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
+                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
                     rel="noopener">Book Now <svg style="width:14px;height:14px">
                       <use href="#i-arrow" />
                     </svg></a>
@@ -3177,7 +3173,7 @@
                 <div class="svc__panel">
                   <p><b>Best for</b> an all-inclusive, multi-treatment retreat.</p>
                   <p><b>Ideal if</b> it's a special occasion or milestone gift.</p>
-                  <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
+                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
                     rel="noopener">Book Now <svg style="width:14px;height:14px">
                       <use href="#i-arrow" />
                     </svg></a>
@@ -3201,12 +3197,11 @@
                 you to the perfect service based on your needs, schedule, and budget. Whether you're booking for
                 yourself or gifting someone special, we'll make the process simple and seamless.</p>
             </div>
-            <div class="btn-row" style="margin-top:0;flex-direction:column;align-items:stretch">
-        
-              <a class="btn btn--ghost" href="tel:+17542232669"><svg>
+            <div class="btn-row" style="margin-top:0">
+              <a class="btn" href="tel:+17542232669"><svg>
                   <use href="#i-phone" />
                 </svg> Call</a>
-              <a class="link-gold" style="align-self:center;margin-top:.6rem"
+              <a class="btn"
                 href="https://mymajestymedspa.wixforms.com/f/7472347790497023003" target="_blank" rel="noopener">Take
                 the 60-second spa match quiz <svg style="width:14px;height:14px">
                   <use href="#i-arrow" />
@@ -3237,7 +3232,7 @@
             </div>
             <div class="rank__cta">
               <span class="rank__price">$249</span>
-              <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/package-detail-summary/504132" target="_blank"
+              <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/package-detail-summary/504132" target="_blank"
                 rel="noopener">Book <svg style="width:13px;height:13px">
                   <use href="#i-arrow" />
                 </svg></a>
@@ -3254,7 +3249,7 @@
             </div>
             <div class="rank__cta">
               <span class="rank__price">$275</span>
-              <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/package-detail-summary/494778" target="_blank"
+              <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/package-detail-summary/494778" target="_blank"
                 rel="noopener">Book <svg style="width:13px;height:13px">
                   <use href="#i-arrow" />
                 </svg></a>
@@ -3271,7 +3266,7 @@
             </div>
             <div class="rank__cta">
               <span class="rank__price">$210</span>
-              <a class="link-gold" href="https://go.booker.com/location/yourmajestyspa/package-detail-summary/494772" target="_blank"
+              <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/package-detail-summary/494772" target="_blank"
                 rel="noopener">Book <svg style="width:13px;height:13px">
                   <use href="#i-arrow" />
                 </svg></a>
@@ -3306,10 +3301,7 @@
             </div>
           </div>
           <div class="gift__art">
-            <div class="gift-card">
-              <img class="gift-card__logo" src="assets/majesty_day_spa_logo.png" alt="Majesty Day Spa">
-              <span style="display:block">Day Spa · Gift Card · Fort Lauderdale</span>
-            </div>
+            <img class="gift-card" src="assets/Majesty-gift-card-white.png" alt="Majesty Day Spa gift card">
           </div>
         </div>
       </div>
