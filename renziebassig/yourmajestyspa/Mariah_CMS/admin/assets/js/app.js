@@ -233,18 +233,27 @@ function buildSidebar() {
 function buildUserBlock() {
   const foot = document.getElementById('sidebar-foot');
 
-  foot.replaceChildren(el(`
-    <span class="sidebar__avatar">${esc(initials(session.fullName))}</span>
+  // el() returns only the first root element of the string it is given, and
+  // .sidebar__foot is a flex row that lays out all three of these as siblings —
+  // so they are built individually rather than as one multi-root fragment.
+  const avatar = el(`<span class="sidebar__avatar">${esc(initials(session.fullName))}</span>`);
+
+  const user = el(`
     <span class="sidebar__user">
       <b>${esc(session.fullName)}</b>
       <small>${esc(session.roleName)}</small>
     </span>
+  `);
+
+  const logout = el(`
     <button class="sidebar__logout" title="Sign out" aria-label="Sign out">
       ${icon('i-logout', 18)}
     </button>
-  `));
+  `);
 
-  foot.querySelector('.sidebar__logout').addEventListener('click', async () => {
+  foot.replaceChildren(avatar, user, logout);
+
+  logout.addEventListener('click', async () => {
     notify.ok('Signing out…');
     await session.logout();
   });
