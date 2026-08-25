@@ -66,13 +66,10 @@ final class Installer
             $this->log("Connected to database \"{$name}\".");
             return;
         } catch (\PDOException $e) {
-            // 1049 = unknown database. Anything else is a credentials or host
-            // problem that creating a database would not solve.
+            // 1049 = unknown database, which creating one may fix. Every other
+            // code is a credentials or grant problem that CREATE would not solve.
             if (($e->errorInfo[1] ?? null) !== 1049) {
-                throw new \RuntimeException(
-                    "Could not connect to MySQL: " . $e->getMessage()
-                    . "\nCheck DB_HOST, DB_USER and DB_PASS in .env."
-                );
+                throw new \RuntimeException(self::explainConnectionError($e));
             }
         }
 
@@ -92,6 +89,123 @@ final class Installer
                 . "DB_NAME, DB_USER and DB_PASS in .env to match.\n\n"
                 . "MySQL said: " . $e->getMessage()
             );
+        }
+    }
+
+    /**
+     * Turns a raw PDO connection failure into something actionable.
+     *
+     * MySQL already distinguishes these cases by error code; surfacing the
+     * driver string alone makes every one of them look identical.
+     */
+    public static function explainConnectionError(\PDOException $e): string
+    {
+        $code = $e->errorInfo[1] ?? null;
+
+        $explanation = match ($code) {
+            1045 => "MySQL rejected the username and password.\n\n"
+                . "This happens BEFORE the database is looked at, so the database "
+                . "existing or not is not the cause. One of these is true:\n"
+                . "  • DB_PASS does not match that user's actual password\n"
+                . "  • DB_USER is misspelled, or is missing the account prefix\n"
+                . "  • the MySQL user was never actually created\n\n"
+                . "Fix: in hPanel → Databases → Management, find the user, use\n"
+                . "\"Change password\", and paste the new password into DB_PASS.",
+
+            1044 => "The username and password are correct, but that user has no\n"
+                . "rights on this database.\n\n"
+                . "Fix: in hPanel → Databases → Management, check the user is listed\n"
+                . "against this database. If not, add it — or delete and recreate the\n"
+                . "database, which creates and grants the user in one step.",
+
+            1049 => "The credentials are valid, but no database with that name exists.\n\n"
+                . "Fix: create it in hPanel → Databases → Management, and make sure\n"
+                . "DB_NAME matches the full name including the account prefix.",
+
+            2002, 2003 => "Could not reach the MySQL server at that host.\n\n"
+                . "Fix: on shared hosting DB_HOST is almost always \"localhost\".\n"
+                . "Only use something else if your control panel explicitly says so.",
+
+            1203, 1226 => "The MySQL account has hit its connection limit.\n\n"
+                . "Fix: wait a minute and retry. If it persists, contact your host.",
+
+            default => 'MySQL refused the connection.',
+        };
+
+        $detail = 'MySQL said: ' . $e->getMessage();
+
+        return $explanation . "\n\n" . $detail;
+    }
+
+    /**
+     * Tries a set of credentials without touching .env, and reports which stage
+     * failed. Lets the installer tell you whether the problem is the password,
+     * the grant, or the database name — rather than one generic refusal.
+     *
+     * @return array{ok:bool, stage:string, message:string, detail:string}
+     */
+    public static function testConnection(
+        string $host,
+        int $port,
+        string $database,
+        string $user,
+        string $password
+    ): array {
+        $options = [
+            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+            \PDO::ATTR_TIMEOUT => 8,
+        ];
+
+        // Stage 1 — can these credentials authenticate at all?
+        try {
+            new \PDO("mysql:host={$host};port={$port}", $user, $password, $options);
+        } catch (\PDOException $e) {
+            return [
+                'ok'      => false,
+                'stage'   => 'Authentication',
+                'message' => self::explainConnectionError($e),
+                'detail'  => $e->getMessage(),
+            ];
+        }
+
+        // Stage 2 — does this user reach that specific database?
+        if ($database === '') {
+            return [
+                'ok'      => false,
+                'stage'   => 'Database name',
+                'message' => "The username and password work, but no database name was given.\n"
+                    . 'Fill in DB_NAME, including the account prefix.',
+                'detail'  => '',
+            ];
+        }
+
+        try {
+            $pdo = new \PDO(
+                "mysql:host={$host};port={$port};dbname={$database};charset=utf8mb4",
+                $user,
+                $password,
+                $options
+            );
+
+            $version = (string) $pdo->query('SELECT VERSION()')->fetchColumn();
+
+            $tables = (int) $pdo->query(
+                'SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE()'
+            )->fetchColumn();
+
+            return [
+                'ok'      => true,
+                'stage'   => 'Connected',
+                'message' => "Success. Connected to \"{$database}\" as \"{$user}\".",
+                'detail'  => "MySQL {$version} · {$tables} table(s) currently in this database.",
+            ];
+        } catch (\PDOException $e) {
+            return [
+                'ok'      => false,
+                'stage'   => 'Database access',
+                'message' => self::explainConnectionError($e),
+                'detail'  => $e->getMessage(),
+            ];
         }
     }
 

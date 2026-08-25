@@ -13,7 +13,7 @@
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lato:wght@300;400;700&family=Great+Vibes&display=swap"
     rel="stylesheet">
   <style>
-    @layer tokens-base, eyebrow-crown, buttons, nav, mobile-floating-actions, hero, specials, service-cards, bands, ranked, gift, shop, cart-drawer, standard, testimonials, contact, footer, reveal, responsive;
+    @layer tokens-base, eyebrow-crown, buttons, nav, mobile-floating-actions, hero, specials, service-cards, bands, ranked, gift, shop, cart-drawer, standard, testimonials, contact, footer, reveal, responsive, cms;
 
     @layer tokens-base {
     /* ============================================================
@@ -2337,6 +2337,95 @@
 
     } /* end reveal */
 
+    @layer cms {
+    /* ============ CMS CONTENT REGIONS ============
+       Every [data-cms-region] ships empty and is filled at runtime from
+       Mariah_CMS, so nothing on the page can drift from the database. A
+       [data-cms-block] is a heading plus its region; it is hidden outright
+       when the CMS returns no records for it. */
+    [data-cms-block][hidden],
+    [data-cms-region][hidden],
+    [data-cms][hidden],
+    .svc-tabs__hint[hidden] {
+      display: none
+    }
+
+    /* Loading placeholders. The spans go straight into the region so its own
+       grid or flex rules position them exactly like the real cards will be. */
+    [data-cms-region].is-cms-loading>span {
+      display: block;
+      height: var(--cms-skel-h, 250px);
+      border-radius: var(--r);
+      background: linear-gradient(100deg, rgba(35, 35, 35, .05) 30%, rgba(35, 35, 35, .1) 50%, rgba(35, 35, 35, .05) 70%) 0 0 / 300% 100%;
+      animation: cmsShimmer 1.5s var(--ease) infinite
+    }
+
+    /* The service panels have no layout of their own until they are filled. */
+    [data-cms-region="services"].is-cms-loading {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+      gap: 1.4rem;
+      margin-top: 2.6rem
+    }
+
+    [data-cms-region="most-loved"].is-cms-loading {
+      gap: .9rem;
+      padding-top: .9rem
+    }
+
+    [data-cms-region="most-loved"].is-cms-loading>span,
+    [data-cms-region="brands"].is-cms-loading>span {
+      --cms-skel-h: 104px
+    }
+
+    [data-cms-region="service-tabs"].is-cms-loading>span,
+    [data-cms-region="product-categories"].is-cms-loading>span {
+      --cms-skel-h: 38px;
+      width: clamp(88px, 18vw, 140px);
+      border-radius: 100px
+    }
+
+    .section--dark [data-cms-region].is-cms-loading>span,
+    .on-dark [data-cms-region].is-cms-loading>span {
+      background-image: linear-gradient(100deg, rgba(255, 255, 255, .05) 30%, rgba(255, 255, 255, .12) 50%, rgba(255, 255, 255, .05) 70%)
+    }
+
+    @keyframes cmsShimmer {
+      from {
+        background-position: 100% 0
+      }
+
+      to {
+        background-position: -200% 0
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      [data-cms-region].is-cms-loading>span {
+        animation: none
+      }
+    }
+
+    /* Shown when a region has no records, or when the CMS is unreachable. */
+    .cms-note {
+      margin: 2.6rem 0 0;
+      padding: 1.3rem 1.5rem;
+      border: 1px solid var(--line-gold);
+      border-radius: var(--r);
+      background: rgba(212, 175, 55, .06);
+      color: var(--text-soft);
+      font-family: var(--f-body);
+      font-size: .9rem;
+      text-align: center
+    }
+
+    .section--dark .cms-note,
+    .on-dark .cms-note {
+      color: var(--on-dark)
+    }
+    }
+
+
     @layer responsive {
     /* ============ RESPONSIVE ============ */
     @media (max-width:1000px) {
@@ -2771,56 +2860,8 @@
           </div>
         </div>
 
-        <div class="special-grid" id="specialsList">
-          <article class="special rv">
-            <div class="special__img">
-              <img src="assets/summer_reset.png" alt="Majesty Summer Reset treatment"
-                data-shot="SPECIALS CARD — Summer Reset: massage + facial pairing, landscape 4:3" loading="lazy">
-            </div>
-            <div class="special__body">
-              <p class="special__tag">Seasonal</p>
-              <h3>Majesty Summer Reset</h3>
-              <p>50 min Swedish Massage and HydraFacial Classic </p>
-              <p class="special__price">$215 <s>$299</s></p>
-              <a class="btn btn--sm btn--white" href="https://go.booker.com/location/yourmajestyspa/package-detail-summary/495139" target="_blank"
-                rel="noopener">Book Now <svg style="width:14px;height:14px">
-                  <use href="#i-arrow" />
-                </svg></a>
-            </div>
-          </article>
-          <article class="special rv rv-d1">
-            <div class="special__img">
-              <img src="assets/couples_river.png" alt="Waterfront Couples Escape suite"
-                data-shot="SPECIALS CARD — Couples Escape: riverfront suite, landscape 4:3" loading="lazy">
-            </div>
-            <div class="special__body">
-              <p class="special__tag">For two</p>
-              <h3>Couples Summer Escape</h3>
-              <p>A relaxing 1-hour-and-40-minute summer spa experience designed for two guests to unwind and reconnect. This package includes a 50-minute Couples Swedish Massage followed by a 50-minute Salt Lounge Experience, combining full-body relaxation with a peaceful wellness reset. Ideal for couples, anniversaries, staycations, birthdays, or a shared summer escape.</p>
-              <p class="special__price">$299 <s>$350</s></p>
-              <a class="btn btn--sm btn--white" href="https://go.booker.com/location/yourmajestyspa/package-detail-summary/506705" target="_blank"
-                rel="noopener">Book Now <svg style="width:14px;height:14px">
-                  <use href="#i-arrow" />
-                </svg></a>
-            </div>
-          </article>
-          <article class="special rv rv-d2">
-            <div class="special__img">
-              <img src="assets/member.png" alt="Crown Society membership"
-                data-shot="SPECIALS CARD — Crown Society: lifestyle/membership, landscape 4:3" loading="lazy">
-            </div>
-            <div class="special__body">
-              <p class="special__tag">Members</p>
-              <h3>Crown Society</h3>
-              <p>A monthly treatment, priority scheduling, and member-only pricing on every add-on and retail product.</p>
-              <p class="special__price">From $109 / mo</p>
-              <a class="btn btn--sm btn--white" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
-                rel="noopener">Book Now <svg style="width:14px;height:14px">
-                  <use href="#i-arrow" />
-                </svg></a>
-            </div>
-          </article>
-        </div>
+        <!-- Live from the CMS — specials -->
+        <div class="special-grid" id="specialsList" data-cms-region="specials"></div>
       </div>
     </section>
 
@@ -2836,352 +2877,14 @@
           <p class="lede">Select a service to see what it's best for and how long to set aside.</p>
         </div>
 
-        <div class="svc-tabs" role="tablist" aria-label="Service categories">
-          <button class="svc-tab-btn is-active" type="button" data-tab="massage" role="tab" aria-selected="true"
-            aria-controls="tab-massage" id="tabbtn-massage">Massage</button>
-          <button class="svc-tab-btn" type="button" data-tab="facials" role="tab" aria-selected="false"
-            aria-controls="tab-facials" id="tabbtn-facials">Facials</button>
-          <button class="svc-tab-btn" type="button" data-tab="body" role="tab" aria-selected="false"
-            aria-controls="tab-body" id="tabbtn-body">Body Treatments</button>
-          <button class="svc-tab-btn" type="button" data-tab="luxury" role="tab" aria-selected="false"
-            aria-controls="tab-luxury" id="tabbtn-luxury">Luxury Experiences</button>
-        </div>
+        <!-- Live from the CMS — service category tabs -->
+        <div class="svc-tabs" role="tablist" aria-label="Service categories" data-cms-region="service-tabs"></div>
         <p class="svc-tabs__hint">Swipe for more <svg>
             <use href="#i-arrow" />
           </svg></p>
 
-        <!-- NOTE: placeholder service line-up per category — swap in the real menu names/durations/prices/photos when ready -->
-        <div class="svc-tab-panel" id="tab-massage" role="tabpanel" aria-labelledby="tabbtn-massage">
-          <div class="svc-grid">
-            <article class="svc rv">
-              <div class="svc__img">
-                <img src="assets/sports_massage.png" alt="Guest receiving a Swedish relaxation massage"
-                  data-shot="SERVICES/MASSAGE — Swedish: broad, flowing strokes, 4:3" loading="lazy">
-                <span class="svc__icon"><svg>
-                    <use href="#i-hands" />
-                  </svg></span>
-              </div>
-              <div class="svc__body">
-                <h3>Sports Massage</h3>
-                <div class="svc__meta"><span>50 min</span><span class="svc__price">from $150</span></div>
-                <div class="svc__panel">
-                  <p>Perfect for athletes or active guests. Combines deep tissue, assisted stretching, and targeted pressure to improve flexibility, reduce injury, and speed recovery.</p>
-                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/detail-summary/4882465"
-                    target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
-                      <use href="#i-arrow" />
-                    </svg></a>
-                </div>
-              </div>
-            </article>
-
-            <article class="svc rv rv-d1">
-              <div class="svc__img">
-                <img src="assets/prenatal_massage.png" alt="Guest receiving a deep tissue massage"
-                  data-shot="SERVICES/MASSAGE — deep tissue: hands working shoulders, 4:3" loading="lazy">
-                <span class="svc__icon"><svg>
-                    <use href="#i-hands" />
-                  </svg></span>
-              </div>
-              <div class="svc__body">
-                <h3>Prenatal Massage</h3>
-                <div class="svc__meta"><span>60 – 90 min</span><span class="svc__price">from $150</span></div>
-                <div class="svc__panel">
-                  <p>A soothing, safe escape designed for mothers-to-be. Pillows and gentle touch ease discomfort in the lower back, hips, and legs while promoting calm for you and baby.</p>
-                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/detail-summary/3904887"
-                    target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
-                      <use href="#i-arrow" />
-                    </svg></a>
-                </div>
-              </div>
-            </article>
-
-            <article class="svc rv rv-d2">
-              <div class="svc__img">
-                <img src="assets/hot_stone.png" alt="Guest receiving a hot stone massage"
-                  data-shot="SERVICES/MASSAGE — hot stone: stones + hands, 4:3" loading="lazy">
-                <span class="svc__icon"><svg>
-                    <use href="#i-hands" />
-                  </svg></span>
-              </div>
-              <div class="svc__body">
-                <h3>Hot Stone Massage</h3>
-                <div class="svc__meta"><span>2 hours</span><span class="svc__price">$210</span></div>
-                <div class="svc__panel">
-                  <p>Smooth, heated basalt stones amplify relaxation while melting away deep muscle tension. A sensory journey ideal for grounding energy and recharging the soul.</p>
-                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/detail-summary/4773861"
-                    target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
-                      <use href="#i-arrow" />
-                    </svg></a>
-                </div>
-              </div>
-            </article>
-
-            <article class="svc rv rv-d3">
-              <div class="svc__img">
-                <img src="assets/couples_massage.jpg" alt="Couple receiving a side-by-side massage"
-                  data-shot="SERVICES/MASSAGE — couples suite: two tables, 4:3" loading="lazy">
-                <span class="svc__icon"><svg>
-                    <use href="#i-hands" />
-                  </svg></span>
-              </div>
-              <div class="svc__body">
-                <h3>Couples Massage</h3>
-                <div class="svc__meta"><span>50 min</span><span class="svc__price">$300</span></div>
-                <div class="svc__panel">
-                  <p>Unwind side by side with our Wine & Couples Massage experience. Enjoy a personalized full-body relaxation session enhanced with aromatherapy, organic sugar scrub & soothing warm towels. Prepaid members Only - Call for questions. A $25 deposit is required to reserve your appointment and will be applied toward your final balance at checkout, which may include gratuity or valet parking.</p>
-                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/detail-summary/4895229"
-                    target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
-                      <use href="#i-arrow" />
-                    </svg></a>
-                </div>
-              </div>
-            </article>
-          </div>
-        </div>
-
-        <div class="svc-tab-panel" id="tab-facials" role="tabpanel" aria-labelledby="tabbtn-facials" hidden>
-          <div class="svc-grid">
-            <article class="svc rv">
-              <div class="svc__img">
-                <img src="assets/facial.jpg" alt="Esthetician performing a HydraFacial treatment"
-                  data-shot="SERVICES/FACIALS — HydraFacial: vortex device close-up, 4:3" loading="lazy">
-                <span class="svc__icon"><svg>
-                    <use href="#i-drop" />
-                  </svg></span>
-              </div>
-              <div class="svc__body">
-                <h3>HydraFacial</h3>
-                <div class="svc__meta"><span>60 min</span><span class="svc__price">$199 – $225</span></div>
-                <div class="svc__panel">
-                  <p><b>Best for</b> deep hydration and an instant glow using vortex technology.</p>
-                  <p><b>Ideal if</b> you want visible results before an event.</p>
-                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu?category=94388"
-                    target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
-                      <use href="#i-arrow" />
-                    </svg></a>
-                </div>
-              </div>
-            </article>
-
-            <article class="svc rv rv-d1">
-              <div class="svc__img">
-                <img src="assets/facial.jpg" alt="Esthetician performing a signature facial treatment"
-                  data-shot="SERVICES/FACIALS — signature facial: treatment close-up, 4:3" loading="lazy">
-                <span class="svc__icon"><svg>
-                    <use href="#i-drop" />
-                  </svg></span>
-              </div>
-              <div class="svc__body">
-                <h3>Signature Facial</h3>
-                <div class="svc__meta"><span>50 min</span><span class="svc__price">from $100</span></div>
-                <div class="svc__panel">
-                  <p><b>Best for</b> a customized cleanse, exfoliation, and hydration.</p>
-                  <p><b>Ideal if</b> you want a classic, relaxing facial.</p>
-                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu?category=94388"
-                    target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
-                      <use href="#i-arrow" />
-                    </svg></a>
-                </div>
-              </div>
-            </article>
-
-            <article class="svc rv rv-d2">
-              <div class="svc__img">
-                <img src="assets/facial.jpg" alt="Esthetician performing an anti-aging facial treatment"
-                  data-shot="SERVICES/FACIALS — anti-aging: serum application, 4:3" loading="lazy">
-                <span class="svc__icon"><svg>
-                    <use href="#i-drop" />
-                  </svg></span>
-              </div>
-              <div class="svc__body">
-                <h3>Anti-Aging Facial</h3>
-                <div class="svc__meta"><span>60 min</span><span class="svc__price">from $140</span></div>
-                <div class="svc__panel">
-                  <p><b>Best for</b> fine lines, firmness, and radiance.</p>
-                  <p><b>Ideal if</b> you want a targeted, results-driven treatment.</p>
-                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu?category=94388"
-                    target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
-                      <use href="#i-arrow" />
-                    </svg></a>
-                </div>
-              </div>
-            </article>
-
-            <article class="svc rv rv-d3">
-              <div class="svc__img">
-                <img src="assets/facial.jpg" alt="Esthetician performing an acne clarifying facial treatment"
-                  data-shot="SERVICES/FACIALS — acne clarifying: extraction/steam, 4:3" loading="lazy">
-                <span class="svc__icon"><svg>
-                    <use href="#i-drop" />
-                  </svg></span>
-              </div>
-              <div class="svc__body">
-                <h3>Acne Clarifying Facial</h3>
-                <div class="svc__meta"><span>50 min</span><span class="svc__price">from $110</span></div>
-                <div class="svc__panel">
-                  <p><b>Best for</b> congested or breakout-prone skin.</p>
-                  <p><b>Ideal if</b> you want a deep clean without over-drying.</p>
-                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu?category=94388"
-                    target="_blank" rel="noopener">Book Now <svg style="width:14px;height:14px">
-                      <use href="#i-arrow" />
-                    </svg></a>
-                </div>
-              </div>
-            </article>
-          </div>
-        </div>
-
-        <div class="svc-tab-panel" id="tab-body" role="tabpanel" aria-labelledby="tabbtn-body" hidden>
-          <div class="svc-grid">
-            <article class="svc rv">
-              <div class="svc__img">
-                <img
-                  src="https://static.wixstatic.com/media/c0fcbb_5c92cd88d11145e58c1227e90e4a8005~mv2.webp/v1/fill/w_280,h_400,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/image%20(5).webp"
-                  alt="Exfoliating salt scrub treatment" data-shot="SERVICES/BODY — salt scrub close-up, 4:3"
-                  loading="lazy">
-                <span class="svc__icon"><svg>
-                    <use href="#i-leaf" />
-                  </svg></span>
-              </div>
-              <div class="svc__body">
-                <h3>Exfoliating Salt Scrub</h3>
-                <div class="svc__meta"><span>50 min</span><span class="svc__price">from $85</span></div>
-                <div class="svc__panel">
-                  <p><b>Best for</b> smoothing rough skin and boosting circulation.</p>
-                  <p><b>Ideal if</b> you want silky, glowing skin.</p>
-                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
-                    rel="noopener">Book Now <svg style="width:14px;height:14px">
-                      <use href="#i-arrow" />
-                    </svg></a>
-                </div>
-              </div>
-            </article>
-
-            <article class="svc rv rv-d1">
-              <div class="svc__img">
-                <img
-                  src="https://static.wixstatic.com/media/c0fcbb_5c92cd88d11145e58c1227e90e4a8005~mv2.webp/v1/fill/w_280,h_400,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/image%20(5).webp"
-                  alt="Detox body wrap treatment" data-shot="SERVICES/BODY — wrap: linens + warm towels, 4:3"
-                  loading="lazy">
-                <span class="svc__icon"><svg>
-                    <use href="#i-leaf" />
-                  </svg></span>
-              </div>
-              <div class="svc__body">
-                <h3>Detox Body Wrap</h3>
-                <div class="svc__meta"><span>50 min</span><span class="svc__price">from $95</span></div>
-                <div class="svc__panel">
-                  <p><b>Best for</b> gentle detoxification and skin renewal.</p>
-                  <p><b>Ideal if</b> you want a lighter, refreshed feeling.</p>
-                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
-                    rel="noopener">Book Now <svg style="width:14px;height:14px">
-                      <use href="#i-arrow" />
-                    </svg></a>
-                </div>
-              </div>
-            </article>
-
-            <article class="svc rv rv-d2">
-              <div class="svc__img">
-                <img
-                  src="https://static.wixstatic.com/media/c0fcbb_5c92cd88d11145e58c1227e90e4a8005~mv2.webp/v1/fill/w_280,h_400,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/image%20(5).webp"
-                  alt="Full body renewal ritual treatment" data-shot="SERVICES/BODY — full ritual: multi-step, 4:3"
-                  loading="lazy">
-                <span class="svc__icon"><svg>
-                    <use href="#i-leaf" />
-                  </svg></span>
-              </div>
-              <div class="svc__body">
-                <h3>Full Body Renewal Ritual</h3>
-                <div class="svc__meta"><span>2 hrs</span><span class="svc__price">from $220</span></div>
-                <div class="svc__panel">
-                  <p><b>Best for</b> a complete scrub, wrap, and massage combination.</p>
-                  <p><b>Ideal if</b> you want a full spa day in one visit.</p>
-                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
-                    rel="noopener">Book Now <svg style="width:14px;height:14px">
-                      <use href="#i-arrow" />
-                    </svg></a>
-                </div>
-              </div>
-            </article>
-          </div>
-        </div>
-
-        <div class="svc-tab-panel" id="tab-luxury" role="tabpanel" aria-labelledby="tabbtn-luxury" hidden>
-          <div class="svc-grid">
-            <article class="svc rv">
-              <div class="svc__img">
-                <img
-                  src="https://static.wixstatic.com/media/c0fcbb_dba98a61a7d34d29bd03e42c7f03c361~mv2.webp/v1/fill/w_300,h_400,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/image%20(7).webp"
-                  alt="Couple at a waterfront spa escape" data-shot="SERVICES/LUXURY — waterfront couples suite, 4:3"
-                  loading="lazy">
-                <span class="svc__icon"><svg>
-                    <use href="#i-boat" />
-                  </svg></span>
-              </div>
-              <div class="svc__body">
-                <h3>Waterfront Couples Escape</h3>
-                <div class="svc__meta"><span>90 min</span><span class="svc__price">from $395</span></div>
-                <div class="svc__panel">
-                  <p><b>Best for</b> side-by-side massages plus a private lounge hour.</p>
-                  <p><b>Ideal if</b> you're booking for two or celebrating together.</p>
-                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
-                    rel="noopener">Book Now <svg style="width:14px;height:14px">
-                      <use href="#i-arrow" />
-                    </svg></a>
-                </div>
-              </div>
-            </article>
-
-            <article class="svc rv rv-d1">
-              <div class="svc__img">
-                <img
-                  src="https://static.wixstatic.com/media/c0fcbb_dba98a61a7d34d29bd03e42c7f03c361~mv2.webp/v1/fill/w_300,h_400,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/image%20(7).webp"
-                  alt="Sunset renewal ritual pairing" data-shot="SERVICES/LUXURY — sunset ritual: golden hour, 4:3"
-                  loading="lazy">
-                <span class="svc__icon"><svg>
-                    <use href="#i-boat" />
-                  </svg></span>
-              </div>
-              <div class="svc__body">
-                <h3>Sunset Renewal Ritual</h3>
-                <div class="svc__meta"><span>90 min</span><span class="svc__price">from $225</span></div>
-                <div class="svc__panel">
-                  <p><b>Best for</b> a body treatment and facial pairing in one indulgent session.</p>
-                  <p><b>Ideal if</b> you want variety without booking two separate visits.</p>
-                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
-                    rel="noopener">Book Now <svg style="width:14px;height:14px">
-                      <use href="#i-arrow" />
-                    </svg></a>
-                </div>
-              </div>
-            </article>
-
-            <article class="svc rv rv-d2">
-              <div class="svc__img">
-                <img
-                  src="https://static.wixstatic.com/media/c0fcbb_dba98a61a7d34d29bd03e42c7f03c361~mv2.webp/v1/fill/w_300,h_400,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/image%20(7).webp"
-                  alt="Royal spa day multi-treatment retreat" data-shot="SERVICES/LUXURY — full spa day, 4:3"
-                  loading="lazy">
-                <span class="svc__icon"><svg>
-                    <use href="#i-boat" />
-                  </svg></span>
-              </div>
-              <div class="svc__body">
-                <h3>Royal Spa Day</h3>
-                <div class="svc__meta"><span>3 hrs</span><span class="svc__price">from $450</span></div>
-                <div class="svc__panel">
-                  <p><b>Best for</b> an all-inclusive, multi-treatment retreat.</p>
-                  <p><b>Ideal if</b> it's a special occasion or milestone gift.</p>
-                  <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/service-menu" target="_blank"
-                    rel="noopener">Book Now <svg style="width:14px;height:14px">
-                      <use href="#i-arrow" />
-                    </svg></a>
-                </div>
-              </div>
-            </article>
-          </div>
-        </div>
+        <!-- Live from the CMS — service categories -->
+        <div id="svcPanels" data-cms-region="services"></div>
       </div>
     </section>
 
@@ -3213,7 +2916,7 @@
     </section>
 
     <!-- ===================== MOST LOVED ===================== -->
-    <section class="section section--paper" style="padding-top:0">
+    <section class="section section--paper" style="padding-top:0" id="most-loved" data-cms-block="most-loved">
       <div class="wrap">
         <div class="rv">
           <p class="eyebrow">Ranked by bookings</p>
@@ -3221,89 +2924,32 @@
           <p class="lede" style="margin-top:1.1rem">The three treatments our guests reserve most often, in order.</p>
         </div>
 
-        <div class="rank">
-          <article class="rank__row rv">
-            <span class="rank__n">01</span>
-            <div>
-              <div class="rank__t">
-                <h3>The King’s Ultimate Relaxation</h3><em>2 hours</em>
-              </div>
-              <p class="rank__d">Perfect for dads, husbands, grandfathers, father figures, and hardworking men who deserve a true luxury spa experience.</p>
-            </div>
-            <div class="rank__cta">
-              <span class="rank__price">$249</span>
-              <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/package-detail-summary/504132" target="_blank"
-                rel="noopener">Book <svg style="width:13px;height:13px">
-                  <use href="#i-arrow" />
-                </svg></a>
-            </div>
-          </article>
-
-          <article class="rank__row rv rv-d1">
-            <span class="rank__n">02</span>
-            <div>
-              <div class="rank__t">
-                <h3>Sports Massage and Facial</h3><em>1 hr & 40 mins</em>
-              </div>
-              <p class="rank__d">Relieve muscle tension, improve flexibility, and support recovery, followed by a revitalizing facial that deeply cleanses, hydrates, and restores your natural glow.</p>
-            </div>
-            <div class="rank__cta">
-              <span class="rank__price">$275</span>
-              <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/package-detail-summary/494778" target="_blank"
-                rel="noopener">Book <svg style="width:13px;height:13px">
-                  <use href="#i-arrow" />
-                </svg></a>
-            </div>
-          </article>
-
-          <article class="rank__row rv rv-d2">
-            <span class="rank__n">03</span>
-            <div>
-              <div class="rank__t">
-                <h3>Recovery Hybrid</h3><em>1 hr & 20 mins</em>
-              </div>
-              <p class="rank__d">Perfect for athletes of active guests. Combines deep tissue, assisted stretching, and targeted pressure to improve flexibility, reduce injury, and speed recovery.</p>
-            </div>
-            <div class="rank__cta">
-              <span class="rank__price">$210</span>
-              <a class="btn btn--sm" href="https://go.booker.com/location/yourmajestyspa/package-detail-summary/494772" target="_blank"
-                rel="noopener">Book <svg style="width:13px;height:13px">
-                  <use href="#i-arrow" />
-                </svg></a>
-            </div>
-          </article>
-        </div>
+        <!-- Live from the CMS — most loved -->
+        <div class="rank" data-cms-region="most-loved"></div>
       </div>
     </section>
 
     <!-- ===================== GIFT CARDS ===================== -->
-    <section class="section" style="padding-top:0">
+    <section class="section" style="padding-top:0" id="gift-cards" data-cms-block="gift" hidden>
       <div class="wrap">
         <div class="gift rv on-dark">
           <div class="gift__body">
             <p class="eyebrow" style="color:var(--gold)">Gift cards</p>
-            <h2 style="color:#fff">Give the Gift of Relaxation</h2>
+            <h2 style="color:#fff" data-cms="gift-title"></h2>
             <div class="crown-rule" aria-hidden="true"><svg>
                 <use href="#i-crown" />
               </svg></div>
-            <p data-cms="gift-description" style="color:rgba(247,243,237,.78)">A thoughtful gift. A memorable
-              experience. A moment of well-deserved
-              self-care. Majesty Day Spa gift cards can be used toward any massage, facial, body treatment, or luxury
-              spa experience, including our signature couples and oceanfront packages.</p>
-            <p data-cms="gift-description" style="color:rgba(247,243,237,.78)">Perfect for birthdays, anniversaries,
-              holidays, thank-you gifts, or
-              simply showing someone they deserve to be pampered.</p>
+            <p data-cms="gift-description" style="color:rgba(247,243,237,.78)"></p>
             <p style="font-size:1.15rem;color:var(--ivory)">Give the gift of relaxation, wellness, and <span
                 class="script" style="font-size:1.5rem">Royal</span> treatment.</p>
             <div class="btn-row">
-              <a class="btn" href="https://go.booker.com/location/yourmajestyspa/buy/gift-certificate" target="_blank"
-                rel="noopener"><svg>
+              <a class="btn" href="#" data-cms="gift-url" target="_blank" rel="noopener"><svg>
                   <use href="#i-gift" />
                 </svg> Buy Gift Card</a>
             </div>
           </div>
           <div class="gift__art">
-            <img class="gift-card" src="assets/Majesty-gift-card-white.png" alt="Majesty Day Spa gift card">
+            <img class="gift-card" alt="" data-cms="gift-image">
           </div>
         </div>
       </div>
@@ -3359,110 +3005,33 @@
         </div>
 
         <!-- categories -->
-        <div style="margin-top:var(--sec)">
+        <div style="margin-top:var(--sec)" data-cms-block="product-categories">
           <div class="rv">
             <p class="eyebrow">Shop by product type</p>
             <p class="lede">Build your at-home routine with professional cleansers, serums, moisturizers, masks, SPF,
               and treatment products selected by Majesty estheticians.</p>
           </div>
-          <div class="chips rv rv-d1">
-            <button class="chip">Cleansers</button>
-            <button class="chip">Exfoliants</button>
-            <button class="chip">Toners</button>
-            <button class="chip">Serums</button>
-            <button class="chip">Moisturizers</button>
-            <button class="chip">SPF</button>
-            <button class="chip">Retail Masks</button>
-            <button class="chip">Eye &amp; Lip Care</button>
-            <button class="chip">Travel Kits</button>
-          </div>
+          <!-- Live from the CMS — product categories -->
+          <div class="chips rv rv-d1" data-cms-region="product-categories"></div>
         </div>
 
         <!-- brands -->
-        <div style="margin-top:var(--sec)">
+        <div style="margin-top:var(--sec)" data-cms-block="brands">
           <div class="rv">
             <p class="eyebrow">Shop by brand</p>
           </div>
-          <div class="brands">
-            <a class="brand-card rv" href="#products">
-              <span><b>Skin Script</b><small>Botanical, results-driven</small></span>
-              <svg style="width:18px;height:18px;color:var(--gold-dp)">
-                <use href="#i-arrow" />
-              </svg>
-            </a>
-            <a class="brand-card rv rv-d1" href="#products">
-              <span><b>PCA SKIN</b><small>Clinical corrective care</small></span>
-              <svg style="width:18px;height:18px;color:var(--gold-dp)">
-                <use href="#i-arrow" />
-              </svg>
-            </a>
-          </div>
+          <!-- Live from the CMS — brands -->
+          <div class="brands" data-cms-region="brands"></div>
         </div>
 
         <!-- products -->
-        <div style="margin-top:var(--sec)" id="products">
+        <div style="margin-top:var(--sec)" id="products" data-cms-block="products">
           <div class="rv">
             <p class="eyebrow">Top selling &amp; in demand</p>
             <h2>Esthetician Favorites</h2>
           </div>
-          <div class="prod-grid" id="prodGrid">
-            <article class="prod rv">
-              <div class="prod__img"><span class="prod__badge">Best seller</span><svg>
-                  <use href="#i-pad" />
-                </svg></div>
-              <div class="prod__body">
-                <span class="prod__brand">Skin Script</span>
-                <span class="prod__name">Glycolic &amp; Retinol Pads</span>
-                <span class="prod__price">$35.00</span>
-                <button class="btn btn--sm add" data-name="Glycolic &amp; Retinol Pads" data-price="35"
-                  data-icon="i-pad"><svg>
-                    <use href="#i-bag" />
-                  </svg> Add to cart</button>
-              </div>
-            </article>
-            <article class="prod rv rv-d1">
-              <div class="prod__img"><svg>
-                  <use href="#i-bottle" />
-                </svg></div>
-              <div class="prod__body">
-                <span class="prod__brand">Skin Script</span>
-                <span class="prod__name">Cucumber Hydration Toner</span>
-                <span class="prod__price">$20.00</span>
-                <button class="btn btn--sm add" data-name="Cucumber Hydration Toner" data-price="20"
-                  data-icon="i-bottle"><svg>
-                    <use href="#i-bag" />
-                  </svg> Add to cart</button>
-              </div>
-            </article>
-            <article class="prod rv rv-d2">
-              <div class="prod__img"><svg>
-                  <use href="#i-pump" />
-                </svg></div>
-              <div class="prod__body">
-                <span class="prod__brand">Skin Script</span>
-                <span class="prod__name">Green Tea Citrus Cleanser</span>
-                <span class="prod__price">$17.50</span>
-                <button class="btn btn--sm add" data-name="Green Tea Citrus Cleanser" data-price="17.5"
-                  data-icon="i-pump"><svg>
-                    <use href="#i-bag" />
-                  </svg> Add to cart</button>
-              </div>
-            </article>
-            <article class="prod rv rv-d3">
-              <div class="prod__img"><span class="prod__badge">Low stock</span><svg>
-                  <use href="#i-jar" />
-                </svg></div>
-              <div class="prod__body">
-                <span class="prod__brand">PCA SKIN</span>
-                <span class="prod__name">Clarifying Toner Pads</span>
-                <span class="prod__price">$27.00</span>
-                <button class="btn btn--sm add" data-name="Clarifying Toner Pads" data-price="27"
-                  data-icon="i-jar"><svg>
-                    <use href="#i-bag" />
-                  </svg> Add to cart</button>
-              </div>
-            </article>
-          </div>
+          <!-- Live from the CMS — products -->
+          <div class="prod-grid" id="prodGrid" data-cms-region="products"></div>
         </div>
       </div>
     </section>
@@ -3712,17 +3281,32 @@
 
   <!-- ==========================================================
        MAJESTY CMS — content layer
-       Replaces the hard-coded markup above with live content from
-       Mariah_CMS. The static markup stays as the first paint and as a
-       fallback: if the API is unreachable the page still renders in full.
-       Only active / published records are returned by the API, so
-       deactivating an item in the CMS removes it from this page.
+       Specials, the service menu, most-loved treatments, gift cards, brands
+       and retail products are all rendered here from Mariah_CMS. The markup
+       above ships empty on purpose: nothing on this page can drift from the
+       database. The API only returns active / published records, so
+       deactivating an item in the CMS removes it from the site.
        ========================================================== -->
   <script>
     window.MajestyCMS = (function () {
       "use strict";
 
       var API = 'Mariah_CMS/api/public/bootstrap';
+
+      /* Every region the CMS owns, and how many placeholders to show while it
+         loads — roughly what that region usually holds. */
+      var REGIONS = {
+        'specials': 3,
+        'service-tabs': 4,
+        'services': 6,
+        'most-loved': 3,
+        'product-categories': 6,
+        'brands': 2,
+        'products': 4
+      };
+
+      function region(key) { return document.querySelector('[data-cms-region="' + key + '"]'); }
+      function block(key) { return document.querySelector('[data-cms-block="' + key + '"]'); }
 
       function esc(v) {
         if (v === null || v === undefined) return '';
@@ -3747,12 +3331,54 @@
           + esc(label) + ' ' + arrow(14) + '</a>';
       }
 
+      function note(message) {
+        return '<p class="cms-note">' + esc(message) + '</p>';
+      }
+
+      /* Skeletons go in before the request so a heading is never left standing
+         over blank space while the CMS answers. */
+      function paintSkeletons() {
+        Object.keys(REGIONS).forEach(function (key) {
+          var host = region(key);
+          if (!host) return;
+
+          var cells = '';
+          for (var i = 0; i < REGIONS[key]; i++) cells += '<span></span>';
+
+          host.classList.add('is-cms-loading');
+          host.setAttribute('aria-busy', 'true');
+          host.innerHTML = cells;
+        });
+      }
+
+      /* Swaps a region out of its loading state and into its real content. */
+      function write(host, html) {
+        host.classList.remove('is-cms-loading');
+        host.removeAttribute('aria-busy');
+        host.innerHTML = html || '';
+      }
+
+      /* Writes rendered markup into a region. With nothing to write the region
+         is emptied and, where the block would otherwise be a heading over blank
+         space, the whole block is hidden. */
+      function fill(key, html, blockKey) {
+        var host = region(key);
+        if (!host) return;
+
+        write(host, html);
+
+        var wrap = blockKey ? block(blockKey) : null;
+        if (wrap) wrap.hidden = !html;
+      }
+
       /* ---------------- SPECIALS ---------------- */
       function renderSpecials(specials) {
-        var host = document.getElementById('specialsList');
-        if (!host || !specials.length) return;
+        if (!specials.length) {
+          fill('specials', note('No specials are running at the moment — new offers are added often.'));
+          return;
+        }
 
-        host.innerHTML = specials.map(function (s, i) {
+        fill('specials', specials.map(function (s, i) {
           var price = s.price_label
             ? '<p class="special__price">' + esc(s.price_label)
               + (s.compare_at_label ? ' <s>' + esc(s.compare_at_label) + '</s>' : '') + '</p>'
@@ -3771,36 +3397,33 @@
             + price
             + bookBtn(s.booking_url, 'Book Now', 'btn btn--sm btn--white')
             + '</div></article>';
-        }).join('');
+        }).join(''));
       }
 
       /* ---------------- SERVICES (tabs + panels) ---------------- */
       function renderServices(categories) {
-        var tabsHost = document.querySelector('.svc-tabs');
-        var section = document.getElementById('services');
-        if (!tabsHost || !section || !categories.length) return;
+        var tabsHost = region('service-tabs');
+        var hint = document.querySelector('.svc-tabs__hint');
 
-        /* Rebuild the tab bar from the categories that have live services. */
-        tabsHost.innerHTML = categories.map(function (c, i) {
-          return '<button class="svc-tab-btn' + (i === 0 ? ' is-active' : '') + '" type="button"'
-            + ' data-tab="' + esc(c.slug) + '" role="tab"'
-            + ' aria-selected="' + (i === 0 ? 'true' : 'false') + '"'
-            + ' aria-controls="tab-' + esc(c.slug) + '" id="tabbtn-' + esc(c.slug) + '">'
-            + esc(c.name) + '</button>';
-        }).join('');
+        if (!categories.length) {
+          if (tabsHost) { write(tabsHost, ''); tabsHost.hidden = true; }
+          if (hint) hint.hidden = true;
+          fill('services', note('Our service menu is being updated. Please check back shortly.'));
+          return;
+        }
 
-        /* Replace the panels, keeping them in the same place in the DOM. */
-        var oldPanels = section.querySelectorAll('.svc-tab-panel');
-        if (!oldPanels.length) return;
+        if (tabsHost) {
+          tabsHost.hidden = false;
+          write(tabsHost, categories.map(function (c, i) {
+            return '<button class="svc-tab-btn' + (i === 0 ? ' is-active' : '') + '" type="button"'
+              + ' data-tab="' + esc(c.slug) + '" role="tab"'
+              + ' aria-selected="' + (i === 0 ? 'true' : 'false') + '"'
+              + ' aria-controls="tab-' + esc(c.slug) + '" id="tabbtn-' + esc(c.slug) + '">'
+              + esc(c.name) + '</button>';
+          }).join(''));
+        }
 
-        /* Anchor on the node AFTER the last old panel so the new panels land in
-           exactly the same position — inserting relative to a node we are about
-           to remove would silently append them to the end of the section. */
-        var lastPanel = oldPanels[oldPanels.length - 1];
-        var anchor = lastPanel.parentNode;
-        var insertBefore = lastPanel.nextSibling;
-
-        var panelHtml = categories.map(function (c, ci) {
+        fill('services', categories.map(function (c, ci) {
           var cards = c.services.map(function (s, i) {
             var meta = '<div class="svc__meta">'
               + '<span>' + esc(s.duration_label || '') + '</span>'
@@ -3827,24 +3450,12 @@
           return '<div class="svc-tab-panel" id="tab-' + esc(c.slug) + '" role="tabpanel"'
             + ' aria-labelledby="tabbtn-' + esc(c.slug) + '"' + (ci === 0 ? '' : ' hidden') + '>'
             + '<div class="svc-grid">' + cards + '</div></div>';
-        }).join('');
-
-        var holder = document.createElement('div');
-        holder.innerHTML = panelHtml;
-
-        Array.prototype.forEach.call(oldPanels, function (p) { p.remove(); });
-
-        while (holder.firstChild) {
-          anchor.insertBefore(holder.firstChild, insertBefore);
-        }
+        }).join(''));
       }
 
       /* ---------------- MOST LOVED ---------------- */
       function renderMostLoved(services) {
-        var host = document.querySelector('.rank');
-        if (!host || !services.length) return;
-
-        host.innerHTML = services.map(function (s, i) {
+        fill('most-loved', services.map(function (s, i) {
           return '<article class="rank__row ' + rv(i) + '">'
             + '<span class="rank__n">' + ('0' + (i + 1)).slice(-2) + '</span>'
             + '<div><div class="rank__t"><h3>' + esc(s.name) + '</h3>'
@@ -3857,67 +3468,59 @@
                 + 'Book ' + arrow(13) + '</a>'
               : '')
             + '</div></article>';
-        }).join('');
+        }).join(''), 'most-loved');
       }
 
       /* ---------------- GIFT CARDS ---------------- */
       function renderGiftCard(giftCards) {
-        var host = document.querySelector('.gift');
-        if (!host || !giftCards.length) return;
+        var section = block('gift');
+        if (!section) return;
 
         var card = giftCards[0];
-        var body = host.querySelector('.gift__body');
-        var image = host.querySelector('.gift-card');
+        if (!card) { section.hidden = true; return; }
 
-        if (body) {
-          var heading = body.querySelector('h2');
-          if (heading) heading.textContent = card.title;
+        var title       = section.querySelector('[data-cms="gift-title"]');
+        var description = section.querySelector('[data-cms="gift-description"]');
+        var link        = section.querySelector('[data-cms="gift-url"]');
+        var image       = section.querySelector('[data-cms="gift-image"]');
 
-          /* Replace only the paragraphs marked for the CMS, leaving the
-             eyebrow, crown rule and closing flourish untouched. */
-          var paragraphs = body.querySelectorAll('[data-cms="gift-description"]');
-          if (paragraphs.length && card.description) {
-            paragraphs[0].textContent = card.description;
-            for (var i = 1; i < paragraphs.length; i++) paragraphs[i].remove();
+        if (title) title.textContent = card.title || '';
+        if (description) description.textContent = card.description || '';
+
+        if (link) {
+          link.hidden = !card.purchase_url;
+          if (card.purchase_url) link.setAttribute('href', card.purchase_url);
+        }
+
+        if (image) {
+          image.hidden = !card.image_url;
+          if (card.image_url) {
+            image.setAttribute('src', card.image_url);
+            image.setAttribute('alt', card.image_alt || card.title || '');
           }
-
-          var button = body.querySelector('.btn-row a');
-          if (button && card.purchase_url) button.setAttribute('href', card.purchase_url);
         }
 
-        if (image && card.image_url) {
-          image.setAttribute('src', card.image_url);
-          image.setAttribute('alt', card.image_alt || card.title);
-        }
+        section.hidden = false;
       }
 
       /* ---------------- SHOP ---------------- */
       function renderBrands(brands) {
-        var host = document.querySelector('.brands');
-        if (!host || !brands.length) return;
-
-        host.innerHTML = brands.map(function (b, i) {
+        fill('brands', brands.map(function (b, i) {
           return '<a class="brand-card ' + rv(i) + '" href="#products">'
             + '<span><b>' + esc(b.name) + '</b><small>' + esc(b.tagline || '') + '</small></span>'
             + '<svg style="width:18px;height:18px;color:var(--gold-dp)"><use href="#i-arrow" /></svg>'
             + '</a>';
-        }).join('');
+        }).join(''), 'brands');
       }
 
       function renderProductCategories(categories) {
-        var host = document.querySelector('.chips');
-        if (!host || !categories.length) return;
-
-        host.innerHTML = categories.map(function (c) {
+        fill('product-categories', categories.map(function (c) {
           return '<button class="chip" data-category="' + esc(c.slug) + '">' + esc(c.name) + '</button>';
-        }).join('');
+        }).join(''), 'product-categories');
       }
 
       function renderProducts(products) {
-        var host = document.getElementById('prodGrid');
-        if (!host || !products.length) return;
-
-        host.innerHTML = products.map(function (p, i) {
+        fill('products', products.map(function (p, i) {
           var visual = p.image_url
             ? '<img src="' + esc(p.image_url) + '" alt="' + esc(p.image_alt || p.name) + '"'
               + ' loading="lazy" style="width:100%;height:100%;object-fit:cover">'
@@ -3936,11 +3539,37 @@
             + ' data-icon="' + esc(p.icon_key || 'i-bottle') + '">'
             + '<svg><use href="#i-bag" /></svg> Add to cart</button>'
             + '</div></article>';
-        }).join('');
+        }).join(''), 'products');
+      }
+
+      /* ---------------- FAILURE ---------------- */
+      /* There is no built-in copy left to fall back on, so an unreachable CMS
+         gets one honest message per content area instead of a page of empty
+         headings. */
+      function renderUnavailable() {
+        var message = 'This content could not be loaded right now. Please refresh the page, or call us at (754) 223-2669.';
+        var tabsHost = region('service-tabs');
+        var hint = document.querySelector('.svc-tabs__hint');
+
+        if (tabsHost) { write(tabsHost, ''); tabsHost.hidden = true; }
+        if (hint) hint.hidden = true;
+
+        fill('specials', note(message));
+        fill('services', note(message));
+        fill('products', note(message));
+
+        ['most-loved', 'product-categories', 'brands'].forEach(function (key) {
+          fill(key, '', key);
+        });
+
+        var gift = block('gift');
+        if (gift) gift.hidden = true;
       }
 
       /* ---------------- BOOT ---------------- */
       function hydrate() {
+        paintSkeletons();
+
         return fetch(API, { credentials: 'same-origin', headers: { Accept: 'application/json' } })
           .then(function (response) {
             if (!response.ok) throw new Error('CMS responded with ' + response.status);
@@ -3964,11 +3593,10 @@
             document.documentElement.setAttribute('data-cms', 'live');
           })
           .catch(function (error) {
-            /* The hard-coded markup remains on screen, so the page still works.
-               This is a content-freshness failure, not a page failure. */
-            document.documentElement.setAttribute('data-cms', 'fallback');
+            renderUnavailable();
+            document.documentElement.setAttribute('data-cms', 'unavailable');
             if (window.console && console.warn) {
-              console.warn('[Majesty CMS] Showing built-in content — ' + error.message);
+              console.warn('[Majesty CMS] Content unavailable — ' + error.message);
             }
           });
       }
@@ -4098,7 +3726,9 @@
           var dx = t.clientX - svcSwipeStartX;
           var dy = t.clientY - svcSwipeStartY;
           if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy)) return;
-          var idx = svcTabOrder.indexOf(document.querySelector('.svc-tab-btn.is-active').getAttribute('data-tab'));
+          var active = document.querySelector('.svc-tab-btn.is-active');
+          if (!active) return;
+          var idx = svcTabOrder.indexOf(active.getAttribute('data-tab'));
           var nextIdx = dx < 0 ? idx + 1 : idx - 1;
           if (nextIdx < 0 || nextIdx >= svcTabOrder.length) return;
           activateSvcTab(svcTabOrder[nextIdx]);

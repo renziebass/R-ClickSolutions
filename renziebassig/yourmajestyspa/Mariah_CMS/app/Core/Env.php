@@ -25,7 +25,15 @@ final class Env
             );
         }
 
-        foreach (file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+        // Control-panel file editors often save a UTF-8 BOM, which would
+        // otherwise become part of the first key's name.
+        if (isset($lines[0])) {
+            $lines[0] = preg_replace('/^\xEF\xBB\xBF/', '', $lines[0]) ?? $lines[0];
+        }
+
+        foreach ($lines as $line) {
             $line = trim($line);
             if ($line === '' || $line[0] === '#' || !str_contains($line, '=')) {
                 continue;

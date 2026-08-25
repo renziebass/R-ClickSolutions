@@ -149,7 +149,7 @@ SETUP_TOKEN=
 
 1. Add a setup token to `.env`. Any long random string:
    ```ini
-   SETUP_TOKEN=9f2c41ab77e05d3610b84fc9ae2d7b58
+   SETUP_TOKEN=9f2c41ab88e05d3610b84fc9ae2d7b58
    ```
    *(Generate your own — don't use that one.)*
 
@@ -285,16 +285,38 @@ Almost always `.htaccess`. Rename `Mariah_CMS/.htaccess` to `.htaccess.bak` and 
 If the 500 clears, your server rejects one of its directives — tell me which and I'll
 adjust it. Also check `storage/logs/` and hPanel → **Advanced → Error log**.
 
-**"Could not connect to MySQL" / access denied**
+**Database connection errors**
 
-- `DB_NAME` and `DB_USER` must include the `u123456789_` prefix.
-- The user must be **assigned** to the database — hPanel → Databases → check the list
-  shows your user against your database.
-- Reset the password in hPanel and paste it into `.env` fresh; a stray space breaks it.
+`setup.php` shows a **Test database credentials** panel whenever the connection is
+failing. Use it — you can try values without editing `.env`, and it tells you which
+stage failed rather than giving one generic refusal. The password you type there is
+used for the test only and is not saved.
+
+The MySQL error code narrows it down a lot:
+
+| Error | What it means | Fix |
+|---|---|---|
+| **1045** — `Access denied for user ... (using password: YES)` | MySQL rejected the **username/password pair**. This happens *before* the database is looked at, so a missing database is not the cause. | Reset the password in hPanel → **Databases → Management** → the user's **⋮ → Change password**, and paste the new value into `DB_PASS`. Also confirm `DB_USER` is spelled exactly as hPanel lists it, prefix included. |
+| **1044** — `Access denied for user ... to database ...` | Credentials are correct, but that user has **no grant** on that database. | In hPanel, check the user is listed against the database. If not, delete and recreate the database — Hostinger creates and grants the user in one step. |
+| **1049** — `Unknown database` | Credentials are correct; the **database name** is wrong or it was never created. | Create it in hPanel and make `DB_NAME` match the full prefixed name. |
+| **2002 / 2003** | Cannot reach the MySQL server at that host. | `DB_HOST` should be `localhost` on Hostinger shared hosting. |
+
+Most 1045s on Hostinger come down to one of these:
+
+1. **The password was never captured.** hPanel shows a generated password only at
+   creation time. If you did not copy it, you cannot recover it — reset it.
+2. **The user exists from an earlier attempt with a different password.** Creating a new
+   database with the same username does *not* reset that user's password.
+3. **The username is not what you think.** hPanel prefixes what you type, and can
+   truncate it. Copy the username from the database list rather than retyping it.
+4. **A stray character in `.env`.** No quotes are needed around the password. Leading and
+   trailing spaces are stripped automatically, but a smart quote or a line break pasted
+   into the middle of the value is not.
 
 **"The database does not exist and this MySQL user is not allowed to create it"**
 
-You skipped Step 1. Create the database in hPanel first.
+You skipped Step 1. Create the database in hPanel first — shared-hosting MySQL users
+cannot create databases themselves.
 
 **Sign-in does nothing — the page just reloads**
 

@@ -95,6 +95,20 @@ $action     = (string) ($_POST['action'] ?? '');
 $logLines   = [];
 $errorText  = '';
 $successMsg = '';
+$testResult = null;
+
+// The connection tester deliberately runs BEFORE ensureDatabase(), because its
+// whole purpose is to diagnose a connection that is currently failing.
+if ($authorised && $action === 'test' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $testResult = Installer::testConnection(
+        trim((string) ($_POST['t_host'] ?? 'localhost')) ?: 'localhost',
+        (int) ($_POST['t_port'] ?? 3306) ?: 3306,
+        trim((string) ($_POST['t_database'] ?? '')),
+        trim((string) ($_POST['t_user'] ?? '')),
+        (string) ($_POST['t_password'] ?? '')
+    );
+    $action = '';   // do not fall through to the install actions
+}
 
 if ($authorised && $action !== '' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
@@ -338,6 +352,89 @@ function h(?string $value): string
           </ul>
         </div>
       </div>
+
+      <?php if (!$dbReachable || $testResult !== null): ?>
+        <!-- ============ Connection tester ============ -->
+        <div class="card mb-2">
+          <div class="card__head"><h3>Test database credentials</h3></div>
+          <div class="card__body">
+            <?php if ($testResult !== null): ?>
+              <div class="form-error" style="margin-bottom:1.5rem;<?= $testResult['ok']
+                    ? 'background:var(--ok-bg);border-color:rgba(46,111,82,.3);color:var(--ok)' : '' ?>">
+                <b><?= h($testResult['stage']) ?></b><br>
+                <?= nl2br(h($testResult['message'])) ?>
+                <?php if ($testResult['detail'] !== ''): ?>
+                  <br><span style="opacity:.75;font-size:.9em"><?= h($testResult['detail']) ?></span>
+                <?php endif; ?>
+              </div>
+
+              <?php if ($testResult['ok']): ?>
+                <p style="margin-top:0">
+                  Copy these into <code class="inline">.env</code>, then reload this page:
+                </p>
+                <pre class="log">DB_HOST=<?= h((string) ($_POST['t_host'] ?? 'localhost')) ?>
+
+DB_PORT=<?= h((string) ($_POST['t_port'] ?? '3306')) ?>
+
+DB_NAME=<?= h((string) ($_POST['t_database'] ?? '')) ?>
+
+DB_USER=<?= h((string) ($_POST['t_user'] ?? '')) ?>
+
+DB_PASS=<?= h((string) ($_POST['t_password'] ?? '')) ?></pre>
+              <?php endif; ?>
+            <?php else: ?>
+              <p style="margin-top:0;color:var(--text-soft);font-size:.9rem">
+                Try a set of credentials without editing <code class="inline">.env</code>.
+                This reports which stage fails — authentication, database access, or the
+                database name — so you know exactly what to change in your control panel.
+              </p>
+            <?php endif; ?>
+
+            <form method="post" class="grid" autocomplete="off">
+              <input type="hidden" name="token" value="<?= h($providedToken) ?>">
+              <input type="hidden" name="action" value="test">
+
+              <div class="field col-8">
+                <label for="t_host">Host</label>
+                <input type="text" id="t_host" name="t_host"
+                       value="<?= h((string) ($_POST['t_host'] ?? Env::string('DB_HOST', 'localhost'))) ?>">
+                <small class="field__hint">Almost always <code>localhost</code> on shared hosting.</small>
+              </div>
+
+              <div class="field col-4">
+                <label for="t_port">Port</label>
+                <input type="text" id="t_port" name="t_port"
+                       value="<?= h((string) ($_POST['t_port'] ?? Env::string('DB_PORT', '3306'))) ?>">
+              </div>
+
+              <div class="field col-12">
+                <label for="t_database">Database name</label>
+                <input type="text" id="t_database" name="t_database"
+                       value="<?= h((string) ($_POST['t_database'] ?? Env::string('DB_NAME'))) ?>"
+                       placeholder="u123456789_majesty_cms">
+                <small class="field__hint">Include the account prefix, exactly as your control panel lists it.</small>
+              </div>
+
+              <div class="field col-6">
+                <label for="t_user">Username</label>
+                <input type="text" id="t_user" name="t_user"
+                       value="<?= h((string) ($_POST['t_user'] ?? Env::string('DB_USER'))) ?>"
+                       placeholder="u123456789_majesty">
+              </div>
+
+              <div class="field col-6">
+                <label for="t_password">Password</label>
+                <input type="password" id="t_password" name="t_password" autocomplete="new-password">
+                <small class="field__hint">Not saved anywhere — used only for this test.</small>
+              </div>
+
+              <div class="col-12">
+                <button type="submit" class="btn">Test connection</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      <?php endif; ?>
 
       <?php if ($dbReachable): ?>
 
