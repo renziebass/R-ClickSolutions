@@ -182,6 +182,12 @@ $publicServices = attempt(static fn (): int => (int) Database::fetchValue(
       WHERE s.status = 'active' AND s.deleted_at IS NULL"
 ));
 
+// Seeded image URLs are built from APP_URL, so a malformed APP_URL bakes a
+// broken prefix into every media row. Sampling one shows whether that happened.
+$sampleMediaUrl = attempt(static fn (): ?string => Database::fetchValue(
+    'SELECT file_url FROM media WHERE deleted_at IS NULL ORDER BY id LIMIT 1'
+));
+
 // ---------------------------------------------------------------------
 // 5. Session and identity
 // ---------------------------------------------------------------------
@@ -205,6 +211,74 @@ $identity = attempt(static function (): array {
 });
 
 $appUrl = Env::string('APP_URL', '(not set)');
+
+// ---------------------------------------------------------------------
+// 6. Front-end file integrity
+//
+// Every admin asset, hashed at the commit this diagnostic was written from.
+// Line endings are normalised to LF before hashing, so an FTP client that
+// rewrote CRLF in transit does not show up as a false mismatch — only a
+// genuine content difference does.
+// ---------------------------------------------------------------------
+$expectedAssets = [
+    'index.html'                    => ['bc5a9c24917ff73c336b34a373721330', 7474],
+    'login.html'                    => ['173dfb0cb3a2d232bfa53b1f9ca1c9b8', 4411],
+    'assets/css/admin.css'          => ['b46452a1bf42d37549e77182de419fb3', 31796],
+    'assets/js/api.js'              => ['62ffd140bc0c4f9a54654e90af977643', 3926],
+    'assets/js/app.js'              => ['b8b45b29c405245a07e21880850ba005', 11523],
+    'assets/js/router.js'           => ['204343d11fa10a1d037a47a415e03cd9', 2793],
+    'assets/js/session.js'          => ['0b2a57ab5ae0f70a14eaf59857b60f15', 1164],
+    'assets/js/pages/audit-logs.js' => ['e8bf8642d6eed2e1e95e0ff98a6b5b9f', 5116],
+    'assets/js/pages/categories.js' => ['4ebc5ee5c4928def8a00da779a9a7263', 5993],
+    'assets/js/pages/dashboard.js'  => ['a5bd97b773f7edc383904bf8273d5b5e', 8074],
+    'assets/js/pages/gift-cards.js' => ['3fa585bf7981e40cd100e56f7332070d', 7259],
+    'assets/js/pages/helpers.js'    => ['93d3a1a6db389865df00e86bbb73b594', 8552],
+    'assets/js/pages/media.js'      => ['d5e772892306240879dcf34d6c2f2079', 7823],
+    'assets/js/pages/promotions.js' => ['8e13c15815264f617216b71c197847ac', 10730],
+    'assets/js/pages/roles.js'      => ['1c775e065da9165a5b3ec99358a0a365', 6122],
+    'assets/js/pages/services.js'   => ['6d913079b3a1f340cb4473098cc9cd38', 11578],
+    'assets/js/pages/settings.js'   => ['509fdcc574029907be129e6a74da3f8e', 4701],
+    'assets/js/pages/shop.js'       => ['a7f5662e4a63f2cf6cdbb7131ebda764', 14961],
+    'assets/js/pages/specials.js'   => ['7a5e8c0e76412fdd9b3b6ee7e7e63183', 7482],
+    'assets/js/pages/users.js'      => ['f086906b4745f012e52e5fc9eae86e76', 8838],
+    'assets/js/ui/dom.js'           => ['a6fcf543fb3eaba9a8bca11f261e03dd', 3749],
+    'assets/js/ui/feedback.js'      => ['c5f65dd497c46fdf461bae9c272b2a28', 5898],
+    'assets/js/ui/form.js'          => ['2e782f4edd61cd70661118a447255f9d', 6274],
+    'assets/js/ui/media-picker.js'  => ['d3571cc9d8f25f7c76da1ee2377c8f16', 9879],
+    'assets/js/ui/table.js'         => ['1d6465a48854403c45a11d5c1da83631', 10268],
+];
+
+$assetChecks  = [];
+$assetProblem = 0;
+
+foreach ($expectedAssets as $relative => [$expectedHash, $expectedSize]) {
+    $path = __DIR__ . '/admin/' . $relative;
+
+    if (!is_readable($path)) {
+        $assetChecks[$relative] = ['state' => 'missing', 'detail' => 'not on the server'];
+        $assetProblem++;
+        continue;
+    }
+
+    $contents = (string) file_get_contents($path);
+    $contents = str_replace("\r\n", "\n", $contents);
+
+    $actualHash = md5($contents);
+    $actualSize = strlen($contents);
+
+    if ($actualHash === $expectedHash) {
+        $assetChecks[$relative] = ['state' => 'ok', 'detail' => number_format($actualSize) . ' bytes'];
+        continue;
+    }
+
+    $assetChecks[$relative] = [
+        'state'  => 'differs',
+        'detail' => number_format($actualSize) . ' bytes on server vs '
+                  . number_format($expectedSize) . ' expected'
+                  . ($actualSize < $expectedSize ? ' — truncated or older' : ' — edited or older'),
+    ];
+    $assetProblem++;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -264,6 +338,22 @@ $appUrl = Env::string('APP_URL', '(not set)');
           <?php if ($connection['value']['database'] !== Env::string('DB_NAME')): ?>
             <p class="bad" style="margin:.9rem 0 0">
               The connected database does not match DB_NAME. Two installations are in play.
+            </p>
+          <?php endif; ?>
+
+          <?php if (!preg_match('#^https?://[^/]+#', $appUrl)): ?>
+            <p class="bad" style="margin:.9rem 0 0">
+              APP_URL is malformed — it must be a single scheme followed by the host, e.g.
+              <code>https://rclicksolutions.com/renziebassig/yourmajestyspa/Mariah_CMS</code>.
+              Seeded image URLs are built from it, so every media row currently holds a
+              broken address.
+            </p>
+          <?php endif; ?>
+
+          <?php if ($sampleMediaUrl['ok'] && $sampleMediaUrl['value'] !== null): ?>
+            <p style="margin:.9rem 0 0;font-size:.82rem">
+              <b>Sample media file_url:</b><br>
+              <code style="word-break:break-all"><?= h($sampleMediaUrl['value']) ?></code>
             </p>
           <?php endif; ?>
         <?php endif; ?>
@@ -427,6 +517,63 @@ $appUrl = Env::string('APP_URL', '(not set)');
       </div>
     </div>
 
+    <!-- ============ 6. Asset integrity ============ -->
+    <div class="card mb-2 mt-2">
+      <div class="card__head"><h3>6 · Front-end files on the server</h3></div>
+      <div class="card__body">
+        <p class="muted" style="margin-top:0;font-size:.85rem">
+          Each admin asset hashed on disk and compared against the version in the project.
+          A file that <b>differs</b> or is <b>missing</b> means the upload to this server was
+          partial or stale — the browser is then running different code than the repository.
+        </p>
+
+        <?php if ($assetProblem === 0): ?>
+          <p class="good" style="margin:0 0 1rem">
+            All <?= count($expectedAssets) ?> files match the project exactly.
+          </p>
+        <?php else: ?>
+          <p class="bad" style="margin:0 0 1rem">
+            <?= (int) $assetProblem ?> of <?= count($expectedAssets) ?> files do not match.
+            Re-upload the ones marked below, in binary mode.
+          </p>
+        <?php endif; ?>
+
+        <table class="d">
+          <thead><tr><th>File</th><th>State</th><th>Detail</th></tr></thead>
+          <tbody>
+            <?php foreach ($assetChecks as $relative => $check): ?>
+              <?php if ($check['state'] === 'ok' && $assetProblem > 0) { continue; } ?>
+              <tr>
+                <td><code>admin/<?= h($relative) ?></code></td>
+                <td class="<?= $check['state'] === 'ok' ? 'good' : 'bad' ?>">
+                  <?= $check['state'] === 'ok' ? 'match' : h($check['state']) ?></td>
+                <td style="font-size:.8rem;color:var(--text-faint)"><?= h($check['detail']) ?></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+
+        <?php if ($assetProblem > 0): ?>
+          <p class="muted" style="margin:.9rem 0 0;font-size:.8rem">
+            Matching files are hidden above so the mismatches stand out.
+          </p>
+        <?php endif; ?>
+      </div>
+    </div>
+
+    <!-- ============ 7. What the SPA renders ============ -->
+    <div class="card">
+      <div class="card__head"><h3>7 · What the admin actually renders</h3></div>
+      <div class="card__body">
+        <p class="muted" style="margin-top:0;font-size:.85rem">
+          The real Services screen is loaded in a hidden frame and its output read back —
+          along with any JavaScript error it throws. This is the screen you are looking at,
+          reported as text.
+        </p>
+        <div id="spa"><p class="muted">Loading the admin…</p></div>
+      </div>
+    </div>
+
     <p class="muted" style="font-size:.8rem;margin-top:2.5rem;text-align:center">
       Mariah_CMS · Delete <code>debug.php</code> once the problem is found.
     </p>
@@ -497,6 +644,90 @@ $appUrl = Env::string('APP_URL', '(not set)');
         block.appendChild(pre);
         out.appendChild(block);
       }
+    })();
+  </script>
+
+  <script>
+    // Loads the real Services screen in a hidden frame and reads back what it
+    // rendered. Same origin, so the frame's DOM and its errors are both
+    // readable — which turns "the list looks empty" into an exact cause.
+    (function () {
+      var out = document.getElementById('spa');
+      var errors = [];
+
+      var frame = document.createElement('iframe');
+      // Positioned off-screen rather than display:none, so the page still
+      // lays out and innerText reports what a viewer would actually see.
+      frame.style.cssText = 'position:absolute;left:-10000px;top:0;width:1280px;height:900px;border:0';
+      frame.src = ROOT + '/admin/index.html#/services';
+      document.body.appendChild(frame);
+
+      // The app's scripts are modules, so they run after the frame's document
+      // is parsed. Polling for contentWindow attaches the listeners before then.
+      var hook = setInterval(function () {
+        try {
+          var w = frame.contentWindow;
+          if (w && !w.__probeHooked) {
+            w.__probeHooked = true;
+
+            w.addEventListener('error', function (event) {
+              errors.push((event.message || 'Error')
+                + (event.filename ? '\n    at ' + event.filename + ':' + event.lineno : ''));
+            });
+
+            w.addEventListener('unhandledrejection', function (event) {
+              var reason = event.reason;
+              errors.push('Unhandled promise rejection: '
+                + (reason && reason.message ? reason.message : String(reason)));
+            });
+          }
+        } catch (err) {
+          // Frame not navigable yet — try again on the next tick.
+        }
+      }, 20);
+
+      setTimeout(function () {
+        clearInterval(hook);
+
+        var lines = [];
+
+        try {
+          var doc = frame.contentDocument;
+          var win = frame.contentWindow;
+
+          lines.push('Final URL: ' + win.location.pathname + win.location.hash);
+
+          var bounced = win.location.pathname.indexOf('login.html') !== -1;
+          if (bounced) {
+            lines.push('>> The admin bounced to the login page: the session was rejected.');
+          }
+
+          var boot = doc.getElementById('boot');
+          lines.push('Splash still showing: '
+            + (boot ? 'YES — app.js never finished starting' : 'no'));
+
+          lines.push('Sidebar links built: ' + doc.querySelectorAll('.sidebar__link').length);
+          lines.push('Table rows rendered: '
+            + doc.querySelectorAll('#view table.data tbody tr').length);
+
+          var view = doc.getElementById('view');
+          lines.push('');
+          lines.push('--- text content of #view ---');
+          lines.push(view ? (view.innerText || '').trim().slice(0, 900) : '(no #view element)');
+        } catch (err) {
+          lines.push('Could not read the frame: ' + err.message);
+        }
+
+        lines.push('');
+        lines.push('--- JavaScript errors captured (' + errors.length + ') ---');
+        lines.push(errors.length ? errors.join('\n\n') : '(none)');
+
+        var pre = document.createElement('pre');
+        pre.className = 'log';
+        pre.textContent = lines.join('\n');
+
+        out.replaceChildren(pre);
+      }, 6000);
     })();
   </script>
 </body>
