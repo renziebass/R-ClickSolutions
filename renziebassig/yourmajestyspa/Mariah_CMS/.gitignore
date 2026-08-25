@@ -1,0 +1,8 @@
+# Secrets — never commit. Use .env.example as the template.
+.env
+
+# Uploaded media and logs are runtime data, not source.
+storage/uploads/*
+!storage/uploads/.htaccess
+storage/logs/*
+!storage/logs/.gitkeep

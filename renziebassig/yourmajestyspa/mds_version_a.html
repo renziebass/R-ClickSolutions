@@ -3286,10 +3286,12 @@
             <div class="crown-rule" aria-hidden="true"><svg>
                 <use href="#i-crown" />
               </svg></div>
-            <p style="color:rgba(247,243,237,.78)">A thoughtful gift. A memorable experience. A moment of well-deserved
+            <p data-cms="gift-description" style="color:rgba(247,243,237,.78)">A thoughtful gift. A memorable
+              experience. A moment of well-deserved
               self-care. Majesty Day Spa gift cards can be used toward any massage, facial, body treatment, or luxury
               spa experience, including our signature couples and oceanfront packages.</p>
-            <p style="color:rgba(247,243,237,.78)">Perfect for birthdays, anniversaries, holidays, thank-you gifts, or
+            <p data-cms="gift-description" style="color:rgba(247,243,237,.78)">Perfect for birthdays, anniversaries,
+              holidays, thank-you gifts, or
               simply showing someone they deserve to be pampered.</p>
             <p style="font-size:1.15rem;color:var(--ivory)">Give the gift of relaxation, wellness, and <span
                 class="script" style="font-size:1.5rem">Royal</span> treatment.</p>
@@ -3708,8 +3710,277 @@
     </div>
   </aside>
 
+  <!-- ==========================================================
+       MAJESTY CMS — content layer
+       Replaces the hard-coded markup above with live content from
+       Mariah_CMS. The static markup stays as the first paint and as a
+       fallback: if the API is unreachable the page still renders in full.
+       Only active / published records are returned by the API, so
+       deactivating an item in the CMS removes it from this page.
+       ========================================================== -->
   <script>
-    (function () {
+    window.MajestyCMS = (function () {
+      "use strict";
+
+      var API = 'Mariah_CMS/api/public/bootstrap';
+
+      function esc(v) {
+        if (v === null || v === undefined) return '';
+        return String(v)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      }
+
+      /* Reveal-delay classes; the observer picks these up after render. */
+      function rv(i) {
+        var delay = i > 0 && i < 4 ? ' rv-d' + i : '';
+        return 'rv' + delay;
+      }
+
+      function arrow(size) {
+        return '<svg style="width:' + size + 'px;height:' + size + 'px"><use href="#i-arrow" /></svg>';
+      }
+
+      function bookBtn(url, label, cls) {
+        if (!url) return '';
+        return '<a class="' + cls + '" href="' + esc(url) + '" target="_blank" rel="noopener">'
+          + esc(label) + ' ' + arrow(14) + '</a>';
+      }
+
+      /* ---------------- SPECIALS ---------------- */
+      function renderSpecials(specials) {
+        var host = document.getElementById('specialsList');
+        if (!host || !specials.length) return;
+
+        host.innerHTML = specials.map(function (s, i) {
+          var price = s.price_label
+            ? '<p class="special__price">' + esc(s.price_label)
+              + (s.compare_at_label ? ' <s>' + esc(s.compare_at_label) + '</s>' : '') + '</p>'
+            : '';
+
+          return '<article class="special ' + rv(i) + '">'
+            + '<div class="special__img">'
+            + (s.image_url
+              ? '<img src="' + esc(s.image_url) + '" alt="' + esc(s.image_alt || s.title) + '" loading="lazy">'
+              : '')
+            + '</div>'
+            + '<div class="special__body">'
+            + (s.badge_label ? '<p class="special__tag">' + esc(s.badge_label) + '</p>' : '')
+            + '<h3>' + esc(s.title) + '</h3>'
+            + (s.description ? '<p>' + esc(s.description) + '</p>' : '')
+            + price
+            + bookBtn(s.booking_url, 'Book Now', 'btn btn--sm btn--white')
+            + '</div></article>';
+        }).join('');
+      }
+
+      /* ---------------- SERVICES (tabs + panels) ---------------- */
+      function renderServices(categories) {
+        var tabsHost = document.querySelector('.svc-tabs');
+        var section = document.getElementById('services');
+        if (!tabsHost || !section || !categories.length) return;
+
+        /* Rebuild the tab bar from the categories that have live services. */
+        tabsHost.innerHTML = categories.map(function (c, i) {
+          return '<button class="svc-tab-btn' + (i === 0 ? ' is-active' : '') + '" type="button"'
+            + ' data-tab="' + esc(c.slug) + '" role="tab"'
+            + ' aria-selected="' + (i === 0 ? 'true' : 'false') + '"'
+            + ' aria-controls="tab-' + esc(c.slug) + '" id="tabbtn-' + esc(c.slug) + '">'
+            + esc(c.name) + '</button>';
+        }).join('');
+
+        /* Replace the panels, keeping them in the same place in the DOM. */
+        var oldPanels = section.querySelectorAll('.svc-tab-panel');
+        if (!oldPanels.length) return;
+
+        /* Anchor on the node AFTER the last old panel so the new panels land in
+           exactly the same position — inserting relative to a node we are about
+           to remove would silently append them to the end of the section. */
+        var lastPanel = oldPanels[oldPanels.length - 1];
+        var anchor = lastPanel.parentNode;
+        var insertBefore = lastPanel.nextSibling;
+
+        var panelHtml = categories.map(function (c, ci) {
+          var cards = c.services.map(function (s, i) {
+            var meta = '<div class="svc__meta">'
+              + '<span>' + esc(s.duration_label || '') + '</span>'
+              + '<span class="svc__price">' + esc(s.price_label || '') + '</span></div>';
+
+            return '<article class="svc ' + rv(i) + '">'
+              + '<div class="svc__img">'
+              + (s.image_url
+                ? '<img src="' + esc(s.image_url) + '" alt="' + esc(s.image_alt || s.name) + '" loading="lazy">'
+                : '')
+              + (s.icon_key
+                ? '<span class="svc__icon"><svg><use href="#' + esc(s.icon_key) + '" /></svg></span>'
+                : '')
+              + '</div>'
+              + '<div class="svc__body">'
+              + '<h3>' + esc(s.name) + '</h3>'
+              + meta
+              + '<div class="svc__panel">'
+              + '<p>' + esc(s.description || s.short_description || '') + '</p>'
+              + bookBtn(s.booking_url, 'Book Now', 'btn btn--sm')
+              + '</div></div></article>';
+          }).join('');
+
+          return '<div class="svc-tab-panel" id="tab-' + esc(c.slug) + '" role="tabpanel"'
+            + ' aria-labelledby="tabbtn-' + esc(c.slug) + '"' + (ci === 0 ? '' : ' hidden') + '>'
+            + '<div class="svc-grid">' + cards + '</div></div>';
+        }).join('');
+
+        var holder = document.createElement('div');
+        holder.innerHTML = panelHtml;
+
+        Array.prototype.forEach.call(oldPanels, function (p) { p.remove(); });
+
+        while (holder.firstChild) {
+          anchor.insertBefore(holder.firstChild, insertBefore);
+        }
+      }
+
+      /* ---------------- MOST LOVED ---------------- */
+      function renderMostLoved(services) {
+        var host = document.querySelector('.rank');
+        if (!host || !services.length) return;
+
+        host.innerHTML = services.map(function (s, i) {
+          return '<article class="rank__row ' + rv(i) + '">'
+            + '<span class="rank__n">' + ('0' + (i + 1)).slice(-2) + '</span>'
+            + '<div><div class="rank__t"><h3>' + esc(s.name) + '</h3>'
+            + '<em>' + esc(s.duration_label || '') + '</em></div>'
+            + '<p class="rank__d">' + esc(s.short_description || s.description || '') + '</p></div>'
+            + '<div class="rank__cta">'
+            + '<span class="rank__price">' + esc(s.price_label || '') + '</span>'
+            + (s.booking_url
+              ? '<a class="btn btn--sm" href="' + esc(s.booking_url) + '" target="_blank" rel="noopener">'
+                + 'Book ' + arrow(13) + '</a>'
+              : '')
+            + '</div></article>';
+        }).join('');
+      }
+
+      /* ---------------- GIFT CARDS ---------------- */
+      function renderGiftCard(giftCards) {
+        var host = document.querySelector('.gift');
+        if (!host || !giftCards.length) return;
+
+        var card = giftCards[0];
+        var body = host.querySelector('.gift__body');
+        var image = host.querySelector('.gift-card');
+
+        if (body) {
+          var heading = body.querySelector('h2');
+          if (heading) heading.textContent = card.title;
+
+          /* Replace only the paragraphs marked for the CMS, leaving the
+             eyebrow, crown rule and closing flourish untouched. */
+          var paragraphs = body.querySelectorAll('[data-cms="gift-description"]');
+          if (paragraphs.length && card.description) {
+            paragraphs[0].textContent = card.description;
+            for (var i = 1; i < paragraphs.length; i++) paragraphs[i].remove();
+          }
+
+          var button = body.querySelector('.btn-row a');
+          if (button && card.purchase_url) button.setAttribute('href', card.purchase_url);
+        }
+
+        if (image && card.image_url) {
+          image.setAttribute('src', card.image_url);
+          image.setAttribute('alt', card.image_alt || card.title);
+        }
+      }
+
+      /* ---------------- SHOP ---------------- */
+      function renderBrands(brands) {
+        var host = document.querySelector('.brands');
+        if (!host || !brands.length) return;
+
+        host.innerHTML = brands.map(function (b, i) {
+          return '<a class="brand-card ' + rv(i) + '" href="#products">'
+            + '<span><b>' + esc(b.name) + '</b><small>' + esc(b.tagline || '') + '</small></span>'
+            + '<svg style="width:18px;height:18px;color:var(--gold-dp)"><use href="#i-arrow" /></svg>'
+            + '</a>';
+        }).join('');
+      }
+
+      function renderProductCategories(categories) {
+        var host = document.querySelector('.chips');
+        if (!host || !categories.length) return;
+
+        host.innerHTML = categories.map(function (c) {
+          return '<button class="chip" data-category="' + esc(c.slug) + '">' + esc(c.name) + '</button>';
+        }).join('');
+      }
+
+      function renderProducts(products) {
+        var host = document.getElementById('prodGrid');
+        if (!host || !products.length) return;
+
+        host.innerHTML = products.map(function (p, i) {
+          var visual = p.image_url
+            ? '<img src="' + esc(p.image_url) + '" alt="' + esc(p.image_alt || p.name) + '"'
+              + ' loading="lazy" style="width:100%;height:100%;object-fit:cover">'
+            : '<svg><use href="#' + esc(p.icon_key || 'i-bottle') + '" /></svg>';
+
+          return '<article class="prod ' + rv(i) + '" data-category="' + esc(p.category_slug || '') + '">'
+            + '<div class="prod__img">'
+            + (p.badge_label ? '<span class="prod__badge">' + esc(p.badge_label) + '</span>' : '')
+            + visual + '</div>'
+            + '<div class="prod__body">'
+            + '<span class="prod__brand">' + esc(p.brand_name || '') + '</span>'
+            + '<span class="prod__name">' + esc(p.name) + '</span>'
+            + '<span class="prod__price">' + esc(p.price_label) + '</span>'
+            + '<button class="btn btn--sm add" data-name="' + esc(p.name) + '"'
+            + ' data-price="' + esc(p.price) + '"'
+            + ' data-icon="' + esc(p.icon_key || 'i-bottle') + '">'
+            + '<svg><use href="#i-bag" /></svg> Add to cart</button>'
+            + '</div></article>';
+        }).join('');
+      }
+
+      /* ---------------- BOOT ---------------- */
+      function hydrate() {
+        return fetch(API, { credentials: 'same-origin', headers: { Accept: 'application/json' } })
+          .then(function (response) {
+            if (!response.ok) throw new Error('CMS responded with ' + response.status);
+            return response.json();
+          })
+          .then(function (payload) {
+            if (!payload || payload.success !== true || !payload.data) {
+              throw new Error('Unexpected CMS response');
+            }
+
+            var data = payload.data;
+
+            renderSpecials(data.specials || []);
+            renderServices(data.categories || []);
+            renderMostLoved(data.most_loved || []);
+            renderGiftCard(data.gift_cards || []);
+            renderBrands(data.brands || []);
+            renderProductCategories(data.product_categories || []);
+            renderProducts(data.products || []);
+
+            document.documentElement.setAttribute('data-cms', 'live');
+          })
+          .catch(function (error) {
+            /* The hard-coded markup remains on screen, so the page still works.
+               This is a content-freshness failure, not a page failure. */
+            document.documentElement.setAttribute('data-cms', 'fallback');
+            if (window.console && console.warn) {
+              console.warn('[Majesty CMS] Showing built-in content — ' + error.message);
+            }
+          });
+      }
+
+      return { hydrate: hydrate };
+    })();
+  </script>
+
+  <script>
+    /* Behaviour wiring. Runs AFTER MajestyCMS.hydrate() so every observer,
+       tab handler and cart button binds against the rendered content. */
+    window.__majestyInit = function () {
       "use strict";
       var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -3915,17 +4186,23 @@
         render();
       });
 
-      document.querySelectorAll('.add').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          var name = btn.dataset.name, price = parseFloat(btn.dataset.price), icon = btn.dataset.icon;
-          var found = cart.filter(function (i) { return i.name === name; })[0];
-          if (found) found.qty++; else cart.push({ name: name, price: price, icon: icon, qty: 1 });
-          render();
-          var html = btn.innerHTML;
-          btn.classList.add('is-added');
-          btn.innerHTML = '<svg><use href="#i-check"/></svg> Added';
-          setTimeout(function () { btn.classList.remove('is-added'); btn.innerHTML = html; }, 1400);
-        });
+      /* Delegated so products rendered from the CMS are clickable too — a
+         per-button listener would only ever see the initial markup. */
+      document.addEventListener('click', function (e) {
+        if (!e.target || typeof e.target.closest !== 'function') return;
+        var btn = e.target.closest('.add');
+        if (!btn) return;
+
+        var name = btn.dataset.name, price = parseFloat(btn.dataset.price), icon = btn.dataset.icon;
+        var found = cart.filter(function (i) { return i.name === name; })[0];
+        if (found) found.qty++; else cart.push({ name: name, price: price, icon: icon, qty: 1 });
+        render();
+
+        if (btn.classList.contains('is-added')) return;
+        var html = btn.innerHTML;
+        btn.classList.add('is-added');
+        btn.innerHTML = '<svg><use href="#i-check"/></svg> Added';
+        setTimeout(function () { btn.classList.remove('is-added'); btn.innerHTML = html; }, 1400);
       });
       render();
 
@@ -3960,7 +4237,12 @@
       form.querySelectorAll('input,textarea').forEach(function (el) {
         el.addEventListener('input', function () { el.closest('.field').classList.remove('has-error'); });
       });
-    })();
+    };
+
+    /* Render CMS content first, then wire behaviour against what is on screen.
+       hydrate() never rejects — on failure it keeps the built-in markup — so
+       the site behaves identically whether or not the CMS is reachable. */
+    window.MajestyCMS.hydrate().then(window.__majestyInit);
   </script>
 </body>
 

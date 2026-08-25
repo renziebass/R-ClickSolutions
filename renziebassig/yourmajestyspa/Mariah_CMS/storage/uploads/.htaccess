@@ -1,0 +1,33 @@
+# Uploaded files are data, never code.
+#
+# Every directive here is guarded by <IfModule>: a bare `php_flag` is a fatal
+# configuration error on FastCGI / LiteSpeed setups (which Hostinger commonly
+# uses), and `Require` is Apache 2.4 syntax that errors on 2.2.
+
+<IfModule mod_php.c>
+  php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+  php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+  php_flag engine off
+</IfModule>
+
+# Works regardless of how PHP is wired up: strip every script handler, and make
+# anything that slips through be served as inert plain text.
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .phps .cgi .pl .py .jsp .asp .shtml
+RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8 .phps .cgi .pl .py .jsp .asp .shtml
+AddType text/plain .php .phtml .php3 .php4 .php5 .php7 .php8 .phps .cgi .pl .py
+
+Options -Indexes -ExecCGI
+
+# Belt and braces: serve image files, refuse everything else.
+<IfModule mod_authz_core.c>
+  <FilesMatch "(?i)\.(jpe?g|png|webp|gif)$">
+    Require all granted
+  </FilesMatch>
+  <FilesMatch "(?i)\.(php|phtml|php[3-8]|phps|cgi|pl|py|jsp|asp|aspx|shtml|htaccess)$">
+    Require all denied
+  </FilesMatch>
+</IfModule>
