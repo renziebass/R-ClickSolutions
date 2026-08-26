@@ -18,6 +18,9 @@ export const session = {
   async load() {
     const result = await api.get('/auth/me');
     this.user = result.data.user;
+    // Merged, not replaced: uploadMaxBytes above is still a client-side
+    // default that the server does not send.
+    Object.assign(this.config, result.data.config || {});
     setCsrfToken(result.data.csrf_token);
     return this.user;
   },

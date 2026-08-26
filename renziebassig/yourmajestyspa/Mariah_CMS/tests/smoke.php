@@ -663,6 +663,140 @@ if ($importCategory === null) {
 }
 
 // =====================================================================
+section('Site settings');
+
+$originalSheetUrl = null;
+
+{
+    $current = request('GET', '/settings');
+
+    $ok = check(
+        'GET /settings returns the setting definitions',
+        $current['status'] === 200
+            && isset($current['body']['data']['values']['services_import_sheet_url']),
+        'HTTP ' . $current['status'] . ' — ' . substr($current['raw'], 0, 300)
+    );
+
+    if ($ok) {
+        $originalSheetUrl = $current['body']['data']['values']['services_import_sheet_url'];
+    }
+
+    $bad = request('PUT', '/settings', ['services_import_sheet_url' => 'https://example.com/nope']);
+    check(
+        'A non-Google link is rejected onto its own field',
+        $bad['status'] === 422 && !empty($bad['body']['error']['fields']['services_import_sheet_url']),
+        'HTTP ' . $bad['status'] . ' — ' . substr($bad['raw'], 0, 300)
+    );
+
+    $published = request('PUT', '/settings', [
+        'services_import_sheet_url' => 'https://docs.google.com/spreadsheets/d/e/2PACX-abc/pubhtml',
+    ]);
+    check(
+        'A "Publish to web" link is rejected with its own message',
+        $published['status'] === 422
+            && str_contains(
+                (string) ($published['body']['error']['fields']['services_import_sheet_url'] ?? ''),
+                'Publish to web'
+            ),
+        'HTTP ' . $published['status'] . ' — ' . substr($published['raw'], 0, 300)
+    );
+
+    $unknown = request('PUT', '/settings', ['not_a_real_setting' => 'x']);
+    check(
+        'An unknown setting key is refused, not silently discarded',
+        $unknown['status'] === 422,
+        'HTTP ' . $unknown['status'] . ' — ' . substr($unknown['raw'], 0, 200)
+    );
+
+    $goodUrl = 'https://docs.google.com/spreadsheets/d/' . str_repeat('A', 44) . '/edit#gid=0';
+    $saved   = request('PUT', '/settings', ['services_import_sheet_url' => $goodUrl]);
+
+    check(
+        'A valid Sheets link saves',
+        $saved['status'] === 200
+            && ($saved['body']['data']['values']['services_import_sheet_url'] ?? null) === $goodUrl,
+        'HTTP ' . $saved['status'] . ' — ' . substr($saved['raw'], 0, 300)
+    );
+
+    $me = request('GET', '/auth/me');
+    check(
+        'Public settings reach the SPA through /auth/me',
+        ($me['body']['data']['config']['services_import_sheet_url'] ?? null) === $goodUrl,
+        substr($me['raw'], 0, 300)
+    );
+}
+
+// =====================================================================
+section('Service import from a Google Sheets link');
+
+{
+    // These two are rejected by GoogleSheetUrl before any network call, so
+    // they are deterministic on a host with no egress at all.
+    $notASheet = request('POST', '/services/import', [
+        'source_url' => 'https://example.com/not-a-sheet',
+        'dry_run'    => '1',
+    ]);
+
+    check(
+        'A non-Google source_url is a 422 on the file field',
+        $notASheet['status'] === 422 && !empty($notASheet['body']['error']['fields']['file']),
+        'HTTP ' . $notASheet['status'] . ' — ' . substr($notASheet['raw'], 0, 300)
+    );
+
+    $publishedLink = request('POST', '/services/import', [
+        'source_url' => 'https://docs.google.com/spreadsheets/d/e/2PACX-abc/pubhtml',
+        'dry_run'    => '1',
+    ]);
+
+    check(
+        'A "Publish to web" source_url names that specific mistake',
+        $publishedLink['status'] === 422
+            && str_contains((string) ($publishedLink['body']['error']['fields']['file'] ?? ''), 'Publish to web'),
+        'HTTP ' . $publishedLink['status'] . ' — ' . substr($publishedLink['raw'], 0, 300)
+    );
+
+    // Network-dependent: assert the SHAPE of the failure, never a success, so
+    // the suite still passes on a host that blocks egress.
+    if (!extension_loaded('curl')) {
+        skip('A well-formed but non-existent sheet fails cleanly', 'cURL is not installed');
+    } else {
+        $missing = request('POST', '/services/import', [
+            'source_url' => 'https://docs.google.com/spreadsheets/d/' . str_repeat('A', 44) . '/edit#gid=0',
+            'dry_run'    => '1',
+        ]);
+
+        $message = (string) ($missing['body']['error']['fields']['file'] ?? '');
+
+        if ($missing['status'] === 0) {
+            skip('A well-formed but non-existent sheet fails cleanly', 'the server could not be reached');
+        } else {
+            check(
+                'A well-formed but non-existent sheet fails with an explanation',
+                $missing['status'] === 422 && $message !== '',
+                'HTTP ' . $missing['status'] . ' — ' . substr($missing['raw'], 0, 300)
+            );
+        }
+    }
+
+    // Opt-in live test against a real shared sheet.
+    $liveSheet = \Mariah\Core\Env::string('SMOKE_SHEET_URL');
+
+    if ($liveSheet === '') {
+        skip('Live import from a real Google Sheet', 'set SMOKE_SHEET_URL in .env to enable');
+    } else {
+        $live = request('POST', '/services/import', ['source_url' => $liveSheet, 'dry_run' => '1']);
+
+        check(
+            'A real shared sheet previews',
+            $live['status'] === 200
+                && ($live['body']['data']['file']['source'] ?? null) === 'google_sheet'
+                && ($live['body']['data']['summary']['rows'] ?? 0) > 0,
+            'HTTP ' . $live['status'] . ' — ' . substr($live['raw'], 0, 300)
+        );
+    }
+}
+
+// =====================================================================
 section('Role-based access control');
 
 $demoEditor = Database::fetchValue("SELECT id FROM users WHERE email = 'editor@demo.local' AND deleted_at IS NULL");
@@ -694,6 +828,32 @@ if ($demoEditor === null || $demoAdmin === null) {
         if (($editorCreate['body']['data']['id'] ?? null) !== null) {
             $createdServiceIds[] = (int) $editorCreate['body']['data']['id'];
         }
+
+        // settings.view ends in ".view", so it would land in the Editor's
+        // grants automatically unless permissions.php excludes it by name.
+        $editorSettingsRead = request('GET', '/settings');
+        check(
+            'An Editor cannot read site settings (403)',
+            $editorSettingsRead['status'] === 403,
+            describe($editorSettingsRead)
+        );
+
+        $editorSettingsWrite = request('PUT', '/settings', ['services_import_url_enabled' => '1']);
+        check(
+            'An Editor cannot change site settings (403)',
+            $editorSettingsWrite['status'] === 403,
+            describe($editorSettingsWrite)
+        );
+
+        $editorImport = request('POST', '/services/import', [
+            'source_url' => 'https://example.com/x',
+            'dry_run'    => '1',
+        ]);
+        check(
+            'An Editor cannot bulk import services (403)',
+            $editorImport['status'] === 403,
+            describe($editorImport)
+        );
 
         $target = $createdServiceIds[0] ?? 1;
         $editorDelete = request('DELETE', "/services/{$target}");
@@ -797,6 +957,16 @@ try {
     Database::run("DELETE FROM audit_logs WHERE description LIKE '%Smoke Test Service%'");
     Database::run("DELETE FROM audit_logs WHERE description LIKE '%Editor Smoke Service%'");
     Database::run("DELETE FROM audit_logs WHERE description LIKE '%smoke-import.csv%'");
+    Database::run("DELETE FROM audit_logs WHERE entity_type = 'setting'");
+
+    // Put the template link back the way the operator had it.
+    if ($originalSheetUrl !== null) {
+        Database::run(
+            'INSERT INTO settings (setting_key, setting_value) VALUES (?, ?)
+             ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)',
+            ['services_import_sheet_url', (string) $originalSheetUrl]
+        );
+    }
 
     pass('Test records removed (' . count(array_unique($createdServiceIds)) . ' service(s))');
 } catch (\Throwable $e) {

@@ -9,6 +9,7 @@ use Mariah\Core\Response;
 use Mariah\Repositories\BaseRepository;
 use Mariah\Repositories\CategoryRepository;
 use Mariah\Repositories\ServiceRepository;
+use Mariah\Repositories\SettingsRepository;
 use Mariah\Services\ServiceCsvSchema;
 use Mariah\Services\ServiceImporter;
 
@@ -83,13 +84,35 @@ final class ServiceController extends ResourceController
     }
 
     /**
-     * Bulk import from a CSV file (multipart/form-data, field "file").
+     * Bulk import, from either an uploaded CSV (multipart, field "file") or a
+     * Google Sheets link (field "source_url"). Both are the same import with a
+     * different way of getting the bytes, so they share one endpoint, one
+     * permission and one preview/commit protocol.
      *
      * `dry_run` defaults to 1, so a request that omits it previews rather than
      * writes. Only an explicit dry_run=0 commits.
      */
     public function import(Request $request): never
     {
+        $dryRun    = (string) $request->input('dry_run', '1') !== '0';
+        $sourceUrl = trim((string) $request->input('source_url', ''));
+
+        // Handled before the upload diagnostics below, which are meaningless
+        // for a JSON body.
+        if ($sourceUrl !== '') {
+            if (!SettingsRepository::bool('services_import_url_enabled')) {
+                throw HttpException::validation(['file' =>
+                    'Importing directly from a link is turned off. Turn it on under '
+                    . 'Settings → Site settings, or download the sheet as a CSV and upload it.']);
+            }
+
+            Response::json(ServiceImporter::runFromUrl(
+                $sourceUrl,
+                $dryRun,
+                $request->input('confirm_digest')
+            ));
+        }
+
         // When PHP's post_max_size is exceeded it silently empties BOTH $_POST
         // and $_FILES. The CSRF header survives, so the guard passes and the
         // request arrives looking like "no file was sent" — the most confusing
@@ -108,9 +131,7 @@ final class ServiceController extends ResourceController
             throw HttpException::validation(['file' => 'Please choose a CSV file to import.']);
         }
 
-        $dryRun = (string) $request->input('dry_run', '1') !== '0';
-
-        Response::json(ServiceImporter::run(
+        Response::json(ServiceImporter::runFromUpload(
             $_FILES['file'],
             $dryRun,
             $request->input('confirm_digest')

@@ -12,12 +12,17 @@ use Mariah\Repositories\CategoryRepository;
 use Mariah\Repositories\ServiceRepository;
 
 /**
- * Bulk service import from a CSV file.
+ * Bulk service import from a CSV file or a Google Sheets link.
  *
  * Preview and commit are the SAME pipeline, differing only in whether the
- * final write stage runs. The browser re-uploads the file it still holds when
- * the operator confirms, so the server keeps no state between the two calls
- * and the preview cannot disagree with what is written.
+ * final write stage runs. On confirm the client re-sends the source — the file
+ * the browser still holds, or the sheet link — so the server keeps no state
+ * between the two calls and the preview cannot disagree with what is written.
+ *
+ * The two sources differ only in how the bytes arrive: runFromUpload() and
+ * runFromUrl() both hand a string to runBytes(), which is everything else.
+ * is_uploaded_file() stays on the upload path alone, because it is false for
+ * any file the server fetched itself.
  *
  * The write is all-or-nothing. Database::transaction() flattens nesting rather
  * than using savepoints, so "skip the bad rows and import the rest" cannot be
@@ -54,25 +59,59 @@ final class ServiceImporter
      * @param bool  $dryRun     true previews, false writes
      * @param mixed $confirmDigest the digest the preview returned, on commit
      */
-    public static function run(array $file, bool $dryRun, mixed $confirmDigest = null): array
+    public static function runFromUpload(array $file, bool $dryRun, mixed $confirmDigest = null): array
     {
-        return (new self())->handle($file, $dryRun, $confirmDigest);
+        $importer = new self();
+        $importer->assertUploadOk($file);
+
+        $raw = (string) file_get_contents($file['tmp_name']);
+
+        return $importer->runBytes(
+            $raw,
+            $importer->safeName((string) ($file['name'] ?? 'upload.csv')),
+            $dryRun,
+            $confirmDigest,
+            'upload'
+        );
     }
 
-    private function handle(array $file, bool $dryRun, mixed $confirmDigest): array
+    /** Fetches a published Google Sheet as CSV and imports it. */
+    public static function runFromUrl(string $sourceUrl, bool $dryRun, mixed $confirmDigest = null): array
     {
-        $this->assertUploadOk($file);
+        $fetched  = GoogleSheetFetcher::fetchCsv($sourceUrl);
+        $importer = new self();
 
-        $raw    = (string) file_get_contents($file['tmp_name']);
+        return $importer->runBytes(
+            $fetched['bytes'],
+            $importer->safeName($fetched['name']),
+            $dryRun,
+            $confirmDigest,
+            'google_sheet',
+            $fetched['url']
+        );
+    }
+
+    /** Everything both sources share, from the raw bytes onward. */
+    private function runBytes(
+        string $raw,
+        string $name,
+        bool $dryRun,
+        mixed $confirmDigest,
+        string $source,
+        ?string $sourceUrl = null
+    ): array {
+        $this->assertContentOk($raw);
+
         $digest = hash('sha256', $raw);
 
-        // The browser re-sends the same File object, so this always matches in
-        // the happy path. It catches a file swapped in another tab between
-        // previewing and confirming.
+        // The client re-sends the same source on confirm, so this matches in
+        // the happy path. It matters more for a sheet than for a file: a file
+        // in the browser cannot change under you, a shared sheet can.
         if (!$dryRun && is_string($confirmDigest) && $confirmDigest !== '' && $confirmDigest !== $digest) {
-            throw HttpException::conflict(
-                'The file changed since it was previewed. Please preview it again.'
-            );
+            throw HttpException::conflict($source === 'google_sheet'
+                ? 'The sheet changed since it was previewed — someone edited it in the last few '
+                  . 'minutes. Nothing was imported. Preview it again to see what it now contains.'
+                : 'The file changed since it was previewed. Please preview it again.');
         }
 
         [$headers, $rows, $ignored] = $this->readRows($raw);
@@ -97,9 +136,14 @@ final class ServiceImporter
             'dry_run'   => $dryRun,
             'committed' => false,
             'file'      => [
-                'name'   => $this->safeName($file['name'] ?? 'upload.csv'),
+                'name'   => $name,
                 'size'   => strlen($raw),
                 'digest' => $digest,
+                // Additive; the existing client ignores what it does not read.
+                // Both also reach the audit log, so the trail records where a
+                // menu rewrite came from.
+                'source'     => $source,
+                'source_url' => $sourceUrl,
             ],
             'columns'   => ['recognised' => $headers, 'ignored' => $ignored],
             'summary'   => $summary,
@@ -129,7 +173,11 @@ final class ServiceImporter
     }
 
     // -----------------------------------------------------------------
-    // Upload
+    // Source checks
+    //
+    // Split deliberately: assertUploadOk() is transport — things only an
+    // HTTP upload can be wrong about — while assertContentOk() judges bytes
+    // and so serves the sheet path too.
     // -----------------------------------------------------------------
 
     /**
@@ -177,30 +225,67 @@ final class ServiceImporter
             throw HttpException::validation(['file' => $message], $message);
         }
 
+        // Only an upload carries an operator-supplied filename.
         $extension = strtolower(pathinfo((string) ($file['name'] ?? ''), PATHINFO_EXTENSION));
 
         if (!in_array($extension, ['csv', 'txt'], true)) {
-            throw HttpException::validation(
-                ['file' => 'Only .csv files can be imported. In Excel choose File → Save As → CSV UTF-8.']
-            );
+            throw HttpException::validation([
+                'file' => 'Only .csv files can be imported. In Excel choose File → Save As → CSV UTF-8; '
+                        . 'in Google Sheets choose File → Download → Comma-separated values.',
+            ]);
+        }
+    }
+
+    /**
+     * Content checks, on bytes rather than a path, so an uploaded file and a
+     * fetched sheet are judged identically.
+     */
+    private function assertContentOk(string $raw): void
+    {
+        if ($raw === '') {
+            throw HttpException::validation(['file' => 'That file is empty.']);
+        }
+
+        // Backstop. The upload path already checked $_FILES['size'] before
+        // reading, and the fetcher aborts mid-transfer, so reaching this means
+        // one of those was bypassed.
+        $maxBytes = Env::int('SERVICE_IMPORT_MAX_BYTES', ServiceCsvSchema::MAX_BYTES);
+
+        if (strlen($raw) > $maxBytes) {
+            $mb      = round($maxBytes / 1048576, 1);
+            $message = 'That file is ' . round(strlen($raw) / 1048576, 1)
+                     . ' MB. The limit is ' . $mb . ' MB.';
+            throw HttpException::validation(['file' => $message], $message);
         }
 
         // An .xlsx is a zip archive. Renaming it to .csv is a common mistake
         // and the resulting parse errors are baffling, so name it precisely.
-        $head = (string) file_get_contents($tmpPath, false, null, 0, 4);
-
-        if (str_starts_with($head, "PK\x03\x04")) {
+        if (str_starts_with($raw, "PK\x03\x04")) {
             throw HttpException::validation([
                 'file' => 'That is an Excel workbook (.xlsx) renamed to .csv. '
-                        . 'In Excel choose File → Save As → CSV UTF-8.',
+                        . 'In Excel choose File → Save As → CSV UTF-8, or in Google Sheets '
+                        . 'File → Download → Comma-separated values (.csv).',
+            ]);
+        }
+
+        // A saved web page renamed .csv on the upload path; a backstop behind
+        // GoogleSheetFetcher's richer sign-in-page detection on the sheet path.
+        $head = strtolower(ltrim(substr($raw, 0, 512)));
+
+        if (str_starts_with($head, '<!doctype html') || str_starts_with($head, '<html')) {
+            throw HttpException::validation([
+                'file' => 'That is a web page, not a CSV. If it came from Google Sheets, the sheet '
+                        . 'is probably not shared — or use File → Download → Comma-separated values.',
             ]);
         }
 
         // finfo is loose on CSV — real ones report text/plain as often as
-        // text/csv — so this only rules out obviously binary uploads.
+        // text/csv — so this only rules out obviously binary content. Reading
+        // the buffer rather than a path is what lets one method serve both
+        // sources.
         if (class_exists('finfo')) {
             $finfo = new \finfo(FILEINFO_MIME_TYPE);
-            $mime  = (string) $finfo->file($tmpPath);
+            $mime  = (string) $finfo->buffer($raw);
 
             $accepted = [
                 'text/plain', 'text/csv', 'application/csv', 'text/x-csv',
@@ -225,9 +310,10 @@ final class ServiceImporter
      */
     private function readRows(string $raw): array
     {
-        // Excel's "CSV UTF-8" writes a BOM, which would otherwise turn the
-        // first header into "\xEF\xBB\xBFname" and match nothing — the classic
-        // "it says name is missing but name is right there".
+        // Excel's "CSV UTF-8" and Google Sheets' CSV export both write a BOM,
+        // which would otherwise turn the first header into "\xEF\xBB\xBFname"
+        // and match nothing — the classic "it says name is missing but name is
+        // right there".
         if (str_starts_with($raw, "\xEF\xBB\xBF")) {
             $raw = substr($raw, 3);
         }
@@ -239,7 +325,8 @@ final class ServiceImporter
 
             if (!is_string($converted) || !mb_check_encoding($converted, 'UTF-8')) {
                 throw HttpException::validation([
-                    'file' => 'That file is not readable as text. Re-save it as CSV UTF-8.',
+                    'file' => 'That file is not readable as text. Re-save it as CSV UTF-8 — '
+                            . 'a file downloaded from Google Sheets always is.',
                 ]);
             }
 
@@ -286,7 +373,8 @@ final class ServiceImporter
             throw HttpException::validation([
                 'file' => 'The file is missing required columns: ' . implode(', ', $missing) . '. '
                         . 'The columns found were: ' . (implode(', ', $found) ?: 'none') . '. '
-                        . 'Download the template to see the expected format.',
+                        . 'The Import screen lists the expected columns, and has a template '
+                        . 'you can compare against.',
             ]);
         }
 
@@ -320,8 +408,8 @@ final class ServiceImporter
             $row = ['__line' => $lineNumber];
 
             foreach ($map as $index => $key) {
-                // Excel routinely omits trailing empty cells, so a short row is
-                // padded rather than rejected.
+                // Excel and Google Sheets both omit trailing empty cells, so a
+                // short row is padded rather than rejected.
                 $row[$key] = isset($cells[$index]) ? trim((string) $cells[$index]) : '';
             }
 
@@ -346,7 +434,10 @@ final class ServiceImporter
         return [$recognised, $rows, $ignored];
     }
 
-    /** European Excel writes semicolons; some exports use tabs. */
+    /**
+     * European Excel writes semicolons; some exports use tabs. Google Sheets
+     * always exports commas, so this only matters on the upload path.
+     */
     private function sniffDelimiter(string $raw): string
     {
         $firstLine = strtok($raw, "\n");

@@ -25,6 +25,7 @@ use Mariah\Controllers\PromotionController;
 use Mariah\Controllers\PublicContentController;
 use Mariah\Controllers\RoleController;
 use Mariah\Controllers\ServiceController;
+use Mariah\Controllers\SettingsController;
 use Mariah\Controllers\SpecialController;
 use Mariah\Controllers\UserController;
 use Mariah\Core\Auth;
@@ -261,6 +262,15 @@ try {
 
     $router->get('/audit-logs',         [$auditLogs, 'index'],   [Guard::permission('audit_logs.view')]);
     $router->get('/audit-logs/filters', [$auditLogs, 'filters'], [Guard::permission('audit_logs.view')]);
+
+    // =================================================================
+    // SITE SETTINGS — the CMS's own configuration, editable in the browser.
+    // One record that is really a bag of keys, so there is no /settings/{id}.
+    // =================================================================
+    $settings = new SettingsController();
+
+    $router->get('/settings', [$settings, 'index'],  [Guard::permission('settings.view')]);
+    $router->put('/settings', [$settings, 'update'], [Guard::permission('settings.edit')]);
 
     // =================================================================
     $router->dispatch($request);

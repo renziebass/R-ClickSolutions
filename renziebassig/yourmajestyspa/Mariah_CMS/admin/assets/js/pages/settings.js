@@ -3,9 +3,20 @@
 import { api } from '../api.js';
 import { session } from '../session.js';
 import { dateTimeLabel, el, esc } from '../ui/dom.js';
-import { applyErrors, clearErrors, field, fill, section } from '../ui/form.js';
+import { applyErrors, clearErrors, field, fill, formValues, section, switchField } from '../ui/form.js';
 import { notify, withBusy } from '../ui/feedback.js';
 import { pageHead } from './helpers.js';
+
+/**
+ * The header row for the Google Sheets template, tab-separated so that pasting
+ * it into cell A1 spreads it across the columns. A comma-separated line would
+ * land in a single cell — the single most likely mistake in the setup.
+ */
+const SHEET_HEADER_ROW = [
+  'name', 'category', 'price', 'slug', 'short_description', 'description',
+  'price_display', 'promo_price', 'duration_minutes', 'duration_display',
+  'icon_key', 'booking_url', 'status', 'featured', 'most_loved_rank', 'display_order',
+].join('\t');
 
 export async function settingsPage(outlet) {
   outlet.appendChild(pageHead({
@@ -20,6 +31,149 @@ export async function settingsPage(outlet) {
   grid.appendChild(integrationCard());
 
   outlet.appendChild(grid);
+
+  // The route itself carries no permission on purpose — every signed-in user
+  // needs the account and password cards. This check only decides whether to
+  // render; GET and PUT /settings each enforce their own guard server-side.
+  if (session.can('settings.view')) {
+    try {
+      grid.insertBefore(await siteSettingsCard(), grid.firstChild);
+    } catch (error) {
+      grid.insertBefore(el(`
+        <div class="card"><div class="card__body">
+          <div class="error-state">
+            <h3>Site settings could not be loaded</h3>
+            <p>${esc(error.message || 'Unexpected error.')}</p>
+          </div>
+        </div></div>
+      `), grid.firstChild);
+    }
+  }
+}
+
+// =================================================================
+// Site settings
+// =================================================================
+async function siteSettingsCard() {
+  const data = (await api.get('/settings')).data;
+  const canEdit = data.can_edit === true;
+
+  const card = el(`
+    <div class="card">
+      <div class="card__head"><h3>Site settings</h3></div>
+      <div class="card__body">
+        <p style="margin-top:0;color:var(--text-soft);font-size:.9rem">
+          Options that change how the CMS behaves. These are stored in the database,
+          so they apply to everyone.
+        </p>
+      </div>
+    </div>
+  `);
+
+  const body = card.querySelector('.card__body');
+  const form = el('<form novalidate></form>');
+
+  data.groups.forEach((group) => {
+    const node = section(group.label);
+
+    fill(node, ...group.settings.map((setting) => (
+      setting.type === 'bool'
+        ? switchField({
+            name: setting.key, label: setting.label,
+            hint: setting.help, checked: Boolean(setting.value), span: 12,
+          })
+        // The field's name IS the setting key, which is what makes
+        // applyErrors() paint a 422 onto the right input with no changes
+        // to ui/form.js.
+        : field({
+            name: setting.key, label: setting.label, hint: setting.help,
+            type: setting.type === 'url' ? 'url' : 'text',
+            value: setting.value ?? '', span: 12,
+          })
+    )));
+
+    form.appendChild(node);
+  });
+
+  if (!canEdit) {
+    form.querySelectorAll('input, select, textarea').forEach((input) => {
+      input.disabled = true;
+    });
+    form.appendChild(el(
+      '<p class="muted" style="font-size:.87rem">Your role can view these settings but not change them.</p>'
+    ));
+  } else {
+    const submit = el('<button type="submit" class="btn mt-2">Save settings</button>');
+    form.appendChild(submit);
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      clearErrors(form);
+
+      await withBusy(submit, async () => {
+        try {
+          const result = await api.put('/settings', formValues(form));
+          notify.ok('Settings saved.');
+
+          // Keeps this tab consistent immediately: /auth/me only runs at boot,
+          // so without this the person who just pasted the template link would
+          // not see the button on the import screen until a reload.
+          Object.assign(session.config, result.data.values_public || {});
+        } catch (error) {
+          applyErrors(form, error);
+          notify.error(error.message);
+        }
+      });
+    });
+  }
+
+  body.appendChild(form);
+  body.appendChild(sheetSetupBlock());
+
+  return card;
+}
+
+/** The one-time setup the CMS cannot do for you — it cannot create a Sheet. */
+function sheetSetupBlock() {
+  const block = el(`
+    <div class="mt-3" style="border-top:1px solid var(--line);padding-top:1.25rem">
+      <h4 style="margin:0 0 .5rem;font-size:.95rem">Setting up the Google Sheets template</h4>
+      <p class="muted" style="font-size:.87rem;margin-top:0">
+        The CMS cannot create the sheet for you. This is a one-time setup.
+      </p>
+      <ol class="muted" style="font-size:.87rem;padding-left:1.2rem;line-height:1.7">
+        <li>Open <b>sheets.google.com</b> and create a blank spreadsheet.</li>
+        <li>Click cell <b>A1</b> and paste the header row below. It is tab-separated,
+            which is what spreads it across sixteen columns.</li>
+        <li>Choose <b>Share → General access → Anyone with the link → Viewer</b>,
+            then <b>Copy link</b>.</li>
+        <li>Paste that link into <b>Google Sheets template link</b> above and save.</li>
+      </ol>
+      <pre style="overflow-x:auto;background:var(--surface-2);border:1px solid var(--line);
+                  border-radius:var(--r);padding:.75rem;font-size:.78rem;margin:0"></pre>
+      <button type="button" class="btn btn--ghost btn--sm mt-2">Copy header row</button>
+      <p class="muted" style="font-size:.82rem;margin-top:.75rem">
+        Anyone holding the link will be able to read that sheet. For a blank template
+        that is fine; keep anything private out of it.
+      </p>
+    </div>
+  `);
+
+  block.querySelector('pre').textContent = SHEET_HEADER_ROW;
+
+  const copyButton = block.querySelector('button');
+
+  copyButton.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(SHEET_HEADER_ROW);
+      notify.ok('Header row copied. Paste it into cell A1.');
+    } catch {
+      // Clipboard access needs a secure context; the <pre> stays selectable.
+      notify.warn('Could not copy automatically — select the row above and copy it.');
+    }
+  });
+
+  return block;
 }
 
 function accountCard() {

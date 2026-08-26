@@ -101,6 +101,10 @@ $catalogue = [
     'Audit logs' => [
         'audit_logs.view'     => 'View the audit log',
     ],
+    'Site settings' => [
+        'settings.view'       => 'View site settings',
+        'settings.edit'       => 'Edit site settings',
+    ],
 ];
 
 /** Flat list of every permission slug. */
@@ -128,8 +132,14 @@ $editorPerms = array_merge($viewOnly, [
     'gift_cards.create', 'gift_cards.edit', 'gift_cards.activate',
     'media.upload',      'media.edit',
 ]);
-// An Editor has no business reading the audit trail or the user list.
-$editorPerms = array_values(array_diff($editorPerms, ['users.view', 'roles.view', 'audit_logs.view']));
+// An Editor has no business reading the audit trail, the user list or the
+// system settings. `settings.view` has to be named here explicitly: $viewOnly
+// is built by matching the ".view" suffix, so it would otherwise be granted
+// silently to both Editor and Staff.
+$editorPerms = array_values(array_diff(
+    $editorPerms,
+    ['users.view', 'roles.view', 'audit_logs.view', 'settings.view']
+));
 
 /** Full content control, plus read-only visibility of users and the audit log. */
 $adminPerms = array_values(array_diff($all, [
@@ -137,8 +147,11 @@ $adminPerms = array_values(array_diff($all, [
     'users.delete',                                  // deleting staff is Super Admin only
 ]));
 
-/** Staff can look, not touch, and cannot see users, roles or the audit log. */
-$staffPerms = array_values(array_diff($viewOnly, ['users.view', 'roles.view', 'audit_logs.view']));
+/** Staff can look, not touch, and cannot see users, roles, the audit log or settings. */
+$staffPerms = array_values(array_diff(
+    $viewOnly,
+    ['users.view', 'roles.view', 'audit_logs.view', 'settings.view']
+));
 
 return [
     'catalogue' => $catalogue,

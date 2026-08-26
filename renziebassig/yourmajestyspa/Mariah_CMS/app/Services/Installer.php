@@ -1151,10 +1151,16 @@ final class Installer
                 'detail' => extension_loaded($ext)
                     ? 'Loaded'
                     : ($fatal ? 'Required — enable it in your hosting control panel'
-                              : 'Optional — only needed for tests/smoke.php'),
+                              : 'Optional — needed to import services from a Google Sheets link, '
+                                . 'and by tests/smoke.php'),
                 'fatal'  => $fatal,
             ];
         }
+
+        // The only outbound request this application makes is the Google Sheets
+        // import. On a hosting plan without SSH there is no other way to learn
+        // whether the host permits it, so the installer answers it directly.
+        $checks[] = self::egressCheck();
 
         $storage = MARIAH_ROOT . '/storage/uploads';
         $checks[] = [
@@ -1210,6 +1216,54 @@ final class Installer
         ];
 
         return $checks;
+    }
+
+    /**
+     * Can this server actually reach Google? Never fatal — the CMS works
+     * completely without it; only importing services straight from a Sheets
+     * link needs it, and that path degrades to download-and-upload.
+     *
+     * @return array{label:string, ok:bool, detail:string, fatal:bool}
+     */
+    private static function egressCheck(): array
+    {
+        if (!extension_loaded('curl')) {
+            return [
+                'label'  => 'Outbound HTTPS to docs.google.com',
+                'ok'     => false,
+                'detail' => 'Cannot test — the cURL extension is not installed',
+                'fatal'  => false,
+            ];
+        }
+
+        $handle = curl_init('https://docs.google.com/');
+
+        curl_setopt_array($handle, [
+            CURLOPT_NOBODY         => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_TIMEOUT        => 8,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_FOLLOWLOCATION => false,
+        ]);
+
+        curl_exec($handle);
+
+        $status = (int) curl_getinfo($handle, CURLINFO_HTTP_CODE);
+        $error  = curl_error($handle);
+
+        curl_close($handle);
+
+        return [
+            'label'  => 'Outbound HTTPS to docs.google.com',
+            'ok'     => $status > 0,
+            'detail' => $status > 0
+                ? "Reachable (HTTP {$status}) — importing from a Google Sheets link will work"
+                : 'Blocked' . ($error !== '' ? " — {$error}" : '')
+                  . '. Staff can still download the sheet as a CSV and upload it.',
+            'fatal'  => false,
+        ];
     }
 
     private static function toBytes(string $value): int

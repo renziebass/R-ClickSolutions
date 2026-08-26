@@ -9,7 +9,9 @@ use Mariah\Core\HttpException;
 use Mariah\Core\RateLimiter;
 use Mariah\Core\Request;
 use Mariah\Core\Response;
+use Mariah\Core\Logger;
 use Mariah\Core\Validator;
+use Mariah\Repositories\SettingsRepository;
 use Mariah\Repositories\UserRepository;
 use Mariah\Services\AuditLogger;
 
@@ -117,9 +119,22 @@ final class AuthController
             throw HttpException::unauthorized();
         }
 
+        // Client-visible settings ride along here rather than costing the SPA a
+        // second request. Wrapped because session.load() is the first thing the
+        // dashboard awaits: if this threw — say because migration 009 has not
+        // been run yet — the entire admin would fail to boot behind a 500.
+        $config = [];
+
+        try {
+            $config = SettingsRepository::publicValues();
+        } catch (\Throwable $e) {
+            Logger::error($e, ['hint' => 'settings read for /auth/me']);
+        }
+
         Response::json([
             'user'       => $profile,
             'csrf_token' => Csrf::token(),
+            'config'     => $config,
         ]);
     }
 

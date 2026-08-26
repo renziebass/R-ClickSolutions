@@ -364,6 +364,7 @@ media.{view,upload,edit,delete}
 users.{view,create,edit,delete}
 roles.{view,create,edit,delete}
 audit_logs.view
+settings.{view,edit}
 ```
 
 ### Enforcement
@@ -473,7 +474,24 @@ Common list parameters: `page`, `per_page` (max 100), `search`, `sort`, `directi
 
 ```
 POST /services/import      multipart: file, dry_run=1|0, confirm_digest
+POST /services/import      JSON:      source_url, dry_run=1|0, confirm_digest
 ```
+
+Two sources, one endpoint: an uploaded CSV or a Google Sheets link are the same import
+with a different way of getting the bytes, so they share the permission, the response
+envelope and the preview/commit protocol. `data.file.source` is `upload` or
+`google_sheet`, and `data.file.source_url` carries the export URL the server used.
+
+**The Sheets link is never fetched as given.** `GoogleSheetUrl` extracts a document id
+matching `[A-Za-z0-9-_]{20,120}` and a numeric gid, and the fetcher requests a hardcoded
+`docs.google.com/spreadsheets/d/{id}/export?format=csv&gid={gid}`. The sheet must be
+shared **Anyone with the link → Viewer**; anything less returns Google's sign-in page,
+which the fetcher detects and explains rather than letting it reach the CSV parser.
+Fetch failures use the same 422 / `error.fields.file` channel as file failures.
+
+Both preview and commit fetch the sheet, mirroring the browser re-uploading a file. That
+is what makes the digest check meaningful here — a shared sheet really can change between
+the two, and a mismatch is a 409 that says so.
 
 Requires the separate `services.import` permission — one file can rewrite the whole
 public menu, so it is not folded into `services.create`.
@@ -657,6 +675,18 @@ in version control. Back it up together with the database.
   a `SameSite=Lax` session cookie.
 - **Session** — HttpOnly, Secure, SameSite=Lax, regenerated on sign-in (defeating
   session fixation), with an idle timeout.
+- **Outbound requests** — the Google Sheets import is the application's *only* egress.
+  The operator's URL is never fetched as given: `GoogleSheetUrl` extracts a document id
+  matching `[A-Za-z0-9-_]{20,120}` and a numeric gid, and the fetcher requests a hardcoded
+  `docs.google.com` template built from those two fragments. Every hop is confined to
+  HTTPS (`CURLOPT_PROTOCOLS` and `CURLOPT_REDIR_PROTOCOLS`), redirects are capped at 5,
+  connect and total timeouts are 5 s and 20 s, certificate verification is explicitly on,
+  no cookies are sent, and a write callback aborts the transfer the moment the response
+  exceeds the size cap. The residual exposure is that redirects may follow to
+  Google-controlled hosts, which cannot be pinned without breaking the feature; the caller
+  already holds `services.import` and can therefore already rewrite the whole public menu.
+  Note also that **a sheet imported by link is world-readable to anyone holding the link**
+  — that is what "Anyone with the link → Viewer" means.
 - **File uploads** — accepted only if the extension is allowlisted **and** the MIME type
   sniffed by `finfo` matches **and** `getimagesize()` succeeds. Stored under a
   randomised name so a crafted filename cannot control the path, in a directory whose
@@ -694,10 +724,15 @@ fit this shape.
 
 Stated plainly rather than left to be discovered:
 
-- **Testimonials and site settings** are still hard-coded in `mds_version_a.html`. They
-  were explicitly out of scope. The guest quotes in the Reviews section and the contact
-  details, opening hours and Booker.com links in the header/footer are still edited in
-  the HTML.
+- **Website content that is still hard-coded in `mds_version_a.html`.** A `settings` store
+  now exists (Settings → Site settings) but holds only the service-import keys. The guest
+  quotes in the Reviews section, and the contact details, opening hours and Booker.com
+  links in the header and footer, are still edited in the HTML.
+- **Private Google Sheets.** Importing from a link requires the sheet to be shared
+  "Anyone with the link → Viewer". An OAuth or service-account path would need a Google
+  API client, which would need Composer, and this project has no dependencies.
+- **`session.config.uploadMaxBytes`** is still a client-side constant rather than being
+  served from `UPLOAD_MAX_BYTES`, even though `/auth/me` now carries a `config` block.
 - **`majesty-day-spa.html`, `sample.html` and `concierge.html`** are untouched. Only
   `mds_version_a.html` reads from the CMS.
 - **Image resizing / thumbnails.** Uploads are stored at their original dimensions;

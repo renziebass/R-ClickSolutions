@@ -8,6 +8,7 @@
 
 import { api } from '../api.js';
 import { navigate } from '../router.js';
+import { session } from '../session.js';
 import { el, esc, icon, money } from '../ui/dom.js';
 import { confirmDialog, emptyState, notify, withBusy } from '../ui/feedback.js';
 import { clearOptionCache, pageHead } from './helpers.js';
@@ -46,9 +47,11 @@ const ACTION_PILLS = {
 };
 
 export async function serviceImportPage(outlet) {
-  // The File object is held across both requests — the commit re-uploads it
-  // rather than the server keeping any state between the two calls.
+  // The source is held across both requests — the commit re-sends the same
+  // file or the same link, rather than the server keeping state between them.
   let file = null;
+  let sourceUrl = '';
+  let source = 'file';
 
   outlet.appendChild(pageHead({
     title: 'Import services from CSV',
@@ -64,6 +67,7 @@ export async function serviceImportPage(outlet) {
   // ---------------------------------------------------------------
   function renderChooser(errorMessage) {
     file = null;
+    sourceUrl = '';
 
     const card = el(`
       <div class="card">
@@ -100,40 +104,126 @@ export async function serviceImportPage(outlet) {
       `));
     });
 
+    const actions = card.querySelector('[data-slot="actions"]');
+
     const templateButton = el(
       `<button type="button" class="btn btn--ghost">${icon('i-upload', 15)} Download blank template</button>`
     );
     templateButton.addEventListener('click', downloadTemplate);
-    card.querySelector('[data-slot="actions"]').appendChild(templateButton);
+    actions.appendChild(templateButton);
+
+    // Only when an Admin has configured a template under Settings. An anchor
+    // rather than a button so middle-click and "open in new tab" work.
+    const copyUrl = sheetCopyUrl(session.config.services_import_sheet_url);
+
+    if (copyUrl) {
+      actions.appendChild(el(`
+        <a class="btn btn--ghost" href="${esc(copyUrl)}" target="_blank" rel="noopener"
+           style="margin-left:.5rem">
+          ${icon('i-copy', 15)} Open the Google Sheets template
+        </a>
+      `));
+      actions.appendChild(el(`
+        <p class="muted" style="font-size:.83rem;margin:.75rem 0 0">
+          Google will offer to make your own copy. Edit that copy, then either import it
+          by link below, or use <b>File → Download → Comma-separated values</b> and upload it.
+        </p>
+      `));
+    }
 
     const dropSlot = card.querySelector('[data-slot="drop"]');
+
+    // When the server says a link import cannot work — turned off, or no cURL
+    // — this slot stays exactly what it was before the feature existed.
+    const canImportByUrl = session.config.services_import_url_available === true;
+
+    if (canImportByUrl) {
+      dropSlot.appendChild(sourcePicker());
+    }
 
     if (errorMessage) {
       dropSlot.appendChild(el(`<div class="form-error">${esc(errorMessage)}</div>`));
     }
 
-    dropSlot.appendChild(buildCsvDropzone((chosen) => {
+    const filePanel = el('<div></div>');
+    filePanel.appendChild(buildCsvDropzone((chosen) => {
       file = chosen;
-      submitFile(true);
+      source = 'file';
+      submit(true);
     }));
 
+    dropSlot.appendChild(filePanel);
+
+    let urlPanel = null;
+
+    if (canImportByUrl) {
+      urlPanel = buildUrlPanel((url) => {
+        sourceUrl = url;
+        source = 'url';
+        submit(true);
+      });
+      urlPanel.hidden = true;
+      dropSlot.appendChild(urlPanel);
+    }
+
     stage.replaceChildren(card);
+
+    /** Two buttons, no tab machinery — each panel holds exactly one control. */
+    function sourcePicker() {
+      const picker = el(`
+        <div class="mb-2" role="group" aria-label="Where the services come from">
+          <button type="button" class="btn btn--sm" data-src="file">Upload a CSV</button>
+          <button type="button" class="btn btn--sm btn--ghost" data-src="url"
+                  style="margin-left:.4rem">Google Sheets link</button>
+        </div>
+      `);
+
+      picker.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-src]');
+        if (!button) return;
+
+        const wanted = button.dataset.src;
+
+        picker.querySelectorAll('button[data-src]').forEach((node) => {
+          node.classList.toggle('btn--ghost', node.dataset.src !== wanted);
+        });
+
+        filePanel.hidden = wanted !== 'file';
+        if (urlPanel) urlPanel.hidden = wanted !== 'url';
+      });
+
+      return picker;
+    }
   }
 
   // ---------------------------------------------------------------
-  // Upload — preview (dryRun) or commit
+  // Submit — preview (dryRun) or commit, from whichever source is active
   // ---------------------------------------------------------------
-  async function submitFile(dryRun, digest, button) {
-    if (!file) return;
-
-    const form = new FormData();
-    form.append('file', file);
-    form.append('dry_run', dryRun ? '1' : '0');
-    if (digest) form.append('confirm_digest', digest);
+  async function submit(dryRun, digest, button) {
+    if (source === 'file' && !file) return;
+    if (source === 'url' && !sourceUrl) return;
 
     const run = async () => {
       try {
-        const result = await api.upload('/services/import', form);
+        let result;
+
+        if (source === 'url') {
+          // Strings, because the server compares
+          // (string) input('dry_run','1') !== '0'.
+          result = await api.post('/services/import', {
+            source_url: sourceUrl,
+            dry_run: dryRun ? '1' : '0',
+            confirm_digest: digest || undefined,
+          });
+        } else {
+          const form = new FormData();
+          form.append('file', file);
+          form.append('dry_run', dryRun ? '1' : '0');
+          if (digest) form.append('confirm_digest', digest);
+
+          result = await api.upload('/services/import', form);
+        }
+
         return result.data;
       } catch (error) {
         // File-level failures come back keyed "file"; per-row problems never
@@ -154,9 +244,10 @@ export async function serviceImportPage(outlet) {
     if (button) {
       data = await withBusy(button, run);
     } else {
+      const what = source === 'url' ? 'the Google Sheet' : file.name;
       stage.replaceChildren(el(`
         <div class="card"><div class="card__body">
-          <p class="muted" style="text-align:center;padding:2rem 0">Reading ${esc(file.name)}…</p>
+          <p class="muted" style="text-align:center;padding:2rem 0">Reading ${esc(what)}…</p>
         </div></div>
       `));
       data = await run();
@@ -170,7 +261,7 @@ export async function serviceImportPage(outlet) {
       renderResult(data);
     } else {
       // Refused (rows still in error) or rolled back mid-write. Stay on the
-      // preview with the file still held so retry is one click.
+      // preview with the source still held so retry is one click.
       renderPreview(data, data.abort?.message || data.message);
     }
   }
@@ -222,7 +313,9 @@ export async function serviceImportPage(outlet) {
 
     const actions = el(`
       <div class="form-actions">
-        <button type="button" class="btn btn--ghost">Choose a different file</button>
+        <button type="button" class="btn btn--ghost">${
+          data.file.source === 'google_sheet' ? 'Choose a different sheet' : 'Choose a different file'
+        }</button>
         <button type="button" class="btn"></button>
       </div>
     `);
@@ -253,7 +346,7 @@ export async function serviceImportPage(outlet) {
           danger: false,
         });
 
-        if (ok) await submitFile(false, data.file.digest, confirmButton);
+        if (ok) await submit(false, data.file.digest, confirmButton);
       });
     }
 
@@ -409,6 +502,27 @@ export async function serviceImportPage(outlet) {
 // Pieces
 // -----------------------------------------------------------------
 
+/**
+ * The "make a copy" link for a stored Sheets URL, or null.
+ *
+ * Mirrors GoogleSheetUrl::copyUrl() in PHP — a small duplication of the same
+ * kind as the COLUMNS const above, and self-revealing in the same way: a link
+ * that does not parse produces no button, and a wrong one produces an
+ * immediate Google 404.
+ */
+function sheetCopyUrl(stored) {
+  if (!stored) return null;
+
+  // "Publish to web" links use a different id space and /copy 404s for them.
+  if (/^https?:\/\/docs\.google\.com\/spreadsheets\/d\/e\//i.test(stored)) return null;
+
+  const match = String(stored).trim().match(
+    /^https?:\/\/docs\.google\.com\/spreadsheets\/d\/([A-Za-z0-9\-_]{20,120})(?:[/?#]|$)/i
+  );
+
+  return match ? `https://docs.google.com/spreadsheets/d/${match[1]}/copy` : null;
+}
+
 function statTiles(tiles) {
   const grid = el('<div class="stat-grid"></div>');
 
@@ -423,6 +537,56 @@ function statTiles(tiles) {
   });
 
   return grid;
+}
+
+/**
+ * The Google Sheets link panel.
+ *
+ * Deliberately not prefilled from the stored template link: that link is the
+ * BLANK template, and prefilling it would lead people to import an empty sheet.
+ * What belongs here is their own copy.
+ */
+function buildUrlPanel(onSubmit) {
+  const panel = el(`
+    <div>
+      <div class="field" data-field="source_url">
+        <label for="f-source_url">Google Sheets link</label>
+        <input type="url" id="f-source_url" name="source_url"
+               placeholder="https://docs.google.com/spreadsheets/d/…">
+        <small class="field__hint">
+          Paste your own copy of the template — not the template itself. The sheet must be
+          shared as <b>Anyone with the link → Viewer</b>, and the tab is the
+          <code>#gid=</code> at the end of the link.
+        </small>
+      </div>
+      <button type="button" class="btn mt-2">Preview this sheet</button>
+    </div>
+  `);
+
+  const input = panel.querySelector('input');
+  const button = panel.querySelector('button');
+
+  const go = () => {
+    const value = input.value.trim();
+
+    if (value === '') {
+      notify.error('Paste the link to your Google Sheet first.');
+      input.focus();
+      return;
+    }
+
+    onSubmit(value);
+  };
+
+  button.addEventListener('click', go);
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      go();
+    }
+  });
+
+  return panel;
 }
 
 /**
@@ -445,7 +609,10 @@ function buildCsvDropzone(onFile) {
     if (!chosen) return;
 
     if (!/\.(csv|txt)$/i.test(chosen.name)) {
-      notify.error('Only .csv files can be imported. In Excel choose File → Save As → CSV UTF-8.');
+      notify.error(
+        'Only .csv files can be imported. In Excel choose File → Save As → CSV UTF-8; '
+        + 'in Google Sheets choose File → Download → Comma-separated values.'
+      );
       return;
     }
 
