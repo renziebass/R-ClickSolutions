@@ -21,9 +21,19 @@ export async function servicesPage(outlet) {
     title: 'Services',
     description: 'The treatment menu shown on the website. Active services appear publicly; '
       + 'inactive ones stay here for later.',
-    actions: session.can('services.create')
-      ? [{ label: 'Add Service', iconName: 'i-plus', onClick: () => navigate('/services/new') }]
-      : [],
+    // Import sits first so the primary "Add Service" stays rightmost.
+    // pageHead filters out the nulls.
+    actions: [
+      session.can('services.import')
+        ? {
+            label: 'Import CSV', iconName: 'i-upload', variant: 'ghost',
+            onClick: () => navigate('/services/import'),
+          }
+        : null,
+      session.can('services.create')
+        ? { label: 'Add Service', iconName: 'i-plus', onClick: () => navigate('/services/new') }
+        : null,
+    ],
   }));
 
   const table = new DataTable({

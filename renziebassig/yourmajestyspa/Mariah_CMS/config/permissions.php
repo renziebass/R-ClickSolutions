@@ -19,6 +19,9 @@ $catalogue = [
         'services.edit'       => 'Edit services',
         'services.delete'     => 'Delete services',
         'services.activate'   => 'Activate / deactivate services',
+        // Separate from services.create on purpose: one CSV can rewrite the
+        // entire public treatment menu in a single click.
+        'services.import'     => 'Bulk import services from a CSV file',
     ],
     'Service categories' => [
         'categories.view'     => 'View service categories',

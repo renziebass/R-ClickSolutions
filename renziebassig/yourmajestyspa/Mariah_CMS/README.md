@@ -350,7 +350,7 @@ Permission slugs follow `resource.action`:
 
 ```
 dashboard.view
-services.{view,create,edit,delete,activate}
+services.{view,create,edit,delete,activate,import}
 categories.{view,create,edit,delete}
 promotions.{view,create,edit,delete,activate}
 specials.{view,create,edit,delete,activate}
@@ -468,6 +468,38 @@ POST   /{resource}/{id}/duplicate  copy as an inactive draft
 Common list parameters: `page`, `per_page` (max 100), `search`, `sort`, `direction`,
 `deleted` (`only` | `with`), plus resource-specific filters (`category_id`, `status`,
 `featured`, `state`, `date_from`, `date_to`, `brand_id`, `type`).
+
+### Bulk import
+
+```
+POST /services/import      multipart: file, dry_run=1|0, confirm_digest
+```
+
+Requires the separate `services.import` permission — one file can rewrite the whole
+public menu, so it is not folded into `services.create`.
+
+**Preview and commit are the same call.** `dry_run` defaults to `1`, so a request that
+omits it can only preview; only an explicit `dry_run=0` writes. On confirm the browser
+re-uploads the same file, which keeps the server stateless and means the preview and the
+write cannot diverge. The preview returns a sha256 `digest` that the commit echoes back
+as `confirm_digest`; a mismatch is a 409.
+
+A row's identity is its **slug** — the `slug` column when given, otherwise slugified from
+`name`. A match updates that service, a miss creates one, and an update never re-slugs
+(so a record's identity cannot drift out from under the next import). Re-importing an
+unchanged file therefore does nothing at all.
+
+Both preview and commit return **200**, with per-row outcomes in `data.rows[]`
+(`create` / `update` / `unchanged` / `error`) and per-row messages in `data.rows[].errors`
+— never in `error.fields`, which the SPA maps onto form inputs and which stays reserved
+for file-level failures keyed `file`. **The write is all-or-nothing:** every row is
+validated before any row is written, and one failure mid-write rolls the whole batch back.
+`Database::transaction()` flattens nesting rather than using savepoints, so a
+"skip the bad rows" mode could not be implemented safely here.
+
+Blank cells mean "leave this field alone"; the literal `NULL` clears it. Unknown category
+names are a row error — the importer never creates categories. Caps: 2 MB, 500 rows,
+60 columns.
 
 Sort keys are resolved through a per-repository allowlist — an arbitrary `?sort=` value
 can never reach SQL as a column name.

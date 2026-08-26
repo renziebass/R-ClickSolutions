@@ -15,6 +15,7 @@ const ACTION_PILLS = {
   deactivated: 'pill pill--warn',
   duplicated: 'pill pill--info',
   uploaded: 'pill pill--info',
+  imported: 'pill pill--info',
   login: 'pill pill--ok',
   logout: 'pill',
   login_failed: 'pill pill--danger',

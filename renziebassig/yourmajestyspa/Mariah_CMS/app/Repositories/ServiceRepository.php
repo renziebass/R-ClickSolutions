@@ -175,6 +175,65 @@ final class ServiceRepository extends BaseRepository
     }
 
     /** Dashboard counters. */
+    /**
+     * Every service in a batch of slugs, keyed by slug, in one query.
+     *
+     * Soft-deleted rows are included on purpose: `uq_services_slug` spans them,
+     * so an importer that ignored them would collide on insert. Resolving 500
+     * slugs one at a time is the difference between a two-second import and a
+     * timeout on shared hosting.
+     *
+     * @param string[] $slugs
+     * @return array<string, array> slug => row
+     */
+    public function findBySlugs(array $slugs): array
+    {
+        $slugs = array_values(array_unique(array_filter($slugs)));
+
+        if ($slugs === []) {
+            return [];
+        }
+
+        $placeholders = implode(', ', array_fill(0, count($slugs), '?'));
+
+        $rows = Database::fetchAll(
+            "SELECT * FROM services WHERE slug IN ({$placeholders})",
+            $slugs
+        );
+
+        $bySlug = [];
+        foreach ($rows as $row) {
+            $bySlug[(string) $row['slug']] = $row;
+        }
+
+        return $bySlug;
+    }
+
+    /**
+     * Which service currently holds each Most Loved rank, so an import can warn
+     * before taking one away.
+     *
+     * @return array<int, array{id:int, name:string}> rank => holder
+     */
+    public function mostLovedHolders(): array
+    {
+        $rows = Database::fetchAll(
+            'SELECT id, name, most_loved_rank
+               FROM services
+              WHERE most_loved_rank IS NOT NULL AND deleted_at IS NULL'
+        );
+
+        $holders = [];
+        foreach ($rows as $row) {
+            $holders[(int) $row['most_loved_rank']] = [
+                'id'   => (int) $row['id'],
+                'name' => (string) $row['name'],
+            ];
+        }
+
+        return $holders;
+    }
+
     public function stats(): array
     {
         $row = Database::fetchOne(

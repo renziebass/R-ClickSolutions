@@ -5,6 +5,7 @@ namespace Mariah\Repositories;
 
 use Mariah\Core\Database;
 use Mariah\Core\Request;
+use Mariah\Core\Slug;
 
 final class CategoryRepository extends BaseRepository
 {
@@ -76,6 +77,44 @@ final class CategoryRepository extends BaseRepository
                FROM service_categories
               WHERE deleted_at IS NULL
               ORDER BY display_order ASC, name ASC"
+        );
+    }
+
+    /**
+     * Every way an operator might write a category, mapped to its id, in one
+     * query — for resolving the `category` column of an imported CSV.
+     *
+     * Keys are slugified, so "Body Treatments", "body treatments",
+     * "BODY TREATMENTS" and "body-treatments" all resolve to the same
+     * category. That is what a real spreadsheet contains.
+     *
+     * @return array<string, int>
+     */
+    public function lookupMap(): array
+    {
+        $map = [];
+
+        foreach ($this->options() as $row) {
+            $id = (int) $row['id'];
+
+            $map[Slug::make((string) $row['name'])] = $id;
+            $map[(string) $row['slug']]             = $id;
+        }
+
+        return $map;
+    }
+
+    /**
+     * Category names as written, for the "no category named X — available: …"
+     * message that makes an import error fixable.
+     *
+     * @return string[]
+     */
+    public function optionNames(): array
+    {
+        return array_map(
+            static fn (array $row): string => (string) $row['name'],
+            $this->options()
         );
     }
 }

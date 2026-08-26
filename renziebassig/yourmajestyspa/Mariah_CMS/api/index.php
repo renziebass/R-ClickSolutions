@@ -164,6 +164,12 @@ try {
     $services = new ServiceController();
     $router->get('/services/form-options', [$services, 'formOptions'],
         [Guard::permission('services.view')]);
+
+    // Bulk CSV import. Its own permission, not services.create: one file can
+    // rewrite the whole public menu.
+    $router->post('/services/import', [$services, 'import'],
+        [Guard::permission('services.import')]);
+
     $registerResource($router, 'services', $services, 'services');
 
     // --- Service categories -------------------------------------------

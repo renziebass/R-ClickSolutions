@@ -13,6 +13,7 @@ import { notify } from './ui/feedback.js';
 
 import { dashboardPage } from './pages/dashboard.js';
 import { servicesPage, serviceFormPage } from './pages/services.js';
+import { serviceImportPage } from './pages/services-import.js';
 import { categoriesPage, categoryFormPage } from './pages/categories.js';
 import { promotionsPage, promotionFormPage } from './pages/promotions.js';
 import { specialsPage, specialFormPage } from './pages/specials.js';
@@ -85,6 +86,7 @@ const CRUMBS = {
   '/services': ['Content', 'Services'],
   '/services/new': ['Content', 'Services', 'Add service'],
   '/services/:id/edit': ['Content', 'Services', 'Edit service'],
+  '/services/import': ['Content', 'Services', 'Import CSV'],
   '/categories': ['Content', 'Categories'],
   '/categories/new': ['Content', 'Categories', 'Add category'],
   '/categories/:id/edit': ['Content', 'Categories', 'Edit category'],
@@ -171,6 +173,8 @@ function registerRoutes() {
 
   route('/services', servicesPage, { permission: 'services.view' });
   route('/services/new', serviceFormPage, { permission: 'services.create' });
+  // Registered before the :id pattern, which would otherwise match "import".
+  route('/services/import', serviceImportPage, { permission: 'services.import' });
   route('/services/:id/edit', serviceFormPage, { permission: 'services.edit' });
 
   route('/categories', categoriesPage, { permission: 'categories.view' });

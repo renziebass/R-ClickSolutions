@@ -471,6 +471,198 @@ section('Media upload validation');
 }
 
 // =====================================================================
+section('Service CSV import');
+
+/** Posts a CSV to /services/import. The JSON request() helper cannot: it forces
+ *  Content-Type: application/json, and an upload must be multipart. */
+function importCsv(string $csv, bool $commit, ?string $digest = null): array
+{
+    global $API, $COOKIE, $csrfToken;
+
+    $path = sys_get_temp_dir() . '/mariah-smoke-import.csv';
+    file_put_contents($path, $csv);
+
+    $fields = [
+        'file'    => new CURLFile($path, 'text/csv', 'smoke-import.csv'),
+        'dry_run' => $commit ? '0' : '1',
+    ];
+
+    if ($digest !== null) {
+        $fields['confirm_digest'] = $digest;
+    }
+
+    $ch = curl_init($API . '/services/import');
+    curl_setopt_array($ch, [
+        CURLOPT_POST           => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER     => ['Accept: application/json', 'X-CSRF-Token: ' . $csrfToken],
+        CURLOPT_COOKIEJAR      => $COOKIE,
+        CURLOPT_COOKIEFILE     => $COOKIE,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_TIMEOUT        => 30,
+        CURLOPT_POSTFIELDS     => $fields,
+    ]);
+
+    $raw    = (string) curl_exec($ch);
+    $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    @unlink($path);
+
+    return ['status' => $status, 'body' => json_decode($raw, true), 'raw' => $raw];
+}
+
+function serviceCount(): int
+{
+    return (int) Database::fetchValue('SELECT COUNT(*) FROM services WHERE deleted_at IS NULL');
+}
+
+$importCategory = Database::fetchOne(
+    "SELECT name FROM service_categories WHERE status = 'active' AND deleted_at IS NULL LIMIT 1"
+);
+
+if ($importCategory === null) {
+    skip('Service CSV import', 'no active service category to import into');
+} else {
+    $categoryName = (string) $importCategory['name'];
+    $suffix       = bin2hex(random_bytes(3));
+
+    $goodCsv = "name,category,price,duration_minutes,status\n"
+        . "Smoke Test Service Alpha {$suffix},{$categoryName},\"\$1,250.00\",60,active\n"
+        . "Smoke Test Service Beta {$suffix},{$categoryName},95,45,active\n";
+
+    // --- dry run writes nothing ---------------------------------------
+    $before  = serviceCount();
+    $preview = importCsv($goodCsv, false);
+
+    check(
+        'Dry run previews two new services',
+        $preview['status'] === 200
+            && ($preview['body']['data']['summary']['create'] ?? null) === 2,
+        'HTTP ' . $preview['status'] . ' — ' . substr($preview['raw'], 0, 300)
+    );
+
+    check(
+        'Dry run wrote nothing',
+        serviceCount() === $before,
+        'Count moved from ' . $before . ' to ' . serviceCount()
+    );
+
+    check(
+        'Money with a currency symbol and thousands separator parses',
+        ($preview['body']['data']['rows'][0]['price'] ?? null) === 1250.0,
+        'Parsed as: ' . var_export($preview['body']['data']['rows'][0]['price'] ?? null, true)
+    );
+
+    // --- commit --------------------------------------------------------
+    $digest = $preview['body']['data']['file']['digest'] ?? null;
+    $commit = importCsv($goodCsv, true, $digest);
+
+    $committed = check(
+        'Commit creates two services',
+        $commit['status'] === 200
+            && ($commit['body']['data']['committed'] ?? false) === true
+            && ($commit['body']['data']['summary']['created'] ?? null) === 2,
+        'HTTP ' . $commit['status'] . ' — ' . substr($commit['raw'], 0, 300)
+    );
+
+    check('Commit moved the service count by two', serviceCount() === $before + 2);
+
+    if ($committed) {
+        foreach ($commit['body']['data']['rows'] as $row) {
+            if (!empty($row['service_id'])) {
+                $createdServiceIds[] = (int) $row['service_id'];
+            }
+        }
+    }
+
+    // --- idempotency: the headline behaviour ---------------------------
+    $again = importCsv($goodCsv, true, null);
+
+    check(
+        'Re-importing the same file changes nothing',
+        ($again['body']['data']['summary']['unchanged'] ?? null) === 2
+            && serviceCount() === $before + 2,
+        'Summary: ' . json_encode($again['body']['data']['summary'] ?? null)
+    );
+
+    // --- bad rows are reported, not written ----------------------------
+    $badCsv = "name,category,price,promo_price,status\n"
+        . "Smoke Test Service Bad {$suffix},No Such Category {$suffix},100,,active\n"
+        . "Smoke Test Service Bad2 {$suffix},{$categoryName},abc,,active\n"
+        . "Smoke Test Service Bad3 {$suffix},{$categoryName},100,150,active\n"
+        . "Smoke Test Service Bad4 {$suffix},{$categoryName},100,,Maybe\n";
+
+    $bad = importCsv($badCsv, true);
+
+    check(
+        'A file with bad rows returns 200 and imports nothing',
+        $bad['status'] === 200
+            && ($bad['body']['data']['committed'] ?? true) === false
+            && ($bad['body']['data']['summary']['error'] ?? 0) === 4,
+        'HTTP ' . $bad['status'] . ' — ' . json_encode($bad['body']['data']['summary'] ?? null)
+    );
+
+    check(
+        'Per-row errors ride in data.rows, not error.fields',
+        !empty($bad['body']['data']['rows'][0]['errors'])
+            && empty($bad['body']['error']),
+        substr($bad['raw'], 0, 300)
+    );
+
+    check('The bad file left the service count alone', serviceCount() === $before + 2);
+
+    // --- duplicate slug inside one file --------------------------------
+    $dupeCsv = "name,category,price\n"
+        . "Smoke Test Dupe {$suffix},{$categoryName},100\n"
+        . "Smoke Test Dupe {$suffix},{$categoryName},120\n";
+
+    $dupe = importCsv($dupeCsv, false);
+
+    check(
+        'Two rows sharing a slug are rejected, not silently suffixed',
+        ($dupe['body']['data']['summary']['error'] ?? 0) === 1,
+        json_encode($dupe['body']['data']['summary'] ?? null)
+    );
+
+    // --- file-level failures -------------------------------------------
+    $wrongHeaders = importCsv("Treatment,Dept,Cost\nMassage,Massages,100\n", false);
+
+    check(
+        'A file with unrecognised required columns is a 422 on the file field',
+        $wrongHeaders['status'] === 422
+            && !empty($wrongHeaders['body']['error']['fields']['file']),
+        'HTTP ' . $wrongHeaders['status'] . ' — ' . substr($wrongHeaders['raw'], 0, 300)
+    );
+
+    $headersOnly = importCsv("name,category,price\n", false);
+
+    check(
+        'A header-only file is not an error',
+        $headersOnly['status'] === 200
+            && ($headersOnly['body']['data']['summary']['rows'] ?? null) === 0,
+        'HTTP ' . $headersOnly['status'] . ' — ' . substr($headersOnly['raw'], 0, 200)
+    );
+
+    // Excel writes a BOM on "CSV UTF-8"; it must not corrupt the first header.
+    $bomCsv = "\xEF\xBB\xBFname,category,price\r\nSmoke Test BOM {$suffix},{$categoryName},77\r\n";
+    $bom    = importCsv($bomCsv, false);
+
+    check(
+        'A UTF-8 BOM and CRLF endings parse correctly',
+        $bom['status'] === 200 && ($bom['body']['data']['summary']['create'] ?? null) === 1,
+        'HTTP ' . $bom['status'] . ' — ' . substr($bom['raw'], 0, 300)
+    );
+
+    $xlsx = importCsv("PK\x03\x04fake-zip-content", false);
+
+    check(
+        'An .xlsx renamed to .csv is named as such',
+        $xlsx['status'] === 422,
+        'HTTP ' . $xlsx['status'] . ' — ' . substr($xlsx['raw'], 0, 200)
+    );
+}
+
+// =====================================================================
 section('Role-based access control');
 
 $demoEditor = Database::fetchValue("SELECT id FROM users WHERE email = 'editor@demo.local' AND deleted_at IS NULL");
@@ -604,6 +796,7 @@ try {
     }
     Database::run("DELETE FROM audit_logs WHERE description LIKE '%Smoke Test Service%'");
     Database::run("DELETE FROM audit_logs WHERE description LIKE '%Editor Smoke Service%'");
+    Database::run("DELETE FROM audit_logs WHERE description LIKE '%smoke-import.csv%'");
 
     pass('Test records removed (' . count(array_unique($createdServiceIds)) . ' service(s))');
 } catch (\Throwable $e) {

@@ -3,13 +3,14 @@ declare(strict_types=1);
 
 namespace Mariah\Controllers;
 
-use Mariah\Core\Database;
 use Mariah\Core\HttpException;
 use Mariah\Core\Request;
 use Mariah\Core\Response;
 use Mariah\Repositories\BaseRepository;
 use Mariah\Repositories\CategoryRepository;
 use Mariah\Repositories\ServiceRepository;
+use Mariah\Services\ServiceCsvSchema;
+use Mariah\Services\ServiceImporter;
 
 final class ServiceController extends ResourceController
 {
@@ -24,47 +25,17 @@ final class ServiceController extends ResourceController
     protected function label(): string              { return 'Service'; }
     protected function entityType(): string         { return 'service'; }
 
+    // Rules, labels and the business checks live in ServiceCsvSchema so the
+    // admin form and the CSV importer cannot drift apart.
+
     protected function rules(bool $isUpdate): array
     {
-        $required = $isUpdate ? '' : 'required|';
-
-        return [
-            'category_id'       => $required . 'int|min:1',
-            'name'              => $required . 'string|min:2|max:190',
-            'slug'              => 'nullable|string|max:190',
-            'short_description' => 'nullable|string|max:500',
-            'description'       => 'nullable|string|max:20000',
-            'price'             => $required . 'numeric|min:0|max:100000',
-            'price_display'     => 'nullable|string|max:60',
-            'promo_price'       => 'nullable|numeric|min:0|max:100000',
-            'duration_minutes'  => 'nullable|int|min:0|max:1440',
-            'duration_display'  => 'nullable|string|max:60',
-            'icon_key'          => 'nullable|string|max:40',
-            'booking_url'       => 'nullable|url|max:500',
-            'media_id'          => 'nullable|int|min:0',
-            'status'            => 'nullable|in:active,inactive',
-            'featured'          => 'nullable|bool',
-            'most_loved_rank'   => 'nullable|int|between:1,3',
-            'display_order'     => 'nullable|int|min:0',
-        ];
+        return ServiceCsvSchema::rules($isUpdate);
     }
 
     protected function fieldLabels(): array
     {
-        return [
-            'category_id'       => 'Category',
-            'name'              => 'Service name',
-            'short_description' => 'Short description',
-            'description'       => 'Full description',
-            'price'             => 'Price',
-            'price_display'     => 'Price display text',
-            'promo_price'       => 'Promotional price',
-            'duration_minutes'  => 'Duration',
-            'duration_display'  => 'Duration display text',
-            'booking_url'       => 'Booking link',
-            'media_id'          => 'Image',
-            'most_loved_rank'   => 'Most Loved rank',
-        ];
+        return ServiceCsvSchema::labels();
     }
 
     protected function prepare(array $data, Request $request, ?array $existing): array
@@ -72,25 +43,13 @@ final class ServiceController extends ResourceController
         $data = $this->resolveMediaId($data);
 
         if (array_key_exists('category_id', $data)) {
-            $exists = Database::fetchValue(
-                'SELECT 1 FROM service_categories WHERE id = ? AND deleted_at IS NULL',
-                [(int) $data['category_id']]
-            );
-
-            if ($exists === null) {
-                throw HttpException::validation(['category_id' => 'Please choose a valid category.']);
-            }
+            ServiceCsvSchema::assertCategoryExists((int) $data['category_id']);
         }
 
-        // A promotional price above the regular price is always a data entry slip.
-        $price      = $data['price']       ?? ($existing['price'] ?? null);
-        $promoPrice = $data['promo_price'] ?? ($existing['promo_price'] ?? null);
-
-        if ($promoPrice !== null && $price !== null && (float) $promoPrice >= (float) $price) {
-            throw HttpException::validation([
-                'promo_price' => 'The promotional price must be lower than the regular price.',
-            ]);
-        }
+        ServiceCsvSchema::assertPromoBelowPrice(
+            $data['promo_price'] ?? ($existing['promo_price'] ?? null),
+            $data['price']       ?? ($existing['price'] ?? null)
+        );
 
         return $data;
     }
@@ -119,17 +78,62 @@ final class ServiceController extends ResourceController
     {
         Response::json([
             'categories' => (new CategoryRepository())->options(),
-            // Sprite symbol ids that exist in the public page's SVG sprite.
-            'icons'      => [
-                ['key' => 'i-hands', 'label' => 'Hands (massage)'],
-                ['key' => 'i-leaf',  'label' => 'Leaf (wellness)'],
-                ['key' => 'i-drop',  'label' => 'Drop (facial)'],
-                ['key' => 'i-stone', 'label' => 'Stone (hot stone)'],
-                ['key' => 'i-boat',  'label' => 'Boat (waterfront)'],
-                ['key' => 'i-crown', 'label' => 'Crown (luxury)'],
-                ['key' => 'i-spark', 'label' => 'Sparkle (signature)'],
-                ['key' => 'i-gift',  'label' => 'Gift'],
-            ],
+            'icons'      => ServiceCsvSchema::iconChoices(),
         ]);
+    }
+
+    /**
+     * Bulk import from a CSV file (multipart/form-data, field "file").
+     *
+     * `dry_run` defaults to 1, so a request that omits it previews rather than
+     * writes. Only an explicit dry_run=0 commits.
+     */
+    public function import(Request $request): never
+    {
+        // When PHP's post_max_size is exceeded it silently empties BOTH $_POST
+        // and $_FILES. The CSRF header survives, so the guard passes and the
+        // request arrives looking like "no file was sent" — the most confusing
+        // upload failure mode there is, and worth naming precisely.
+        if (!isset($_FILES['file'])) {
+            $contentLength = (int) ($_SERVER['CONTENT_LENGTH'] ?? 0);
+            $postMax       = self::bytesFromIni((string) ini_get('post_max_size'));
+
+            if ($postMax > 0 && $contentLength > $postMax) {
+                $mb = round($postMax / 1048576, 1);
+                throw HttpException::validation([
+                    'file' => "That file was too large for the server to accept (limit {$mb} MB).",
+                ]);
+            }
+
+            throw HttpException::validation(['file' => 'Please choose a CSV file to import.']);
+        }
+
+        $dryRun = (string) $request->input('dry_run', '1') !== '0';
+
+        Response::json(ServiceImporter::run(
+            $_FILES['file'],
+            $dryRun,
+            $request->input('confirm_digest')
+        ));
+    }
+
+    /** "8M" / "512K" from php.ini as a byte count. */
+    private static function bytesFromIni(string $value): int
+    {
+        $value = trim($value);
+
+        if ($value === '') {
+            return 0;
+        }
+
+        $unit   = strtolower($value[strlen($value) - 1]);
+        $number = (int) $value;
+
+        return match ($unit) {
+            'g'     => $number * 1073741824,
+            'm'     => $number * 1048576,
+            'k'     => $number * 1024,
+            default => $number,
+        };
     }
 }
