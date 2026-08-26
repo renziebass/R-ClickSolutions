@@ -484,7 +484,8 @@ DB_PASS=<?= h((string) ($_POST['t_password'] ?? '')) ?></pre>
             <p style="margin-top:0;color:var(--text-soft);font-size:.9rem">
               This creates the four roles with their permissions, your Super Admin account,
               and the full Majesty Day Spa content — 6 categories, 16 services with real
-              prices and booking links, 3 specials, 3 promotions, the shop and the gift cards.
+              prices and booking links, 3 specials, 3 promotions, 3 Journal articles, the shop
+              and the gift cards.
             </p>
 
             <form method="post" class="grid" style="margin-top:1.25rem">

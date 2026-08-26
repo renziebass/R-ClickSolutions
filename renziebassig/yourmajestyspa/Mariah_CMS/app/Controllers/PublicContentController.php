@@ -7,6 +7,7 @@ use Mariah\Core\Database;
 use Mariah\Core\HttpException;
 use Mariah\Core\Request;
 use Mariah\Core\Response;
+use Mariah\Repositories\BlogPostRepository;
 use Mariah\Repositories\ServiceRepository;
 use Mariah\Services\ScheduleResolver;
 
@@ -54,6 +55,10 @@ final class PublicContentController
             'brands'             => $this->fetchBrands(),
             'product_categories' => $this->fetchProductCategories(),
             'products'           => $this->fetchProducts(),
+            // The Journal strip on the home page shows the newest few; the
+            // full post body is fetched only when a visitor opens one.
+            'blog_posts'         => $this->fetchBlogPosts(null, 3),
+            'blog_categories'    => $this->fetchBlogCategories(),
             'generated_at'       => date('c'),
         ]);
     }
@@ -140,6 +145,77 @@ final class PublicContentController
         Response::json($this->fetchGiftCards(
             $request->q('type') !== null ? (string) $request->q('type') : null
         ));
+    }
+
+    /** Card data for the Journal listing. Never includes the post body. */
+    public function blogPosts(Request $request): never
+    {
+        $limit = $request->q('limit') !== null ? (int) $request->q('limit') : null;
+
+        Response::json($this->fetchBlogPosts(
+            $request->q('category') !== null ? (string) $request->q('category') : null,
+            $limit
+        ));
+    }
+
+    /** One post in full, plus a few more to read next. */
+    public function blogPost(Request $request, array $args): never
+    {
+        $slug  = (string) ($args['slug'] ?? '');
+        $where = ScheduleResolver::publishedWhere('bp');
+
+        $row = Database::fetchOne(
+            "SELECT bp.id, bp.title, bp.slug, bp.excerpt, bp.content,
+                    bp.author_name, bp.read_minutes, bp.tags, bp.published_at,
+                    bp.meta_title, bp.meta_description, bp.featured,
+                    c.name AS category_name, c.slug AS category_slug,
+                    m.file_url AS image_url, m.alt_text AS image_alt
+               FROM blog_posts bp
+               LEFT JOIN blog_categories c ON c.id = bp.category_id
+                    AND c.status = 'active' AND c.deleted_at IS NULL
+               LEFT JOIN media m ON m.id = bp.media_id AND m.deleted_at IS NULL
+              WHERE bp.slug = ? AND {$where}
+              LIMIT 1",
+            [$slug]
+        );
+
+        if ($row === null) {
+            throw HttpException::notFound('That article is not available.');
+        }
+
+        $row = $this->decorateBlogPost($row);
+
+        // Paragraphs are split server-side so the page never has to parse the
+        // body: it escapes each one and prints it.
+        $row['paragraphs'] = array_values(array_filter(
+            array_map('trim', preg_split('/\R{2,}/u', (string) ($row['content'] ?? '')) ?: []),
+            static fn (string $part): bool => $part !== ''
+        ));
+
+        $row['related'] = array_map(
+            [$this, 'decorateBlogPost'],
+            Database::fetchAll(
+                "SELECT bp.id, bp.title, bp.slug, bp.excerpt, bp.read_minutes,
+                        bp.published_at, bp.tags,
+                        c.name AS category_name, c.slug AS category_slug,
+                        m.file_url AS image_url, m.alt_text AS image_alt
+                   FROM blog_posts bp
+                   LEFT JOIN blog_categories c ON c.id = bp.category_id
+                        AND c.status = 'active' AND c.deleted_at IS NULL
+                   LEFT JOIN media m ON m.id = bp.media_id AND m.deleted_at IS NULL
+                  WHERE {$where} AND bp.id <> ?
+                  ORDER BY (c.slug <=> ?) DESC, bp.published_at DESC, bp.id DESC
+                  LIMIT 2",
+                [(int) $row['id'], $row['category_slug']]
+            )
+        );
+
+        Response::json($row);
+    }
+
+    public function blogCategories(Request $request): never
+    {
+        Response::json($this->fetchBlogCategories());
     }
 
     // -----------------------------------------------------------------
@@ -337,6 +413,90 @@ final class PublicContentController
 
             return $r;
         }, Database::fetchAll($sql, $params));
+    }
+
+    /**
+     * Published posts, newest first. The body is deliberately left out — a
+     * listing that shipped every post in full would grow without bound.
+     */
+    private function fetchBlogPosts(?string $categorySlug = null, ?int $limit = null): array
+    {
+        $where = ScheduleResolver::publishedWhere('bp');
+
+        $sql = "SELECT bp.id, bp.title, bp.slug, bp.excerpt, bp.author_name,
+                       bp.read_minutes, bp.tags, bp.published_at, bp.featured,
+                       c.name AS category_name, c.slug AS category_slug,
+                       m.file_url AS image_url, m.alt_text AS image_alt
+                  FROM blog_posts bp
+                  LEFT JOIN blog_categories c ON c.id = bp.category_id
+                       AND c.status = 'active' AND c.deleted_at IS NULL
+                  LEFT JOIN media m ON m.id = bp.media_id AND m.deleted_at IS NULL
+                 WHERE {$where}";
+
+        $params = [];
+
+        if ($categorySlug !== null && $categorySlug !== '') {
+            $sql     .= ' AND c.slug = ?';
+            $params[] = $categorySlug;
+        }
+
+        $sql .= ' ORDER BY bp.published_at DESC, bp.display_order ASC, bp.id DESC';
+
+        // Bounded either way: an unbounded public listing is a free way to
+        // pull the whole table in one request.
+        $sql .= ' LIMIT ' . ($limit === null ? 24 : max(1, min(24, $limit)));
+
+        return array_map([$this, 'decorateBlogPost'], Database::fetchAll($sql, $params));
+    }
+
+    private function decorateBlogPost(array $r): array
+    {
+        $r['id']       = (int) $r['id'];
+        $r['featured'] = (bool) ($r['featured'] ?? false);
+
+        $r['read_minutes'] = isset($r['read_minutes']) && $r['read_minutes'] !== null
+            ? (int) $r['read_minutes']
+            : null;
+        $r['read_label'] = $r['read_minutes'] === null ? null : $r['read_minutes'] . ' min read';
+
+        if (($r['excerpt'] ?? null) === null || $r['excerpt'] === '') {
+            $r['excerpt'] = BlogPostRepository::deriveExcerpt($r['content'] ?? null);
+        }
+
+        $r['tags'] = BlogPostRepository::splitTags($r['tags'] ?? null);
+
+        // Two forms of the same instant: one for humans, one for <time datetime>.
+        $timestamp = $r['published_at'] !== null ? strtotime((string) $r['published_at']) : false;
+        $r['date_label'] = $timestamp === false ? null : date('F j, Y', $timestamp);
+        $r['date_iso']   = $timestamp === false ? null : date('c', $timestamp);
+
+        unset($r['published_at']);
+
+        return $r;
+    }
+
+    /** Only topics that actually hold a live post become filter chips. */
+    private function fetchBlogCategories(): array
+    {
+        $where = ScheduleResolver::publishedWhere('bp');
+
+        return array_map(static function (array $r): array {
+            $r['id']          = (int) $r['id'];
+            $r['posts_count'] = (int) $r['posts_count'];
+            return $r;
+        }, Database::fetchAll(
+            // EXISTS rather than HAVING: this query has no GROUP BY, and
+            // filtering on a select alias in HAVING is rejected under
+            // ONLY_FULL_GROUP_BY, which MySQL 8 enables by default.
+            "SELECT c.id, c.name, c.slug, c.description,
+                    (SELECT COUNT(*) FROM blog_posts bp
+                      WHERE bp.category_id = c.id AND {$where}) AS posts_count
+               FROM blog_categories c
+              WHERE c.status = 'active' AND c.deleted_at IS NULL
+                AND EXISTS (SELECT 1 FROM blog_posts bp
+                             WHERE bp.category_id = c.id AND {$where})
+              ORDER BY c.display_order ASC, c.name ASC"
+        ));
     }
 
     private function fetchBrands(): array

@@ -1,7 +1,7 @@
 # Mariah_CMS — Majesty Day Spa Content Manager
 
 A custom CMS and admin dashboard for Majesty Day Spa. Staff manage services, categories,
-promotions, specials, retail products, gift cards, media and users through a secure
+promotions, specials, blog posts, retail products, gift cards, media and users through a secure
 `/admin` dashboard; the public website reads that content from a JSON API.
 
 > **Status: written but not yet executed.** There is no PHP or MySQL runtime on the
@@ -107,7 +107,7 @@ nothing auth-related needs to be reachable from JavaScript, and revoking a user 
 effect on their very next request rather than at token expiry. `.env` therefore has
 `SESSION_SECRET` and no `JWT_SECRET`.
 
-**Derived status for dated content.** Promotions and specials store only
+**Derived status for dated content.** Promotions, specials and blog posts store only
 `draft` / `published` / `archived`. Whether something is *scheduled*, *active* or
 *expired* is computed from the dates by `ScheduleResolver` — nobody types "expired".
 
@@ -140,6 +140,8 @@ All tables are InnoDB / `utf8mb4`. Content tables carry
 | `promotions` | Discount rules | `discount_type`, `discount_value`, `start_date`, `end_date` |
 | `promotion_services` | Promotion ↔ service join | composite PK |
 | `specials` | Packaged offers at a price | `price`, `compare_at_price`, `badge_label`, dates |
+| `blog_categories` | Journal topic filters | `slug` UQ, `display_order` |
+| `blog_posts` | Journal articles | `excerpt`, `content`, `published_at`, `read_minutes`, `tags`, `meta_title` |
 | `product_brands` | Skincare houses | `tagline` |
 | `product_categories` | Shop filter chips | `display_order` |
 | `products` | Retail products | `price`, `badge_label`, `icon_key` |
@@ -159,6 +161,7 @@ match the exact shape of the queries that run most:
   public endpoints' `WHERE` and `ORDER BY` in one index.
 - `(category_id, status, display_order)` on `services` — the category-filtered listing.
 - `(status, start_date, end_date)` on `promotions` and `specials` — the date-window scan.
+- `(status, deleted_at, published_at)` on `blog_posts` — the Journal listing scan.
 - `(entity_type, entity_id)`, `(user_id, created_at)`, `(action, created_at)` on
   `audit_logs` — the three ways the audit screen is filtered.
 - `(email, attempted_at)` and `(ip_address, attempted_at)` on `login_attempts`.
@@ -302,6 +305,7 @@ starts as an exact replica of the live site:
   Booker.com links, and the three "Most Loved" ranks assigned
 - 3 specials (Majesty Summer Reset, Couples Summer Escape, Crown Society)
 - 3 promotions deliberately covering the active, scheduled and expired states
+- 3 blog topics and 3 published Journal articles
 - 2 brands, 9 product types, 4 products
 - 1 gift card and 1 membership
 - `media` rows pointing at the existing files in `yourmajestyspa/assets/`
@@ -350,6 +354,8 @@ services.{view,create,edit,delete,activate}
 categories.{view,create,edit,delete}
 promotions.{view,create,edit,delete,activate}
 specials.{view,create,edit,delete,activate}
+blog_posts.{view,create,edit,delete,activate}
+blog_categories.{view,create,edit,delete}
 products.{view,create,edit,delete,activate}
 product_categories.{view,create,edit,delete}
 brands.{view,create,edit,delete}
@@ -426,6 +432,9 @@ Every response uses one envelope:
 | `GET /public/products` | Active products (`?category=slug`) |
 | `GET /public/product-categories`, `GET /public/brands` | Shop taxonomy |
 | `GET /public/gift-cards` | Gift cards and memberships (`?type=`) |
+| `GET /public/blog-posts` | Live Journal posts, newest first (`?category=slug`, `?limit=`) |
+| `GET /public/blog-posts/{slug}` | One post in full, with its paragraphs and related posts |
+| `GET /public/blog-categories` | Topics that hold at least one live post |
 
 These return **only** records that are active/published, inside their date window, and
 not soft-deleted.
@@ -442,8 +451,8 @@ POST /auth/password      { current_password, new_password }
 
 ### Admin resources
 
-Each of `services`, `categories`, `promotions`, `specials`, `products`,
-`product-categories`, `brands`, `gift-cards` exposes:
+Each of `services`, `categories`, `promotions`, `specials`, `blog-posts`,
+`blog-categories`, `products`, `product-categories`, `brands`, `gift-cards` exposes:
 
 ```
 GET    /{resource}                 list — search, filter, sort, paginate
@@ -486,7 +495,7 @@ its content changed.
 
 1. A `window.MajestyCMS` module fetches `Mariah_CMS/api/public/bootstrap` and re-renders
    the specials grid, the service tabs and panels, the Most Loved ranking, the gift card
-   block, the brand cards, the shop filter chips and the product grid — reusing the exact
+   block, the brand cards, the shop filter chips, the product grid and the Journal — reusing the exact
    original class names, so the stylesheet and animations are untouched.
 2. **Then** the original behaviour script runs. This ordering matters: the reveal
    `IntersectionObserver`, the service-tab handlers and the scrollspy all bind once at
@@ -644,7 +653,7 @@ The structure is built so new modules drop in without touching authorization:
 5. Register it in `api/index.php` with `$registerResource(...)`.
 6. Add a page module under `admin/assets/js/pages/` and an entry in `NAV` in `app.js`.
 
-Appointments, customers, memberships, testimonials, blog, FAQs, locations and staff all
+Appointments, customers, memberships, testimonials, FAQs, locations and staff all
 fit this shape.
 
 ---

@@ -263,6 +263,9 @@ abstract class ResourceController
         if (array_key_exists('most_loved_rank', $copy)) {
             $copy['most_loved_rank'] = null;   // the podium holds one service per rank
         }
+        if (array_key_exists('published_at', $copy)) {
+            $copy['published_at'] = null;      // a copy is a new post, not a re-dated old one
+        }
         if ($this->hasSlug()) {
             $copy['slug'] = Slug::unique($repository->table(), (string) $copy[$titleColumn]);
         }

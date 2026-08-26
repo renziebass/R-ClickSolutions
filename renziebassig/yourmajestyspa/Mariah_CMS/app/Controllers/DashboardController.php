@@ -7,6 +7,7 @@ use Mariah\Core\Auth;
 use Mariah\Core\Request;
 use Mariah\Core\Response;
 use Mariah\Repositories\AuditLogRepository;
+use Mariah\Repositories\BlogPostRepository;
 use Mariah\Repositories\GiftCardRepository;
 use Mariah\Repositories\MediaRepository;
 use Mariah\Repositories\ProductRepository;
@@ -27,6 +28,7 @@ final class DashboardController
             'services'   => (new ServiceRepository())->stats(),
             'promotions' => (new PromotionRepository())->stats(),
             'specials'   => (new SpecialRepository())->stats(),
+            'blog_posts' => (new BlogPostRepository())->stats(),
             'products'   => (new ProductRepository())->stats(),
             'gift_cards' => (new GiftCardRepository())->stats(),
             'media'      => (new MediaRepository())->stats(),
@@ -38,6 +40,10 @@ final class DashboardController
 
         $payload['recent_promotions'] = Auth::can('promotions.view')
             ? (new PromotionRepository())->recent(5)
+            : [];
+
+        $payload['recent_blog_posts'] = Auth::can('blog_posts.view')
+            ? (new BlogPostRepository())->recent(5)
             : [];
 
         $payload['users'] = Auth::can('users.view')

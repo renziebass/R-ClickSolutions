@@ -17,6 +17,10 @@ import { categoriesPage, categoryFormPage } from './pages/categories.js';
 import { promotionsPage, promotionFormPage } from './pages/promotions.js';
 import { specialsPage, specialFormPage } from './pages/specials.js';
 import {
+  blogPostsPage, blogPostFormPage,
+  blogCategoriesPage, blogCategoryFormPage,
+} from './pages/blog.js';
+import {
   productsPage, productFormPage,
   productCategoriesPage, productCategoryFormPage,
   brandsPage, brandFormPage,
@@ -45,6 +49,8 @@ const NAV = [
       { label: 'Categories', path: '/categories', iconName: 'i-folder', permission: 'categories.view' },
       { label: 'Promotions', path: '/promotions', iconName: 'i-tag', permission: 'promotions.view' },
       { label: 'Specials', path: '/specials', iconName: 'i-star', permission: 'specials.view' },
+      { label: 'Blog posts', path: '/blog-posts', iconName: 'i-post', permission: 'blog_posts.view' },
+      { label: 'Blog topics', path: '/blog-categories', iconName: 'i-folder', permission: 'blog_categories.view' },
       { label: 'Media', path: '/media', iconName: 'i-image', permission: 'media.view' },
     ],
   },
@@ -88,6 +94,12 @@ const CRUMBS = {
   '/specials': ['Content', 'Specials'],
   '/specials/new': ['Content', 'Specials', 'Add special'],
   '/specials/:id/edit': ['Content', 'Specials', 'Edit special'],
+  '/blog-posts': ['Content', 'Blog posts'],
+  '/blog-posts/new': ['Content', 'Blog posts', 'Write a post'],
+  '/blog-posts/:id/edit': ['Content', 'Blog posts', 'Edit post'],
+  '/blog-categories': ['Content', 'Blog topics'],
+  '/blog-categories/new': ['Content', 'Blog topics', 'Add topic'],
+  '/blog-categories/:id/edit': ['Content', 'Blog topics', 'Edit topic'],
   '/media': ['Content', 'Media'],
   '/products': ['Shop', 'Products'],
   '/products/new': ['Shop', 'Products', 'Add product'],
@@ -172,6 +184,14 @@ function registerRoutes() {
   route('/specials', specialsPage, { permission: 'specials.view' });
   route('/specials/new', specialFormPage, { permission: 'specials.create' });
   route('/specials/:id/edit', specialFormPage, { permission: 'specials.edit' });
+
+  route('/blog-posts', blogPostsPage, { permission: 'blog_posts.view' });
+  route('/blog-posts/new', blogPostFormPage, { permission: 'blog_posts.create' });
+  route('/blog-posts/:id/edit', blogPostFormPage, { permission: 'blog_posts.edit' });
+
+  route('/blog-categories', blogCategoriesPage, { permission: 'blog_categories.view' });
+  route('/blog-categories/new', blogCategoryFormPage, { permission: 'blog_categories.create' });
+  route('/blog-categories/:id/edit', blogCategoryFormPage, { permission: 'blog_categories.edit' });
 
   route('/products', productsPage, { permission: 'products.view' });
   route('/products/new', productFormPage, { permission: 'products.create' });

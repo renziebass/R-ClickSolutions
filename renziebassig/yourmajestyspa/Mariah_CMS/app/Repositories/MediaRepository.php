@@ -108,7 +108,7 @@ final class MediaRepository extends BaseRepository
 
         $tables = [
             'services', 'service_categories', 'promotions', 'specials',
-            'products', 'product_brands', 'gift_cards',
+            'products', 'product_brands', 'gift_cards', 'blog_posts',
         ];
 
         foreach ($tables as $table) {

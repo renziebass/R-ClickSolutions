@@ -66,6 +66,18 @@ export async function dashboardPage(outlet) {
     ],
   }));
 
+  if (session.can('blog_posts.view') && stats.blog_posts) {
+    cards.appendChild(statCard({
+      label: 'Blog posts',
+      value: stats.blog_posts.published,
+      valueSuffix: 'live now',
+      meta: [
+        `${stats.blog_posts.scheduled} scheduled`,
+        `${stats.blog_posts.draft} draft`,
+      ],
+    }));
+  }
+
   if (stats.users) {
     cards.appendChild(statCard({
       label: 'Admin users',
@@ -90,6 +102,7 @@ export async function dashboardPage(outlet) {
     ['services.create', 'Add Service', '/services/new'],
     ['promotions.create', 'Add Promotion', '/promotions/new'],
     ['specials.create', 'Add Special', '/specials/new'],
+    ['blog_posts.create', 'Write Post', '/blog-posts/new'],
     ['categories.create', 'Add Category', '/categories/new'],
     ['products.create', 'Add Product', '/products/new'],
     ['media.upload', 'Upload Image', '/media'],

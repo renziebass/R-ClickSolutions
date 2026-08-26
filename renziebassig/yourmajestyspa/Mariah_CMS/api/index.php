@@ -12,6 +12,8 @@ require_once dirname(__DIR__) . '/config/bootstrap.php';
 
 use Mariah\Controllers\AuditLogController;
 use Mariah\Controllers\AuthController;
+use Mariah\Controllers\BlogCategoryController;
+use Mariah\Controllers\BlogPostController;
 use Mariah\Controllers\BrandController;
 use Mariah\Controllers\CategoryController;
 use Mariah\Controllers\DashboardController;
@@ -80,6 +82,9 @@ try {
     $router->get('/public/product-categories', [$public, 'productCategories']);
     $router->get('/public/brands',             [$public, 'brands']);
     $router->get('/public/gift-cards',         [$public, 'giftCards']);
+    $router->get('/public/blog-posts',          [$public, 'blogPosts']);
+    $router->get('/public/blog-posts/{slug}',   [$public, 'blogPost']);
+    $router->get('/public/blog-categories',     [$public, 'blogCategories']);
 
     // =================================================================
     // AUTHENTICATION
@@ -142,7 +147,7 @@ try {
         if ($hasStatus) {
             // Falls back to .edit for resources with no dedicated activate right.
             $activate = in_array($permission, [
-                'services', 'promotions', 'specials', 'products', 'gift_cards',
+                'services', 'promotions', 'specials', 'products', 'gift_cards', 'blog_posts',
             ], true) ? "{$permission}.activate" : "{$permission}.edit";
 
             $router->patch("/{$prefix}/{id}/status", [$controller, 'setStatus'],
@@ -172,6 +177,17 @@ try {
 
     // --- Specials -----------------------------------------------------
     $registerResource($router, 'specials', new SpecialController(), 'specials');
+
+    // --- Blog posts ---------------------------------------------------
+    // The post form fills its topic dropdown from /blog-categories/options
+    // below, so this resource needs no form-options endpoint of its own.
+    $registerResource($router, 'blog-posts', new BlogPostController(), 'blog_posts');
+
+    // --- Blog topics --------------------------------------------------
+    $blogCategories = new BlogCategoryController();
+    $router->get('/blog-categories/options', [$blogCategories, 'options'],
+        [Guard::anyPermission('blog_categories.view', 'blog_posts.view')]);
+    $registerResource($router, 'blog-categories', $blogCategories, 'blog_categories');
 
     // --- Shop products ------------------------------------------------
     $products = new ProductController();

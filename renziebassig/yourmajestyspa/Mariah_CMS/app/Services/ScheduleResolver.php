@@ -77,6 +77,44 @@ final class ScheduleResolver
                 AND ({$alias}.end_date   IS NULL OR {$alias}.end_date   >= CURDATE())";
     }
 
+    /**
+     * The same derivation for content whose window has only an opening edge —
+     * a blog post is live from `published_at` onward and never expires.
+     *
+     * Compared at full datetime precision, so a post scheduled for 4pm today
+     * still reads "Scheduled" in the admin at noon, exactly as the SQL in
+     * publishedWhere() sees it.
+     */
+    public static function resolvePublished(?string $status, ?string $publishedAt): string
+    {
+        if ($status === 'draft') {
+            return self::DRAFT;
+        }
+        if ($status === 'archived' || $status === 'inactive') {
+            return self::INACTIVE;
+        }
+        if ($publishedAt !== null && $publishedAt !== '' && $publishedAt > date('Y-m-d H:i:s')) {
+            return self::SCHEDULED;
+        }
+
+        return self::ACTIVE;
+    }
+
+    /**
+     * SQL fragment selecting only the posts that are live right now. Used by
+     * the public endpoints so drafts and future-dated posts never reach the
+     * website.
+     *
+     * @param string $alias table alias, e.g. "bp"
+     */
+    public static function publishedWhere(string $alias, string $column = 'published_at'): string
+    {
+        // Alias and column come from call sites in this codebase, never from input.
+        return "{$alias}.status = 'published'
+                AND {$alias}.deleted_at IS NULL
+                AND ({$alias}.{$column} IS NULL OR {$alias}.{$column} <= NOW())";
+    }
+
     /** Human-readable label for the admin UI. */
     public static function label(string $effective): string
     {

@@ -40,6 +40,19 @@ $catalogue = [
         'specials.delete'     => 'Delete specials',
         'specials.activate'   => 'Publish / unpublish specials',
     ],
+    'Blog posts' => [
+        'blog_posts.view'     => 'View blog posts',
+        'blog_posts.create'   => 'Create blog posts',
+        'blog_posts.edit'     => 'Edit blog posts',
+        'blog_posts.delete'   => 'Delete blog posts',
+        'blog_posts.activate' => 'Publish / unpublish blog posts',
+    ],
+    'Blog topics' => [
+        'blog_categories.view'   => 'View blog topics',
+        'blog_categories.create' => 'Create blog topics',
+        'blog_categories.edit'   => 'Edit blog topics',
+        'blog_categories.delete' => 'Delete blog topics',
+    ],
     'Shop products' => [
         'products.view'       => 'View shop products',
         'products.create'     => 'Create shop products',
@@ -104,6 +117,8 @@ $editorPerms = array_merge($viewOnly, [
     'categories.create', 'categories.edit',
     'promotions.create', 'promotions.edit', 'promotions.activate',
     'specials.create',   'specials.edit',   'specials.activate',
+    'blog_posts.create', 'blog_posts.edit', 'blog_posts.activate',
+    'blog_categories.create', 'blog_categories.edit',
     'products.create',   'products.edit',   'products.activate',
     'product_categories.create', 'product_categories.edit',
     'brands.create',     'brands.edit',
@@ -142,7 +157,7 @@ return [
         ],
         'staff' => [
             'name'        => 'Staff',
-            'description' => 'Read-only access to services, promotions, specials and shop content.',
+            'description' => 'Read-only access to services, promotions, specials, blog posts and shop content.',
             'permissions' => $staffPerms,
         ],
     ],

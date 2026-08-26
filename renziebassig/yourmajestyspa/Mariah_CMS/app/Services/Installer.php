@@ -547,6 +547,7 @@ final class Installer
         $this->seedPromotions($adminId, $media);
         $this->seedGiftCards($adminId, $media);
         $this->seedShop($adminId);
+        $this->seedBlog($adminId, $media);
 
         Database::run(
             'INSERT INTO audit_logs (user_id, user_label, action, entity_type, description)
@@ -934,6 +935,110 @@ final class Installer
         }
 
         $this->log("Gift cards and memberships: {$count}.");
+    }
+
+    /**
+     * Three starter articles for the website's Journal, so the section has
+     * something real in it the day the CMS goes live. Post bodies are plain
+     * text: a blank line starts a new paragraph.
+     */
+    private function seedBlog(int $adminId, callable $media): void
+    {
+        $topicIds = [];
+
+        foreach ([
+            ['Massage & Bodywork', 'massage-and-bodywork', 'Techniques, recovery and what to expect on the table.', 1],
+            ['Skin & Facials',     'skin-and-facials',     'Treatment guides and everyday skincare that holds up.', 2],
+            ['Spa Rituals',        'spa-rituals',          'Slow mornings, salt rooms and the art of an unhurried visit.', 3],
+        ] as [$name, $slug, $description, $order]) {
+            $existing = Database::fetchValue('SELECT id FROM blog_categories WHERE slug = ?', [$slug]);
+
+            if ($existing !== null) {
+                $topicIds[$slug] = (int) $existing;
+                continue;
+            }
+
+            Database::run(
+                'INSERT INTO blog_categories
+                    (name, slug, description, status, display_order, created_by, updated_by)
+                 VALUES (?, ?, ?, "active", ?, ?, ?)',
+                [$name, $slug, $description, $order, $adminId, $adminId]
+            );
+
+            $topicIds[$slug] = Database::insertId();
+        }
+
+        $posts = [
+            [
+                'How to Get the Most Out of Your First Massage',
+                'how-to-get-the-most-out-of-your-first-massage',
+                'massage-and-bodywork',
+                'A first massage is mostly a conversation. Here is what to say, what to expect, and how to leave feeling the way you hoped to.',
+                "A first massage is mostly a conversation. The table, the oils and the quiet room matter, but the difference between a pleasant hour and a treatment that actually changes how your week feels comes down to what you tell your therapist before they start.\n\nArrive ten minutes early. Not because we are strict about it, but because those ten minutes are when your shoulders come down from your ears. Fill in your intake form honestly, especially the parts about injuries, recent surgery, pregnancy and medication. None of it is judged and all of it changes the plan.\n\nWhen your therapist asks about pressure, answer in specifics. \"Firm through my shoulders, light everywhere else\" is more useful than \"medium\". You can change your mind halfway through, and you should: pressure that felt right at minute five often needs adjusting by minute thirty-five.\n\nTell us where you actually hurt, not where you think the problem is. Desk tension usually shows up in the neck, but it is often anchored in the chest and forearms. A good therapist will work the whole chain rather than only the spot that aches.\n\nBreathe normally. Holding your breath through a tender area tightens exactly the muscle we are trying to release. If a stroke is too much, say so before it becomes something you brace against.\n\nAfterward, drink water, skip the gym for the rest of the day, and give yourself an unstructured evening if you can. Deep work can leave you pleasantly sore for a day, much like a good workout. If anything feels wrong rather than tender, call us — we would always rather hear about it.",
+                'massage1.jpg',
+                'Majesty Day Spa',
+                'first visit, massage, guest guide',
+                'How to Get the Most Out of Your First Massage | Majesty Day Spa',
+                'What to tell your massage therapist, how to talk about pressure, and how to feel your best afterward.',
+                1, 1, '-21 days',
+            ],
+            [
+                'HydraFacial vs. Classic Facial: Which One Is For You',
+                'hydrafacial-vs-classic-facial',
+                'skin-and-facials',
+                'Both leave you glowing. They get there differently, and one of them suits your skin and your schedule better than the other.',
+                "Guests ask us this almost every week, usually while booking something for an event on Saturday. Both treatments leave you glowing. They get there differently, and the right answer depends on your skin, your calendar and how much downtime you can afford.\n\nA classic facial is a hands-on treatment: cleanse, exfoliate, steam, extractions, massage, mask. The massage is a real part of it, not a flourish, and it is the reason people come out of a classic facial looking rested as well as clearer. It suits skin that is generally healthy and wants maintenance, and it suits anyone who wants the hour to feel like a spa treatment rather than a procedure.\n\nA HydraFacial uses a device to cleanse, exfoliate, extract and infuse serums in a single pass. It is methodical and consistent, it handles congestion and blackheads more thoroughly than hands alone, and it delivers hydrating and brightening serums straight after the exfoliation, when skin absorbs them best. There is essentially no downtime, which is why it is the one we recommend before a wedding or a photo shoot.\n\nIf your skin is congested, uneven in tone, or you are short on time before an event, book the HydraFacial. If your skin is behaving and you want the treatment to feel restorative as much as corrective, book the classic. If you are managing active breakouts, rosacea or recent sun damage, book either and tell your esthetician first — the products change even when the treatment name does not.\n\nWhichever you choose, come with clean skin if you can, skip retinol for two days beforehand, and plan to wear sunscreen religiously for the week after. Freshly exfoliated skin burns faster than you expect.",
+                'facial.jpg',
+                'Majesty Day Spa',
+                'facials, hydrafacial, skincare',
+                'HydraFacial vs. Classic Facial: Which One Is For You | Majesty Day Spa',
+                'A plain comparison of two facial treatments, what each one fixes, and how to choose before an event.',
+                1, 2, '-12 days',
+            ],
+            [
+                'Making a Couples Visit Feel Unhurried',
+                'making-a-couples-visit-feel-unhurried',
+                'spa-rituals',
+                'The couples suite is easy to rush through. A few small decisions turn a booking into an afternoon you both remember.',
+                "The couples suite is the easiest room in the spa to rush through. Two people arrive from two different days, get an hour of quiet, and leave straight back into traffic. A few small decisions turn the same booking into an afternoon you both remember.\n\nBook later than you think you need to. An appointment at four leaves the evening open on the other side; an appointment at noon puts a deadline on the end of your massage. If you are marking an anniversary or a birthday, the hour after matters as much as the hour on the table.\n\nAdd the salt lounge before, not after. Twenty minutes in the salt room settles your breathing and warms your muscles, which means your therapist starts on a body that is already halfway relaxed rather than spending the first fifteen minutes getting there.\n\nAgree on pressure separately. Couples often book the same treatment and then quietly endure a pressure that suits the other person. You are in the same room, not on the same table — ask for what your own back needs.\n\nLeave the phones in the locker. Not on silent, in the locker. The single most common thing guests tell us afterward is that they did not check their phone once, and they say it as though it surprised them.\n\nFinally, plan nothing immediately after. A walk along the water, a slow lunch, or simply driving home without a schedule keeps the effect of the treatment intact. The massage is an hour. The unhurried afternoon around it is the part that actually resets you.",
+                'couples_river.png',
+                'Majesty Day Spa',
+                'couples, rituals, planning',
+                'Making a Couples Visit Feel Unhurried | Majesty Day Spa',
+                'How to plan a couples spa visit so the treatment is the middle of the afternoon, not the whole of it.',
+                0, 3, '-4 days',
+            ],
+        ];
+
+        $count = 0;
+
+        foreach ($posts as [$title, $slug, $topicSlug, $excerpt, $content, $image,
+                            $author, $tags, $metaTitle, $metaDescription, $featured, $order, $ago]) {
+            if (Database::fetchValue('SELECT id FROM blog_posts WHERE slug = ?', [$slug]) !== null) {
+                continue;
+            }
+
+            $words = preg_split('/\s+/u', trim($content), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+
+            Database::run(
+                'INSERT INTO blog_posts
+                    (category_id, title, slug, excerpt, content, media_id, author_name,
+                     read_minutes, tags, meta_title, meta_description, status,
+                     published_at, featured, display_order, created_by, updated_by)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "published", ?, ?, ?, ?, ?)',
+                [
+                    $topicIds[$topicSlug] ?? null, $title, $slug, $excerpt, $content,
+                    $media($image), $author, max(1, (int) ceil(count($words) / 200)),
+                    $tags, $metaTitle, $metaDescription,
+                    date('Y-m-d', strtotime($ago)) . ' 09:00:00',
+                    $featured, $order, $adminId, $adminId,
+                ]
+            );
+
+            $count++;
+        }
+
+        $this->log('Blog topics: ' . count($topicIds) . ", posts: {$count}.");
     }
 
     private function seedShop(int $adminId): void

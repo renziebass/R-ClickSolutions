@@ -192,8 +192,31 @@ check('GET /public/bootstrap returns 200', $bootstrap['status'] === 200, describ
 check(
     'Bootstrap payload contains the expected collections',
     isset($bootstrap['body']['data']['services'], $bootstrap['body']['data']['specials'],
-          $bootstrap['body']['data']['categories']),
+          $bootstrap['body']['data']['categories'], $bootstrap['body']['data']['blog_posts']),
     describe($bootstrap)
+);
+
+$blogPosts = request('GET', '/public/blog-posts', null, false);
+check('GET /public/blog-posts returns 200', $blogPosts['status'] === 200, describe($blogPosts));
+
+$firstPost = $blogPosts['body']['data'][0] ?? null;
+
+if ($firstPost !== null) {
+    $onePost = request('GET', '/public/blog-posts/' . rawurlencode((string) $firstPost['slug']), null, false);
+    check(
+        'GET /public/blog-posts/{slug} returns the post with its paragraphs',
+        $onePost['status'] === 200 && !empty($onePost['body']['data']['paragraphs']),
+        describe($onePost)
+    );
+} else {
+    check('GET /public/blog-posts/{slug} — skipped, no published posts', true, '');
+}
+
+$missingPost = request('GET', '/public/blog-posts/definitely-not-a-real-post', null, false);
+check(
+    'GET /public/blog-posts/{unknown slug} returns 404',
+    $missingPost['status'] === 404,
+    describe($missingPost)
 );
 
 // =====================================================================
