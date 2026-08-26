@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/config/bootstrap.php';
 
+use Mariah\Controllers\AddonController;
 use Mariah\Controllers\AuditLogController;
 use Mariah\Controllers\AuthController;
 use Mariah\Controllers\BlogCategoryController;
@@ -29,6 +30,7 @@ use Mariah\Controllers\SettingsController;
 use Mariah\Controllers\SpecialController;
 use Mariah\Controllers\UserController;
 use Mariah\Core\Auth;
+use Mariah\Core\Clock;
 use Mariah\Core\Env;
 use Mariah\Core\HttpException;
 use Mariah\Core\Logger;
@@ -55,6 +57,14 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
     http_response_code(204);
     exit;
 }
+
+// ---------------------------------------------------------------------
+// Clocks — before anything reads or writes a timestamp. Points PHP and the
+// MySQL session at the configured zone so the two agree, since both write
+// into the same tz-naive DATETIME columns. Opens the database connection, so
+// it sits after the preflight exit above rather than before it. Never throws.
+// ---------------------------------------------------------------------
+Clock::boot();
 
 try {
     $request = new Request();
@@ -178,6 +188,13 @@ try {
     $router->get('/categories/options', [$categories, 'options'],
         [Guard::anyPermission('categories.view', 'services.view')]);
     $registerResource($router, 'categories', $categories, 'categories');
+
+    // --- Service add-ons ----------------------------------------------
+    // Gated by the services permissions rather than slugs of its own: an
+    // add-on is a line on the treatment menu, managed by whoever manages the
+    // menu. No duplicate route — an add-on is two fields, so copying one is
+    // slower than typing it.
+    $registerResource($router, 'addons', new AddonController(), 'services', true, false);
 
     // --- Promotions ---------------------------------------------------
     $registerResource($router, 'promotions', new PromotionController(), 'promotions');

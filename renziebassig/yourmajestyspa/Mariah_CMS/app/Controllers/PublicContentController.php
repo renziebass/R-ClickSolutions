@@ -7,6 +7,7 @@ use Mariah\Core\Database;
 use Mariah\Core\HttpException;
 use Mariah\Core\Request;
 use Mariah\Core\Response;
+use Mariah\Repositories\AddonRepository;
 use Mariah\Repositories\BlogPostRepository;
 use Mariah\Repositories\ServiceRepository;
 use Mariah\Services\ScheduleResolver;
@@ -25,28 +26,9 @@ final class PublicContentController
     /** One aggregated payload for the whole page — a single round trip. */
     public function bootstrap(Request $request): never
     {
-        $categories = $this->fetchCategories();
-        $services   = $this->fetchServices();
-
-        // Group services under their category so the page can build its tabs.
-        $byCategory = [];
-        foreach ($services as $service) {
-            $byCategory[$service['category_slug']][] = $service;
-        }
-
-        foreach ($categories as $i => $category) {
-            $categories[$i]['services'] = $byCategory[$category['slug']] ?? [];
-        }
-
-        // Only categories that actually have live services become tabs.
-        $categories = array_values(array_filter(
-            $categories,
-            static fn (array $c): bool => $c['services'] !== []
-        ));
-
         Response::json([
-            'categories'         => $categories,
-            'services'           => $services,
+            'categories'         => $this->fetchMenu(),
+            'services'           => $this->fetchServices(),
             'most_loved'         => $this->fetchMostLoved(),
             'specials'           => $this->fetchSpecials(),
             'promotions'         => $this->fetchPromotions(),
@@ -63,6 +45,100 @@ final class PublicContentController
         ]);
     }
 
+    /**
+     * The treatment menu as the page draws it: top-level categories carrying
+     * their own services, their sub-categories under `groups`, and the add-on
+     * menu that applies to each.
+     *
+     * Built from three flat queries and grouped in PHP. Walking the tree with
+     * a query per node would be an N+1 on the busiest endpoint on the site.
+     */
+    private function fetchMenu(): array
+    {
+        $categories = $this->fetchCategories();
+        $services   = $this->fetchServices();
+        $addons     = (new AddonRepository())->activeFor(array_column($categories, 'id'));
+
+        $byCategory = [];
+        foreach ($services as $service) {
+            $byCategory[$service['category_slug']][] = $service;
+        }
+
+        // Pass one: index by id, and attach each category's own services and
+        // add-ons.
+        $nodes = [];
+        foreach ($categories as $category) {
+            $category['services'] = $byCategory[$category['slug']] ?? [];
+            $category['addons']   = $addons[$category['id']] ?? [];
+            $category['groups']   = [];
+
+            $nodes[$category['id']] = $category;
+        }
+
+        // Pass two: hang each sub-category off its parent. A sub-category
+        // inherits its parent's add-ons — the massage add-on menu applies to
+        // every massage — but its own win on a name clash, so a sub-category
+        // can price the same enhancement differently.
+        foreach ($nodes as $node) {
+            $parentId = $node['parent_id'];
+
+            if ($parentId === null || !isset($nodes[$parentId])) {
+                continue;   // placed in pass three
+            }
+
+            $node['addons'] = self::mergeAddons($node['addons'], $nodes[$parentId]['addons']);
+            $nodes[$parentId]['groups'][] = $node;
+        }
+
+        // Pass three: the top level, in display order, keeping only what has
+        // something live to show. A sub-category whose parent went inactive
+        // has no parent to sit under, so it surfaces as a tab of its own
+        // rather than taking its services off the site with it.
+        $tree = [];
+
+        foreach ($nodes as $node) {
+            if ($node['parent_id'] !== null && isset($nodes[$node['parent_id']])) {
+                continue;
+            }
+
+            $node['groups'] = array_values(array_filter(
+                $node['groups'],
+                static fn (array $g): bool => $g['services'] !== []
+            ));
+
+            if ($node['services'] === [] && $node['groups'] === []) {
+                continue;   // an empty tab is worse than no tab
+            }
+
+            $tree[] = $node;
+        }
+
+        return $tree;
+    }
+
+    /**
+     * A category's own add-ons, then the ones it inherits, dropping any
+     * inherited entry whose name the category already defines.
+     *
+     * @param array<int, array<string, mixed>> $own
+     * @param array<int, array<string, mixed>> $inherited
+     */
+    private static function mergeAddons(array $own, array $inherited): array
+    {
+        $claimed = [];
+        foreach ($own as $addon) {
+            $claimed[mb_strtolower(trim((string) $addon['name']))] = true;
+        }
+
+        foreach ($inherited as $addon) {
+            if (!isset($claimed[mb_strtolower(trim((string) $addon['name']))])) {
+                $own[] = $addon;
+            }
+        }
+
+        return $own;
+    }
+
     public function services(Request $request): never
     {
         Response::json($this->fetchServices(
@@ -70,15 +146,27 @@ final class PublicContentController
         ));
     }
 
+    /**
+     * One treatment in full, for the detail view a guest opens from a card.
+     *
+     * Carries what the listing deliberately leaves out: the price tiers, the
+     * add-on menu that applies, the gallery, and the guest-information copy —
+     * benefits, inclusions and, most importantly, contraindications. Shipping
+     * all of that with every service in /bootstrap would multiply the page's
+     * first payload for text almost no one scrolls to.
+     */
     public function service(Request $request, array $args): never
     {
         $slug = (string) ($args['slug'] ?? '');
 
         $row = Database::fetchOne(
             "SELECT s.id, s.name, s.slug, s.short_description, s.description,
+                    s.benefits, s.inclusions, s.contraindications,
+                    s.complimentary_enhancement,
                     s.price, s.price_display, s.promo_price,
                     s.duration_minutes, s.duration_display,
                     s.icon_key, s.booking_url, s.featured, s.most_loved_rank,
+                    c.id AS category_id, c.parent_id AS category_parent_id,
                     c.name AS category_name, c.slug AS category_slug,
                     m.file_url AS image_url, m.alt_text AS image_alt
                FROM services s
@@ -94,7 +182,21 @@ final class PublicContentController
             throw HttpException::notFound('That service is not available.');
         }
 
-        $row = $this->decorateService($row);
+        // Through withVariants() so the tiers, and the labels built from them,
+        // match what the listing showed.
+        $row = $this->withVariants([$row])[0];
+
+        // Own add-ons first, then the parent's, exactly as the menu tree
+        // resolves them — a massage sub-category offers the massage add-ons.
+        $addons = (new AddonRepository())->activeFor(
+            array_filter([$row['category_id'], $row['category_parent_id']])
+        );
+        $row['addons'] = self::mergeAddons(
+            $addons[(int) $row['category_id']] ?? [],
+            $row['category_parent_id'] === null
+                ? []
+                : ($addons[(int) $row['category_parent_id']] ?? [])
+        );
 
         $row['gallery'] = Database::fetchAll(
             'SELECT m.file_url, COALESCE(si.alt_text, m.alt_text) AS alt_text
@@ -104,6 +206,8 @@ final class PublicContentController
               ORDER BY si.is_primary DESC, si.display_order ASC',
             [(int) $row['id']]
         );
+
+        unset($row['category_id'], $row['category_parent_id']);
 
         Response::json($row);
     }
@@ -225,7 +329,7 @@ final class PublicContentController
     private function fetchCategories(): array
     {
         $rows = Database::fetchAll(
-            "SELECT c.id, c.name, c.slug, c.description, c.icon_key,
+            "SELECT c.id, c.parent_id, c.name, c.slug, c.description, c.icon_key,
                     m.file_url AS image_url
                FROM service_categories c
                LEFT JOIN media m ON m.id = c.media_id AND m.deleted_at IS NULL
@@ -235,6 +339,7 @@ final class PublicContentController
 
         return array_map(static function (array $r): array {
             $r['id'] = (int) $r['id'];
+            $r['parent_id'] = $r['parent_id'] === null ? null : (int) $r['parent_id'];
             return $r;
         }, $rows);
     }
@@ -263,13 +368,34 @@ final class PublicContentController
 
         $sql .= ' ORDER BY c.display_order ASC, s.display_order ASC, s.name ASC';
 
-        return array_map([$this, 'decorateService'], Database::fetchAll($sql, $params));
+        return $this->withVariants(Database::fetchAll($sql, $params));
+    }
+
+    /**
+     * Decorates rows and attaches their price tiers, in one extra query for the
+     * whole set rather than one per service.
+     *
+     * Without this a treatment offered at $150–$210 would advertise a flat
+     * "$150", because services.price holds the cheapest tier. That is worse
+     * than showing no price at all, so the tiers travel with the service even
+     * though only the label is rendered today.
+     */
+    private function withVariants(array $rows): array
+    {
+        $variants = (new ServiceRepository())->variantsFor(array_column($rows, 'id'));
+
+        return array_map(function (array $row) use ($variants): array {
+            // Attached before decorating, because decorateService() builds the
+            // labels from them.
+            $row['variants'] = $variants[(int) $row['id']] ?? [];
+
+            return $this->decorateService($row);
+        }, $rows);
     }
 
     private function fetchMostLoved(): array
     {
-        return array_map(
-            [$this, 'decorateService'],
+        return $this->withVariants(
             Database::fetchAll(
                 "SELECT s.id, s.name, s.slug, s.short_description, s.description,
                         s.price, s.price_display, s.duration_minutes, s.duration_display,
@@ -293,11 +419,11 @@ final class PublicContentController
         $r['price']    = (float) $r['price'];
         $r['featured'] = (bool) ($r['featured'] ?? false);
 
-        $r['price_label'] = $r['price_display']
-            ?: ServiceRepository::formatMoney((float) $r['price']);
-
-        $r['duration_label'] = $r['duration_display']
-            ?: ($r['duration_minutes'] !== null ? $r['duration_minutes'] . ' min' : null);
+        // One implementation, shared with the admin side, so the two cannot
+        // disagree about what a treatment costs. With tiers it reads
+        // "from $150" / "50–110 min"; without them it is the stored price, and
+        // a manual price_display still wins over both.
+        $r = ServiceRepository::applyLabels($r, $r['variants'] ?? []);
 
         if (array_key_exists('promo_price', $r)) {
             $r['promo_price'] = $r['promo_price'] === null ? null : (float) $r['promo_price'];

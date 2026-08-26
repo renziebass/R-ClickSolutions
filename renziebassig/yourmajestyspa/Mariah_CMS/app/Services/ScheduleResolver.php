@@ -14,6 +14,12 @@ namespace Mariah\Services;
  *   published  start_date > today    scheduled
  *   published  inside window         active
  *   published  end_date < today      expired
+ *
+ * The admin badge is derived in PHP (date()) while public visibility is derived
+ * in SQL (CURDATE() / NOW()), so the two agree only while PHP and MySQL share a
+ * timezone. Clock::boot() is what makes that true — without it, a promotion
+ * ending today reads "Active" in the admin all evening while the public API has
+ * already dropped it.
  */
 final class ScheduleResolver
 {
@@ -83,7 +89,8 @@ final class ScheduleResolver
      *
      * Compared at full datetime precision, so a post scheduled for 4pm today
      * still reads "Scheduled" in the admin at noon, exactly as the SQL in
-     * publishedWhere() sees it.
+     * publishedWhere() sees it — see the class docblock on why that identity
+     * depends on both clocks being aligned.
      */
     public static function resolvePublished(?string $status, ?string $publishedAt): string
     {

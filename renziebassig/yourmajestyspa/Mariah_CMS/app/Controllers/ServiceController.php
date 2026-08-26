@@ -67,11 +67,132 @@ final class ServiceController extends ResourceController
         if (is_array($imageIds)) {
             $this->services->syncImages($id, $imageIds, (string) $request->input('image_alt', '') ?: null);
         }
+
+        // Same contract: absent means leave the tiers alone, present means
+        // replace them wholesale.
+        $variants = $request->input('variants');
+        if (is_array($variants)) {
+            $this->services->syncVariants($id, $this->validVariants($variants));
+        }
     }
 
+    /**
+     * showExtras() is merged over the row, so recomputing the two labels here
+     * is what makes a tiered service read "from $150" rather than "$150".
+     *
+     * decorate() cannot do it: it runs per row inside paginate()'s array_map,
+     * where a child query would be an N+1 across the whole page. index() below
+     * solves the same problem for lists, in one query.
+     */
     protected function showExtras(array $row): array
     {
-        return ['images' => $this->services->images((int) $row['id'])];
+        $variants = $this->services->variants((int) $row['id']);
+        $labelled = ServiceRepository::applyLabels($row, $variants);
+
+        return [
+            'images'         => $this->services->images((int) $row['id']),
+            'variants'       => $variants,
+            'price_label'    => $labelled['price_label'],
+            'duration_label' => $labelled['duration_label'],
+        ];
+    }
+
+    /**
+     * The list, with tier-aware labels. One extra query for the whole page
+     * rather than one per row.
+     */
+    public function index(Request $request): never
+    {
+        $result   = $this->services->paginate($request);
+        $variants = $this->services->variantsFor(array_column($result['rows'], 'id'));
+
+        $rows = array_map(
+            static fn (array $row): array => ServiceRepository::applyLabels(
+                $row,
+                $variants[(int) $row['id']] ?? []
+            ),
+            $result['rows']
+        );
+
+        Response::json($rows, 200, $result['meta']);
+    }
+
+    /**
+     * Validates the submitted price tiers.
+     *
+     * Hand-rolled because Validator takes a flat `field => rules` map and has
+     * no vocabulary for arrays or nesting. Errors are keyed "variants.0.price"
+     * so the form paints them onto the right repeater cell.
+     *
+     * @param  array<int, mixed> $rows
+     * @return array<int, array<string, mixed>>
+     */
+    private function validVariants(array $rows): array
+    {
+        $clean  = [];
+        $errors = [];
+        $index  = 0;
+
+        foreach ($rows as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+
+            $label = trim((string) ($row['label'] ?? ''));
+            $price = $row['price'] ?? null;
+
+            // A wholly blank row is the empty repeater line nobody filled in.
+            if ($label === '' && ($price === null || $price === '')) {
+                continue;
+            }
+
+            if ($label === '') {
+                $errors["variants.{$index}.label"] = 'Give this tier a name, such as "50 min".';
+            }
+
+            if (!is_numeric($price) || (float) $price < 0) {
+                $errors["variants.{$index}.price"] = 'Enter a price for this tier.';
+            }
+
+            $minutes = $row['duration_minutes'] ?? null;
+            if ($minutes !== null && $minutes !== '' && (!is_numeric($minutes) || (int) $minutes < 0)) {
+                $errors["variants.{$index}.duration_minutes"] = 'Duration must be a whole number of minutes.';
+            }
+
+            $url = trim((string) ($row['booking_url'] ?? ''));
+            if ($url !== '' && filter_var($url, FILTER_VALIDATE_URL) === false) {
+                $errors["variants.{$index}.booking_url"] = 'That is not a valid link.';
+            }
+
+            $clean[] = [
+                'label'            => $label,
+                'duration_minutes' => $minutes,
+                'price'            => $price,
+                'booking_url'      => $url,
+            ];
+            $index++;
+        }
+
+        if ($errors !== []) {
+            throw HttpException::validation($errors);
+        }
+
+        return $clean;
+    }
+
+    /**
+     * duplicate() copies fillable columns only, so without this a copied
+     * service would lose every price tier. The gallery is deliberately not
+     * copied: two services sharing image rows would fight over which one owns
+     * the primary, and picking new images is part of adapting a copy anyway.
+     */
+    protected function afterDuplicate(int $newId, int $sourceId): void
+    {
+        $tiers = $this->services->variants($sourceId);
+
+        if ($tiers !== []) {
+            $this->services->syncVariants($newId, $tiers);
+        }
     }
 
     /**

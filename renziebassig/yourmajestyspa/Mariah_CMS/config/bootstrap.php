@@ -37,7 +37,10 @@ ini_set('display_errors', $debug && PHP_SAPI === 'cli' ? '1' : '0');
 ini_set('log_errors', '1');
 ini_set('error_log', MARIAH_ROOT . '/storage/logs/php-' . date('Y-m-d') . '.log');
 
-date_default_timezone_set('America/New_York'); // Fort Lauderdale, FL
+// The pre-database default only. The authoritative zone is the site_timezone
+// setting, which cannot be read until a connection exists — Clock::boot()
+// applies it, to PHP and to MySQL together, once one does.
+date_default_timezone_set(\Mariah\Core\Clock::envTimezone());
 
 // Ensure writable runtime directories exist.
 foreach ([MARIAH_ROOT . '/storage/logs', MARIAH_ROOT . '/storage/uploads'] as $dir) {

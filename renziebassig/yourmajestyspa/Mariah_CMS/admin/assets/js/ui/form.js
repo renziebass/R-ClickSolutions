@@ -102,11 +102,159 @@ export function fill(sectionNode, ...fields) {
 }
 
 // ---------------------------------------------------------------
+// Repeating rows
+// ---------------------------------------------------------------
+
+/**
+ * A variable-length set of rows — price tiers, and anything later that needs
+ * "add another".
+ *
+ * The inputs deliberately carry NO `name` attribute. formValues() serialises a
+ * form by [name] into a flat last-wins object, so ten rows sharing a name
+ * would collapse to one value. Instead each cell is tagged
+ * data-repeat="<name>" / data-key="<column>", and readRepeater() collects them
+ * in the page's `transform` hook — the same technique promotions.js and
+ * roles.js already use to keep their checkbox lists away from formValues().
+ *
+ * Errors are keyed "<name>.<index>.<column>" by the server, and each cell
+ * carries a matching data-field, so applyErrors() paints them with no changes
+ * of its own.
+ *
+ * @param columns {key, label, type, span, placeholder, step}[]
+ * @param rows    existing values, one object per row
+ */
+export function repeater({
+  name, label, hint = '', columns, rows = [], addLabel = 'Add another', span = 12,
+}) {
+  const node = el(`
+    <div class="field col-${span}" data-repeat-group="${esc(name)}">
+      <label>${esc(label)}</label>
+      ${hint ? `<small class="field__hint">${esc(hint)}</small>` : ''}
+      <div class="repeat" data-repeat-body="${esc(name)}"></div>
+      <button type="button" class="btn btn--ghost btn--sm repeat__add">${esc(addLabel)}</button>
+    </div>
+  `);
+
+  const body = node.querySelector('[data-repeat-body]');
+
+  // One grid template for the header and every row, so the columns line up.
+  // Set on the container; both inherit it.
+  body.style.setProperty(
+    '--repeat-cols',
+    columns.map((column) => `${column.span || 1}fr`).join(' ')
+  );
+
+  const buildRow = (values = {}) => {
+    const row = el('<div class="repeat__row"></div>');
+
+    columns.forEach((column) => {
+      const value = values[column.key] ?? '';
+      row.appendChild(el(`
+        <div class="repeat__cell">
+          <input type="${esc(column.type || 'text')}"
+            data-repeat="${esc(name)}" data-key="${esc(column.key)}"
+            value="${esc(value)}"
+            placeholder="${esc(column.placeholder || column.label)}"
+            aria-label="${esc(column.label)}"
+            ${column.step ? `step="${esc(column.step)}"` : ''}>
+        </div>
+      `));
+    });
+
+    const remove = el('<button type="button" class="repeat__remove" aria-label="Remove this row">&times;</button>');
+    remove.addEventListener('click', () => {
+      row.remove();
+      reindex();
+    });
+    row.appendChild(remove);
+
+    return row;
+  };
+
+  // data-field has to track position, because that is what the server keys its
+  // errors by. Recomputed whenever a row is added or removed.
+  //
+  // Selects .repeat__row rather than body.children: the header is a child too,
+  // and counting it would shift every index by one against the server's.
+  const reindex = () => {
+    [...body.querySelectorAll('.repeat__row')].forEach((row, index) => {
+      row.querySelectorAll('[data-key]').forEach((input) => {
+        input.closest('.repeat__cell')
+          .setAttribute('data-field', `${name}.${index}.${input.dataset.key}`);
+      });
+    });
+  };
+
+  const header = el('<div class="repeat__head"></div>');
+  columns.forEach((column) => {
+    header.appendChild(el(`<span>${esc(column.label)}</span>`));
+  });
+  header.appendChild(el('<span></span>'));
+  body.appendChild(header);
+
+  rows.forEach((row) => body.appendChild(buildRow(row)));
+
+  if (rows.length === 0) body.appendChild(buildRow());
+
+  node.querySelector('.repeat__add').addEventListener('click', () => {
+    body.appendChild(buildRow());
+    reindex();
+  });
+
+  reindex();
+
+  return node;
+}
+
+/**
+ * Collects a repeater's rows out of a form, in document order. Call from the
+ * page's `transform` hook; returns null when the repeater is not on the page,
+ * so the caller can leave the key off the payload entirely and the server
+ * treats the children as untouched.
+ */
+export function readRepeater(form, name) {
+  const inputs = [...form.querySelectorAll(`[data-repeat="${CSS.escape(name)}"]`)];
+  if (inputs.length === 0) return null;
+
+  const rows = [];
+
+  [...form.querySelectorAll(`[data-repeat-body="${CSS.escape(name)}"] .repeat__row`)]
+    .forEach((rowNode) => {
+      const row = {};
+      let filled = false;
+
+      rowNode.querySelectorAll('[data-key]').forEach((input) => {
+        const value = input.value.trim();
+        row[input.dataset.key] = value === '' ? null : value;
+        if (value !== '') filled = true;
+      });
+
+      // An untouched blank row is not an empty tier, it is no tier.
+      if (!filled) return;
+
+      // Because blank rows are dropped, a row's position in the payload is not
+      // its position in the DOM. The server keys its errors by payload index,
+      // so re-stamp data-field to match what is actually being sent —
+      // otherwise a message lands on the wrong row.
+      rowNode.querySelectorAll('[data-key]').forEach((input) => {
+        input.closest('.repeat__cell')
+          .setAttribute('data-field', `${name}.${rows.length}.${input.dataset.key}`);
+      });
+
+      rows.push(row);
+    });
+
+  return rows;
+}
+
+// ---------------------------------------------------------------
 // Error handling
 // ---------------------------------------------------------------
 
 export function clearErrors(form) {
-  form.querySelectorAll('.field.has-error').forEach((node) => node.classList.remove('has-error'));
+  // Not `.field.has-error`: a repeater cell is a .repeat__cell, and leaving its
+  // class behind would keep the last failure highlighted after a good save.
+  form.querySelectorAll('.has-error').forEach((node) => node.classList.remove('has-error'));
   form.querySelectorAll('.field__error').forEach((node) => node.remove());
 
   const banner = form.querySelector('.form-error');

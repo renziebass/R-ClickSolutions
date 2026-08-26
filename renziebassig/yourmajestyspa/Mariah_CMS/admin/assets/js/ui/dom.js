@@ -34,16 +34,32 @@ export function money(value) {
   return '$' + number.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+/**
+ * Parses what the API sends — "2026-08-25 14:30:00" from a DATETIME column, or
+ * "2026-08-25" from a DATE one — as local time.
+ *
+ * The date-only case needs the explicit midnight. Per spec a bare "YYYY-MM-DD"
+ * is parsed as UTC while a full datetime is parsed as local, so without this a
+ * DATE column renders a day early anywhere west of UTC — which is every
+ * promotion and special run window in the admin list.
+ */
+function parseLocal(value) {
+  const text = String(value);
+  return new Date(
+    /^\d{4}-\d{2}-\d{2}$/.test(text) ? `${text}T00:00:00` : text.replace(' ', 'T')
+  );
+}
+
 export function dateLabel(value) {
   if (!value) return '—';
-  const date = new Date(String(value).replace(' ', 'T'));
+  const date = parseLocal(value);
   if (Number.isNaN(date.getTime())) return esc(value);
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 export function dateTimeLabel(value) {
   if (!value) return '—';
-  const date = new Date(String(value).replace(' ', 'T'));
+  const date = parseLocal(value);
   if (Number.isNaN(date.getTime())) return esc(value);
   return date.toLocaleString('en-US', {
     month: 'short', day: 'numeric', year: 'numeric',
@@ -54,7 +70,7 @@ export function dateTimeLabel(value) {
 /** "3 hours ago" for activity feeds; falls back to a date past a week. */
 export function relativeTime(value) {
   if (!value) return '';
-  const date = new Date(String(value).replace(' ', 'T'));
+  const date = parseLocal(value);
   if (Number.isNaN(date.getTime())) return '';
 
   const seconds = Math.floor((Date.now() - date.getTime()) / 1000);

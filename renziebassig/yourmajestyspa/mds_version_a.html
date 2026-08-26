@@ -1311,6 +1311,147 @@
       font-weight: 500
     }
 
+    /* Sub-category heading inside a category tab. Two levels is the whole
+       hierarchy, so this is the only nesting the menu ever draws. */
+    .svc-group {
+      font-family: var(--f-display);
+      font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+      color: var(--emerald-deep);
+      margin: 2.2rem 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: .9rem
+    }
+
+    .svc-group:first-child {
+      margin-top: .2rem
+    }
+
+    .svc-group::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--line)
+    }
+
+    /* Replaces the Book button on a card with tiers: one price and one link
+       would misrepresent a treatment sold at three. */
+    .svc__more {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--gold-dp)
+    }
+
+    .svc:hover .svc__more {
+      color: var(--emerald)
+    }
+
+    .rank__row:focus-visible,
+    .svc:focus-visible {
+      outline: 2px solid var(--gold-dp);
+      outline-offset: 3px
+    }
+
+    /* ---- Treatment detail, inside the .reader surface ---- */
+    .svc-detail__cat {
+      font-size: .74rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--gold-dp);
+      margin: 0 0 .5rem
+    }
+
+    .svc-detail__lede {
+      font-size: 1.02rem;
+      color: var(--text-soft);
+      margin: 0 0 1.6rem
+    }
+
+    .svc-detail h2 {
+      font-family: var(--f-body);
+      font-size: .76rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin: 2rem 0 .8rem
+    }
+
+    /* One row per tier: length, price, and its own booking link, because each
+       duration is a separate product at Booker. */
+    .svc-tier {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: .6rem 1rem;
+      padding: .85rem 0;
+      border-bottom: 1px solid var(--line)
+    }
+
+    .svc-tier__label {
+      font-weight: 500;
+      min-width: 7rem
+    }
+
+    .svc-tier__price {
+      font-family: var(--f-display);
+      font-size: 1.25rem;
+      color: var(--gold-dp);
+      flex: 1
+    }
+
+    .svc-addons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: .1rem 1.6rem
+    }
+
+    .svc-addon {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      padding: .5rem 0;
+      border-bottom: 1px solid var(--line);
+      font-size: .9rem
+    }
+
+    .svc-addon small {
+      display: block;
+      color: var(--text-faint);
+      font-size: .78rem
+    }
+
+    .svc-addon__price {
+      color: var(--gold-dp);
+      font-weight: 500;
+      white-space: nowrap
+    }
+
+    /* Safety copy, not decoration: a guest needs to read this before booking a
+       hot stone treatment, not after. */
+    .svc-care {
+      border-left: 3px solid var(--gold-dp);
+      background: var(--paper, rgba(0, 0, 0, .025));
+      padding: .9rem 1.1rem;
+      margin: 1.2rem 0;
+      font-size: .9rem;
+      color: var(--text-soft)
+    }
+
+    .svc-care b {
+      display: block;
+      color: var(--text);
+      font-weight: 500;
+      margin-bottom: .2rem
+    }
+
     } /* end service-cards */
 
     @layer bands {
@@ -3586,6 +3727,17 @@
     <article class="reader__in" id="readerBody"></article>
   </div>
 
+  <!-- Full-screen detail for one treatment. Its own element rather than a
+       shared one with #reader: a guest can deep-link to either, and two
+       controllers that never touch each other cannot fight over which is open.
+       Reuses the .reader styles, which are about the surface, not the content. -->
+  <div class="reader" id="svcReader" role="dialog" aria-modal="true" aria-label="Treatment" aria-hidden="true">
+    <button class="reader__close" id="svcReaderClose" type="button" aria-label="Close treatment"><svg>
+        <use href="#i-close" />
+      </svg></button>
+    <article class="reader__in" id="svcReaderBody"></article>
+  </div>
+
   <div class="overlay" id="overlay"></div>
   <aside class="cart" id="cart" aria-hidden="true" aria-label="Shopping cart">
     <div class="cart__head">
@@ -3727,6 +3879,39 @@
       }
 
       /* ---------------- SERVICES (tabs + panels) ---------------- */
+
+      /* One card. Clickable as a whole — the detail view holds the tiers, the
+         add-on menu and the contraindications, none of which fit here. */
+      function svcCard(s, i) {
+        var tiers = (s.variants || []).length;
+
+        return '<article class="svc ' + rv(i) + '" data-service="' + esc(s.slug) + '"'
+          + ' tabindex="0" role="button"'
+          + ' aria-label="' + esc(s.name) + ' — see durations and prices">'
+          + '<div class="svc__img">'
+          + (s.image_url
+            ? '<img src="' + esc(s.image_url) + '" alt="' + esc(s.image_alt || s.name) + '" loading="lazy">'
+            : '')
+          + (s.icon_key
+            ? '<span class="svc__icon"><svg><use href="#' + esc(s.icon_key) + '" /></svg></span>'
+            : '')
+          + '</div>'
+          + '<div class="svc__body">'
+          + '<h3>' + esc(s.name) + '</h3>'
+          + '<div class="svc__meta">'
+          + '<span>' + esc(s.duration_label || '') + '</span>'
+          + '<span class="svc__price">' + esc(s.price_label || '') + '</span></div>'
+          + '<div class="svc__panel">'
+          + '<p>' + esc(s.short_description || s.description || '') + '</p>'
+          /* With tiers there are several prices and several booking links, so
+             one Book button here would be a guess. Single-price treatments
+             keep the direct link. */
+          + (tiers > 1
+            ? '<span class="svc__more">' + tiers + ' lengths ' + arrow(13) + '</span>'
+            : bookBtn(s.booking_url, 'Book Now', 'btn btn--sm'))
+          + '</div></div></article>';
+      }
+
       function renderServices(categories) {
         var tabsHost = region('service-tabs');
         var hint = document.querySelector('.svc-tabs__hint');
@@ -3750,49 +3935,56 @@
         }
 
         fill('services', categories.map(function (c, ci) {
-          var cards = c.services.map(function (s, i) {
-            var meta = '<div class="svc__meta">'
-              + '<span>' + esc(s.duration_label || '') + '</span>'
-              + '<span class="svc__price">' + esc(s.price_label || '') + '</span></div>';
+          /* Two levels, no deeper: services sitting directly on the category
+             come first, then one headed block per sub-category. */
+          var blocks = '';
+          var offset = 0;
 
-            return '<article class="svc ' + rv(i) + '">'
-              + '<div class="svc__img">'
-              + (s.image_url
-                ? '<img src="' + esc(s.image_url) + '" alt="' + esc(s.image_alt || s.name) + '" loading="lazy">'
-                : '')
-              + (s.icon_key
-                ? '<span class="svc__icon"><svg><use href="#' + esc(s.icon_key) + '" /></svg></span>'
-                : '')
-              + '</div>'
-              + '<div class="svc__body">'
-              + '<h3>' + esc(s.name) + '</h3>'
-              + meta
-              + '<div class="svc__panel">'
-              + '<p>' + esc(s.description || s.short_description || '') + '</p>'
-              + bookBtn(s.booking_url, 'Book Now', 'btn btn--sm')
-              + '</div></div></article>';
-          }).join('');
+          if ((c.services || []).length) {
+            blocks += '<div class="svc-grid">'
+              + c.services.map(svcCard).join('') + '</div>';
+            offset = c.services.length;
+          }
+
+          (c.groups || []).forEach(function (g) {
+            blocks += '<h3 class="svc-group">' + esc(g.name) + '</h3>'
+              + '<div class="svc-grid">'
+              + g.services.map(function (s, i) { return svcCard(s, offset + i); }).join('')
+              + '</div>';
+            offset += g.services.length;
+          });
 
           return '<div class="svc-tab-panel" id="tab-' + esc(c.slug) + '" role="tabpanel"'
             + ' aria-labelledby="tabbtn-' + esc(c.slug) + '"' + (ci === 0 ? '' : ' hidden') + '>'
-            + '<div class="svc-grid">' + cards + '</div></div>';
+            + blocks + '</div>';
         }).join(''));
       }
 
       /* ---------------- MOST LOVED ---------------- */
       function renderMostLoved(services) {
         fill('most-loved', services.map(function (s, i) {
-          return '<article class="rank__row ' + rv(i) + '">'
+          var tiers = (s.variants || []).length;
+
+          /* Same reasoning as the cards: a treatment sold at three lengths has
+             three booking links, so the row opens the detail view instead of
+             guessing one. */
+          var cta = tiers > 1
+            ? '<span class="svc__more">' + tiers + ' lengths ' + arrow(13) + '</span>'
+            : (s.booking_url
+              ? '<a class="btn btn--sm" href="' + esc(s.booking_url) + '" target="_blank" rel="noopener">'
+                + 'Book ' + arrow(13) + '</a>'
+              : '');
+
+          return '<article class="rank__row ' + rv(i) + '" data-service="' + esc(s.slug) + '"'
+            + ' tabindex="0" role="button"'
+            + ' aria-label="' + esc(s.name) + ' — see durations and prices">'
             + '<span class="rank__n">' + ('0' + (i + 1)).slice(-2) + '</span>'
             + '<div><div class="rank__t"><h3>' + esc(s.name) + '</h3>'
             + '<em>' + esc(s.duration_label || '') + '</em></div>'
             + '<p class="rank__d">' + esc(s.short_description || s.description || '') + '</p></div>'
             + '<div class="rank__cta">'
             + '<span class="rank__price">' + esc(s.price_label || '') + '</span>'
-            + (s.booking_url
-              ? '<a class="btn btn--sm" href="' + esc(s.booking_url) + '" target="_blank" rel="noopener">'
-                + 'Book ' + arrow(13) + '</a>'
-              : '')
+            + cta
             + '</div></article>';
         }).join(''), 'most-loved');
       }
@@ -3973,6 +4165,202 @@
           .catch(function () {
             fill('journal', note('These articles could not be loaded right now. Please try again.'));
           });
+      }
+
+      /* ---------------- TREATMENT DETAIL ---------------- */
+      /* Deliberately separate from the article reader below. Both are the same
+         surface, but each owns one query parameter and one open slug, so
+         neither can close the other or answer a popstate meant for it. */
+      var svcReader = {
+        panel: null, body: null, closeBtn: null,
+        openSlug: null, pushedState: false, lastFocus: null
+      };
+
+      function svcSection(title, body) {
+        return body ? '<h2>' + esc(title) + '</h2>' + body : '';
+      }
+
+      /* Free text typed in the CMS: blank lines separate paragraphs, and every
+         line is escaped, so nothing an operator types can inject markup. */
+      function svcProse(text) {
+        if (!text) return '';
+        return String(text).split(/\n{2,}/).map(function (block) {
+          return '<p>' + esc(block.replace(/\n+/g, ' ').trim()) + '</p>';
+        }).join('');
+      }
+
+      function renderTreatment(s) {
+        var tiers = s.variants || [];
+        var addons = s.addons || [];
+
+        /* One row per length, each with its own booking link. Where a tier has
+           none, the treatment link is the sensible fallback. */
+        var tierRows = tiers.length
+          ? tiers.map(function (v) {
+              return '<div class="svc-tier">'
+                + '<span class="svc-tier__label">' + esc(v.label) + '</span>'
+                + '<span class="svc-tier__price">' + esc(v.price_label || '') + '</span>'
+                + bookBtn(v.booking_url || s.booking_url, 'Book', 'btn btn--sm')
+                + '</div>';
+            }).join('')
+          : '';
+
+        var addonRows = addons.length
+          ? '<div class="svc-addons">' + addons.map(function (a) {
+              return '<div class="svc-addon"><span>' + esc(a.name)
+                + (a.description ? '<small>' + esc(a.description) + '</small>' : '')
+                + '</span><span class="svc-addon__price">' + esc(a.price_label || '') + '</span></div>';
+            }).join('') + '</div>'
+          : '';
+
+        var single = (!tierRows && s.booking_url)
+          ? '<div class="svc-tier"><span class="svc-tier__label">'
+            + esc(s.duration_label || '') + '</span>'
+            + '<span class="svc-tier__price">' + esc(s.price_label || '') + '</span>'
+            + bookBtn(s.booking_url, 'Book', 'btn btn--sm') + '</div>'
+          : '';
+
+        return (s.image_url
+            ? '<img class="reader__cover" src="' + esc(s.image_url) + '"'
+              + ' alt="' + esc(s.image_alt || s.name) + '">'
+            : '')
+          + (s.category_name
+            ? '<p class="svc-detail__cat">' + esc(s.category_name) + '</p>'
+            : '')
+          + '<h1>' + esc(s.name) + '</h1>'
+          + '<div class="svc-detail">'
+          + (s.short_description
+            ? '<p class="svc-detail__lede">' + esc(s.short_description) + '</p>'
+            : '')
+          + svcProse(s.description)
+          + (s.complimentary_enhancement
+            ? '<div class="svc-care"><b>Included with this treatment</b>'
+              + esc(s.complimentary_enhancement) + '</div>'
+            : '')
+          + (tierRows ? svcSection('Choose your length', tierRows) : single)
+          + svcSection('What it is best for', svcProse(s.benefits))
+          + svcSection('What is included', svcProse(s.inclusions))
+          + svcSection('Enhance your treatment', addonRows)
+          + (s.contraindications
+            ? '<div class="svc-care"><b>Please let us know before booking</b>'
+              + esc(s.contraindications) + '</div>'
+            : '')
+          + '</div>';
+      }
+
+      function openTreatment(slug, fromHistory) {
+        if (!svcReader.panel || !slug) return;
+
+        svcReader.lastFocus = document.activeElement;
+        svcReader.openSlug = slug;
+        svcReader.body.innerHTML = readerState('Loading the treatment…');
+        svcReader.panel.classList.add('is-open');
+        svcReader.panel.setAttribute('aria-hidden', 'false');
+        svcReader.panel.scrollTop = 0;
+        document.body.style.overflow = 'hidden';
+        svcReader.closeBtn.focus();
+
+        /* A shareable URL for every treatment, on the same terms as ?post=
+           for an article. */
+        if (!fromHistory) {
+          try {
+            var url = new URL(window.location.href);
+            url.searchParams.set('treatment', slug);
+            window.history.pushState({ treatment: slug }, '', url.toString());
+            svcReader.pushedState = true;
+          } catch (e) { svcReader.pushedState = false; }
+        }
+
+        getJson(API_BASE + '/services/' + encodeURIComponent(slug))
+          .then(function (service) {
+            if (svcReader.openSlug !== slug) return;   // a newer open won the race
+            svcReader.body.innerHTML = renderTreatment(service);
+            svcReader.panel.setAttribute('aria-label', service.name || 'Treatment');
+            revealNew(svcReader.body);
+          })
+          .catch(function () {
+            if (svcReader.openSlug !== slug) return;
+            svcReader.body.innerHTML = readerState(
+              'This treatment could not be loaded. It may no longer be offered.'
+            );
+          });
+      }
+
+      function closeTreatment() {
+        if (!svcReader.panel || !svcReader.openSlug) return;
+
+        svcReader.openSlug = null;
+        svcReader.panel.classList.remove('is-open');
+        svcReader.panel.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+
+        if (svcReader.lastFocus && svcReader.lastFocus.focus) svcReader.lastFocus.focus();
+
+        if (svcReader.pushedState) {
+          svcReader.pushedState = false;
+          window.history.back();
+          return;
+        }
+
+        /* Opened straight from a shared link: there is no history entry to go
+           back to, so the parameter is dropped in place instead. */
+        try {
+          var url = new URL(window.location.href);
+          if (url.searchParams.has('treatment')) {
+            url.searchParams.delete('treatment');
+            window.history.replaceState({}, '', url.toString());
+          }
+        } catch (e) { /* history unavailable — the panel still closed */ }
+      }
+
+      function wireTreatmentReader() {
+        svcReader.panel = document.getElementById('svcReader');
+        svcReader.body = document.getElementById('svcReaderBody');
+        svcReader.closeBtn = document.getElementById('svcReaderClose');
+        if (!svcReader.panel) return;
+
+        svcReader.closeBtn.addEventListener('click', function () { closeTreatment(); });
+
+        /* Delegated: cards are rendered after this runs, and again whenever the
+           menu reloads. */
+        document.addEventListener('click', function (event) {
+          if (!event.target || typeof event.target.closest !== 'function') return;
+          /* A single-price card still carries a real Book link. Let it win. */
+          if (event.target.closest('a')) return;
+          var card = event.target.closest('[data-service]');
+          if (!card) return;
+          openTreatment(card.getAttribute('data-service'));
+        });
+
+        document.addEventListener('keydown', function (event) {
+          if (event.key === 'Escape' && svcReader.openSlug) {
+            closeTreatment();
+            return;
+          }
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          var card = document.activeElement && document.activeElement.closest
+            ? document.activeElement.closest('[data-service]')
+            : null;
+          if (!card) return;
+          event.preventDefault();
+          openTreatment(card.getAttribute('data-service'));
+        });
+
+        window.addEventListener('popstate', function (event) {
+          var slug = (event.state && event.state.treatment) || readParam('treatment');
+          svcReader.pushedState = false;
+          if (slug) {
+            openTreatment(slug, true);
+          } else if (svcReader.openSlug) {
+            closeTreatment();
+          }
+        });
+      }
+
+      /* Opens the treatment named in ?treatment= on a shared or bookmarked link. */
+      function openDeepLinkedTreatment() {
+        var slug = readParam('treatment');
+        if (slug) openTreatment(slug, true);
       }
 
       /* ---------------- ARTICLE READER ---------------- */
@@ -4194,6 +4582,7 @@
       function hydrate() {
         paintSkeletons();
         wireReader();
+        wireTreatmentReader();
 
         return fetch(API, { credentials: 'same-origin', headers: { Accept: 'application/json' } })
           .then(function (response) {
@@ -4218,6 +4607,7 @@
 
             document.documentElement.setAttribute('data-cms', 'live');
             openDeepLinkedPost();
+            openDeepLinkedTreatment();
           })
           .catch(function (error) {
             renderUnavailable();

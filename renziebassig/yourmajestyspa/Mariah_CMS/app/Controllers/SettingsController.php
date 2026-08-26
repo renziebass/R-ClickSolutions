@@ -40,6 +40,15 @@ final class SettingsController
                     (string) $key => '"' . $key . '" is not a known setting.',
                 ]);
             }
+
+            // settings.edit governs the screen; a handful of keys are narrower
+            // than that. Forbidden rather than a validation error, because the
+            // value is fine — the caller is not.
+            if (SettingsSchema::isSuperAdminOnly((string) $key) && !Auth::isSuperAdmin()) {
+                throw HttpException::forbidden(
+                    'Changing "' . $key . '" is restricted to Super Admins.'
+                );
+            }
         }
 
         if ($body === []) {
@@ -83,11 +92,16 @@ final class SettingsController
                 $definition = SettingsSchema::definitions()[$key];
 
                 $settings[] = [
-                    'key'   => $key,
-                    'label' => $definition['label'],
-                    'help'  => $definition['help'],
-                    'type'  => $definition['type'],
-                    'value' => $values[$key] ?? null,
+                    'key'     => $key,
+                    'label'   => $definition['label'],
+                    'help'    => $definition['help'],
+                    'type'    => $definition['type'],
+                    'value'   => $values[$key] ?? null,
+                    'options' => SettingsSchema::optionsFor($key),
+                    // Per-key, on top of the form-wide can_edit below. An Admin
+                    // sees the timezone and what it is set to; the input is
+                    // just disabled for them.
+                    'editable' => !SettingsSchema::isSuperAdminOnly($key) || Auth::isSuperAdmin(),
                 ];
             }
 

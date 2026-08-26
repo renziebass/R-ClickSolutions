@@ -77,6 +77,7 @@ try {
     exit;
 }
 
+use Mariah\Core\Clock;
 use Mariah\Core\Env;
 use Mariah\Services\Installer;
 
@@ -145,6 +146,10 @@ if ($authorised && $action !== '' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $installer->syncRolesAndPermissions();
 
+                // Before the content seed: the seeded records carry timestamps,
+                // and they should be stamped in the zone that was just chosen.
+                $installer->setTimezone((string) ($_POST['site_timezone'] ?? ''));
+
                 $adminId = $installer->createSuperAdmin(
                     trim((string) ($_POST['admin_email'] ?? '')) ?: null,
                     (string) ($_POST['admin_password'] ?? '') ?: null,
@@ -163,6 +168,12 @@ if ($authorised && $action !== '' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             case 'sync':
                 $installer->syncRolesAndPermissions();
                 $successMsg = 'Roles and permissions re-synced. No content was touched.';
+                break;
+
+            case 'timezone':
+                $installer->setTimezone((string) ($_POST['site_timezone'] ?? ''));
+                $successMsg = 'Timezone updated. New timestamps use it from now on; '
+                            . 'existing ones are not rewritten.';
                 break;
 
             default:
@@ -199,9 +210,30 @@ if ($authorised) {
 
 $adminUrl = rtrim(Env::string('APP_URL', '.'), '/') . '/admin/';
 
+// Whatever is stored, or the .env / built-in fallback before anything is.
+$currentZone = $dbReachable ? Clock::timezone() : Clock::envTimezone();
+
 function h(?string $value): string
 {
     return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+
+/**
+ * Every IANA zone, labelled with its current UTC offset. Built here rather than
+ * through ui/form.js because this page renders its own HTML.
+ */
+function timezoneOptions(string $current): string
+{
+    $html = '';
+
+    foreach (timezone_identifiers_list() as $zone) {
+        $offset   = Clock::utcOffset($zone);
+        $selected = $zone === $current ? ' selected' : '';
+        $html .= '<option value="' . h($zone) . '"' . $selected . '>'
+               . h(str_replace('_', ' ', $zone)) . ' (UTC' . h($offset) . ')</option>';
+    }
+
+    return $html;
 }
 ?>
 <!DOCTYPE html>
@@ -520,6 +552,18 @@ DB_PASS=<?= h((string) ($_POST['t_password'] ?? '')) ?></pre>
               </div>
 
               <div class="field col-12">
+                <label for="site_timezone">Timezone</label>
+                <select id="site_timezone" name="site_timezone">
+                  <?= timezoneOptions($currentZone) ?>
+                </select>
+                <small class="field__hint">
+                  The clock the whole CMS runs on — audit log times, scheduled blog posts,
+                  and promotion start and end dates. A Super Admin can change it later
+                  under <b>Settings → Site settings</b>.
+                </small>
+              </div>
+
+              <div class="field col-12">
                 <label class="switch">
                   <input type="checkbox" name="demo" value="1">
                   <span class="switch__track"></span>
@@ -555,6 +599,32 @@ DB_PASS=<?= h((string) ($_POST['t_password'] ?? '')) ?></pre>
             </div>
           </div>
         <?php endif; ?>
+
+        <!-- ============ Timezone ============ -->
+        <div class="card mb-2">
+          <div class="card__head"><h3>Timezone</h3></div>
+          <div class="card__body">
+            <p style="margin-top:0;color:var(--text-soft);font-size:.9rem">
+              Currently <b><?= h(str_replace('_', ' ', $currentZone)) ?></b>
+              (UTC<?= h(Clock::utcOffset($currentZone)) ?>), and the server clock reads
+              <b><?= h(date('D j M Y, g:i a')) ?></b>. If that is wrong, correct it here —
+              a Super Admin can also change it under <b>Settings → Site settings</b>.
+            </p>
+            <form method="post" class="grid">
+              <input type="hidden" name="token" value="<?= h($providedToken) ?>">
+              <input type="hidden" name="action" value="timezone">
+              <div class="field col-8">
+                <label for="tz_maintenance">Timezone</label>
+                <select id="tz_maintenance" name="site_timezone">
+                  <?= timezoneOptions($currentZone) ?>
+                </select>
+              </div>
+              <div class="col-4" style="display:flex;align-items:flex-end">
+                <button type="submit" class="btn btn--ghost btn--block">Save timezone</button>
+              </div>
+            </form>
+          </div>
+        </div>
 
         <!-- ============ Maintenance ============ -->
         <div class="card mb-2">

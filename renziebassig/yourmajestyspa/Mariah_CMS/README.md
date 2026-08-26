@@ -134,8 +134,10 @@ All tables are InnoDB / `utf8mb4`. Content tables carry
 | `users` | Staff accounts | `email` UQ, `password_hash`, `role_id`, `status` |
 | `login_attempts` | Login throttling | `email`, `ip_address`, `successful` |
 | `media` | Central image library | `file_path`, `file_url`, `mime_type`, `alt_text` |
-| `service_categories` | Website service tabs | `slug` UQ, `icon_key`, `display_order` |
-| `services` | Treatment menu | `price` + `price_display`, `duration_minutes` + `duration_display`, `booking_url`, `icon_key`, `most_loved_rank` |
+| `service_categories` | Website service tabs, two levels deep | `parent_id` (self FK, NULL = top level), `slug` UQ, `icon_key`, `display_order` |
+| `services` | Treatment menu | `price` + `price_display`, `duration_minutes` + `duration_display`, `booking_url`, `icon_key`, `most_loved_rank`, `benefits`, `inclusions`, `contraindications` |
+| `service_variants` | Price/duration tiers | `label`, `duration_minutes`, `price`, own `booking_url` |
+| `service_addons` | Per-category enhancements | `category_id`, `price`, `duration_minutes` |
 | `service_images` | Per-service gallery | `is_primary`, `display_order` |
 | `promotions` | Discount rules | `discount_type`, `discount_value`, `start_date`, `end_date` |
 | `promotion_services` | Promotion ↔ service join | composite PK |
@@ -151,6 +153,42 @@ All tables are InnoDB / `utf8mb4`. Content tables carry
 **Promotions vs Specials** are separate because their business purpose differs: a
 *promotion* is a discount rule applied to services (15% off midweek massages); a
 *special* is a sellable bundle with its own price (`$215` struck through `$299`).
+
+### The treatment menu: categories, tiers and add-ons
+
+The real menu is two levels deep and priced by duration, which `services` alone
+cannot express.
+
+- **Sub-categories.** `service_categories.parent_id` points at another category, and
+  nothing may nest deeper — `CategoryController` rejects a third level, a category as
+  its own parent, and demoting a category that has children of its own. Top-level
+  categories are the tabs on the website; sub-categories are headings inside a tab.
+  Services always attach to the **leaf**, so a service on a childless top-level
+  category keeps working exactly as before.
+
+- **Price tiers.** A treatment offered at 50/80/110 minutes is one `services` row plus
+  three `service_variants`. Each tier carries its own `booking_url`, because the Booker
+  links are `.../detail-summary/{id}` deep links — 50 and 80 minutes of the same
+  treatment are two different products to book. The **cheapest tier is mirrored back**
+  onto `services.price` and `services.duration_minutes` by `syncVariants()`, exactly as
+  `service_images` mirrors its primary onto `services.media_id`, so every existing sort,
+  filter and public query keeps working with no join.
+
+  This is what `price_display` and `duration_display` were for. Those columns exist
+  because there was nowhere to put a range, so someone typed `"from $150"` and
+  `"60 – 90 min"` by hand. They still win when set, but `ServiceRepository::applyLabels()`
+  now derives the same strings — `"$150"` for one tier, `"from $150"` and `"50–110 min"`
+  for several.
+
+- **Add-ons** belong to a category and carry **their own price**, because the price is a
+  property of the menu the add-on appears on: Aromatherapy is +$25 on the massage menu
+  and +$20 on the facial menu. Two rows, one per category. A shared catalogue with a
+  single price would have to be wrong for one of them.
+
+**Gratuity is deliberately not a column.** It is exactly 15% of price throughout the
+source menu, so it is computed if it is needed at all. The one row that disagreed had
+stale gratuity figures left over from an earlier price rise — precisely the drift a
+derived value cannot have.
 
 ### Indexes
 
@@ -176,7 +214,10 @@ roles ──< role_permissions >── permissions
   └──< users ──< audit_logs
               └─< media (uploaded_by)
 
+service_categories ──< service_categories        (parent_id, two levels only)
+service_categories ──< service_addons
 service_categories ──< services ──< service_images >── media
+                          └──────< service_variants
                                  └─< promotion_services >── promotions ── media
                                                             specials  ── media
 
@@ -188,9 +229,9 @@ products ── media                   gift_cards ── media
 
 | Behaviour | Where | Why |
 |---|---|---|
-| `RESTRICT` | category → services, brand/type → products, media → service_images, role → users | Deleting the parent would orphan or silently remove business-critical records. The API returns a clear 409 instead. |
+| `RESTRICT` | category → services, category → sub-categories, brand/type → products, media → service_images, role → users | Deleting the parent would orphan or silently remove business-critical records. The API returns a clear 409 instead. |
 | `SET NULL` | every optional `media_id`, `audit_logs.user_id`, `media.uploaded_by` | Losing an image or a staff account must not delete the content or rewrite history. |
-| `CASCADE` | `role_permissions`, `service_images`, `promotion_services` | Pure join tables with no independent meaning. |
+| `CASCADE` | `role_permissions`, `service_images`, `service_variants`, `service_addons`, `promotion_services` | Rows with no meaning apart from their parent. A price tier without its treatment, or an add-on menu without its category, is nothing. |
 
 ---
 
@@ -254,6 +295,7 @@ Copy `.env.example` to `.env`. **Never commit `.env`** — it is in `.gitignore`
 | `APP_ENV` | | `production` or `local` |
 | `APP_DEBUG` | | `false` in production. Errors are always logged, never displayed. |
 | `APP_URL` | yes | Full URL of this folder, no trailing slash. Used to build seeded image URLs and by the smoke test. |
+| `APP_TIMEZONE` | | **Fallback only.** The live zone is the Timezone site setting — see §9.1. This is used before the database is readable, and if the setting is unreadable. Default `America/New_York`. |
 | `DB_HOST` `DB_PORT` `DB_NAME` `DB_USER` `DB_PASS` | yes | MySQL connection |
 | `SESSION_SECRET` | yes | `php -r "echo bin2hex(random_bytes(32));"` |
 | `SESSION_NAME` | | Cookie name |
@@ -338,6 +380,9 @@ Four roles ship as system roles. `config/permissions.php` is the source of truth
 | View content | ✅ | ✅ | ✅ | ✅ |
 | Create / edit content | ✅ | ✅ | ✅ | ❌ |
 | Activate / deactivate | ✅ | ✅ | ✅ | ❌ |
+| Bulk import services | ✅ | ✅ | ✅ | ❌ |
+| Edit site settings | ✅ | ✅ | ❌ | ❌ |
+| Change the timezone | ✅ | ❌ | ❌ | ❌ |
 | Delete content | ✅ | ✅ | ❌ | ❌ |
 | Upload media | ✅ | ✅ | ✅ | ❌ |
 | View users | ✅ | ✅ | ❌ | ❌ |
@@ -389,6 +434,48 @@ your own account, and you cannot remove the last active Super Admin.
 
 **An Editor who calls `DELETE /api/services/123` by hand receives `403 Forbidden`.**
 `tests/smoke.php` asserts exactly this.
+
+A third rule sits above the permission system, at the level of a single setting
+rather than an endpoint: a setting carrying `'super_admin' => true` in
+`SettingsSchema` can be **read** by anyone with `settings.view` but **written**
+only by a Super Admin. `settings.edit` still governs the screen as a whole. Only
+the timezone uses this today; an Admin sees it and what it is set to, with the
+input disabled.
+
+### 9.1 Timezone
+
+The CMS runs on one timezone, chosen in `setup.php` during installation and
+changeable afterwards by a Super Admin under **Settings → Site settings**. It
+drives audit log times, scheduled blog posts, and promotion and special start
+and end dates.
+
+It is not a display preference. Every timestamp column in this schema is
+`DATETIME`, never `TIMESTAMP`, so a stored value is bare wall-clock text with no
+zone attached — whichever clock wrote it. Two clocks write into those columns:
+
+- **PHP**, for `date()` values and the repositories' explicit writes;
+- **MySQL**, for `NOW()` and `DEFAULT CURRENT_TIMESTAMP` — which is where
+  `audit_logs.created_at` comes from, since `AuditLogger` does not send it.
+
+MySQL's session zone otherwise inherits the daemon's own, which is UTC on most
+shared hosting while PHP is on the configured zone. Values written by one are
+then compared against cutoffs computed by the other: the 15-minute login lockout
+becomes a four-hour one, and audit entries land in the future.
+
+`Clock::boot()` closes that gap, applying the zone to both on every request.
+Two implementation notes:
+
+- **MySQL is set by numeric offset, not by name** (`SET time_zone = '-04:00'`).
+  Shared hosts rarely load the named-timezone tables, so `'America/New_York'`
+  fails there with "Unknown or incorrect time zone". The offset is resolved per
+  connection, so it is correct for the current DST state.
+- **`APP_TIMEZONE` in `.env` is only the pre-database fallback.** The setting
+  lives in the database, which cannot be read while `config/bootstrap.php` runs,
+  so `Database::pdo()` pins the session to the env zone at connect time and
+  `Clock::boot()` refines both clocks from the setting immediately after.
+  Nothing is ever left on an unknown zone in between.
+
+Changing the zone does not rewrite existing timestamps — only new ones follow it.
 
 ---
 
@@ -493,8 +580,12 @@ Both preview and commit fetch the sheet, mirroring the browser re-uploading a fi
 is what makes the digest check meaningful here — a shared sheet really can change between
 the two, and a mismatch is a 409 that says so.
 
-Requires the separate `services.import` permission — one file can rewrite the whole
-public menu, so it is not folded into `services.create`.
+Requires the `services.import` permission, held by Super Admin, Admin and Editor. It is
+a slug of its own rather than part of `services.create` so that a custom role can be
+given single-record editing without the bulk tool — not because it is stricter. The
+importer only creates and updates, never deletes and never creates categories, and every
+column it writes is one the admin form already reaches, so for a role holding
+`services.create` and `services.edit` it adds speed rather than reach.
 
 **Preview and commit are the same call.** `dry_run` defaults to `1`, so a request that
 omits it can only preview; only an explicit `dry_run=0` writes. On confirm the browser
@@ -563,6 +654,43 @@ Two fields exist in the schema specifically because the real page needs them:
 `booking_url` (each service card links to its own Booker.com page) and `icon_key`
 (services map to `<symbol>` ids in the page's existing SVG sprite).
 
+### The treatment menu on the page
+
+`/public/bootstrap` returns `categories` as a **two-level tree**, already grouped in
+PHP so the page does no work to build it:
+
+```
+categories[]            top level — one tab each
+  ├ services[]          treatments filed directly on the tab
+  ├ groups[]            sub-categories, each a heading inside the tab
+  │   └ services[]
+  └ addons[]            the enhancement menu that applies
+```
+
+A tab is emitted only if it, or one of its groups, has a live service — an empty tab is
+worse than no tab.
+
+**A card opens a detail view.** `.svc` already carried `cursor: pointer` and the section
+lede already said *"Select a service to see what it's best for"*, but nothing was ever
+bound. Now every card and every Most Loved row carries `data-service`, and one delegated
+handler opens `#svcReader` — the same full-screen surface the Journal reader uses, with
+its own slug and its own `?treatment=` parameter so the two can never close each other.
+The detail is fetched from `/public/services/{slug}`, an endpoint that already existed
+and had no caller.
+
+**Why a card with tiers has no Book button.** A treatment sold at 50, 80 and 110 minutes
+has three prices *and three Booker links* — `detail-summary/{id}` deep links are per
+product, not per treatment. Picking one on the card would be a guess, so the card shows
+`3 lengths →` and the detail view lists every tier with its own button. Single-price
+treatments keep the direct link exactly as before.
+
+What the detail view adds beyond the card: the full description, the price tiers, the
+category's add-on menu, and the guest-information copy — benefits, inclusions,
+complimentary enhancement, and **contraindications**, which is the one a guest needs
+*before* booking a hot stone treatment rather than after. None of that is in
+`/public/bootstrap`: shipping four text columns for every treatment would multiply the
+page's first payload for copy most visitors never open.
+
 **Verify the whole loop:** deactivate a service in the CMS, reload the website, and it
 is gone. Reactivate it and it returns.
 
@@ -597,9 +725,18 @@ It asserts the full brief flow, plus the failure cases:
   API but is still in the admin dashboard → soft delete → it is recoverable from the
   deleted-items filter → restore**
 - uploading a `.php` file is rejected
-- **RBAC:** an Editor can create but gets **403** on `DELETE /services/:id`, on
-  `/users`, on `/roles` and on `/audit-logs`; an Admin gets **403** editing a Super
-  Admin and **403** editing a role; Staff can view but gets **403** creating
+- **RBAC:** an Editor can create and can preview a CSV import, but gets **403** on
+  `DELETE /services/:id`, on `/users`, on `/roles` and on `/audit-logs`; an Admin gets
+  **403** editing a Super Admin, **403** editing a role and **403** changing the
+  timezone while still getting **200** on every other setting; Staff can view but gets
+  **403** creating and **403** importing
+- **Clocks:** `SELECT NOW()` and PHP's `time()` agree, and saving a new timezone moves
+  the MySQL session with it
+- **Treatment menu:** a third category level is refused, a parent holding sub-categories
+  cannot be deleted, the same add-on name coexists under two categories at two prices,
+  tiers round-trip and cascade away with their service, and `/public/bootstrap` nests
+  sub-categories under their parent while a sub-category service inherits the parent
+  add-on menu
 - the 6th failed sign-in returns **429**, then `login_attempts` is cleared so real
   sign-ins are not locked out
 
@@ -685,6 +822,9 @@ in version control. Back it up together with the database.
   exceeds the size cap. The residual exposure is that redirects may follow to
   Google-controlled hosts, which cannot be pinned without breaking the feature; the caller
   already holds `services.import` and can therefore already rewrite the whole public menu.
+  That caller may be an Editor, whose `services.create` / `services.edit` grants carry the
+  same reach — and the link path additionally stays dark until an Admin turns on
+  `services_import_url_enabled`, which needs `settings.edit`.
   Note also that **a sheet imported by link is world-readable to anyone holding the link**
   — that is what "Anyone with the link → Viewer" means.
 - **File uploads** — accepted only if the extension is allowlisted **and** the MIME type
@@ -725,7 +865,8 @@ fit this shape.
 Stated plainly rather than left to be discovered:
 
 - **Website content that is still hard-coded in `mds_version_a.html`.** A `settings` store
-  now exists (Settings → Site settings) but holds only the service-import keys. The guest
+  now exists (Settings → Site settings) but holds only the timezone and the service-import
+  keys. The guest
   quotes in the Reviews section, and the contact details, opening hours and Booker.com
   links in the header and footer, are still edited in the HTML.
 - **Private Google Sheets.** Importing from a link requires the sheet to be shared

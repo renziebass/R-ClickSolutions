@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Mariah\Services;
 
+use Mariah\Core\Clock;
 use Mariah\Core\HttpException;
 
 /**
@@ -20,19 +21,46 @@ use Mariah\Core\HttpException;
 final class SettingsSchema
 {
     /**
-     * key => {group, label, help, type, default, rules, public}
+     * key => {group, label, help, type, default, rules, public, options?, super_admin?}
      *
-     * `type`   string | url | bool | int — the only thing coerce()/serialise() read.
+     * `type`   string | url | bool | int | select — the only thing
+     *          coerce()/serialise() read. `select` needs no branch in either:
+     *          it round-trips as a string exactly as `url` does, and differs
+     *          only in how the form renders it.
      * `public` whether the value may be sent to the browser in /auth/me.
      *          Nothing without it is ever emitted to a client or written into
      *          an audit-log value. No setting is secret today; the flag has to
      *          exist before the first one is, not after.
+     * `options` {value,label} pairs for a `select`. Optional everywhere else.
+     * `super_admin` restricts *editing* to a Super Admin. Everyone holding
+     *          settings.view still sees the value; only the write is refused.
      *
-     * @return array<string, array{group:string,label:string,help:string,type:string,default:mixed,rules:string,public:bool}>
+     * @return array<string, array{group:string,label:string,help:string,type:string,default:mixed,rules:string,public:bool,options?:mixed,super_admin?:bool}>
      */
     public static function definitions(): array
     {
         return [
+            'site_timezone' => [
+                'group'       => 'Regional',
+                'label'       => 'Timezone',
+                'help'        => 'The clock the whole CMS runs on. Audit log times, '
+                               . 'scheduled blog posts, and promotion and special start '
+                               . 'and end dates all follow it.',
+                'type'        => 'select',
+                // Declared as a callable, not an array: definitions() is called
+                // several times on most requests and building ~420 labelled
+                // zones is pure waste on every request that never opens the
+                // Settings screen. optionsFor() resolves it where it is needed.
+                'options'     => [self::class, 'timezoneOptions'],
+                'default'     => Clock::FALLBACK,
+                'rules'       => 'required|string|max:64',
+                // Not a secret, and being public is what keeps the audit entry
+                // readable: loggableChanges() records a non-public value as
+                // "(hidden)", which would be useless for a timezone change.
+                'public'      => true,
+                'super_admin' => true,
+            ],
+
             'services_import_sheet_url' => [
                 'group'   => 'Service import',
                 'label'   => 'Google Sheets template link',
@@ -57,10 +85,59 @@ final class SettingsSchema
         ];
     }
 
+    /**
+     * Every IANA zone as {value,label} pairs for the Settings dropdown.
+     *
+     * Memoised because definitions() is called by defaults(), rules(), labels(),
+     * groups() and has() — several times per request — and this list is roughly
+     * 420 entries. Labels carry the current UTC offset, since "Asia/Manila"
+     * alone is not much help to someone choosing between two plausible zones.
+     *
+     * @return array<int, array{value:string, label:string}>
+     */
+    public static function timezoneOptions(): array
+    {
+        static $options = null;
+
+        if ($options !== null) {
+            return $options;
+        }
+
+        $options = [];
+
+        foreach (timezone_identifiers_list() as $zone) {
+            $options[] = [
+                'value' => $zone,
+                'label' => str_replace('_', ' ', $zone) . ' (UTC' . Clock::utcOffset($zone) . ')',
+            ];
+        }
+
+        return $options;
+    }
+
     /** @return string[] */
     public static function keys(): array
     {
         return array_keys(self::definitions());
+    }
+
+    /** Whether editing this setting is restricted to a Super Admin. */
+    public static function isSuperAdminOnly(string $key): bool
+    {
+        return (bool) (self::definitions()[$key]['super_admin'] ?? false);
+    }
+
+    /**
+     * A setting's choices, resolving the lazy callable form. Empty for every
+     * type that has none.
+     *
+     * @return array<int, array{value:string, label:string}>
+     */
+    public static function optionsFor(string $key): array
+    {
+        $options = self::definitions()[$key]['options'] ?? [];
+
+        return is_callable($options) ? $options() : $options;
     }
 
     public static function has(string $key): bool
@@ -192,6 +269,19 @@ final class SettingsSchema
      */
     public static function assertValid(array $clean): void
     {
+        if (array_key_exists('site_timezone', $clean)) {
+            $zone = trim((string) ($clean['site_timezone'] ?? ''));
+
+            // Checked against the live IANA list rather than an in: rule —
+            // 420 identifiers do not belong in a rule string.
+            if (!Clock::isValid($zone)) {
+                throw HttpException::validation([
+                    'site_timezone' => '"' . $zone . '" is not a recognised timezone. '
+                        . 'Choose one from the list.',
+                ]);
+            }
+        }
+
         if (array_key_exists('services_import_sheet_url', $clean)) {
             $url = trim((string) ($clean['services_import_sheet_url'] ?? ''));
 

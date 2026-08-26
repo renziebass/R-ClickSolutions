@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Mariah\Services;
 
+use Mariah\Core\Clock;
 use Mariah\Core\Database;
 use Mariah\Core\Env;
+use Mariah\Repositories\SettingsRepository;
 
 /**
  * Schema migration and content seeding.
@@ -396,6 +398,36 @@ final class Installer
             . 'that only resolves from the public page. Set APP_URL and re-run the seed.');
 
         return 'assets/';
+    }
+
+    /**
+     * Stores the timezone the CMS runs on.
+     *
+     * Written through SettingsRepository so the upsert, the no-op skip and the
+     * per-request cache reset all behave exactly as they do for a Super Admin
+     * saving the Settings form. Auth::id() is null during an install and
+     * settings.updated_by is nullable, so an unattended write is fine.
+     *
+     * A blank zone leaves whatever is already stored alone — the seed form
+     * submits this on every run, and re-seeding should not silently reset it.
+     */
+    public function setTimezone(?string $zone): void
+    {
+        $zone = trim((string) $zone);
+
+        if ($zone === '') {
+            return;
+        }
+
+        if (!Clock::isValid($zone)) {
+            throw new \RuntimeException('"' . $zone . '" is not a recognised timezone.');
+        }
+
+        SettingsRepository::put(['site_timezone' => $zone]);
+        Clock::forget();
+        Clock::boot();
+
+        $this->log('Timezone set to ' . $zone . ' (UTC' . Clock::utcOffset($zone) . ').');
     }
 
     /** Roles and permissions only — safe to re-run after editing the catalogue. */

@@ -14,6 +14,7 @@ final class ServiceRepository extends BaseRepository
 
     protected array $fillable = [
         'category_id', 'name', 'slug', 'short_description', 'description',
+        'benefits', 'inclusions', 'contraindications', 'complimentary_enhancement',
         'price', 'price_display', 'promo_price',
         'duration_minutes', 'duration_display',
         'icon_key', 'booking_url', 'media_id',
@@ -88,9 +89,65 @@ final class ServiceRepository extends BaseRepository
         $row['most_loved_rank'] = $row['most_loved_rank'] === null ? null : (int) $row['most_loved_rank'];
 
         // What the public page should print, display override winning.
-        $row['price_label']    = $row['price_display'] ?: self::formatMoney((float) $row['price']);
-        $row['duration_label'] = $row['duration_display']
-            ?: ($row['duration_minutes'] !== null ? $row['duration_minutes'] . ' min' : null);
+        //
+        // No variants are passed here on purpose. decorate() runs per row via
+        // array_map inside paginate(), so reading a child table from it would
+        // be an N+1 across the whole list page. Callers that need tier-aware
+        // labels fetch the variants for the page in one query and call
+        // applyLabels() themselves.
+        return self::applyLabels($row, []);
+    }
+
+    /**
+     * Fills in price_label / duration_label for one service row.
+     *
+     * The one place that decides what a guest reads, shared by the admin list,
+     * the admin form and the public API so the three cannot drift.
+     *
+     *   no variants  → the stored price and duration, as before
+     *   one variant  → "$150", "50 min"
+     *   two or more  → "from $150", "50–110 min"
+     *
+     * price_display / duration_display still win when set. They were the only
+     * way to say "from $150" before variants existed, and every one that was
+     * typed by hand keeps working.
+     *
+     * @param array<int, array<string, mixed>> $variants for this service only
+     */
+    public static function applyLabels(array $row, array $variants): array
+    {
+        $prices = [];
+        $mins   = [];
+
+        foreach ($variants as $variant) {
+            $prices[] = (float) $variant['price'];
+
+            if ($variant['duration_minutes'] !== null) {
+                $mins[] = (int) $variant['duration_minutes'];
+            }
+        }
+
+        if ($prices === []) {
+            $priceLabel = self::formatMoney((float) $row['price']);
+        } elseif (count($prices) === 1 || min($prices) === max($prices)) {
+            $priceLabel = self::formatMoney(min($prices));
+        } else {
+            $priceLabel = 'from ' . self::formatMoney(min($prices));
+        }
+
+        if ($mins === []) {
+            $durationLabel = $row['duration_minutes'] !== null
+                ? $row['duration_minutes'] . ' min'
+                : null;
+        } elseif (min($mins) === max($mins)) {
+            $durationLabel = min($mins) . ' min';
+        } else {
+            // En dash, matching the "60 – 90 min" the menu already used.
+            $durationLabel = min($mins) . '–' . max($mins) . ' min';
+        }
+
+        $row['price_label']    = ($row['price_display'] ?? '') ?: $priceLabel;
+        $row['duration_label'] = ($row['duration_display'] ?? '') ?: $durationLabel;
 
         return $row;
     }
@@ -171,6 +228,135 @@ final class ServiceRepository extends BaseRepository
             );
 
             Database::run('UPDATE services SET media_id = ? WHERE id = ?', [$primary, $serviceId]);
+        });
+    }
+
+    /** Price/duration tiers for one service, cheapest first. */
+    public function variants(int $serviceId): array
+    {
+        return array_map(
+            [self::class, 'decorateVariant'],
+            Database::fetchAll(
+                'SELECT id, label, duration_minutes, price, booking_url, display_order
+                   FROM service_variants
+                  WHERE service_id = ?
+                  ORDER BY display_order ASC, id ASC',
+                [$serviceId]
+            )
+        );
+    }
+
+    /**
+     * Tiers for many services in one query, keyed by service id.
+     *
+     * The list page and the public bootstrap both need every service's tiers
+     * at once; fetching them per row would be an N+1.
+     *
+     * @param  int[] $serviceIds
+     * @return array<int, array<int, array<string, mixed>>>
+     */
+    public function variantsFor(array $serviceIds): array
+    {
+        $ids = array_values(array_unique(array_filter(array_map('intval', $serviceIds))));
+
+        if ($ids === []) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+        $rows = Database::fetchAll(
+            "SELECT service_id, id, label, duration_minutes, price, booking_url, display_order
+               FROM service_variants
+              WHERE service_id IN ({$placeholders})
+              ORDER BY service_id ASC, display_order ASC, id ASC",
+            $ids
+        );
+
+        $grouped = [];
+        foreach ($rows as $row) {
+            $serviceId = (int) $row['service_id'];
+            unset($row['service_id']);
+            $grouped[$serviceId][] = self::decorateVariant($row);
+        }
+
+        return $grouped;
+    }
+
+    /** Raw numbers for sorting, plus the rendered strings the client prints. */
+    private static function decorateVariant(array $row): array
+    {
+        $row['id']               = (int) $row['id'];
+        $row['price']            = (float) $row['price'];
+        $row['duration_minutes'] = $row['duration_minutes'] === null
+            ? null
+            : (int) $row['duration_minutes'];
+
+        $row['price_label']    = self::formatMoney($row['price']);
+        $row['duration_label'] = $row['duration_minutes'] !== null
+            ? $row['duration_minutes'] . ' min'
+            : null;
+
+        return $row;
+    }
+
+    /**
+     * Replaces every tier with the given set.
+     *
+     * Same contract as syncImages(): the whole child set is destroyed and
+     * rebuilt in one transaction, the ordinal comes from array position, and a
+     * summary is mirrored back onto the parent — here the cheapest tier's price
+     * and duration, so that every existing sort, filter and public query keeps
+     * working without a join.
+     *
+     * @param array<int, array<string, mixed>> $rows already validated
+     */
+    public function syncVariants(int $serviceId, array $rows): void
+    {
+        Database::transaction(function () use ($serviceId, $rows): void {
+            Database::run('DELETE FROM service_variants WHERE service_id = ?', [$serviceId]);
+
+            $order = 0;
+            foreach ($rows as $row) {
+                $label = trim((string) ($row['label'] ?? ''));
+
+                if ($label === '') {
+                    continue;   // a blank repeater row the operator never filled in
+                }
+
+                $minutes = $row['duration_minutes'] ?? null;
+                $url     = trim((string) ($row['booking_url'] ?? ''));
+
+                Database::run(
+                    'INSERT INTO service_variants
+                        (service_id, label, duration_minutes, price, booking_url, display_order)
+                     VALUES (?, ?, ?, ?, ?, ?)',
+                    [
+                        $serviceId,
+                        mb_substr($label, 0, 60),
+                        ($minutes === null || $minutes === '') ? null : (int) $minutes,
+                        (float) ($row['price'] ?? 0),
+                        $url === '' ? null : mb_substr($url, 0, 500),
+                        $order,
+                    ]
+                );
+                $order++;
+            }
+
+            $cheapest = Database::fetchOne(
+                'SELECT price, duration_minutes FROM service_variants
+                  WHERE service_id = ? ORDER BY price ASC, id ASC LIMIT 1',
+                [$serviceId]
+            );
+
+            // No tiers left means the service is back to a single price, and
+            // whatever is already on the parent row is that price.
+            if ($cheapest !== null) {
+                Database::run(
+                    'UPDATE services SET price = ?, duration_minutes = ? WHERE id = ?',
+                    [$cheapest['price'], $cheapest['duration_minutes'], $serviceId]
+                );
+            }
         });
     }
 

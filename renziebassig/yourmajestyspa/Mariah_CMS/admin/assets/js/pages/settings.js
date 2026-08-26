@@ -3,7 +3,7 @@
 import { api } from '../api.js';
 import { session } from '../session.js';
 import { dateTimeLabel, el, esc } from '../ui/dom.js';
-import { applyErrors, clearErrors, field, fill, formValues, section, switchField } from '../ui/form.js';
+import { applyErrors, clearErrors, field, fill, formValues, section, select, switchField } from '../ui/form.js';
 import { notify, withBusy } from '../ui/feedback.js';
 import { pageHead } from './helpers.js';
 
@@ -63,26 +63,63 @@ async function siteSettingsCard() {
   const body = card.querySelector('.card__body');
   const form = el('<form novalidate></form>');
 
+  // Only these are sent on save. Some settings are narrower than settings.edit
+  // and come back editable:false; formValues() serialises by [name] and does
+  // not skip disabled inputs, so without this filter an Admin's save would
+  // carry the timezone too and be refused outright.
+  const editableKeys = [];
+
   data.groups.forEach((group) => {
     const node = section(group.label);
 
-    fill(node, ...group.settings.map((setting) => (
-      setting.type === 'bool'
-        ? switchField({
-            name: setting.key, label: setting.label,
-            hint: setting.help, checked: Boolean(setting.value), span: 12,
-          })
-        // The field's name IS the setting key, which is what makes
-        // applyErrors() paint a 422 onto the right input with no changes
-        // to ui/form.js.
-        : field({
-            name: setting.key, label: setting.label, hint: setting.help,
-            type: setting.type === 'url' ? 'url' : 'text',
-            value: setting.value ?? '', span: 12,
-          })
-    )));
+    fill(node, ...group.settings.map((setting) => {
+      if (setting.editable !== false) editableKeys.push(setting.key);
+
+      if (setting.type === 'bool') {
+        return switchField({
+          name: setting.key, label: setting.label,
+          hint: setting.help, checked: Boolean(setting.value), span: 12,
+        });
+      }
+
+      if (setting.type === 'select') {
+        return select({
+          name: setting.key, label: setting.label, hint: setting.help,
+          value: setting.value ?? '', options: setting.options || [], span: 12,
+          // No empty option: formValues() maps '' to null, which a required
+          // setting would then reject.
+          placeholder: '',
+        });
+      }
+
+      // The field's name IS the setting key, which is what makes
+      // applyErrors() paint a 422 onto the right input with no changes
+      // to ui/form.js.
+      return field({
+        name: setting.key, label: setting.label, hint: setting.help,
+        type: setting.type === 'url' ? 'url' : 'text',
+        value: setting.value ?? '', span: 12,
+      });
+    }));
 
     form.appendChild(node);
+  });
+
+  // Per-setting lockout, independent of the form-wide one below.
+  data.groups.forEach((group) => {
+    group.settings.forEach((setting) => {
+      if (setting.editable !== false) return;
+
+      const wrapper = form.querySelector(`[data-field="${CSS.escape(setting.key)}"]`);
+      if (!wrapper) return;
+
+      wrapper.querySelectorAll('input, select, textarea').forEach((input) => {
+        input.disabled = true;
+      });
+      wrapper.appendChild(el(
+        '<small class="field__hint">Only a Super Admin can change this.</small>'
+      ));
+    });
   });
 
   if (!canEdit) {
@@ -102,7 +139,13 @@ async function siteSettingsCard() {
 
       await withBusy(submit, async () => {
         try {
-          const result = await api.put('/settings', formValues(form));
+          const all = formValues(form);
+          const payload = {};
+          editableKeys.forEach((key) => {
+            if (key in all) payload[key] = all[key];
+          });
+
+          const result = await api.put('/settings', payload);
           notify.ok('Settings saved.');
 
           // Keeps this tab consistent immediately: /auth/me only runs at boot,

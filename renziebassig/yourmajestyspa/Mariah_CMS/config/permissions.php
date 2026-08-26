@@ -19,8 +19,10 @@ $catalogue = [
         'services.edit'       => 'Edit services',
         'services.delete'     => 'Delete services',
         'services.activate'   => 'Activate / deactivate services',
-        // Separate from services.create on purpose: one CSV can rewrite the
-        // entire public treatment menu in a single click.
+        // Its own slug rather than part of services.create, so a custom role
+        // can be given single-record editing without the bulk tool. It is not
+        // a stricter permission: every column the importer writes is one that
+        // services.create and services.edit already reach.
         'services.import'     => 'Bulk import services from a CSV file',
     ],
     'Service categories' => [
@@ -120,7 +122,10 @@ $viewOnly = array_values(array_filter($all, static fn (string $s): bool => str_e
 
 /** Content create/edit without any delete, user or role rights. */
 $editorPerms = array_merge($viewOnly, [
-    'services.create',   'services.edit',   'services.activate',
+    // Import is bulk create+edit and nothing more: it never deletes and never
+    // creates categories, so it hands an Editor no authority the three slugs
+    // beside it do not already grant — only speed.
+    'services.create',   'services.edit',   'services.activate', 'services.import',
     'categories.create', 'categories.edit',
     'promotions.create', 'promotions.edit', 'promotions.activate',
     'specials.create',   'specials.edit',   'specials.activate',

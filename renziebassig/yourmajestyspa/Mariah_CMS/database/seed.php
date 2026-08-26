@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/config/bootstrap.php';
 
+use Mariah\Core\Clock;
 use Mariah\Core\Database;
 use Mariah\Core\Env;
 use Mariah\Services\Installer;
@@ -25,6 +26,10 @@ if (PHP_SAPI !== 'cli') {
     http_response_code(403);
     exit("seed.php may only be run from the command line. Use setup.php in a browser instead.\n");
 }
+
+// Seeded content carries timestamps, so both clocks need to be on the
+// configured zone before the first row is written.
+Clock::boot();
 
 $args     = array_slice($argv, 1);
 $syncOnly = in_array('--sync', $args, true);

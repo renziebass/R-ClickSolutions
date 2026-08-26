@@ -5,7 +5,9 @@ import { navigate } from '../router.js';
 import { session } from '../session.js';
 import { dateLabel, el, esc, relativeTime } from '../ui/dom.js';
 import { DataTable } from '../ui/table.js';
-import { field, fill, section, select, switchField, textarea, bindSlugPreview } from '../ui/form.js';
+import {
+  field, fill, readRepeater, repeater, section, select, switchField, textarea, bindSlugPreview,
+} from '../ui/form.js';
 import { mediaField } from '../ui/media-picker.js';
 import { notify } from '../ui/feedback.js';
 import {
@@ -162,7 +164,10 @@ export async function serviceFormPage(outlet, args) {
   const options = (await api.get('/services/form-options')).data;
   const categories = options.categories.map((category) => ({
     value: category.id,
-    label: category.name + (category.status === 'inactive' ? ' (inactive)' : ''),
+    // depth 1 is a sub-category; the dash is what makes the nesting readable
+    // in a flat <select>.
+    label: (category.depth ? '— ' : '') + category.name
+      + (category.status === 'inactive' ? ' (inactive)' : ''),
   }));
 
   outlet.appendChild(pageHead({
@@ -244,6 +249,60 @@ export async function serviceFormPage(outlet, args) {
     }),
   ));
 
+  // --- Price tiers ------------------------------------------------
+  body.appendChild(fill(
+    section(
+      'Price tiers',
+      'For a treatment offered at several lengths. Leave empty if there is only one '
+      + 'price — the fields above are then used as-is.'
+    ),
+    repeater({
+      name: 'variants',
+      label: 'Durations and prices',
+      addLabel: 'Add a tier',
+      hint: 'The cheapest tier becomes the price the card shows as "from". Each tier can '
+        + 'carry its own booking link, because Booker treats 50 and 80 minutes of the '
+        + 'same treatment as two different products.',
+      rows: record?.variants || [],
+      columns: [
+        { key: 'label', label: 'Tier', span: 2, placeholder: '50 min' },
+        { key: 'duration_minutes', label: 'Minutes', span: 1, type: 'number', placeholder: '50' },
+        { key: 'price', label: 'Price', span: 1, type: 'number', step: '0.01', placeholder: '150' },
+        { key: 'booking_url', label: 'Booking link', span: 3, type: 'url', placeholder: 'https://go.booker.com/…' },
+      ],
+    }),
+  ));
+
+  // --- Guest information ------------------------------------------
+  body.appendChild(fill(
+    section(
+      'Guest information',
+      'Shown when a guest opens the treatment. All optional.'
+    ),
+    textarea({
+      name: 'benefits', label: 'Benefits', rows: 2, span: 6,
+      value: record?.benefits,
+      placeholder: 'Releases knots, improves mobility',
+    }),
+    textarea({
+      name: 'inclusions', label: 'What is included', rows: 2, span: 6,
+      value: record?.inclusions,
+      placeholder: 'Heated stones, full-body massage',
+    }),
+    textarea({
+      name: 'contraindications', label: 'Who should avoid this', rows: 2, span: 12,
+      value: record?.contraindications,
+      placeholder: 'Heat sensitivity, diabetic neuropathy, recent injuries',
+      hint: 'Shown prominently before booking. Worth filling in wherever it applies.',
+    }),
+    field({
+      name: 'complimentary_enhancement', label: 'Complimentary enhancement', span: 12,
+      value: record?.complimentary_enhancement,
+      placeholder: 'Scalp massage included',
+      hint: 'An extra that comes free with this treatment.',
+    }),
+  ));
+
   // --- Media ------------------------------------------------------
   body.appendChild(fill(
     section('Image', 'Landscape images at roughly 4:3 look best on the service cards.'),
@@ -307,7 +366,7 @@ export async function serviceFormPage(outlet, args) {
     id,
     redirectTo: '/services',
     successMessage: isEdit ? 'Service updated.' : 'Service created.',
-    transform: (payload) => {
+    transform: (payload, formEl) => {
       // image_alt belongs to the media row, not the service; strip it so the
       // server does not reject an unknown column.
       delete payload.image_alt;
@@ -317,6 +376,13 @@ export async function serviceFormPage(outlet, args) {
 
       if (payload.most_loved_rank) payload.most_loved_rank = Number(payload.most_loved_rank);
       if (payload.category_id) payload.category_id = Number(payload.category_id);
+
+      // The tiers carry no name attributes, so formValues() never saw them.
+      // An empty array is meaningful here — it means "this service no longer
+      // has tiers" — so only omit the key when the repeater is absent
+      // entirely, which tells the server to leave the tiers alone.
+      const variants = readRepeater(formEl, 'variants');
+      if (variants !== null) payload.variants = variants;
 
       return payload;
     },

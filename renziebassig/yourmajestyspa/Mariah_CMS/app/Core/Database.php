@@ -34,6 +34,15 @@ final class Database
             PDO::ATTR_STRINGIFY_FETCHES  => false,
         ]);
 
+        // NOW() and DEFAULT CURRENT_TIMESTAMP run on the session's time_zone,
+        // which otherwise inherits the MySQL daemon's own — usually UTC on
+        // shared hosting, while PHP is on the configured zone. Two clocks
+        // writing into the same tz-naive DATETIME columns is how a 15-minute
+        // login lockout becomes a four-hour one. The env zone is used here
+        // because the settings table cannot be read before this connection
+        // exists; Clock::boot() refines it from the setting immediately after.
+        Clock::applyTo(self::$pdo, Clock::envTimezone());
+
         return self::$pdo;
     }
 

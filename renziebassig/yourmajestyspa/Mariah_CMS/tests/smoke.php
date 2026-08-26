@@ -18,8 +18,10 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/config/bootstrap.php';
 
+use Mariah\Core\Clock;
 use Mariah\Core\Database;
 use Mariah\Core\Env;
+use Mariah\Repositories\SettingsRepository;
 
 if (PHP_SAPI !== 'cli') {
     http_response_code(403);
@@ -859,6 +861,257 @@ function templateCsv(array $header, array $rows): string
 }
 
 // =====================================================================
+section('Sub-categories, price tiers and add-ons');
+
+{
+    $parentId = null;
+    $childId  = null;
+    $addonId  = null;
+    $tieredId   = null;
+    $tieredSlug = '';
+
+    $parent = request('POST', '/categories', [
+        'name'   => 'Smoke Parent ' . bin2hex(random_bytes(3)),
+        'status' => 'inactive',
+    ]);
+    check('A top-level category is created', $parent['status'] === 201, describe($parent));
+    $parentId = $parent['body']['data']['id'] ?? null;
+
+    if ($parentId === null) {
+        skip('Sub-category checks', 'the parent category could not be created');
+    } else {
+        $child = request('POST', '/categories', [
+            'name'      => 'Smoke Child ' . bin2hex(random_bytes(3)),
+            'parent_id' => $parentId,
+            'status'    => 'inactive',
+        ]);
+        check('A sub-category is created under it', $child['status'] === 201, describe($child));
+        $childId = $child['body']['data']['id'] ?? null;
+
+        // The whole point of the two-level cap: the public site draws parents
+        // as tabs and children as headings, and has no third place to render.
+        $grandchild = request('POST', '/categories', [
+            'name'      => 'Smoke Grandchild ' . bin2hex(random_bytes(3)),
+            'parent_id' => $childId,
+            'status'    => 'inactive',
+        ]);
+        check(
+            'A third level is refused (422)',
+            $grandchild['status'] === 422
+                && !empty($grandchild['body']['error']['fields']['parent_id']),
+            describe($grandchild)
+        );
+
+        $selfParent = request('PUT', "/categories/{$childId}", ['parent_id' => $childId]);
+        check(
+            'A category cannot be its own parent (422)',
+            $selfParent['status'] === 422,
+            describe($selfParent)
+        );
+
+        $deleteParent = request('DELETE', "/categories/{$parentId}");
+        check(
+            'A category holding sub-categories cannot be deleted (409)',
+            $deleteParent['status'] === 409,
+            describe($deleteParent)
+        );
+
+        // --- add-ons, the two-prices-one-name case --------------------
+        $addonA = request('POST', '/addons', [
+            'name' => 'Smoke Aromatherapy', 'category_id' => $parentId, 'price' => 25,
+        ]);
+        $addonB = request('POST', '/addons', [
+            'name' => 'Smoke Aromatherapy', 'category_id' => $childId, 'price' => 20,
+        ]);
+        check(
+            'The same add-on name coexists under two categories at two prices',
+            $addonA['status'] === 201 && $addonB['status'] === 201
+                && ($addonA['body']['data']['price_label'] ?? null) === '+$25'
+                && ($addonB['body']['data']['price_label'] ?? null) === '+$20',
+            describe($addonA) . ' / ' . describe($addonB)
+        );
+        $addonId = $addonA['body']['data']['id'] ?? null;
+
+        // --- price tiers ----------------------------------------------
+        $tiered = request('POST', '/services', [
+            'name'        => 'Smoke Tiered Treatment ' . bin2hex(random_bytes(3)),
+            'category_id' => $childId,
+            'price'       => 999,
+            'status'      => 'inactive',
+            'variants'    => [
+                ['label' => '50 min',  'duration_minutes' => 50,  'price' => 150],
+                ['label' => '80 min',  'duration_minutes' => 80,  'price' => 180],
+                ['label' => '1h 50m',  'duration_minutes' => 110, 'price' => 210],
+            ],
+        ]);
+        check('A service saves with three price tiers', $tiered['status'] === 201, describe($tiered));
+        $tieredId = $tiered['body']['data']['id'] ?? null;
+        $tieredSlug = $tiered['body']['data']['slug'] ?? '';
+
+        if ($tieredId !== null) {
+            $createdServiceIds[] = (int) $tieredId;
+
+            $read = request('GET', "/services/{$tieredId}");
+            $variants = $read['body']['data']['variants'] ?? [];
+
+            check(
+                'The tiers round-trip in order',
+                count($variants) === 3
+                    && $variants[0]['label'] === '50 min'
+                    && $variants[2]['price'] === 210.0,
+                'Got: ' . json_encode(array_column($variants, 'label'))
+            );
+
+            // The mirror is what keeps every existing sort, filter and public
+            // query working without a join.
+            check(
+                'The cheapest tier is mirrored onto the parent row',
+                ($read['body']['data']['price'] ?? null) === 150.0
+                    && ($read['body']['data']['duration_minutes'] ?? null) === 50,
+                'price=' . json_encode($read['body']['data']['price'] ?? null)
+                    . ' duration=' . json_encode($read['body']['data']['duration_minutes'] ?? null)
+            );
+
+            check(
+                'A multi-tier service reads as a "from" price',
+                ($read['body']['data']['price_label'] ?? null) === 'from $150'
+                    && ($read['body']['data']['duration_label'] ?? null) === '50–110 min',
+                'price_label=' . json_encode($read['body']['data']['price_label'] ?? null)
+                    . ' duration_label=' . json_encode($read['body']['data']['duration_label'] ?? null)
+            );
+
+            $badTier = request('PUT', "/services/{$tieredId}", [
+                'variants' => [['label' => '', 'price' => 'not-a-number']],
+            ]);
+            check(
+                'A malformed tier is rejected onto its own cell (422)',
+                $badTier['status'] === 422
+                    && !empty($badTier['body']['error']['fields']['variants.0.price']),
+                describe($badTier)
+            );
+
+            $copy = request('POST', "/services/{$tieredId}/duplicate");
+            $copyId = $copy['body']['data']['id'] ?? null;
+            if ($copyId !== null) {
+                $createdServiceIds[] = (int) $copyId;
+                $copyRead = request('GET', "/services/{$copyId}");
+                check(
+                    'Duplicating a service copies its tiers',
+                    count($copyRead['body']['data']['variants'] ?? []) === 3,
+                    'Got ' . count($copyRead['body']['data']['variants'] ?? []) . ' tiers'
+                );
+            } else {
+                fail('Duplicating a service copies its tiers', describe($copy));
+            }
+
+            // --- what a guest actually sees ------------------------------
+            // The public endpoints show active records only, so everything
+            // has to come out of hiding for the checks below.
+            request('PATCH', "/categories/{$parentId}/status", ['status' => 'active']);
+            request('PATCH', "/categories/{$childId}/status", ['status' => 'active']);
+            request('PATCH', "/services/{$tieredId}/status", ['status' => 'active']);
+            request('PUT', "/services/{$tieredId}", [
+                'short_description' => 'Created by tests/smoke.php.',
+                'contraindications' => 'Heat sensitivity, diabetic neuropathy.',
+            ]);
+
+            $boot = request('GET', '/public/bootstrap');
+            $tab  = null;
+            foreach ($boot['body']['data']['categories'] ?? [] as $category) {
+                if ((int) $category['id'] === (int) $parentId) {
+                    $tab = $category;
+                }
+            }
+
+            check(
+                'The public menu nests the sub-category under its parent',
+                $tab !== null
+                    && count($tab['groups'] ?? []) === 1
+                    && (int) $tab['groups'][0]['id'] === (int) $childId,
+                'Got: ' . json_encode($tab === null ? null : array_column($tab['groups'] ?? [], 'name'))
+            );
+
+            check(
+                'A parent tab carries no services of its own, only the group',
+                $tab !== null && ($tab['services'] ?? null) === [],
+                'Got ' . count($tab['services'] ?? []) . ' loose services'
+            );
+
+            // The add-on menu is defined on Massage and has to reach a service
+            // filed under Signature Massage, or the guest never sees it.
+            $publicService = request('GET', '/public/services/' . $tieredSlug);
+            $addonNames    = array_column($publicService['body']['data']['addons'] ?? [], 'name');
+
+            check(
+                'A sub-category service inherits its parent add-on menu',
+                $publicService['status'] === 200 && in_array('Smoke Aromatherapy', $addonNames, true),
+                'Got: ' . json_encode($addonNames)
+            );
+
+            // The sub-category prices the same add-on lower, and its own must
+            // win — that is the whole reason add-ons are per-category rows.
+            $inherited = null;
+            foreach ($publicService['body']['data']['addons'] ?? [] as $addon) {
+                if ($addon['name'] === 'Smoke Aromatherapy') {
+                    $inherited = $addon['price_label'];
+                }
+            }
+            check(
+                'The sub-category price wins over the inherited one',
+                $inherited === '+$20',
+                'Got: ' . json_encode($inherited)
+            );
+
+            check(
+                'The detail endpoint carries the tiers and the safety copy',
+                count($publicService['body']['data']['variants'] ?? []) === 3
+                    && str_contains(
+                        (string) ($publicService['body']['data']['contraindications'] ?? ''),
+                        'Heat sensitivity'
+                    ),
+                describe($publicService)
+            );
+
+
+            // Clearing the tiers must leave the service on a single price.
+            request('PUT', "/services/{$tieredId}", ['variants' => []]);
+            $cleared = request('GET', "/services/{$tieredId}");
+            check(
+                'Clearing the tiers returns the service to a single price',
+                ($cleared['body']['data']['variants'] ?? null) === []
+                    && ($cleared['body']['data']['price_label'] ?? null) === '$150',
+                'price_label=' . json_encode($cleared['body']['data']['price_label'] ?? null)
+            );
+
+            // CASCADE: the tiers must not outlive the service.
+            request('PUT', "/services/{$tieredId}", [
+                'variants' => [['label' => '50 min', 'duration_minutes' => 50, 'price' => 150]],
+            ]);
+            Database::run('DELETE FROM services WHERE id = ?', [$tieredId]);
+            $orphans = (int) Database::fetchValue(
+                'SELECT COUNT(*) FROM service_variants WHERE service_id = ?',
+                [$tieredId]
+            );
+            check('Deleting a service cascades its tiers away', $orphans === 0, "{$orphans} left behind");
+            $createdServiceIds = array_values(array_diff($createdServiceIds, [(int) $tieredId]));
+        }
+
+        // --- teardown --------------------------------------------------
+        if ($addonId !== null) {
+            Database::run('DELETE FROM service_addons WHERE category_id IN (?, ?)', [$parentId, $childId]);
+        }
+        if (isset($copyId) && $copyId !== null) {
+            Database::run('DELETE FROM services WHERE id = ?', [$copyId]);
+            $createdServiceIds = array_values(array_diff($createdServiceIds, [(int) $copyId]));
+        }
+        if ($childId !== null) {
+            Database::run('DELETE FROM service_categories WHERE id = ?', [$childId]);
+        }
+        Database::run('DELETE FROM service_categories WHERE id = ?', [$parentId]);
+    }
+}
+
+// =====================================================================
 section('Site settings');
 
 $originalSheetUrl = null;
@@ -920,6 +1173,89 @@ $originalSheetUrl = null;
         ($me['body']['data']['config']['services_import_sheet_url'] ?? null) === $goodUrl,
         substr($me['raw'], 0, 300)
     );
+}
+
+// =====================================================================
+section('Timezone');
+
+$originalZone = null;
+
+{
+    // The headline assertion. Every timestamp column is DATETIME, so PHP and
+    // MySQL write bare wall-clock text into the same columns and compare it
+    // against each other. If the two clocks drift apart, audit log times, the
+    // login lockout window and the promotion day boundary all go wrong at once.
+    $mysqlNow = (string) Database::fetchValue('SELECT NOW()');
+    $drift    = abs(strtotime($mysqlNow) - time());
+
+    check(
+        'The MySQL and PHP clocks agree',
+        $drift < 60,
+        'MySQL says ' . $mysqlNow . ', PHP says ' . date('Y-m-d H:i:s')
+            . ' — ' . $drift . 's apart'
+    );
+
+    $current = request('GET', '/settings');
+    $zoneSetting = null;
+
+    foreach ($current['body']['data']['groups'] ?? [] as $group) {
+        foreach ($group['settings'] as $setting) {
+            if ($setting['key'] === 'site_timezone') {
+                $zoneSetting = $setting;
+            }
+        }
+    }
+
+    check(
+        'The timezone is offered as a populated dropdown',
+        ($zoneSetting['type'] ?? null) === 'select' && count($zoneSetting['options'] ?? []) > 100,
+        'Got: ' . json_encode($zoneSetting === null ? null : [
+            'type'    => $zoneSetting['type'] ?? null,
+            'options' => count($zoneSetting['options'] ?? []),
+        ])
+    );
+
+    $originalZone = $current['body']['data']['values']['site_timezone'] ?? null;
+
+    $badZone = request('PUT', '/settings', ['site_timezone' => 'Mars/Olympus_Mons']);
+    check(
+        'An unrecognised timezone is rejected onto its own field',
+        $badZone['status'] === 422 && !empty($badZone['body']['error']['fields']['site_timezone']),
+        'HTTP ' . $badZone['status'] . ' — ' . substr($badZone['raw'], 0, 300)
+    );
+
+    // Deliberately far from America/New_York, so a clock that ignored the
+    // setting could not pass by coincidence.
+    $savedZone = request('PUT', '/settings', ['site_timezone' => 'Asia/Manila']);
+    check(
+        'A valid timezone saves',
+        $savedZone['status'] === 200
+            && ($savedZone['body']['data']['values']['site_timezone'] ?? null) === 'Asia/Manila',
+        'HTTP ' . $savedZone['status'] . ' — ' . substr($savedZone['raw'], 0, 300)
+    );
+
+    // This process has its own connection, pinned to the env zone at connect
+    // time. Re-booting Clock is what the API front controller does on every
+    // request, so this exercises the same path the application takes.
+    SettingsRepository::forget();
+    Clock::forget();
+    Clock::boot();
+
+    $manilaNow  = (string) Database::fetchValue('SELECT NOW()');
+    $manilaReal = (new \DateTimeImmutable('now', new \DateTimeZone('Asia/Manila')))
+        ->format('Y-m-d H:i:s');
+
+    check(
+        'Booting the clock moves the MySQL session with it',
+        abs(strtotime($manilaNow) - strtotime($manilaReal)) < 120,
+        'MySQL says ' . $manilaNow . ', Manila is ' . $manilaReal
+    );
+
+    if ($originalZone !== null) {
+        request('PUT', '/settings', ['site_timezone' => $originalZone]);
+        Clock::forget();
+        Clock::boot();
+    }
 }
 
 // =====================================================================
@@ -1041,15 +1377,39 @@ if ($demoEditor === null || $demoAdmin === null) {
             describe($editorSettingsWrite)
         );
 
+        // Import is bulk create+edit, which an Editor already holds one record
+        // at a time, so the guard lets them through. The request still fails —
+        // on content, not on authorization: either the link path is switched
+        // off, or GoogleSheetUrl refuses a non-Google host. Both are 422, and
+        // the point of the check is that it is no longer 403.
         $editorImport = request('POST', '/services/import', [
             'source_url' => 'https://example.com/x',
             'dry_run'    => '1',
         ]);
         check(
-            'An Editor cannot bulk import services (403)',
-            $editorImport['status'] === 403,
+            'An Editor reaches the import endpoint (422, not 403)',
+            $editorImport['status'] === 422,
             describe($editorImport)
         );
+
+        if ($importCategory === null) {
+            skip('An Editor CAN preview a CSV import (200)', 'no active service category');
+        } else {
+            $editorCsv = "name,category,price,status\n"
+                . 'Editor Import Smoke ' . bin2hex(random_bytes(3))
+                . ',"' . str_replace('"', '""', $categoryName) . "\",75,inactive\n";
+
+            // Dry run only: this block asserts access, and must not leave rows
+            // behind for the cleanup at the end to chase.
+            $editorPreview = importCsv($editorCsv, false);
+
+            check(
+                'An Editor CAN preview a CSV import (200)',
+                $editorPreview['status'] === 200
+                    && ($editorPreview['body']['data']['summary']['create'] ?? null) === 1,
+                'HTTP ' . $editorPreview['status'] . ' — ' . substr($editorPreview['raw'], 0, 300)
+            );
+        }
 
         $target = $createdServiceIds[0] ?? 1;
         $editorDelete = request('DELETE', "/services/{$target}");
@@ -1089,6 +1449,38 @@ if ($demoEditor === null || $demoAdmin === null) {
             describe($adminEditsRole)
         );
 
+        // The timezone is narrower than settings.edit. These two together are
+        // the point: the restriction is per key, not a blanket lockout of the
+        // settings screen, which the Admin still holds settings.edit for.
+        $adminTimezone = request('PUT', '/settings', ['site_timezone' => 'Asia/Manila']);
+        check(
+            'An Admin cannot change the timezone (403)',
+            $adminTimezone['status'] === 403,
+            describe($adminTimezone)
+        );
+
+        $adminOtherSetting = request('PUT', '/settings', ['services_import_url_enabled' => 1]);
+        check(
+            'An Admin CAN still change other settings (200)',
+            $adminOtherSetting['status'] === 200,
+            describe($adminOtherSetting)
+        );
+
+        $adminSeesTimezone = request('GET', '/settings');
+        $editableFlag = null;
+        foreach ($adminSeesTimezone['body']['data']['groups'] ?? [] as $group) {
+            foreach ($group['settings'] as $setting) {
+                if ($setting['key'] === 'site_timezone') {
+                    $editableFlag = $setting['editable'];
+                }
+            }
+        }
+        check(
+            'An Admin sees the timezone but is told it is not editable',
+            $editableFlag === false,
+            'editable was: ' . var_export($editableFlag, true)
+        );
+
         $adminServices = request('GET', '/services');
         check('An Admin CAN list services (200)', $adminServices['status'] === 200, describe($adminServices));
     }
@@ -1104,6 +1496,15 @@ if ($demoEditor === null || $demoAdmin === null) {
             'name' => 'Staff should not create', 'category_id' => $categoryId, 'price' => 10,
         ]);
         check('Staff cannot create a service (403)', $staffCreate['status'] === 403, describe($staffCreate));
+
+        // Import reaches Editor but stops there: it is a write, and Staff is
+        // read-only. Guards the one place widening the permission could have
+        // leaked past $viewOnly.
+        $staffImport = request('POST', '/services/import', [
+            'source_url' => 'https://example.com/x',
+            'dry_run'    => '1',
+        ]);
+        check('Staff cannot bulk import services (403)', $staffImport['status'] === 403, describe($staffImport));
     } else {
         skip('Staff read-only checks', 'demo staff account not available');
     }

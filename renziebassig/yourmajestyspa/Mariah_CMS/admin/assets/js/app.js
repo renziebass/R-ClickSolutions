@@ -14,6 +14,7 @@ import { notify } from './ui/feedback.js';
 import { dashboardPage } from './pages/dashboard.js';
 import { servicesPage, serviceFormPage } from './pages/services.js';
 import { serviceImportPage } from './pages/services-import.js';
+import { addonFormPage, addonsPage } from './pages/addons.js';
 import { categoriesPage, categoryFormPage } from './pages/categories.js';
 import { promotionsPage, promotionFormPage } from './pages/promotions.js';
 import { specialsPage, specialFormPage } from './pages/specials.js';
@@ -48,6 +49,7 @@ const NAV = [
     items: [
       { label: 'Services', path: '/services', iconName: 'i-sparkle', permission: 'services.view' },
       { label: 'Categories', path: '/categories', iconName: 'i-folder', permission: 'categories.view' },
+      { label: 'Add-ons', path: '/addons', iconName: 'i-plus', permission: 'services.view' },
       { label: 'Promotions', path: '/promotions', iconName: 'i-tag', permission: 'promotions.view' },
       { label: 'Specials', path: '/specials', iconName: 'i-star', permission: 'specials.view' },
       { label: 'Blog posts', path: '/blog-posts', iconName: 'i-post', permission: 'blog_posts.view' },
@@ -90,6 +92,9 @@ const CRUMBS = {
   '/categories': ['Content', 'Categories'],
   '/categories/new': ['Content', 'Categories', 'Add category'],
   '/categories/:id/edit': ['Content', 'Categories', 'Edit category'],
+  '/addons': ['Content', 'Add-ons'],
+  '/addons/new': ['Content', 'Add-ons', 'Add add-on'],
+  '/addons/:id/edit': ['Content', 'Add-ons', 'Edit add-on'],
   '/promotions': ['Content', 'Promotions'],
   '/promotions/new': ['Content', 'Promotions', 'Add promotion'],
   '/promotions/:id/edit': ['Content', 'Promotions', 'Edit promotion'],
@@ -180,6 +185,11 @@ function registerRoutes() {
   route('/categories', categoriesPage, { permission: 'categories.view' });
   route('/categories/new', categoryFormPage, { permission: 'categories.create' });
   route('/categories/:id/edit', categoryFormPage, { permission: 'categories.edit' });
+
+  // Add-ons ride on the services permissions — they are lines on the same menu.
+  route('/addons', addonsPage, { permission: 'services.view' });
+  route('/addons/new', addonFormPage, { permission: 'services.create' });
+  route('/addons/:id/edit', addonFormPage, { permission: 'services.edit' });
 
   route('/promotions', promotionsPage, { permission: 'promotions.view' });
   route('/promotions/new', promotionFormPage, { permission: 'promotions.create' });

@@ -40,9 +40,15 @@ export async function categoriesPage(outlet) {
       { key: 'image', label: 'Image', width: '70px', render: (row) => thumbCell(row) },
       {
         key: 'name', label: 'Category', sortable: true,
+        // The parent name, not the description, is the useful second line once
+        // categories nest: "Signature Massage" alone does not say where it sits.
         render: (row) => `
-          <span class="cell-title">${esc(row.name)}</span>
-          <span class="cell-sub">${esc(row.description || row.slug)}</span>
+          <span class="cell-title">${row.parent_name ? '— ' : ''}${esc(row.name)}</span>
+          <span class="cell-sub">${esc(
+            row.parent_name
+              ? `in ${row.parent_name}`
+              : (row.children_count ? `${row.children_count} sub-categories` : (row.description || row.slug))
+          )}</span>
         `,
       },
       {
@@ -104,6 +110,18 @@ export async function categoryFormPage(outlet, args) {
     saveLabel: isEdit ? 'Save changes' : 'Create category',
   });
 
+  // Only top-level categories can be parents, and a category that already has
+  // children cannot become one — both are enforced on the server too. Offering
+  // an impossible choice here would just produce a 422.
+  const parentOptions = (await api.get('/categories/options')).data
+    .filter((row) => !row.depth && row.id !== id)
+    .map((row) => ({
+      value: row.id,
+      label: row.name + (row.status === 'inactive' ? ' (inactive)' : ''),
+    }));
+
+  const hasChildren = (record?.children_count || 0) > 0;
+
   body.appendChild(fill(
     section('Category details'),
     field({
@@ -113,6 +131,16 @@ export async function categoryFormPage(outlet, args) {
     field({
       name: 'slug', label: 'URL slug', span: 4, value: record?.slug,
       hint: 'Leave blank to generate from the name.',
+    }),
+    select({
+      name: 'parent_id', label: 'Parent category', span: 6,
+      value: record?.parent_id || '',
+      options: hasChildren ? [] : parentOptions,
+      placeholder: 'None — this is a top-level category',
+      hint: hasChildren
+        ? 'This category has sub-categories of its own, so it must stay top level.'
+        : 'Top-level categories become the tabs on the website. A sub-category '
+          + 'becomes a heading inside its parent’s tab.',
     }),
     textarea({
       name: 'description', label: 'Description', rows: 3, span: 12,
@@ -170,6 +198,7 @@ export async function categoryFormPage(outlet, args) {
     successMessage: isEdit ? 'Category updated.' : 'Category created.',
     transform: (payload) => {
       payload.media_id = payload.media_id ? Number(payload.media_id) : null;
+      payload.parent_id = payload.parent_id ? Number(payload.parent_id) : null;
       clearOptionCache();   // the category select on other forms is now stale
       return payload;
     },

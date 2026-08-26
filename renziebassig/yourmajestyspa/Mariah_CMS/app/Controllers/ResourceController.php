@@ -68,6 +68,15 @@ abstract class ResourceController
     {
     }
 
+    /**
+     * Copies whatever duplicate() could not: child rows, join tables, anything
+     * outside the fillable column list. Without this a copy silently loses its
+     * relations, which is the worst way to lose them.
+     */
+    protected function afterDuplicate(int $newId, int $sourceId): void
+    {
+    }
+
     /** Throws if the record must not be deleted (e.g. still referenced). */
     protected function assertDeletable(array $row): void
     {
@@ -271,6 +280,9 @@ abstract class ResourceController
         }
 
         $newId = $repository->create($copy);
+
+        $this->afterDuplicate($newId, $id);
+
         $title = $this->titleOf($repository->findOrFail($newId));
 
         AuditLogger::record(

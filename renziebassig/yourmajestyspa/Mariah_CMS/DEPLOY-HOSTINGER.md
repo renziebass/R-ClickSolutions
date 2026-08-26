@@ -168,9 +168,15 @@ SETUP_TOKEN=
    should report as applied.
 
 5. **Step 3 — Roles, administrator and content.** Confirm the admin email, set a
-   password, and click **Seed roles, administrator and content**.
+   password, **choose the timezone**, and click **Seed roles, administrator and content**.
    Leave the demo accounts off unless you want to test role restrictions — they share a
    password that is published in this repository.
+
+   The timezone matters more than it looks: Hostinger's MySQL runs on UTC, and without
+   this setting the audit log timestamps and the login lockout window would both be
+   several hours out. Pick the spa's own zone (`America/New_York`). If you get it wrong,
+   the **Timezone** card further down `setup.php` fixes it, and afterwards a Super Admin
+   can change it under **Settings → Site settings**.
 
 6. **Step 4 — Finish up**, then follow Step 6 below.
 
