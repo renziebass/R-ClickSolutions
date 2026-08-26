@@ -10,34 +10,11 @@ import { api } from '../api.js';
 import { navigate } from '../router.js';
 import { session } from '../session.js';
 import { el, esc, icon, money } from '../ui/dom.js';
-import { confirmDialog, emptyState, notify, withBusy } from '../ui/feedback.js';
+import { confirmDialog, emptyState, errorState, notify, withBusy } from '../ui/feedback.js';
 import { clearOptionCache, pageHead } from './helpers.js';
+import { templatePanel } from './services-template.js';
 
 const MAX_BYTES = 2 * 1024 * 1024;
-
-/**
- * Mirrors ServiceCsvSchema::columns() in PHP, which is the source of truth.
- * Drift is self-revealing: a renamed column shows up as "ignored" on the very
- * next preview.
- */
-const COLUMNS = [
-  ['name', true, 'The service name, 2 to 190 characters.'],
-  ['category', true, 'An existing category name or slug. The import never creates categories.'],
-  ['price', true, 'A number. "$1,250.00" and "1250" are both accepted.'],
-  ['slug', false, 'Matches the row to an existing service. Blank means "match on the name".'],
-  ['short_description', false, 'One line under the name on the website. Max 500 characters.'],
-  ['description', false, 'The full description shown when the card is opened.'],
-  ['price_display', false, 'Overrides the price on the website, e.g. "from $150".'],
-  ['promo_price', false, 'Must be lower than the price.'],
-  ['duration_minutes', false, 'Whole minutes, up to 1440.'],
-  ['duration_display', false, 'Overrides the duration, e.g. "1 hr & 40 mins".'],
-  ['icon_key', false, 'i-hands, i-leaf, i-drop, i-stone, i-boat, i-crown, i-spark or i-gift.'],
-  ['booking_url', false, 'The Booker.com link for this treatment.'],
-  ['status', false, 'active or inactive. Defaults to active on new services.'],
-  ['featured', false, 'yes or no.'],
-  ['most_loved_rank', false, '1, 2 or 3. Only one service can hold each rank.'],
-  ['display_order', false, 'Lower numbers appear first. Blank follows the file order.'],
-];
 
 const ACTION_PILLS = {
   create: ['pill pill--ok', 'Create'],
@@ -53,6 +30,11 @@ export async function serviceImportPage(outlet) {
   let sourceUrl = '';
   let source = 'file';
 
+  // Kept in the closure so the template panel survives a re-render of the
+  // chooser — someone who opened it, downloaded a CSV, uploaded and hit an
+  // error should not have to open it again.
+  let templateOpen = false;
+
   outlet.appendChild(pageHead({
     title: 'Import services from CSV',
     description: 'Add new services and update existing ones from a spreadsheet. '
@@ -61,6 +43,31 @@ export async function serviceImportPage(outlet) {
 
   const stage = el('<div></div>');
   outlet.appendChild(stage);
+
+  stage.replaceChildren(el(`
+    <div class="card"><div class="card__body">
+      <p class="muted" style="text-align:center;padding:2rem 0">Loading…</p>
+    </div></div>
+  `));
+
+  // The column contract comes from ServiceCsvSchema via the API, so the admin
+  // never keeps its own copy of the list. Fetched once, up front, which keeps
+  // renderChooser() synchronous for its four call sites.
+  let options;
+
+  try {
+    options = (await api.get('/services/form-options')).data;
+  } catch (error) {
+    const card = el('<div class="card"><div class="card__body"></div></div>');
+    card.querySelector('.card__body').appendChild(errorState(
+      error.message || 'The import columns could not be loaded.',
+      () => serviceImportPage(outlet)
+    ));
+    // Rendering a dropzone with no stated columns would let someone upload a
+    // file against a contract nobody showed them.
+    outlet.replaceChildren(card);
+    return;
+  }
 
   // ---------------------------------------------------------------
   // Step 1 — choose a file
@@ -85,6 +92,7 @@ export async function serviceImportPage(outlet) {
             </table>
           </div>
           <div class="mt-3" data-slot="actions"></div>
+          <div class="mt-3" data-slot="template" hidden></div>
           <div class="mt-3" data-slot="drop"></div>
         </div>
       </div>
@@ -92,25 +100,45 @@ export async function serviceImportPage(outlet) {
 
     const tbody = card.querySelector('tbody');
 
-    COLUMNS.forEach(([key, required, help]) => {
+    options.columns.forEach((column) => {
       tbody.appendChild(el(`
         <tr>
-          <td data-label="Column"><span class="cell-title">${esc(key)}</span></td>
-          <td data-label="Required">${required
+          <td data-label="Column"><span class="cell-title">${esc(column.key)}</span></td>
+          <td data-label="Required">${column.required
             ? '<span class="pill pill--warn">Required</span>'
             : '<span class="pill pill--plain">Optional</span>'}</td>
-          <td data-label="Notes"><span class="cell-sub">${esc(help)}</span></td>
+          <td data-label="Notes"><span class="cell-sub">${esc(column.help)}</span></td>
         </tr>
       `));
     });
 
     const actions = card.querySelector('[data-slot="actions"]');
+    const templateSlot = card.querySelector('[data-slot="template"]');
 
-    const templateButton = el(
-      `<button type="button" class="btn btn--ghost">${icon('i-upload', 15)} Download blank template</button>`
+    const toggle = el(
+      `<button type="button" class="btn btn--ghost">${icon('i-copy', 15)} Start from a template</button>`
     );
-    templateButton.addEventListener('click', downloadTemplate);
-    actions.appendChild(templateButton);
+    toggle.setAttribute('aria-expanded', String(templateOpen));
+
+    const openTemplatePanel = () => {
+      if (!templateSlot.firstChild) templateSlot.appendChild(templatePanel(options));
+      templateSlot.hidden = false;
+    };
+
+    toggle.addEventListener('click', () => {
+      templateOpen = !templateOpen;
+      toggle.setAttribute('aria-expanded', String(templateOpen));
+
+      if (templateOpen) {
+        openTemplatePanel();
+      } else {
+        templateSlot.hidden = true;
+      }
+    });
+
+    actions.appendChild(toggle);
+
+    if (templateOpen) openTemplatePanel();
 
     // Only when an Admin has configured a template under Settings. An anchor
     // rather than a button so middle-click and "open in new tab" work.
@@ -505,10 +533,9 @@ export async function serviceImportPage(outlet) {
 /**
  * The "make a copy" link for a stored Sheets URL, or null.
  *
- * Mirrors GoogleSheetUrl::copyUrl() in PHP — a small duplication of the same
- * kind as the COLUMNS const above, and self-revealing in the same way: a link
- * that does not parse produces no button, and a wrong one produces an
- * immediate Google 404.
+ * Mirrors GoogleSheetUrl::copyUrl() in PHP. A small, self-revealing
+ * duplication: a link that does not parse produces no button at all, and a
+ * wrong one produces an immediate Google 404.
  */
 function sheetCopyUrl(stored) {
   if (!stored) return null;
@@ -661,35 +688,4 @@ function buildCsvDropzone(onFile) {
   });
 
   return zone;
-}
-
-/**
- * The template is built here rather than served, so it needs no endpoint and
- * no non-JSON response path. The leading BOM is what makes Excel open it as
- * UTF-8 — and is the same BOM the importer strips on the way back in.
- */
-function downloadTemplate() {
-  const headers = COLUMNS.map(([key]) => key);
-
-  const examples = [
-    ['Hot Stone Massage', 'Massages', '165', '', 'Warm basalt stones melt deep tension.',
-     '', '', '', '80', '', 'i-stone', '', 'active', 'yes', '', ''],
-    ['Signature Facial', 'Facials', '140', '', 'A tailored deep-cleansing facial.',
-     '', '', '', '60', '', 'i-drop', '', 'active', 'no', '', ''],
-  ];
-
-  const escapeCell = (value) => (/[",\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value);
-
-  const csv = '﻿'
-    + [headers, ...examples].map((row) => row.map(escapeCell).join(',')).join('\r\n')
-    + '\r\n';
-
-  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-  const link = el(`<a href="${url}" download="majesty-services-template.csv" style="display:none"></a>`);
-
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-
-  URL.revokeObjectURL(url);
 }

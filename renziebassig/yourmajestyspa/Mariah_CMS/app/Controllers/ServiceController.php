@@ -74,12 +74,19 @@ final class ServiceController extends ResourceController
         return ['images' => $this->services->images((int) $row['id'])];
     }
 
-    /** Category and icon choices for the add/edit form. */
+    /**
+     * Vocabularies the add/edit form and the import screen both need.
+     *
+     * `columns` makes ServiceCsvSchema the single source of truth for the
+     * import contract: the admin renders the column reference and builds
+     * templates from this, rather than keeping its own copy of the list.
+     */
     public function formOptions(Request $request): never
     {
         Response::json([
             'categories' => (new CategoryRepository())->options(),
             'icons'      => ServiceCsvSchema::iconChoices(),
+            'columns'    => ServiceCsvSchema::columns(),
         ]);
     }
 

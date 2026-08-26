@@ -7,16 +7,6 @@ import { applyErrors, clearErrors, field, fill, formValues, section, switchField
 import { notify, withBusy } from '../ui/feedback.js';
 import { pageHead } from './helpers.js';
 
-/**
- * The header row for the Google Sheets template, tab-separated so that pasting
- * it into cell A1 spreads it across the columns. A comma-separated line would
- * land in a single cell — the single most likely mistake in the setup.
- */
-const SHEET_HEADER_ROW = [
-  'name', 'category', 'price', 'slug', 'short_description', 'description',
-  'price_display', 'promo_price', 'duration_minutes', 'duration_display',
-  'icon_key', 'booking_url', 'status', 'featured', 'most_loved_rank', 'display_order',
-].join('\t');
 
 export async function settingsPage(outlet) {
   outlet.appendChild(pageHead({
@@ -133,9 +123,16 @@ async function siteSettingsCard() {
   return card;
 }
 
-/** The one-time setup the CMS cannot do for you — it cannot create a Sheet. */
+/**
+ * The one-time setup the CMS cannot do for you — Google has no URL that
+ * creates a sheet with content in it.
+ *
+ * The sheet's *contents* come from the import screen's template generator, so
+ * the column list lives in exactly one place (ServiceCsvSchema, served through
+ * /services/form-options) rather than being copied here as well.
+ */
 function sheetSetupBlock() {
-  const block = el(`
+  return el(`
     <div class="mt-3" style="border-top:1px solid var(--line);padding-top:1.25rem">
       <h4 style="margin:0 0 .5rem;font-size:.95rem">Setting up the Google Sheets template</h4>
       <p class="muted" style="font-size:.87rem;margin-top:0">
@@ -143,37 +140,19 @@ function sheetSetupBlock() {
       </p>
       <ol class="muted" style="font-size:.87rem;padding-left:1.2rem;line-height:1.7">
         <li>Open <b>sheets.google.com</b> and create a blank spreadsheet.</li>
-        <li>Click cell <b>A1</b> and paste the header row below. It is tab-separated,
-            which is what spreads it across sixteen columns.</li>
+        <li>Go to <a href="#/services/import">Services → Import</a>, open
+            <b>Start from a template</b> and click <b>Copy blank template</b>.
+            Back in your sheet, click cell <b>A1</b> and paste.</li>
         <li>Choose <b>Share → General access → Anyone with the link → Viewer</b>,
             then <b>Copy link</b>.</li>
         <li>Paste that link into <b>Google Sheets template link</b> above and save.</li>
       </ol>
-      <pre style="overflow-x:auto;background:var(--surface-2);border:1px solid var(--line);
-                  border-radius:var(--r);padding:.75rem;font-size:.78rem;margin:0"></pre>
-      <button type="button" class="btn btn--ghost btn--sm mt-2">Copy header row</button>
       <p class="muted" style="font-size:.82rem;margin-top:.75rem">
         Anyone holding the link will be able to read that sheet. For a blank template
         that is fine; keep anything private out of it.
       </p>
     </div>
   `);
-
-  block.querySelector('pre').textContent = SHEET_HEADER_ROW;
-
-  const copyButton = block.querySelector('button');
-
-  copyButton.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(SHEET_HEADER_ROW);
-      notify.ok('Header row copied. Paste it into cell A1.');
-    } catch {
-      // Clipboard access needs a secure context; the <pre> stays selectable.
-      notify.warn('Could not copy automatically — select the row above and copy it.');
-    }
-  });
-
-  return block;
 }
 
 function accountCard() {

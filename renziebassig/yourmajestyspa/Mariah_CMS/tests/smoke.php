@@ -663,6 +663,202 @@ if ($importCategory === null) {
 }
 
 // =====================================================================
+section('Template generator round-trip');
+
+/**
+ * Rebuilds in PHP exactly what admin/assets/js/pages/services-template.js
+ * builds in the browser. Kept literal rather than clever — the point is to
+ * encode the same decisions, so a divergence fails loudly.
+ */
+function templateCell(array $service, string $key): string
+{
+    if ($key === 'category') {
+        return (string) ($service['category_name'] ?? '');
+    }
+
+    if ($key === 'featured') {
+        return $service['featured'] ? 'yes' : 'no';
+    }
+
+    $value = $service[$key] ?? null;
+
+    if ($value === null || $value === '') {
+        return '';
+    }
+
+    if (in_array($key, ['price', 'promo_price', 'duration_minutes', 'most_loved_rank', 'display_order'], true)) {
+        return is_numeric($value) ? (string) (0 + $value) : '';
+    }
+
+    return (string) $value;
+}
+
+function templateCsv(array $header, array $rows): string
+{
+    $escape = static function (string $value): string {
+        return preg_match('/["\r\n,]/', $value) === 1
+            ? '"' . str_replace('"', '""', $value) . '"'
+            : $value;
+    };
+
+    $lines = [];
+
+    foreach (array_merge([$header], $rows) as $row) {
+        $lines[] = implode(',', array_map($escape, $row));
+    }
+
+    return "\xEF\xBB\xBF" . implode("\r\n", $lines) . "\r\n";
+}
+
+{
+    $formOptions = request('GET', '/services/form-options');
+    $columns     = $formOptions['body']['data']['columns'] ?? [];
+
+    check(
+        'GET /services/form-options carries the import columns',
+        $formOptions['status'] === 200
+            && array_column($columns, 'key') === \Mariah\Services\ServiceCsvSchema::columnKeys()
+            && isset($formOptions['body']['data']['categories'], $formOptions['body']['data']['icons']),
+        'HTTP ' . $formOptions['status'] . ' — ' . substr($formOptions['raw'], 0, 300)
+    );
+
+    $header = array_column($columns, 'key');
+
+    $listed   = request('GET', '/services?per_page=100&sort=id&direction=asc');
+    $services = $listed['body']['data'] ?? [];
+    $total    = $listed['body']['meta']['total'] ?? count($services);
+
+    // Each of these is asserted on its own below; letting one fail the
+    // round-trip would hide which decision actually broke.
+    $noCategory = array_filter($services, static fn (array $s): bool => ($s['category_name'] ?? null) === null);
+    $oddIcons   = array_filter($services, static fn (array $s): bool =>
+        ($s['icon_key'] ?? null) !== null
+        && !in_array($s['icon_key'], \Mariah\Services\ServiceCsvSchema::iconKeys(), true));
+
+    if ($services === []) {
+        skip('Generated sheet re-imports with every row unchanged', 'no services to export');
+    } elseif ($total > \Mariah\Services\ServiceCsvSchema::MAX_ROWS) {
+        skip('Generated sheet re-imports with every row unchanged', "{$total} services exceeds the import cap");
+    } elseif ($noCategory !== []) {
+        skip('Generated sheet re-imports with every row unchanged',
+             count($noCategory) . ' service(s) have a deleted category');
+    } elseif ($oddIcons !== []) {
+        // Pre-existing importer behaviour: an unknown icon_key normalises to
+        // null, so such a row round-trips as an update that clears the icon.
+        skip('Generated sheet re-imports with every row unchanged',
+             count($oddIcons) . ' service(s) carry an icon_key outside the catalogue');
+    } else {
+        $rows = [];
+        foreach ($services as $service) {
+            $rows[] = array_map(static fn (string $key): string => templateCell($service, $key), $header);
+        }
+
+        $before     = serviceCount();
+        $roundTrip  = importCsv(templateCsv($header, $rows), false);
+        $summary    = $roundTrip['body']['data']['summary'] ?? [];
+
+        // One assertion pinning column order, the category header spelling,
+        // bool→yes/no, float→plain digits, null→blank, the CSV escaping, the
+        // BOM and CRLF all at once.
+        check(
+            'Generated sheet re-imports with every row unchanged',
+            $roundTrip['status'] === 200
+                && ($summary['create'] ?? -1) === 0
+                && ($summary['update'] ?? -1) === 0
+                && ($summary['error'] ?? -1) === 0
+                && ($summary['unchanged'] ?? -1) === count($rows),
+            'summary: ' . json_encode($summary) . ' — '
+                . json_encode(array_slice($roundTrip['body']['data']['rows'] ?? [], 0, 2))
+        );
+
+        check('The round-trip preview wrote nothing', serviceCount() === $before);
+
+        // A direct regression guard against anyone reaching for money(),
+        // which would emit "$1,250.00" and drift through Sheets' formatting.
+        $priced = null;
+        foreach ($services as $service) {
+            if ((float) $service['price'] > 0) { $priced = $service; break; }
+        }
+
+        if ($priced === null) {
+            skip('Prices export as plain digits', 'no priced service to check');
+        } else {
+            $csv = templateCsv($header, [array_map(
+                static fn (string $key): string => templateCell($priced, $key),
+                $header
+            )]);
+
+            check(
+                'Prices export as plain digits, not currency text',
+                str_contains($csv, ',' . (0 + $priced['price']) . ',') && !str_contains($csv, '$'),
+                'Generated: ' . substr($csv, 0, 200)
+            );
+        }
+    }
+
+    if ($noCategory !== []) {
+        $first = reset($noCategory);
+        $row   = array_map(static fn (string $key): string => templateCell($first, $key), $header);
+        $bad   = importCsv(templateCsv($header, [$row]), false);
+
+        check(
+            'A service whose category was deleted is rejected, naming the column',
+            ($bad['body']['data']['summary']['error'] ?? 0) === 1
+                && str_contains(
+                    (string) ($bad['body']['data']['rows'][0]['errors']['category'] ?? ''),
+                    'Category is required'
+                ),
+            substr($bad['raw'], 0, 300)
+        );
+    }
+
+    // The blank template must import cleanly — today's hardcoded examples used
+    // categories that may not exist, so it could fail its own first import.
+    $categories = $formOptions['body']['data']['categories'] ?? [];
+    $icons      = $formOptions['body']['data']['icons'] ?? [];
+
+    if ($categories === [] || $icons === []) {
+        skip('The blank template imports cleanly', 'no categories or icons defined');
+    } else {
+        $active = null;
+        foreach ($categories as $category) {
+            if (($category['status'] ?? '') === 'active') { $active = $category; break; }
+        }
+        $active ??= $categories[0];
+
+        $iconKeys = array_column($icons, 'key');
+        $seed     = [
+            ['name' => 'EXAMPLE — Hot Stone Massage', 'price' => '165', 'duration_minutes' => '80',
+             'icon_key' => in_array('i-stone', $iconKeys, true) ? 'i-stone' : $iconKeys[0],
+             'short_description' => 'Warm basalt stones melt deep tension.'],
+            ['name' => 'EXAMPLE — Signature Facial', 'price' => '140', 'duration_minutes' => '60',
+             'icon_key' => in_array('i-drop', $iconKeys, true) ? 'i-drop' : $iconKeys[0],
+             'short_description' => 'A tailored deep-cleansing facial.'],
+        ];
+
+        $exampleRows = [];
+        foreach ($seed as $example) {
+            $exampleRows[] = array_map(static function (string $key) use ($example, $active): string {
+                if ($key === 'category') return (string) $active['name'];
+                if ($key === 'status')   return 'inactive';
+                if ($key === 'featured') return 'no';
+                return (string) ($example[$key] ?? '');
+            }, $header);
+        }
+
+        $template = importCsv(templateCsv($header, $exampleRows), false);
+
+        check(
+            'The blank template imports cleanly as two inactive services',
+            ($template['body']['data']['summary']['error'] ?? 1) === 0
+                && ($template['body']['data']['summary']['create'] ?? 0) === 2,
+            'summary: ' . json_encode($template['body']['data']['summary'] ?? null)
+                . ' — ' . substr($template['raw'], 0, 300)
+        );
+    }
+}
+
+// =====================================================================
 section('Site settings');
 
 $originalSheetUrl = null;
