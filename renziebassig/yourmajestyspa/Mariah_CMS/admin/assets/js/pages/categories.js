@@ -166,7 +166,7 @@ export async function categoryFormPage(outlet, args) {
   body.appendChild(fill(
     section('Image'),
     mediaField({
-      name: 'media_id', label: 'Category image', span: 12,
+      name: 'media_id', label: 'Category image', span: 12, folder: 'categories',
       value: record?.media_id, imageUrl: record?.image_url,
     }),
   ));

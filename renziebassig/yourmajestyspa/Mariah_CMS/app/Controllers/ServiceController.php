@@ -10,6 +10,7 @@ use Mariah\Repositories\BaseRepository;
 use Mariah\Repositories\CategoryRepository;
 use Mariah\Repositories\ServiceRepository;
 use Mariah\Repositories\SettingsRepository;
+use Mariah\Services\MediaFiler;
 use Mariah\Services\ServiceCsvSchema;
 use Mariah\Services\ServiceImporter;
 
@@ -25,6 +26,7 @@ final class ServiceController extends ResourceController
     protected function repository(): BaseRepository { return $this->services; }
     protected function label(): string              { return 'Service'; }
     protected function entityType(): string         { return 'service'; }
+    protected function mediaFolder(): ?string       { return 'services'; }
 
     // Rules, labels and the business checks live in ServiceCsvSchema so the
     // admin form and the CSV importer cannot drift apart.
@@ -79,6 +81,24 @@ final class ServiceController extends ResourceController
         $variants = $request->input('variants');
         if (is_array($variants)) {
             $this->services->syncVariants($id, $this->validVariants($variants));
+        }
+    }
+
+    /**
+     * Gallery images are service photos too, so they file alongside the cover
+     * that afterCommit() handles for every resource.
+     */
+    protected function afterCommit(int $id, array $data, Request $request, bool $isUpdate): void
+    {
+        parent::afterCommit($id, $data, $request, $isUpdate);
+
+        $imageIds = $request->input('image_ids');
+        if (!is_array($imageIds)) {
+            return;
+        }
+
+        foreach ($imageIds as $imageId) {
+            MediaFiler::file(is_numeric($imageId) ? (int) $imageId : null, 'services');
         }
     }
 

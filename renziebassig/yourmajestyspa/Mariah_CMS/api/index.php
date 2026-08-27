@@ -240,6 +240,14 @@ try {
     $media = new MediaController();
 
     $router->get('/media',             [$media, 'index'],   [Guard::permission('media.view')]);
+
+    // Before /media/{id}, or the literal path is swallowed by the id route.
+    $router->get('/media/folders',     [$media, 'folders'], [Guard::permission('media.view')]);
+
+    // Files every photo into the folder its row names — the one-off migration
+    // for a library uploaded before folders existed. Idempotent.
+    $router->post('/media/reorganize', [$media, 'reorganize'], [Guard::permission('media.edit')]);
+
     $router->get('/media/{id}',        [$media, 'show'],    [Guard::permission('media.view')]);
     $router->get('/media/{id}/usage',  [$media, 'usage'],   [Guard::permission('media.view')]);
     $router->post('/media',            [$media, 'store'],   [Guard::permission('media.upload')]);

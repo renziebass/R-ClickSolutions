@@ -224,7 +224,7 @@ export async function promotionFormPage(outlet, args) {
   body.appendChild(fill(
     section('Image'),
     mediaField({
-      name: 'media_id', label: 'Promotion image', span: 12,
+      name: 'media_id', label: 'Promotion image', span: 12, folder: 'promotions',
       value: record?.media_id, imageUrl: record?.image_url, altText: record?.image_alt,
     }),
   ));

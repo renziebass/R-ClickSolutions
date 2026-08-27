@@ -12,6 +12,7 @@ use Mariah\Core\Validator;
 use Mariah\Repositories\BaseRepository;
 use Mariah\Services\AuditLogger;
 use Mariah\Services\HtmlSanitizer;
+use Mariah\Services\MediaFiler;
 use Mariah\Services\MediaService;
 
 /**
@@ -84,6 +85,40 @@ abstract class ResourceController
     }
 
     /**
+     * Media library folder this resource files its images into, e.g. "services".
+     * Null means this resource carries no image.
+     */
+    protected function mediaFolder(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * Runs after the write has committed, for effects a transaction cannot
+     * take back.
+     *
+     * Filing a photo moves a file on disk, so it belongs here rather than in
+     * afterSave(): a rollback would leave the file in its new folder with no
+     * record saying so. By the time this runs the record is safely stored, and
+     * MediaFiler swallows its own failures, so an unfilable photo costs the
+     * operator nothing.
+     */
+    protected function afterCommit(int $id, array $data, Request $request, bool $isUpdate): void
+    {
+        $folder = $this->mediaFolder();
+
+        // array_key_exists, not isset: a partial update that never mentions
+        // media_id must leave the existing photo's folder alone, while an
+        // explicit null (image cleared) is a no-op MediaFiler handles.
+        if ($folder !== null && array_key_exists('media_id', $data)) {
+            MediaFiler::file(
+                $data['media_id'] === null ? null : (int) $data['media_id'],
+                $folder
+            );
+        }
+    }
+
+    /**
      * Copies whatever duplicate() could not: child rows, join tables, anything
      * outside the fillable column list. Without this a copy silently loses its
      * relations, which is the worst way to lose them.
@@ -144,6 +179,8 @@ abstract class ResourceController
             return $newId;
         });
 
+        $this->afterCommit($id, $data, $request, false);
+
         $row   = $repository->findOrFail($id);
         $title = $this->titleOf($row);
 
@@ -183,6 +220,10 @@ abstract class ResourceController
             $this->afterSave($id, $data, $request, true);
         });
 
+        $this->afterCommit($id, $data, $request, true);
+
+        // Read back after filing, so the response carries the photo's new URL
+        // rather than the one it had a moment ago.
         $after = $repository->findOrFail($id, true);
         $title = $this->titleOf($after);
 

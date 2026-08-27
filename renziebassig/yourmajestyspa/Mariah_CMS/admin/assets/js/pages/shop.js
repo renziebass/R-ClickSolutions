@@ -162,7 +162,7 @@ export async function productFormPage(outlet, args) {
   body.appendChild(fill(
     section('Image'),
     mediaField({
-      name: 'media_id', label: 'Product photo', span: 8,
+      name: 'media_id', label: 'Product photo', span: 8, folder: 'products',
       value: record?.media_id, imageUrl: record?.image_url,
     }),
     select({
@@ -404,7 +404,7 @@ export async function brandFormPage(outlet, args) {
   body.appendChild(fill(
     section('Logo'),
     mediaField({
-      name: 'media_id', label: 'Brand logo', span: 12,
+      name: 'media_id', label: 'Brand logo', span: 12, folder: 'brands',
       value: record?.media_id, imageUrl: record?.image_url,
     }),
   ));

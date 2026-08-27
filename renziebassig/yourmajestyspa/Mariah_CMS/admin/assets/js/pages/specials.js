@@ -165,7 +165,7 @@ export async function specialFormPage(outlet, args) {
   body.appendChild(fill(
     section('Image'),
     mediaField({
-      name: 'media_id', label: 'Special image', span: 12,
+      name: 'media_id', label: 'Special image', span: 12, folder: 'specials',
       value: record?.media_id, imageUrl: record?.image_url, altText: record?.image_alt,
     }),
   ));

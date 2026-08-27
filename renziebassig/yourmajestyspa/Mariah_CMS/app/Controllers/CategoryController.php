@@ -21,6 +21,7 @@ final class CategoryController extends ResourceController
     protected function repository(): BaseRepository { return $this->categories; }
     protected function label(): string              { return 'Category'; }
     protected function entityType(): string         { return 'category'; }
+    protected function mediaFolder(): ?string       { return 'categories'; }
 
     protected function rules(bool $isUpdate): array
     {

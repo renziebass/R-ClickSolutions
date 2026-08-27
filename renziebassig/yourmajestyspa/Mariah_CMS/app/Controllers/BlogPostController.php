@@ -22,6 +22,7 @@ final class BlogPostController extends ResourceController
     protected function label(): string              { return 'Blog post'; }
     protected function entityType(): string         { return 'blog_post'; }
     protected function titleColumn(): string        { return 'title'; }
+    protected function mediaFolder(): ?string       { return 'blog'; }
 
     protected function statusValues(): array
     {

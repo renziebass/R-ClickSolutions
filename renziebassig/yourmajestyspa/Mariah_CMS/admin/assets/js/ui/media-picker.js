@@ -3,6 +3,11 @@
  *
  * Used by every content form that carries an image. Uploading goes straight to
  * POST /api/media, so a newly uploaded file is immediately available everywhere.
+ *
+ * Every field names the media library folder it belongs to. That folder is
+ * sent with an upload, so a photo added from a service form lands in Services
+ * rather than passing through Unsorted, and it seeds the library browser's
+ * filter so the relevant photos are the ones on screen first.
  */
 
 import { api } from '../api.js';
@@ -13,10 +18,62 @@ import { session } from '../session.js';
 const ACCEPT = 'image/jpeg,image/png,image/webp';
 
 /**
+ * The folder list is small, fixed in code on the server, and wanted by every
+ * picker on the page — so it is fetched once per page load.
+ */
+let foldersPromise = null;
+
+export function mediaFolders() {
+  if (!foldersPromise) {
+    foldersPromise = api.get('/media/folders')
+      .then((result) => result.data || [])
+      .catch(() => {
+        // A failed fetch must not break the picker: without folders it simply
+        // behaves as it did before they existed.
+        foldersPromise = null;
+        return [];
+      });
+  }
+  return foldersPromise;
+}
+
+/** Discards the cached counts after an upload or a move changes them. */
+export function invalidateFolders() {
+  foldersPromise = null;
+}
+
+/**
+ * The folder filter strip. `onPick(slug)` fires with '' for "All".
+ * Counts are omitted when the caller has none to show.
+ */
+export function folderChips(folders, current, onPick, { showCounts = true } = {}) {
+  const strip = el('<div class="folder-chips"></div>');
+
+  const chips = [{ slug: '', label: 'All' }, ...folders].map((folder) => {
+    const count = showCounts && folder.slug !== '' ? ` <span>${folder.count}</span>` : '';
+    const chip = el(
+      `<button type="button" class="folder-chip">${esc(folder.label)}${count}</button>`
+    );
+
+    chip.classList.toggle('is-active', folder.slug === current);
+    chip.addEventListener('click', () => {
+      strip.querySelectorAll('.folder-chip').forEach((c) => c.classList.remove('is-active'));
+      chip.classList.add('is-active');
+      onPick(folder.slug);
+    });
+
+    return chip;
+  });
+
+  strip.append(...chips);
+  return strip;
+}
+
+/**
  * A form field showing the current image with Choose / Upload / Remove.
  * Exposes `.value` (media id) and a hidden input named `media_id`.
  */
-export function mediaField({ name = 'media_id', label = 'Image', value = null, imageUrl = null, altText = '', span = 12, hint = '' }) {
+export function mediaField({ name = 'media_id', label = 'Image', value = null, imageUrl = null, altText = '', span = 12, hint = '', folder = null }) {
   const node = el(`
     <div class="field col-${span}" data-field="${esc(name)}">
       <span class="field__label">${esc(label)}</span>
@@ -60,12 +117,12 @@ export function mediaField({ name = 'media_id', label = 'Image', value = null, i
   };
 
   node.querySelector('[data-act="choose"]').addEventListener('click', async () => {
-    const chosen = await openLibrary();
+    const chosen = await openLibrary({ folder });
     if (chosen) apply(chosen);
   });
 
   node.querySelector('[data-act="upload"]').addEventListener('click', async () => {
-    const uploaded = await promptUpload();
+    const uploaded = await promptUpload({ folder });
     if (uploaded) apply(uploaded);
   });
 
@@ -74,8 +131,14 @@ export function mediaField({ name = 'media_id', label = 'Image', value = null, i
   return node;
 }
 
-/** Opens the library in a modal; resolves with the chosen media row or null. */
-export function openLibrary() {
+/**
+ * Opens the library in a modal; resolves with the chosen media row or null.
+ *
+ * `folder` filters the grid to that folder to begin with — the photos for the
+ * form you are on — with "All" one click away. Uploads made from here inherit
+ * it too.
+ */
+export function openLibrary({ folder = null } = {}) {
   return modal({
     title: 'Media library',
     subtitle: 'Choose an image, or upload a new one.',
@@ -86,24 +149,35 @@ export function openLibrary() {
       const container = el('<div></div>');
       const dropzone = buildDropzone(async (media) => {
         close(media);
-      });
+      }, { folder });
 
       const grid = el('<div class="media-grid mt-3"></div>');
       container.append(dropzone, grid);
 
       let selected = null;
+      let activeFolder = folder || '';
+      let searchTerm = '';
 
-      const load = async (search = '') => {
+      const load = async (search = searchTerm) => {
+        searchTerm = search;
+
         grid.innerHTML = Array.from({ length: 8 }, () =>
           '<div class="skel" style="aspect-ratio:4/3;height:auto"></div>').join('');
 
         try {
-          const { data } = await api.list('/media', { search, per_page: 60 });
+          const { data } = await api.list('/media', {
+            search,
+            folder: activeFolder,
+            per_page: 60,
+          });
 
           if (!data.length) {
             grid.replaceChildren(el(
               '<p class="muted" style="grid-column:1/-1;text-align:center;padding:2rem 0">' +
-              'No images yet. Upload one above.</p>'
+              (activeFolder || search
+                ? 'No images here. Try another folder, or upload one above.'
+                : 'No images yet. Upload one above.') +
+              '</p>'
             ));
             return;
           }
@@ -152,6 +226,20 @@ export function openLibrary() {
       body.replaceChildren(container);
       load();
 
+      // Chips arrive after the grid so a slow folder fetch never delays the
+      // images themselves.
+      mediaFolders().then((folders) => {
+        if (!folders.length) return;
+
+        const chips = folderChips(folders, activeFolder, (slug) => {
+          activeFolder = slug;
+          load();
+        });
+        chips.classList.add('mt-3');
+
+        container.insertBefore(chips, search);
+      });
+
       body.dataset.ready = '1';
       body.__getSelected = () => selected;
     },
@@ -177,7 +265,7 @@ export function openLibrary() {
 }
 
 /** File chooser + upload, resolving with the created media row. */
-export function promptUpload() {
+export function promptUpload({ folder = null } = {}) {
   return new Promise((resolve) => {
     const input = el(`<input type="file" accept="${ACCEPT}" style="display:none">`);
     document.body.appendChild(input);
@@ -191,7 +279,7 @@ export function promptUpload() {
         return;
       }
 
-      const media = await uploadFile(file);
+      const media = await uploadFile(file, { folder });
       resolve(media);
     });
 
@@ -211,7 +299,7 @@ export function promptUpload() {
 }
 
 /** Uploads one file with client-side pre-checks, then a server-side re-check. */
-export async function uploadFile(file, { altText = '', onProgress } = {}) {
+export async function uploadFile(file, { altText = '', folder = null, onProgress } = {}) {
   const maxBytes = session.config.uploadMaxBytes || 5242880;
 
   if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
@@ -228,11 +316,16 @@ export async function uploadFile(file, { altText = '', onProgress } = {}) {
   formData.append('file', file);
   if (altText) formData.append('alt_text', altText);
 
+  // Naming the folder here means the file is written straight into it — no
+  // move, and no moment where the photo sits in Unsorted.
+  if (folder) formData.append('folder', folder);
+
   try {
     if (onProgress) onProgress(40);
     const result = await api.upload('/media', formData);
     if (onProgress) onProgress(100);
 
+    invalidateFolders();
     notify.ok(`Uploaded "${file.name}".`);
     return result.data;
   } catch (error) {
@@ -241,8 +334,11 @@ export async function uploadFile(file, { altText = '', onProgress } = {}) {
   }
 }
 
-/** Drag-and-drop upload area. `onUploaded(media)` fires per accepted file. */
-export function buildDropzone(onUploaded) {
+/**
+ * Drag-and-drop upload area. `onUploaded(media)` fires per accepted file.
+ * `folder` files everything dropped here straight into that folder.
+ */
+export function buildDropzone(onUploaded, { folder = null } = {}) {
   const zone = el(`
     <div>
       <div class="dropzone">
@@ -264,6 +360,7 @@ export function buildDropzone(onUploaded) {
     bar.style.display = '';
     for (const file of files) {
       const media = await uploadFile(file, {
+        folder,
         onProgress: (percent) => { fill.style.width = percent + '%'; },
       });
       if (media && onUploaded) onUploaded(media);

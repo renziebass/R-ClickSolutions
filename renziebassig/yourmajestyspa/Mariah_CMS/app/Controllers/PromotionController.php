@@ -21,6 +21,7 @@ final class PromotionController extends ResourceController
     protected function label(): string              { return 'Promotion'; }
     protected function entityType(): string         { return 'promotion'; }
     protected function titleColumn(): string        { return 'title'; }
+    protected function mediaFolder(): ?string       { return 'promotions'; }
 
     /** Promotions publish rather than activate; the dates decide the rest. */
     protected function statusValues(): array

@@ -174,7 +174,7 @@ export async function giftCardFormPage(outlet, args) {
   body.appendChild(fill(
     section('Image'),
     mediaField({
-      name: 'media_id', label: 'Image', span: 12,
+      name: 'media_id', label: 'Image', span: 12, folder: 'gift-cards',
       value: record?.media_id, imageUrl: record?.image_url, altText: record?.image_alt,
     }),
   ));

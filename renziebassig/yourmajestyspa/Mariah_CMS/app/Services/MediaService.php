@@ -15,7 +15,11 @@ use Mariah\Core\Logger;
  * A file is accepted only if it passes all three checks: extension allowlist,
  * real MIME sniffed by finfo, and a successful getimagesize(). Any one alone
  * is bypassable. Stored names are random, so a crafted filename cannot control
- * the path, and storage/uploads/.htaccess disables script execution.
+ * the path, and storage/uploads/.htaccess disables script execution — that
+ * file is directory-scoped, so it covers the folder subdirectories too.
+ *
+ * Files live at storage/uploads/{folder}/YYYY/MM/. MediaFiler owns moves
+ * between folders once a photo is attached to a content record.
  */
 final class MediaService
 {
@@ -28,9 +32,19 @@ final class MediaService
 
     private const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
 
-    /** @param array $file one entry from $_FILES */
-    public static function store(array $file, ?string $altText = null, ?string $title = null): array
-    {
+    /**
+     * @param array   $file   one entry from $_FILES
+     * @param ?string $folder media library folder to land in; an upload started
+     *                        from a content form names its own folder so the
+     *                        photo never needs moving. Anything else, including
+     *                        an unknown slug, goes to "unsorted".
+     */
+    public static function store(
+        array $file,
+        ?string $altText = null,
+        ?string $title = null,
+        ?string $folder = null
+    ): array {
         self::assertUploadOk($file);
 
         $maxBytes = Env::int('UPLOAD_MAX_BYTES', 5_242_880);
@@ -82,7 +96,10 @@ final class MediaService
         $safeExtension = self::ALLOWED[$mime];
         $fileName      = date('Ymd-His') . '-' . bin2hex(random_bytes(8)) . '.' . $safeExtension;
 
-        $relativeDir = date('Y/m');
+        // Folder first, date shard inside it: the library groups by purpose,
+        // while no single directory grows without bound.
+        $folder      = MediaFolders::normalize($folder);
+        $relativeDir = $folder . '/' . date('Y/m');
         $absoluteDir = self::storageRoot() . '/' . $relativeDir;
 
         if (!is_dir($absoluteDir) && !@mkdir($absoluteDir, 0775, true) && !is_dir($absoluteDir)) {
@@ -102,8 +119,8 @@ final class MediaService
         Database::run(
             'INSERT INTO media
                 (file_name, original_name, file_path, file_url, mime_type,
-                 file_size, width, height, alt_text, title, uploaded_by)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                 file_size, width, height, alt_text, title, folder, uploaded_by)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             [
                 $fileName,
                 mb_substr($originalName, 0, 255),
@@ -115,6 +132,7 @@ final class MediaService
                 (int) $height,
                 $altText !== null ? mb_substr($altText, 0, 255) : null,
                 $title !== null ? mb_substr($title, 0, 190) : null,
+                $folder,
                 Auth::id(),
             ]
         );
@@ -126,7 +144,12 @@ final class MediaService
             'media',
             $id,
             "Uploaded image \"{$originalName}\"",
-            ['file_name' => $fileName, 'size' => (int) $file['size'], 'mime' => $mime]
+            [
+                'file_name' => $fileName,
+                'size'      => (int) $file['size'],
+                'mime'      => $mime,
+                'folder'    => $folder,
+            ]
         );
 
         return self::find($id) ?? throw new \RuntimeException('Media row vanished after insert.');
@@ -168,9 +191,12 @@ final class MediaService
     {
         $total = 0;
 
+        // Must stay in step with MediaRepository::usageCountsFor(): a table
+        // missing here is an image that deletes cleanly and silently blanks a
+        // live page.
         foreach ([
             'services', 'service_categories', 'promotions', 'specials',
-            'products', 'product_brands', 'gift_cards',
+            'products', 'product_brands', 'gift_cards', 'blog_posts',
         ] as $table) {
             $total += (int) Database::fetchValue(
                 "SELECT COUNT(*) FROM `{$table}` WHERE media_id = ? AND deleted_at IS NULL",

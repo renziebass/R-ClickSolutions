@@ -24,6 +24,7 @@ final class ProductController extends ResourceController
     protected function repository(): BaseRepository { return $this->products; }
     protected function label(): string              { return 'Product'; }
     protected function entityType(): string         { return 'product'; }
+    protected function mediaFolder(): ?string       { return 'products'; }
 
     protected function rules(bool $isUpdate): array
     {

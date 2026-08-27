@@ -140,7 +140,7 @@ All tables are InnoDB / `utf8mb4`. Content tables carry
 | `role_permissions` | Role ↔ permission join | composite PK |
 | `users` | Staff accounts | `email` UQ, `password_hash`, `role_id`, `status` |
 | `login_attempts` | Login throttling | `email`, `ip_address`, `successful` |
-| `media` | Central image library | `file_path`, `file_url`, `mime_type`, `alt_text` |
+| `media` | Central image library | `file_path`, `file_url`, `mime_type`, `alt_text`, `folder` |
 | `service_categories` | Website service tabs, two levels deep | `parent_id` (self FK, NULL = top level), `slug` UQ, `icon_key`, `display_order` |
 | `services` | Treatment menu | `price` + `price_display`, `duration_minutes` + `duration_display`, `booking_url`, `icon_key`, `most_loved_rank`, `benefits`, `inclusions`, `contraindications` |
 | `service_variants` | Price/duration tiers | `label`, `duration_minutes`, `price`, own `booking_url` |
@@ -160,6 +160,40 @@ All tables are InnoDB / `utf8mb4`. Content tables carry
 **Promotions vs Specials** are separate because their business purpose differs: a
 *promotion* is a discount rule applied to services (15% off midweek massages); a
 *special* is a sellable bundle with its own price (`$215` struck through `$299`).
+
+### The media library: folders filed by usage
+
+Every module that carries an image owns one folder, so a photo's folder answers *what is
+this picture for?* The set is declared in code (`app/Services/MediaFolders.php`), never
+created by an operator — the slug doubles as a directory name under `storage/uploads`, so
+a typo would strand photos somewhere nothing else looks. Files live at
+`storage/uploads/{folder}/YYYY/MM/`; the date shard sits **inside** the folder so no
+single directory grows without bound.
+
+Filing is automatic and follows **first use wins**:
+
+- An upload lands in `unsorted`. An upload started from a content form names its folder up
+  front, so it is written straight there and never has to move.
+- When a service, category, promotion, special, blog post, brand, gift card or product
+  saves a `media_id`, `MediaFiler::file()` moves that photo into the module's folder — but
+  only if it is still in `unsorted`. A photo shared by a service and a promotion therefore
+  has one home and one stable URL, instead of ping-ponging between two.
+- Detaching a photo leaves it where it is. "Move to folder" in the library is the manual
+  override for the case where the automatic answer was the wrong one.
+
+The move is real: `file_path` and `file_url` are rewritten, and **the database is only
+written once the file is confirmed at its new path**. If a `rename()` fails, the row keeps
+describing where the file actually still is, the live image keeps rendering, and the
+failure is logged — an unfiled photo is a far smaller problem than a broken one. Filing
+runs *after* the content record has committed, so it can never turn a successful save into
+a 500.
+
+Two things are deliberately outside this. Rows whose `file_url` is not under `STORAGE_URL`
+are references to the website's own artwork rather than uploads (the demo seed creates
+these), so folders do not apply to them and nothing tries to move them. And a library that
+predates folders is caught up by **Reorganise files** in the admin (`POST /media/reorganize`),
+which walks each file to the folder its row already names — idempotent, so re-running it
+finds nothing to do.
 
 ### The treatment menu: categories, tiers and add-ons
 
@@ -628,6 +662,8 @@ GET    /services/form-options      categories + icon choices
 GET    /categories/options         id/name pairs for selects
 GET    /media          POST /media (multipart)   PUT /media/{id}    DELETE /media/{id}
 GET    /media/{id}/usage           what would break if this image were deleted
+GET    /media/folders              folder slugs, labels and counts
+POST   /media/reorganize           files every photo into the folder its row names
 GET    /users   POST /users   PUT /users/{id}   DELETE /users/{id}   POST /users/{id}/restore
 GET    /users/assignable-roles
 GET    /roles   POST /roles   PUT /roles/{id}   DELETE /roles/{id}   GET /permissions

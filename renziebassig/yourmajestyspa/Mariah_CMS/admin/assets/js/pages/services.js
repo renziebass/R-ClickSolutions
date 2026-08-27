@@ -316,6 +316,7 @@ export async function serviceFormPage(outlet, args) {
       imageUrl: record?.image_url,
       altText: record?.image_alt,
       span: 12,
+      folder: 'services',
     }),
     field({
       name: 'image_alt', label: 'Image alt text', span: 12,

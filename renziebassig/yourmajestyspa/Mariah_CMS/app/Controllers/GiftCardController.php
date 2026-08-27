@@ -21,6 +21,7 @@ final class GiftCardController extends ResourceController
     protected function label(): string              { return 'Gift card'; }
     protected function entityType(): string         { return 'gift_card'; }
     protected function titleColumn(): string        { return 'title'; }
+    protected function mediaFolder(): ?string       { return 'gift-cards'; }
 
     protected function rules(bool $isUpdate): array
     {

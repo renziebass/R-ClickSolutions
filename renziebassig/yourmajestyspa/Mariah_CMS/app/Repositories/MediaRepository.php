@@ -5,6 +5,7 @@ namespace Mariah\Repositories;
 
 use Mariah\Core\Database;
 use Mariah\Core\Request;
+use Mariah\Services\MediaFolders;
 
 final class MediaRepository extends BaseRepository
 {
@@ -12,11 +13,14 @@ final class MediaRepository extends BaseRepository
     protected string $entity = 'image';
     protected string $alias  = 'm';
 
+    // folder is not fillable: changing it moves a file on disk, so it goes
+    // through MediaFiler::moveTo() rather than a bare column write.
     protected array $fillable = ['alt_text', 'title'];
 
     protected array $sortable = [
         'name'       => 'm.original_name',
         'size'       => 'm.file_size',
+        'folder'     => 'm.folder',
         'created_at' => 'm.created_at',
         'id'         => 'm.id',
     ];
@@ -38,11 +42,24 @@ final class MediaRepository extends BaseRepository
 
     protected function listFilters(Request $request): array
     {
+        $conditions = [];
+        $bindings   = [];
+
         $mime = (string) $request->q('mime', '');
         if ($mime !== '' && in_array($mime, ['image/jpeg', 'image/png', 'image/webp'], true)) {
-            return [['m.mime_type = ?'], [$mime]];
+            $conditions[] = 'm.mime_type = ?';
+            $bindings[]   = $mime;
         }
-        return [[], []];
+
+        // An unrecognised slug is ignored rather than returning nothing, so a
+        // stale bookmark shows the library instead of an empty grid.
+        $folder = (string) $request->q('folder', '');
+        if (MediaFolders::isValid($folder)) {
+            $conditions[] = 'm.folder = ?';
+            $bindings[]   = $folder;
+        }
+
+        return [$conditions, $bindings];
     }
 
     /**
@@ -58,12 +75,14 @@ final class MediaRepository extends BaseRepository
     {
         $id = (int) $row['id'];
 
-        $row['id']          = $id;
-        $row['file_size']   = (int) $row['file_size'];
-        $row['width']       = $row['width']  === null ? null : (int) $row['width'];
-        $row['height']      = $row['height'] === null ? null : (int) $row['height'];
-        $row['size_label']  = self::formatBytes((int) $row['file_size']);
-        $row['usage_count'] = $this->usageCounts[$id] ?? 0;
+        $row['id']           = $id;
+        $row['file_size']    = (int) $row['file_size'];
+        $row['width']        = $row['width']  === null ? null : (int) $row['width'];
+        $row['height']       = $row['height'] === null ? null : (int) $row['height'];
+        $row['size_label']   = self::formatBytes((int) $row['file_size']);
+        $row['usage_count']  = $this->usageCounts[$id] ?? 0;
+        $row['folder']       = MediaFolders::normalize($row['folder'] ?? null);
+        $row['folder_label'] = MediaFolders::label($row['folder']);
 
         return $row;
     }
@@ -148,6 +167,34 @@ final class MediaRepository extends BaseRepository
             return round($bytes / 1024, 1) . ' KB';
         }
         return round($bytes / 1_048_576, 2) . ' MB';
+    }
+
+    /**
+     * Every folder with its photo count, in the order MediaFolders declares —
+     * including the empty ones, so the library's folder strip does not
+     * rearrange itself as photos move around.
+     *
+     * @return array<int, array{slug: string, label: string, count: int}>
+     */
+    public function folders(): array
+    {
+        $counts = [];
+        foreach (Database::fetchAll(
+            'SELECT folder, COUNT(*) AS n FROM media WHERE deleted_at IS NULL GROUP BY folder'
+        ) as $row) {
+            $counts[(string) $row['folder']] = (int) $row['n'];
+        }
+
+        $folders = [];
+        foreach (MediaFolders::all() as $slug => $label) {
+            $folders[] = [
+                'slug'  => $slug,
+                'label' => $label,
+                'count' => $counts[$slug] ?? 0,
+            ];
+        }
+
+        return $folders;
     }
 
     public function stats(): array

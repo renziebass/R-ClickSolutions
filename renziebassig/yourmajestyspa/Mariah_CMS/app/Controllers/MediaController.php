@@ -10,6 +10,8 @@ use Mariah\Core\Response;
 use Mariah\Core\Validator;
 use Mariah\Repositories\MediaRepository;
 use Mariah\Services\AuditLogger;
+use Mariah\Services\MediaFiler;
+use Mariah\Services\MediaFolders;
 use Mariah\Services\MediaService;
 
 final class MediaController
@@ -32,7 +34,20 @@ final class MediaController
         Response::json($this->media->findOrFail($this->idFrom($args)));
     }
 
-    /** multipart/form-data upload: field "file", optional alt_text and title. */
+    /** The folder list with counts, for the library's folder navigation. */
+    public function folders(Request $request): never
+    {
+        Response::json($this->media->folders());
+    }
+
+    /**
+     * multipart/form-data upload: field "file", optional alt_text, title and
+     * folder.
+     *
+     * An upload started from a content form names its folder, so the photo
+     * lands where it belongs and never needs moving. A plain library upload
+     * names none and goes to "unsorted", to be filed when something uses it.
+     */
     public function store(Request $request): never
     {
         if (!isset($_FILES['file'])) {
@@ -44,17 +59,48 @@ final class MediaController
 
         $altText = $request->input('alt_text');
         $title   = $request->input('title');
+        $folder  = $request->input('folder');
 
         $record = MediaService::store(
             $_FILES['file'],
             is_string($altText) && $altText !== '' ? $altText : null,
-            is_string($title) && $title !== '' ? $title : null
+            is_string($title) && $title !== '' ? $title : null,
+            is_string($folder) && MediaFolders::isValid($folder) ? $folder : null
         );
 
         Response::created($this->media->findOrFail((int) $record['id']));
     }
 
-    /** Metadata only — replacing the binary means uploading a new image. */
+    /**
+     * Walks every file into the folder its row names.
+     *
+     * The migration that introduced folders could only stamp the column —
+     * moving files is a filesystem job. This is what actually reorganises a
+     * library uploaded before folders existed, and it is idempotent, so a
+     * second run reports nothing to do.
+     */
+    public function reorganize(Request $request): never
+    {
+        $result = MediaFiler::reorganize();
+
+        $message = $result['moved'] === 0
+            ? 'Every image is already in its folder.'
+            : "Moved {$result['moved']} image(s) into their folders.";
+
+        if ($result['failed'] > 0) {
+            $message .= " {$result['failed']} could not be moved and were left where they are.";
+        }
+
+        Response::json($result + ['message' => $message]);
+    }
+
+    /**
+     * Metadata and folder — replacing the binary means uploading a new image.
+     *
+     * A folder change is the manual override on the first-use-wins rule, for
+     * the photo that filed itself somewhere unhelpful. It moves the file, so
+     * it goes through MediaFiler rather than the repository's column write.
+     */
     public function update(Request $request, array $args): never
     {
         $id     = $this->idFrom($args);
@@ -63,7 +109,22 @@ final class MediaController
         $data = Validator::make($request->body())->validate([
             'alt_text' => 'nullable|string|max:255',
             'title'    => 'nullable|string|max:190',
+            'folder'   => 'nullable|string|max:40',
         ], ['alt_text' => 'Alt text']);
+
+        $folder = $data['folder'] ?? null;
+        unset($data['folder']);
+
+        if ($folder !== null && $folder !== '' && $folder !== $before['folder']) {
+            if (!MediaFolders::isValid($folder)) {
+                throw HttpException::validation(['folder' => 'That is not a media library folder.']);
+            }
+
+            $reason = MediaFiler::moveTo($id, $folder);
+            if ($reason !== null) {
+                throw HttpException::conflict($reason);
+            }
+        }
 
         $this->media->update($id, $data);
 
@@ -74,7 +135,11 @@ final class MediaController
             'media',
             $id,
             "Updated image details for \"{$after['original_name']}\"",
-            AuditLogger::diff($before, $after, ['usage_count', 'size_label'])
+            // file_path/file_url move with the folder, and folder_label is
+            // derived from it — one "folder" line says all four.
+            AuditLogger::diff($before, $after, [
+                'usage_count', 'size_label', 'folder_label', 'file_path', 'file_url',
+            ])
         );
 
         Response::json($after);
@@ -111,6 +176,7 @@ final class MediaController
             'products'           => ['product',          'name'],
             'product_brands'     => ['brand',            'name'],
             'gift_cards'         => ['gift card',        'title'],
+            'blog_posts'         => ['blog post',        'title'],
         ] as $table => [$type, $titleColumn]) {
             $rows = Database::fetchAll(
                 "SELECT id, `{$titleColumn}` AS title FROM `{$table}`

@@ -21,6 +21,7 @@ final class BrandController extends ResourceController
     protected function repository(): BaseRepository { return $this->brands; }
     protected function label(): string              { return 'Brand'; }
     protected function entityType(): string         { return 'brand'; }
+    protected function mediaFolder(): ?string       { return 'brands'; }
 
     protected function rules(bool $isUpdate): array
     {

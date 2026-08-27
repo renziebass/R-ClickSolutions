@@ -177,7 +177,7 @@ export async function blogPostFormPage(outlet, args) {
   body.appendChild(fill(
     section('Cover image'),
     mediaField({
-      name: 'media_id', label: 'Cover image', span: 12,
+      name: 'media_id', label: 'Cover image', span: 12, folder: 'blog',
       value: record?.media_id, imageUrl: record?.image_url, altText: record?.image_alt,
     }),
   ));

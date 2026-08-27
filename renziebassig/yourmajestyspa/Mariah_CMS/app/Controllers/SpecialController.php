@@ -21,6 +21,7 @@ final class SpecialController extends ResourceController
     protected function label(): string              { return 'Special'; }
     protected function entityType(): string         { return 'special'; }
     protected function titleColumn(): string        { return 'title'; }
+    protected function mediaFolder(): ?string       { return 'specials'; }
 
     protected function statusValues(): array
     {
