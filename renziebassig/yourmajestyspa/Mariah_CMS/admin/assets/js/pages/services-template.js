@@ -464,7 +464,10 @@ function valuesReference(categories, icons) {
   wrap.appendChild(el(`
     <b style="font-size:.92rem">What you can type</b>
     <p class="muted" style="font-size:.85rem;margin:.2rem 0 .6rem">
-      The <code>category</code> and <code>icon_key</code> columns only accept these values.
+      The <code>category</code> column must name a category that already exists.
+      For <code>icon_key</code>, either the key or the name works —
+      <code>i-drop</code>, <code>Drop</code> and <code>facial</code> all mean the same
+      icon. Leave it blank, or write <code>No icon</code>, for none.
     </p>
   `));
 

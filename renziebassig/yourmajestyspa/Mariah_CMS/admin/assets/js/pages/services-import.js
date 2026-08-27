@@ -627,8 +627,39 @@ function rulesPanel(options, onSaved) {
 
   const tbody = panel.querySelector('tbody');
 
+  // Columns whose values are a fixed list. Typing into these is how an invalid
+  // default gets saved in the first place, so they are chosen, not typed.
+  const CHOICES = {
+    icon_key: (options.icons || []).map((i) => ({ value: i.key, label: i.label })),
+    status: [
+      { value: 'active', label: 'active' },
+      { value: 'inactive', label: 'inactive' },
+    ],
+    featured: [
+      { value: 'yes', label: 'yes' },
+      { value: 'no', label: 'no' },
+    ],
+  };
+
   (options.columns || []).forEach((column) => {
     const locked = NO_DEFAULT.includes(column.key);
+    const choices = CHOICES[column.key];
+    const disabled = canEdit && !locked ? '' : 'disabled';
+    const current = column.default || '';
+
+    // The empty option is the "no default" case, and it has to come first so
+    // that is what a fresh column shows.
+    const control = choices
+      ? `<select data-default="${esc(column.key)}" ${disabled}>
+           <option value="">${column.key === 'icon_key' ? 'No icon' : 'None'}</option>
+           ${choices.map((choice) => `
+             <option value="${esc(choice.value)}"${
+               String(choice.value) === String(current) ? ' selected' : ''
+             }>${esc(choice.label)}</option>`).join('')}
+         </select>`
+      : `<input type="text" data-default="${esc(column.key)}"
+           value="${esc(current)}"
+           placeholder="${locked ? 'Not available' : 'None'}" ${disabled}>`;
 
     const row = el(`
       <tr>
@@ -640,12 +671,7 @@ function rulesPanel(options, onSaved) {
             <span></span>
           </label>
         </td>
-        <td data-label="Default when blank">
-          <input type="text" data-default="${esc(column.key)}"
-            value="${esc(column.default || '')}"
-            placeholder="${locked ? 'Not available' : 'None'}"
-            ${canEdit && !locked ? '' : 'disabled'}>
-        </td>
+        <td data-label="Default when blank">${control}</td>
       </tr>
     `);
 

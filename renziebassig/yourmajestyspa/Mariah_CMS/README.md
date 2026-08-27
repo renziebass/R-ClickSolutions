@@ -668,6 +668,25 @@ named "import rules" cannot change what someone typing a service by hand may lea
 The blank template narrows to match: required columns first, then optional ones with no
 default. Give a column a default and it leaves the sheet.
 
+### The icon column reads words, not keys
+
+`i-drop` is a machine key, and nobody maintaining a treatment menu in a spreadsheet is
+going to type one. `ServiceCsvSchema::resolveIcon()` therefore accepts the key, the full
+label, or any word from the label — `i-drop`, `Drop (facial)`, `Drop` and `facial` are the
+same icon — and treats `No icon`, `none`, `n/a` and `nil` as *no icon*, with **no
+warning**. Matching is on a lowercased, punctuation-stripped form, so `HOT  STONE` and
+`hot-stone` both land on `i-stone`.
+
+This is the same leniency `headerAliases()` gives column *names* and `status` gives
+`live`/`published`: the importer meets the sheet where it is. A genuinely unrecognised
+value still warns and imports as no icon, so a typo cannot pass silently.
+
+The lookup is built from `iconChoices()`, and **a word claimed by two labels is dropped
+rather than guessed at** — so adding an icon later can never silently start matching an
+existing one to the wrong key. Adding one means two edits: the `iconChoices()` entry, and
+an `<svg><symbol id="i-…">` in the public page's sprite. A key with no symbol renders an
+empty box on the live site.
+
 **Preview and commit are the same call.** `dry_run` defaults to `1`, so a request that
 omits it can only preview; only an explicit `dry_run=0` writes. On confirm the browser
 re-uploads the same file, which keeps the server stateless and means the preview and the

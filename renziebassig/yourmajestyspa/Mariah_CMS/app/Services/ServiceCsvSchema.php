@@ -279,7 +279,9 @@ final class ServiceCsvSchema
                 );
 
             case 'icon':
-                if (!in_array($value, self::iconKeys(), true)) {
+                $icon = self::resolveIcon($value);
+
+                if (!$icon['known']) {
                     // A wrong icon degrades to no icon rather than breaking the
                     // page, so this is a warning and the value is dropped.
                     $warnings[] = 'Unknown icon "' . self::clip($value)
@@ -287,7 +289,7 @@ final class ServiceCsvSchema
                     return null;
                 }
 
-                return $value;
+                return $icon['key'];
 
             case 'url':
                 // A bare "www.booker.com/..." would fail Validator's url rule,
@@ -441,6 +443,102 @@ final class ServiceCsvSchema
     public static function iconKeys(): array
     {
         return array_column(self::iconChoices(), 'key');
+    }
+
+    /**
+     * What an operator wrote in the icon column, resolved to a sprite key.
+     *
+     * `i-drop` is a machine key, and nobody maintaining a treatment menu in a
+     * spreadsheet is going to type one. This accepts what a real sheet holds —
+     * the label, a word from the label, or a phrase meaning "leave it empty" —
+     * the same way headerAliases() accepts "Service Name" for `name`, and the
+     * same way `status` already accepts "live" and "published".
+     *
+     * @return array{key: ?string, known: bool}
+     *         known=false means "say so"; known=true with a null key means the
+     *         operator deliberately asked for no icon.
+     */
+    public static function resolveIcon(string $value): array
+    {
+        $needle = self::normaliseTerm($value);
+
+        if ($needle === '') {
+            return ['key' => null, 'known' => true];
+        }
+
+        // Phrases that plainly mean "no icon". The literal NULL is NOT here:
+        // the importer handles it earlier and it means "clear this column",
+        // which is a different intent even though the stored result matches.
+        // A bare "-" or "—" normalises to an empty string and is caught above.
+        if (in_array($needle, ['no icon', 'none', 'no', 'n a', 'na', 'nil'], true)) {
+            return ['key' => null, 'known' => true];
+        }
+
+        $lookup = self::iconLookup();
+
+        return array_key_exists($needle, $lookup)
+            ? ['key' => $lookup[$needle], 'known' => true]
+            : ['key' => null, 'known' => false];
+    }
+
+    /**
+     * Every spelling that resolves to an icon key, built from iconChoices() so
+     * the vocabulary has one home.
+     *
+     * A word appearing in two labels is dropped rather than guessed at — that
+     * way adding an icon later can never silently start matching an existing
+     * one to the wrong key.
+     *
+     * @return array<string, string>
+     */
+    private static function iconLookup(): array
+    {
+        static $lookup = null;
+
+        if ($lookup !== null) {
+            return $lookup;
+        }
+
+        $claims = [];   // term => [keys that want it]
+
+        foreach (self::iconChoices() as $choice) {
+            $key   = $choice['key'];
+            $terms = [
+                self::normaliseTerm($key),                       // i-drop
+                self::normaliseTerm($choice['label']),           // drop facial
+                // "i-spark" also answers to "spark".
+                self::normaliseTerm((string) preg_replace('/^i-/', '', $key)),
+            ];
+
+            // Each word of the label on its own: "Stone (hot stone)" gives
+            // "stone" and "hot stone", which is what a sheet actually says.
+            foreach (preg_split('/[()\/,]+/', $choice['label']) ?: [] as $part) {
+                $terms[] = self::normaliseTerm($part);
+            }
+
+            foreach (array_filter(array_unique($terms)) as $term) {
+                $claims[$term][$key] = true;
+            }
+        }
+
+        $lookup = [];
+
+        foreach ($claims as $term => $keys) {
+            if (count($keys) === 1) {
+                $lookup[$term] = array_key_first($keys);
+            }
+        }
+
+        return $lookup;
+    }
+
+    /** Lowercased, punctuation-stripped, single-spaced — "Hot  Stone" => "hot stone". */
+    private static function normaliseTerm(string $value): string
+    {
+        $value = strtolower(trim($value));
+        $value = (string) preg_replace('/[^a-z0-9]+/', ' ', $value);
+
+        return trim((string) preg_replace('/\s+/', ' ', $value));
     }
 
     /** The same list with the labels the admin form's dropdown shows. */

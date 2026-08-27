@@ -1117,6 +1117,105 @@ section('Sub-categories, price tiers and add-ons');
 }
 
 // =====================================================================
+section('Icon column accepts what a spreadsheet actually holds');
+
+// i-drop is a machine key and nobody maintaining a treatment menu is going to
+// type one. A real sheet says "Drop", "facial" or "No icon", and the importer
+// has to read all three — the same way it already reads "Service Name" as
+// `name` and "published" as active.
+if ($importCategory === null) {
+    skip('Icon column matching', 'no active service category');
+} else {
+    $iconSuffix = bin2hex(random_bytes(3));
+    $quoted     = '"' . str_replace('"', '""', $categoryName) . '"';
+
+    $cases = [
+        ['Key',        'i-drop',        'i-drop'],
+        ['Full label', 'Drop (facial)', 'i-drop'],
+        ['One word',   'facial',        'i-drop'],
+        ['Spacing',    'HOT  STONE',    'i-stone'],
+        ['No icon',    'No icon',       null],
+        ['none',       'none',          null],
+    ];
+
+    $csv = "name,category,price,icon_key\n";
+    foreach ($cases as $index => [, $written]) {
+        $csv .= "Smoke Icon {$iconSuffix} {$index},{$quoted},50,\"" . $written . "\"\n";
+    }
+
+    $preview = importCsv($csv, false);
+
+    check(
+        'Every icon spelling previews without error',
+        $preview['status'] === 200
+            && ($preview['body']['data']['summary']['error'] ?? null) === 0,
+        'HTTP ' . $preview['status'] . ' — ' . substr($preview['raw'], 0, 400)
+    );
+
+    // The point of the change: none of these should warn. A warning is what
+    // made "No icon" a hard error when it was used as a default.
+    check(
+        'No spelling produces an unknown-icon warning',
+        !str_contains($preview['raw'], 'Unknown icon'),
+        substr($preview['raw'], 0, 400)
+    );
+
+    $commit  = importCsv($csv, true, $preview['body']['data']['file']['digest'] ?? null);
+    $iconIds = [];
+
+    foreach ($commit['body']['data']['rows'] ?? [] as $row) {
+        if (!empty($row['service_id'])) {
+            $iconIds[] = (int) $row['service_id'];
+        }
+    }
+
+    if (count($iconIds) !== count($cases)) {
+        fail('Every icon row committed', describe($commit));
+    } else {
+        $createdServiceIds = array_merge($createdServiceIds, $iconIds);
+
+        foreach ($cases as $index => [$label, $written, $expected]) {
+            $stored = request('GET', '/services/' . $iconIds[$index]);
+            $actual = $stored['body']['data']['icon_key'] ?? 'missing';
+
+            check(
+                'Icon — ' . $label . ': "' . $written . '" resolves to '
+                    . ($expected ?? 'no icon'),
+                $actual === $expected,
+                'Got: ' . json_encode($actual)
+            );
+        }
+
+        foreach ($iconIds as $id) {
+            Database::run('DELETE FROM services WHERE id = ?', [$id]);
+        }
+        $createdServiceIds = array_values(array_diff($createdServiceIds, $iconIds));
+    }
+
+    // A genuinely unknown icon must still say so, or a typo would pass silently.
+    $bogus = importCsv(
+        "name,category,price,icon_key\nSmoke Icon Bogus {$iconSuffix},{$quoted},50,Banana\n",
+        false
+    );
+    check(
+        'An unrecognised icon still warns',
+        str_contains($bogus['raw'], 'Unknown icon'),
+        substr($bogus['raw'], 0, 300)
+    );
+
+    // And the value that started all this is now a legal default.
+    $noIconDefault = request('PUT', '/settings', [
+        'services_import_rules' => json_encode(['icon_key' => ['default' => 'No icon']]),
+    ]);
+    check(
+        '"No icon" is accepted as an icon default',
+        $noIconDefault['status'] === 200,
+        describe($noIconDefault)
+    );
+    request('PUT', '/settings', ['services_import_rules' => '{}']);
+}
+
+// =====================================================================
 section('Configurable import rules');
 
 // The load-bearing assertion here is that a default fills a blank on a NEW
