@@ -5,6 +5,7 @@ namespace Mariah\Services;
 
 use Mariah\Core\Database;
 use Mariah\Core\HttpException;
+use Mariah\Repositories\SettingsRepository;
 
 /**
  * The one definition of what a service is, shared by the admin form and the
@@ -15,7 +16,12 @@ use Mariah\Core\HttpException;
  * importer that accepted data the form rejects would be worse than no importer
  * at all.
  *
- * Pure static, no I/O beyond the two assertions.
+ * Which columns are required, and what a blank cell falls back to, are
+ * configurable per site — so `configuredColumns()`, `requiredColumns()` and
+ * `rules()` read the `services_import_rules` setting. `columns()` itself stays
+ * pure: it is the base contract those overrides are applied to, and it is read
+ * in hot paths. SettingsRepository caches per request, so the reads are free
+ * after the first.
  */
 final class ServiceCsvSchema
 {
@@ -87,12 +93,34 @@ final class ServiceCsvSchema
         ];
     }
 
-    /** @return string[] */
+    /**
+     * The columns a file must carry a header for.
+     *
+     * A column that is required but has a configured default does NOT need a
+     * header: the default supplies the value, so demanding an empty column
+     * would be busywork.
+     *
+     * @return string[]
+     */
     public static function requiredColumns(): array
     {
         $required = [];
 
-        foreach (self::columns() as $column) {
+        foreach (self::configuredColumns() as $column) {
+            if ($column['required'] && $column['default'] === null) {
+                $required[] = $column['key'];
+            }
+        }
+
+        return $required;
+    }
+
+    /** Every column an operator must put a value in, header or default. */
+    public static function requiredKeys(): array
+    {
+        $required = [];
+
+        foreach (self::configuredColumns() as $column) {
             if ($column['required']) {
                 $required[] = $column['key'];
             }
@@ -105,6 +133,182 @@ final class ServiceCsvSchema
     public static function columnKeys(): array
     {
         return array_column(self::columns(), 'key');
+    }
+
+    /** The setting holding the operator's per-column overrides. */
+    public const RULES_SETTING = 'services_import_rules';
+
+    /**
+     * Identity columns. These may never carry a default.
+     *
+     * ServiceImporter::identitySlug() reads them raw, before normalisation,
+     * and its answer decides whether a row creates a service or updates one.
+     * A default here would change which record a row matches — silently, and
+     * differently on every run.
+     *
+     * @var string[]
+     */
+    public const NO_DEFAULT = ['name', 'slug'];
+
+    /**
+     * columns() merged with the admin's configuration.
+     *
+     * Every entry gains an effective `required` and a `default` (raw string, or
+     * null for none). The stored config is sparse, so a column nobody has
+     * touched keeps exactly what columns() says.
+     *
+     * columns() itself stays pure and untouched — it is read in hot paths and
+     * its contract is "no I/O". Only this method reads settings.
+     */
+    public static function configuredColumns(): array
+    {
+        $config = self::rulesConfig();
+
+        return array_map(static function (array $column) use ($config): array {
+            $override = $config[$column['key']] ?? [];
+
+            $column['required'] = array_key_exists('required', $override)
+                ? (bool) $override['required']
+                : $column['required'];
+
+            $default = $override['default'] ?? null;
+            $default = is_string($default) && trim($default) !== '' ? trim($default) : null;
+
+            $column['default'] = in_array($column['key'], self::NO_DEFAULT, true) ? null : $default;
+
+            return $column;
+        }, self::columns());
+    }
+
+    /** key => ['required' => bool, 'default' => string], as stored. */
+    public static function rulesConfig(): array
+    {
+        $decoded = json_decode(SettingsRepository::string(self::RULES_SETTING), true);
+
+        return is_array($decoded) ? $decoded : [];
+    }
+
+    /** Column => how its raw CSV text becomes a real PHP value. */
+    public static function normalisableColumns(): array
+    {
+        return [
+            'slug'              => 'text',
+            'short_description' => 'text',
+            'description'       => 'text',
+            'price'             => 'money',
+            'price_display'     => 'text',
+            'promo_price'       => 'money',
+            'duration_minutes'  => 'int',
+            'duration_display'  => 'text',
+            'icon_key'          => 'icon',
+            'booking_url'       => 'url',
+            'status'            => 'status',
+            'featured'          => 'bool',
+            'most_loved_rank'   => 'int',
+            'display_order'     => 'int',
+        ];
+    }
+
+    /**
+     * Raw CSV text into the real PHP value for that column.
+     *
+     * Casting is mandatory, not cosmetic: Validator's min/max rules branch on
+     * `is_numeric($value) && !is_string($value)`, so the string "150" would be
+     * length-checked rather than magnitude-checked, and "999999999" would sail
+     * past max:100000 and overflow DECIMAL(10,2).
+     *
+     * Lives here rather than in the importer so a configured default can be
+     * validated through the exact same coercion the import will apply to it —
+     * a bad default is then refused when it is saved, not on the next import.
+     *
+     * @param  string[] $warnings collected by reference; an unknown icon is a
+     *                            warning rather than an error
+     * @return mixed the value, or a RuntimeException carrying the row message
+     */
+    public static function normalise(string $key, string $type, string $value, array &$warnings = []): mixed
+    {
+        switch ($type) {
+            case 'money':
+                $cleaned = str_replace([',', ' ', "\xC2\xA0", '$'], '', $value);
+
+                if (!is_numeric($cleaned)) {
+                    return new \RuntimeException(
+                        '"' . self::clip($value) . '" is not a number. Use digits, e.g. 150 or 150.00.'
+                    );
+                }
+
+                return (float) $cleaned;
+
+            case 'int':
+                $cleaned = str_replace([',', ' ', "\xC2\xA0"], '', $value);
+
+                if (!preg_match('/^-?\d+$/', $cleaned)) {
+                    return new \RuntimeException(
+                        '"' . self::clip($value) . '" is not a whole number.'
+                    );
+                }
+
+                return (int) $cleaned;
+
+            case 'bool':
+                $lower = strtolower($value);
+
+                if (in_array($lower, ['1', 'true', 'yes', 'y', 'on', 'x'], true)) {
+                    return 1;
+                }
+                if (in_array($lower, ['0', 'false', 'no', 'n', 'off'], true)) {
+                    return 0;
+                }
+
+                return new \RuntimeException(
+                    '"' . self::clip($value) . '" is not yes or no. Use yes, no, true, false, 1 or 0.'
+                );
+
+            case 'status':
+                $lower = strtolower($value);
+
+                if (in_array($lower, ['active', 'live', 'on', 'published', 'enabled'], true)) {
+                    return 'active';
+                }
+                if (in_array($lower, ['inactive', 'hidden', 'off', 'draft', 'disabled'], true)) {
+                    return 'inactive';
+                }
+
+                return new \RuntimeException(
+                    '"' . self::clip($value) . '" is not a status. Use active or inactive.'
+                );
+
+            case 'icon':
+                if (!in_array($value, self::iconKeys(), true)) {
+                    // A wrong icon degrades to no icon rather than breaking the
+                    // page, so this is a warning and the value is dropped.
+                    $warnings[] = 'Unknown icon "' . self::clip($value)
+                        . '" was ignored. Valid icons: ' . implode(', ', self::iconKeys()) . '.';
+                    return null;
+                }
+
+                return $value;
+
+            case 'url':
+                // A bare "www.booker.com/..." would fail Validator's url rule,
+                // which requires a scheme.
+                if (!preg_match('#^https?://#i', $value)) {
+                    return 'https://' . ltrim($value, '/');
+                }
+
+                return $value;
+
+            default:
+                return $value;
+        }
+    }
+
+    /** Keeps a 20,000-character description from being echoed back 500 times. */
+    public static function clip(mixed $value, int $limit = 120): string
+    {
+        $text = trim((string) $value);
+
+        return mb_strlen($text) <= $limit ? $text : mb_substr($text, 0, $limit) . '…';
     }
 
     /**
@@ -150,14 +354,40 @@ final class ServiceCsvSchema
     /**
      * Validation rules for a service. $isUpdate relaxes `required` into
      * optional, exactly as ResourceController expects.
+     *
+     * Deliberately NOT configurable: this is what the admin form enforces, and
+     * a setting named "import rules" must not quietly change what someone
+     * typing a service by hand is allowed to leave blank. The importer calls
+     * importRules() instead.
      */
     public static function rules(bool $isUpdate): array
     {
-        $required = $isUpdate ? '' : 'required|';
+        $required = $isUpdate ? [] : ['name', 'category', 'price'];
+
+        return self::rulesFor($required);
+    }
+
+    /**
+     * The same rules with the operator's configured required columns applied.
+     * Used only by ServiceImporter.
+     */
+    public static function importRules(bool $isUpdate): array
+    {
+        return self::rulesFor($isUpdate ? [] : self::requiredKeys());
+    }
+
+    /** @param string[] $required column names that must carry a value */
+    private static function rulesFor(array $required): array
+    {
+        // `category` is the column name an operator sees; `category_id` is what
+        // it resolves to once the category has been looked up.
+        $need = static function (string $column) use ($required): string {
+            return in_array($column, $required, true) ? 'required|' : '';
+        };
 
         return [
-            'category_id'       => $required . 'int|min:1',
-            'name'              => $required . 'string|min:2|max:190',
+            'category_id'       => $need('category') . 'int|min:1',
+            'name'              => $need('name') . 'string|min:2|max:190',
             'slug'              => 'nullable|string|max:190',
             'short_description' => 'nullable|string|max:500',
             'description'       => 'nullable|string|max:20000',
@@ -167,7 +397,7 @@ final class ServiceCsvSchema
             'inclusions'        => 'nullable|string|max:8000',
             'contraindications' => 'nullable|string|max:8000',
             'complimentary_enhancement' => 'nullable|string|max:500',
-            'price'             => $required . 'numeric|min:0|max:100000',
+            'price'             => $need('price') . 'numeric|min:0|max:100000',
             'price_display'     => 'nullable|string|max:60',
             'promo_price'       => 'nullable|numeric|min:0|max:100000',
             'duration_minutes'  => 'nullable|int|min:0|max:1440',

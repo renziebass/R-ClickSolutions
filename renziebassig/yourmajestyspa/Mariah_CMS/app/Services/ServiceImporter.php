@@ -45,6 +45,16 @@ final class ServiceImporter
 
     private array $warnings = [];
 
+    /**
+     * The operator's per-column rules, resolved once per import.
+     *
+     * @var array<string, array{required:bool, default:?string}>
+     */
+    private array $rules = [];
+
+    /** @var array<string, int> column => how many blank cells a default filled */
+    private array $defaulted = [];
+
     private ServiceRepository $services;
     private CategoryRepository $categories;
 
@@ -52,6 +62,13 @@ final class ServiceImporter
     {
         $this->services   = new ServiceRepository();
         $this->categories = new CategoryRepository();
+
+        foreach (ServiceCsvSchema::configuredColumns() as $column) {
+            $this->rules[$column['key']] = [
+                'required' => (bool) $column['required'],
+                'default'  => $column['default'],
+            ];
+        }
     }
 
     /**
@@ -117,6 +134,14 @@ final class ServiceImporter
         [$headers, $rows, $ignored] = $this->readRows($raw);
 
         $plan = $this->plan($rows);
+
+        // Say so plainly. A default that silently altered rows would be the
+        // kind of thing someone discovers weeks later on the live site.
+        foreach ($this->defaulted as $column => $count) {
+            $this->warnings[] = $count . ' new ' . ($count === 1 ? 'service' : 'services')
+                . ' had no ' . $column . ', so the default "'
+                . ServiceCsvSchema::clip($this->rules[$column]['default']) . '" was used.';
+        }
 
         $summary = [
             'rows'      => count($plan),
@@ -575,6 +600,8 @@ final class ServiceImporter
             'data'       => [],
         ];
 
+        // The name identifies the row, so it is required whatever the rules
+        // say — without it there is nothing to create and nothing to match.
         if (($row['name'] ?? '') === '') {
             $entry['errors']['name'] = 'Service name is required.';
             return $entry;
@@ -606,10 +633,22 @@ final class ServiceImporter
         $entry['service_id'] = $isUpdate ? (int) $current['id'] : null;
 
         // --- category -------------------------------------------------
+        // Not in normalisableColumns() — it resolves against the live category
+        // list rather than coercing — so it applies its own default here.
         $categoryValue = (string) ($row['category'] ?? '');
+        $categoryRule  = $this->rules['category'] ?? ['required' => true, 'default' => null];
+
+        if ($categoryValue === '' && !$isUpdate && $categoryRule['default'] !== null) {
+            $categoryValue = (string) $categoryRule['default'];
+            $this->defaulted['category'] = ($this->defaulted['category'] ?? 0) + 1;
+        }
 
         if ($categoryValue === '') {
-            $entry['errors']['category'] = 'Category is required.';
+            // An update keeps whatever category is stored; only a new service
+            // has to be told where it belongs.
+            if ($categoryRule['required'] && !$isUpdate) {
+                $entry['errors']['category'] = 'Category is required.';
+            }
         } else {
             $categoryId = $categoryMap[Slug::make($categoryValue)] ?? null;
 
@@ -633,15 +672,30 @@ final class ServiceImporter
         $data['name'] = (string) $row['name'];
 
         foreach ($this->normalisableColumns() as $key => $type) {
-            if (!array_key_exists($key, $row)) {
-                continue;   // column absent from the file entirely
-            }
+            $rule = $this->rules[$key] ?? ['required' => false, 'default' => null];
 
-            $rawValue = (string) $row[$key];
+            // A column absent from the file reads as blank rather than being
+            // skipped, so a configured default can still supply it — that is
+            // what lets a required column with a default need no header.
+            $rawValue = array_key_exists($key, $row) ? (string) $row[$key] : '';
 
-            // Blank means "leave alone": the key is omitted, so Validator never
-            // writes it and an update keeps whatever is stored.
             if ($rawValue === '') {
+                // Defaults fill gaps on NEW services only. On an update a blank
+                // cell still means "leave the stored value alone" — the promise
+                // that lets someone import a file carrying only the columns
+                // they actually changed.
+                if (!$isUpdate && $rule['default'] !== null) {
+                    $filled = $this->normalise($key, $type, (string) $rule['default']);
+
+                    // Defaults are validated when they are saved, so this is
+                    // belt and braces: an unusable one is skipped rather than
+                    // failing every row in the file.
+                    if (!($filled instanceof \RuntimeException)) {
+                        $data[$key] = $filled;
+                        $this->defaulted[$key] = ($this->defaulted[$key] ?? 0) + 1;
+                    }
+                }
+
                 continue;
             }
 
@@ -668,7 +722,9 @@ final class ServiceImporter
         // --- validate, exactly as the admin form does -----------------
         try {
             $clean = Validator::make($data)->validate(
-                ServiceCsvSchema::rules($isUpdate),
+                // importRules, not rules: the operator's required-column
+                // toggles apply here and nowhere else.
+                ServiceCsvSchema::importRules($isUpdate),
                 ServiceCsvSchema::labels()
             );
 
@@ -734,108 +790,17 @@ final class ServiceImporter
     /** Column => how its raw CSV text becomes a real PHP value. */
     private function normalisableColumns(): array
     {
-        return [
-            'slug'              => 'text',
-            'short_description' => 'text',
-            'description'       => 'text',
-            'price'             => 'money',
-            'price_display'     => 'text',
-            'promo_price'       => 'money',
-            'duration_minutes'  => 'int',
-            'duration_display'  => 'text',
-            'icon_key'          => 'icon',
-            'booking_url'       => 'url',
-            'status'            => 'status',
-            'featured'          => 'bool',
-            'most_loved_rank'   => 'int',
-            'display_order'     => 'int',
-        ];
+        return ServiceCsvSchema::normalisableColumns();
     }
 
     /**
-     * Casting is mandatory, not cosmetic: Validator's min/max rules branch on
-     * `is_numeric($value) && !is_string($value)`, so the string "150" would be
-     * length-checked rather than magnitude-checked, and "999999999" would sail
-     * past max:100000 and overflow DECIMAL(10,2).
-     *
-     * @return mixed the value, or a RuntimeException carrying the row message
+     * Raw CSV text into a real value, or a RuntimeException carrying the
+     * row message. Lives on the schema so a configured default is coerced
+     * by exactly the same code that will coerce the real cells.
      */
     private function normalise(string $key, string $type, string $value): mixed
     {
-        switch ($type) {
-            case 'money':
-                $cleaned = str_replace([',', ' ', "\xC2\xA0", '$'], '', $value);
-
-                if (!is_numeric($cleaned)) {
-                    return new \RuntimeException(
-                        '"' . $this->clip($value) . '" is not a number. Use digits, e.g. 150 or 150.00.'
-                    );
-                }
-
-                return (float) $cleaned;
-
-            case 'int':
-                $cleaned = str_replace([',', ' ', "\xC2\xA0"], '', $value);
-
-                if (!preg_match('/^-?\d+$/', $cleaned)) {
-                    return new \RuntimeException(
-                        '"' . $this->clip($value) . '" is not a whole number.'
-                    );
-                }
-
-                return (int) $cleaned;
-
-            case 'bool':
-                $lower = strtolower($value);
-
-                if (in_array($lower, ['1', 'true', 'yes', 'y', 'on', 'x'], true)) {
-                    return 1;
-                }
-                if (in_array($lower, ['0', 'false', 'no', 'n', 'off'], true)) {
-                    return 0;
-                }
-
-                return new \RuntimeException(
-                    '"' . $this->clip($value) . '" is not yes or no. Use yes, no, true, false, 1 or 0.'
-                );
-
-            case 'status':
-                $lower = strtolower($value);
-
-                if (in_array($lower, ['active', 'live', 'on', 'published', 'enabled'], true)) {
-                    return 'active';
-                }
-                if (in_array($lower, ['inactive', 'hidden', 'off', 'draft', 'disabled'], true)) {
-                    return 'inactive';
-                }
-
-                return new \RuntimeException(
-                    '"' . $this->clip($value) . '" is not a status. Use active or inactive.'
-                );
-
-            case 'icon':
-                if (!in_array($value, ServiceCsvSchema::iconKeys(), true)) {
-                    // A wrong icon degrades to no icon rather than breaking the
-                    // page, so this is a warning and the value is dropped.
-                    $this->warnings[] = 'Unknown icon "' . $this->clip($value)
-                        . '" was ignored. Valid icons: ' . implode(', ', ServiceCsvSchema::iconKeys()) . '.';
-                    return null;
-                }
-
-                return $value;
-
-            case 'url':
-                // A bare "www.booker.com/..." would fail Validator's url rule,
-                // which requires a scheme.
-                if (!preg_match('#^https?://#i', $value)) {
-                    return 'https://' . ltrim($value, '/');
-                }
-
-                return $value;
-
-            default:
-                return $value;
-        }
+        return ServiceCsvSchema::normalise($key, $type, $value, $this->warnings);
     }
 
     /**

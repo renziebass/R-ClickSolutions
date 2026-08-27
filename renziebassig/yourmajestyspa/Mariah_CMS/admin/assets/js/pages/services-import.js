@@ -30,10 +30,11 @@ export async function serviceImportPage(outlet) {
   let sourceUrl = '';
   let source = 'file';
 
-  // Kept in the closure so the template panel survives a re-render of the
-  // chooser — someone who opened it, downloaded a CSV, uploaded and hit an
-  // error should not have to open it again.
+  // Kept in the closure so the panels survive a re-render of the chooser —
+  // someone who opened one, downloaded a CSV, uploaded and hit an error should
+  // not have to open it again.
   let templateOpen = false;
+  let rulesOpen = false;
 
   outlet.appendChild(pageHead({
     title: 'Import services from CSV',
@@ -55,18 +56,30 @@ export async function serviceImportPage(outlet) {
   // renderChooser() synchronous for its four call sites.
   let options;
 
-  try {
-    options = (await api.get('/services/form-options')).data;
-  } catch (error) {
-    const card = el('<div class="card"><div class="card__body"></div></div>');
-    card.querySelector('.card__body').appendChild(errorState(
-      error.message || 'The import columns could not be loaded.',
-      () => serviceImportPage(outlet)
-    ));
-    // Rendering a dropzone with no stated columns would let someone upload a
-    // file against a contract nobody showed them.
-    outlet.replaceChildren(card);
-    return;
+  /**
+   * Loads the column contract and shows step one.
+   *
+   * Called again after the import rules are saved, because the contract the
+   * screen displays — the reference table, and which columns the template
+   * carries — is derived from it.
+   */
+  async function boot() {
+    try {
+      options = (await api.get('/services/form-options')).data;
+    } catch (error) {
+      const card = el('<div class="card"><div class="card__body"></div></div>');
+      card.querySelector('.card__body').appendChild(errorState(
+        error.message || 'The import columns could not be loaded.',
+        () => serviceImportPage(outlet)
+      ));
+      // Rendering a dropzone with no stated columns would let someone upload a
+      // file against a contract nobody showed them.
+      outlet.replaceChildren(card);
+      return false;
+    }
+
+    renderChooser();
+    return true;
   }
 
   // ---------------------------------------------------------------
@@ -87,12 +100,15 @@ export async function serviceImportPage(outlet) {
           </p>
           <div class="table-wrap mt-2">
             <table class="data">
-              <thead><tr><th>Column</th><th>Required</th><th>Notes</th></tr></thead>
+              <thead><tr>
+                <th>Column</th><th>Required</th><th>Default when blank</th><th>Notes</th>
+              </tr></thead>
               <tbody></tbody>
             </table>
           </div>
           <div class="mt-3" data-slot="actions"></div>
           <div class="mt-3" data-slot="template" hidden></div>
+          <div class="mt-3" data-slot="rules" hidden></div>
           <div class="mt-3" data-slot="drop"></div>
         </div>
       </div>
@@ -107,6 +123,9 @@ export async function serviceImportPage(outlet) {
           <td data-label="Required">${column.required
             ? '<span class="pill pill--warn">Required</span>'
             : '<span class="pill pill--plain">Optional</span>'}</td>
+          <td data-label="Default when blank">${column.default
+            ? `<code>${esc(column.default)}</code>`
+            : '<span class="muted">—</span>'}</td>
           <td data-label="Notes"><span class="cell-sub">${esc(column.help)}</span></td>
         </tr>
       `));
@@ -139,6 +158,41 @@ export async function serviceImportPage(outlet) {
     actions.appendChild(toggle);
 
     if (templateOpen) openTemplatePanel();
+
+    // --- import rules ---------------------------------------------
+    const rulesSlot = card.querySelector('[data-slot="rules"]');
+
+    const rulesToggle = el(
+      `<button type="button" class="btn btn--ghost" style="margin-left:.4rem">${
+        icon('i-settings', 15)} Import rules</button>`
+    );
+    rulesToggle.setAttribute('aria-expanded', String(rulesOpen));
+
+    const openRulesPanel = () => {
+      if (!rulesSlot.firstChild) {
+        rulesSlot.appendChild(rulesPanel(options, () => {
+          // The contract changed, so everything derived from it is stale —
+          // the reference table, the template columns and the panel itself.
+          boot();
+        }));
+      }
+      rulesSlot.hidden = false;
+    };
+
+    rulesToggle.addEventListener('click', () => {
+      rulesOpen = !rulesOpen;
+      rulesToggle.setAttribute('aria-expanded', String(rulesOpen));
+
+      if (rulesOpen) {
+        openRulesPanel();
+      } else {
+        rulesSlot.hidden = true;
+      }
+    });
+
+    actions.appendChild(rulesToggle);
+
+    if (rulesOpen) openRulesPanel();
 
     // Only when an Admin has configured a template under Settings. An anchor
     // rather than a button so middle-click and "open in new tab" work.
@@ -523,12 +577,137 @@ export async function serviceImportPage(outlet) {
     stage.replaceChildren(...nodes);
   }
 
-  renderChooser();
+  await boot();
 }
 
 // -----------------------------------------------------------------
 // Pieces
 // -----------------------------------------------------------------
+
+/**
+ * Per-column import rules: which columns must be filled, and what a blank cell
+ * falls back to on a NEW service.
+ *
+ * Lives here rather than on the Settings page because this is the only screen
+ * that knows the column list — Settings has no access to it, deliberately.
+ * Everyone who can import sees the rules; only settings.edit can change them,
+ * and the server enforces that independently on PUT /settings.
+ *
+ * Stored as one JSON site setting, so this reuses the existing settings
+ * endpoint, permission and audit trail rather than adding a route.
+ *
+ * @param options  the /services/form-options payload
+ * @param onSaved  called after a successful save, to reload the contract
+ */
+function rulesPanel(options, onSaved) {
+  const canEdit = options.can_edit_rules === true;
+
+  // Identity columns decide which service a row matches, before any default
+  // could be applied — so they can never have one.
+  const NO_DEFAULT = ['name', 'slug'];
+
+  const panel = el(`
+    <div style="border-top:1px solid var(--line);padding-top:1.25rem">
+      <b style="font-size:.92rem">Import rules</b>
+      <p class="muted" style="font-size:.85rem;margin:.2rem 0 .8rem">
+        Tick the columns a file must fill in. A default is used when a cell is blank
+        <b>on a new service only</b> — updating an existing one still leaves a blank
+        cell alone, so you can import a file carrying just the columns you changed.
+        Give a column a default and it drops out of the blank template.
+      </p>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th>Column</th><th>Must be filled</th><th>Default when blank</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="mt-2" data-slot="rules-actions"></div>
+    </div>
+  `);
+
+  const tbody = panel.querySelector('tbody');
+
+  (options.columns || []).forEach((column) => {
+    const locked = NO_DEFAULT.includes(column.key);
+
+    const row = el(`
+      <tr>
+        <td data-label="Column"><span class="cell-title">${esc(column.key)}</span></td>
+        <td data-label="Must be filled">
+          <label class="check" style="padding:0">
+            <input type="checkbox" data-rule="${esc(column.key)}"
+              ${column.required ? 'checked' : ''} ${canEdit ? '' : 'disabled'}>
+            <span></span>
+          </label>
+        </td>
+        <td data-label="Default when blank">
+          <input type="text" data-default="${esc(column.key)}"
+            value="${esc(column.default || '')}"
+            placeholder="${locked ? 'Not available' : 'None'}"
+            ${canEdit && !locked ? '' : 'disabled'}>
+        </td>
+      </tr>
+    `);
+
+    if (locked) {
+      row.querySelector('[data-default]').title =
+        'This column identifies which service a row belongs to, so it cannot have a default.';
+    }
+
+    tbody.appendChild(row);
+  });
+
+  const actions = panel.querySelector('[data-slot="rules-actions"]');
+
+  if (!canEdit) {
+    actions.appendChild(el(
+      '<p class="muted" style="font-size:.85rem;margin:0">'
+      + 'These rules apply to every import. Changing them needs permission to edit settings.</p>'
+    ));
+    return panel;
+  }
+
+  const save = el('<button type="button" class="btn btn--sm">Save rules</button>');
+  const error = el('<p class="form-error" style="margin:.6rem 0 0" hidden></p>');
+
+  save.addEventListener('click', () => withBusy(save, async () => {
+    // Sparse: only columns that differ from the built-in contract are stored,
+    // so the base contract stays the source of truth and the setting stays
+    // small and readable.
+    const rules = {};
+
+    (options.columns || []).forEach((column) => {
+      const required = panel.querySelector(`[data-rule="${CSS.escape(column.key)}"]`).checked;
+      const value = panel.querySelector(`[data-default="${CSS.escape(column.key)}"]`).value.trim();
+      const entry = {};
+
+      if (required !== Boolean(column.required)) entry.required = required;
+      if (value !== '') entry.default = value;
+
+      if (Object.keys(entry).length) {
+        // `required` has to travel whenever a default does, or reloading the
+        // page would show the built-in value beside a custom default.
+        entry.required = required;
+        rules[column.key] = entry;
+      }
+    });
+
+    error.hidden = true;
+
+    try {
+      await api.put('/settings', { services_import_rules: JSON.stringify(rules) });
+      notify.ok('Import rules saved.');
+      onSaved();
+    } catch (e) {
+      error.textContent = e.fields?.services_import_rules || e.message || 'The rules could not be saved.';
+      error.hidden = false;
+    }
+  }));
+
+  actions.append(save, error);
+
+  return panel;
+}
 
 /**
  * The "make a copy" link for a stored Sheets URL, or null.

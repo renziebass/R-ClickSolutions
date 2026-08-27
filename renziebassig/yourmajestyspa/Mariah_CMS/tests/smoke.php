@@ -1117,6 +1117,174 @@ section('Sub-categories, price tiers and add-ons');
 }
 
 // =====================================================================
+section('Configurable import rules');
+
+// The load-bearing assertion here is that a default fills a blank on a NEW
+// service but never on an update. The import screen promises that a blank cell
+// leaves a stored value alone, and that promise is what lets staff import a
+// file carrying only the columns they changed.
+if ($importCategory === null) {
+    skip('Configurable import rules', 'no active service category');
+} else {
+    $settingsNow = request('GET', '/settings');
+    $rulesBefore = $settingsNow['body']['data']['values']['services_import_rules'] ?? '{}';
+
+    $setRules = static function (array $rules): array {
+        return request('PUT', '/settings', [
+            'services_import_rules' => json_encode($rules, JSON_UNESCAPED_SLASHES),
+        ]);
+    };
+
+    // --- bad rules are refused when SAVED, not on the next import ----
+    $badDefault = $setRules(['price' => ['required' => true, 'default' => 'not a number']]);
+    check(
+        'A default that cannot be coerced is refused at save',
+        $badDefault['status'] === 422
+            && !empty($badDefault['body']['error']['fields']['services_import_rules']),
+        describe($badDefault)
+    );
+
+    $badColumn = $setRules(['not_a_column' => ['required' => true]]);
+    check('A rule for an unknown column is refused', $badColumn['status'] === 422, describe($badColumn));
+
+    $badIdentity = $setRules(['name' => ['required' => true, 'default' => 'Untitled']]);
+    check(
+        'An identity column cannot be given a default',
+        $badIdentity['status'] === 422,
+        describe($badIdentity)
+    );
+
+    $badCategory = $setRules(['category' => ['required' => true, 'default' => 'No Such Category']]);
+    check(
+        'A category default must name a real category',
+        $badCategory['status'] === 422,
+        describe($badCategory)
+    );
+
+    // --- unticking a required column --------------------------------
+    $saved = $setRules(['price' => ['required' => false]]);
+    check('Rules save', $saved['status'] === 200, describe($saved));
+
+    $suffix   = bin2hex(random_bytes(3));
+    $quotedCat = '"' . str_replace('"', '""', $categoryName) . '"';
+    $noPrice  = "name,category\nSmoke NoPrice {$suffix},{$quotedCat}\n";
+
+    $preview = importCsv($noPrice, false);
+    check(
+        'With price unticked, a file with no price column previews',
+        $preview['status'] === 200
+            && ($preview['body']['data']['summary']['create'] ?? null) === 1,
+        'HTTP ' . $preview['status'] . ' — ' . substr($preview['raw'], 0, 300)
+    );
+
+    // --- a required column with a default needs no header ------------
+    $setRules([
+        'price'  => ['required' => true, 'default' => '99'],
+        'status' => ['required' => false, 'default' => 'inactive'],
+    ]);
+
+    $defaulted = importCsv($noPrice, false);
+    check(
+        'A required column with a default needs no header',
+        $defaulted['status'] === 200
+            && ($defaulted['body']['data']['summary']['create'] ?? null) === 1,
+        'HTTP ' . $defaulted['status'] . ' — ' . substr($defaulted['raw'], 0, 300)
+    );
+
+    check(
+        'The preview says which defaults were applied',
+        str_contains(strtolower($defaulted['raw']), 'default'),
+        substr($defaulted['raw'], 0, 400)
+    );
+
+    // --- commit, then prove defaults do NOT touch an update ----------
+    $commit = importCsv($noPrice, true, $defaulted['body']['data']['file']['digest'] ?? null);
+    check('The defaulted row commits', $commit['status'] === 200, describe($commit));
+
+    $newId = null;
+    foreach ($commit['body']['data']['rows'] ?? [] as $row) {
+        if (!empty($row['service_id'])) {
+            $newId = (int) $row['service_id'];
+        }
+    }
+
+    if ($newId === null) {
+        fail('The defaulted row commits with an id', describe($commit));
+    } else {
+        $createdServiceIds[] = $newId;
+        $made = request('GET', "/services/{$newId}");
+
+        check(
+            'Defaults filled the blanks on the new service',
+            ($made['body']['data']['price'] ?? null) === 99.0
+                && ($made['body']['data']['status'] ?? null) === 'inactive',
+            'price=' . json_encode($made['body']['data']['price'] ?? null)
+                . ' status=' . json_encode($made['body']['data']['status'] ?? null)
+        );
+
+        // Change it by hand, then re-import the very same file. A default that
+        // applied on updates would quietly undo this on every run.
+        request('PATCH', "/services/{$newId}/status", ['status' => 'active']);
+        request('PUT', "/services/{$newId}", ['price' => 250]);
+
+        $again = importCsv($noPrice, false);
+        importCsv($noPrice, true, $again['body']['data']['file']['digest'] ?? null);
+
+        $after = request('GET', "/services/{$newId}");
+        check(
+            'Defaults do NOT overwrite an existing service',
+            ($after['body']['data']['price'] ?? null) === 250.0
+                && ($after['body']['data']['status'] ?? null) === 'active',
+            'price=' . json_encode($after['body']['data']['price'] ?? null)
+                . ' status=' . json_encode($after['body']['data']['status'] ?? null)
+        );
+
+        // An explicit NULL still clears a column, default or not.
+        $clearing = "name,category,price_display\nSmoke NoPrice {$suffix},{$quotedCat},NULL\n";
+        $clearPreview = importCsv($clearing, false);
+        importCsv($clearing, true, $clearPreview['body']['data']['file']['digest'] ?? null);
+
+        $cleared = request('GET', "/services/{$newId}");
+        check(
+            'A literal NULL still clears a column',
+            ($cleared['body']['data']['price_display'] ?? 'x') === null,
+            'Got: ' . json_encode($cleared['body']['data']['price_display'] ?? 'missing')
+        );
+
+        Database::run('DELETE FROM services WHERE id = ?', [$newId]);
+        $createdServiceIds = array_values(array_diff($createdServiceIds, [$newId]));
+    }
+
+    // --- the contract the screen renders ----------------------------
+    $formOptions = request('GET', '/services/form-options');
+    $priceColumn = null;
+    foreach ($formOptions['body']['data']['columns'] ?? [] as $column) {
+        if ($column['key'] === 'price') {
+            $priceColumn = $column;
+        }
+    }
+    check(
+        'form-options reports the configured contract, not the built-in one',
+        ($priceColumn['default'] ?? null) === '99' && ($priceColumn['required'] ?? null) === true,
+        'Got: ' . json_encode($priceColumn)
+    );
+
+    // Edited on the import screen, so it must not also surface in the Settings
+    // form as an unusable one-line JSON box.
+    $shown = false;
+    foreach (request('GET', '/settings')['body']['data']['groups'] ?? [] as $group) {
+        foreach ($group['settings'] as $setting) {
+            if ($setting['key'] === 'services_import_rules') {
+                $shown = true;
+            }
+        }
+    }
+    check('The rules setting is hidden from the Settings form', $shown === false, '');
+
+    request('PUT', '/settings', ['services_import_rules' => $rulesBefore ?: '{}']);
+}
+
+// =====================================================================
 section('Rich text sanitising');
 
 // This is the security boundary. Rich text is the only content on the public

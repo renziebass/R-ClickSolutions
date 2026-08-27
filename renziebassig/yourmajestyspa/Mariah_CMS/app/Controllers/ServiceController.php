@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Mariah\Controllers;
 
+use Mariah\Core\Auth;
 use Mariah\Core\HttpException;
 use Mariah\Core\Request;
 use Mariah\Core\Response;
@@ -233,7 +234,11 @@ final class ServiceController extends ResourceController
         Response::json([
             'categories' => (new CategoryRepository())->options(),
             'icons'      => ServiceCsvSchema::iconChoices(),
-            'columns'    => ServiceCsvSchema::columns(),
+            // Configured, not raw: the import screen renders the contract the
+            // importer will actually apply, including the operator's own
+            // required toggles and defaults.
+            'columns'    => ServiceCsvSchema::configuredColumns(),
+            'can_edit_rules' => Auth::can('settings.edit'),
         ]);
     }
 

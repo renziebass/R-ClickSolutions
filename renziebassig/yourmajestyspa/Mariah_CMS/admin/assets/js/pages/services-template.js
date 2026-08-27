@@ -37,7 +37,13 @@ const IMPORT_MAX_ROWS = 500;
  *        exactly the GET /services/form-options payload
  */
 export function templatePanel(options) {
-  const { columns, categories, icons } = options;
+  const { categories, icons } = options;
+
+  // The template carries only what still needs typing: required columns first,
+  // then optional ones nobody has given a default. Configure a default and the
+  // column leaves the sheet — the importer fills it. With no rules configured
+  // this keeps all sixteen, exactly as before.
+  const columns = templateColumns(options.columns);
 
   const panel = el(`
     <div style="border-top:1px solid var(--line);padding-top:1.25rem">
@@ -274,6 +280,25 @@ async function fetchAllServices() {
 // Row building
 // =================================================================
 
+/**
+ * The columns a template should carry, required ones first.
+ *
+ * A column with a configured default is dropped: the importer supplies it, so
+ * asking someone to fill an entire column with the same word is busywork. The
+ * headers themselves stay byte-exact — the importer matches on them — so the
+ * required marking lives in the on-screen reference, not in the file.
+ */
+function templateColumns(columns) {
+  const needed = (columns || []).filter(
+    (column) => column.required || !column.default
+  );
+
+  return [
+    ...needed.filter((column) => column.required),
+    ...needed.filter((column) => !column.required),
+  ];
+}
+
 function buildRows(columns, services) {
   const header = columns.map((column) => column.key);
   const missingCategory = [];
@@ -342,8 +367,15 @@ function exampleRows(columns, categories, icons) {
     },
   ];
 
-  return seed.map((row) => columns.map(({ key }) => {
+  return seed.map((row) => columns.map((column) => {
+    const key = column.key;
+
     if (key === 'category') return categoryName;
+
+    // A configured default wins: showing something else in the example would
+    // teach the wrong thing about what this import does.
+    if (column.default) return String(column.default);
+
     // Imported untouched by accident, these cannot reach the public website.
     if (key === 'status') return 'inactive';
     if (key === 'featured') return 'no';

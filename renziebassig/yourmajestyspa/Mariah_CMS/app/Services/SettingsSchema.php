@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Mariah\Services;
 
 use Mariah\Core\Clock;
+use Mariah\Core\Database;
 use Mariah\Core\HttpException;
 
 /**
@@ -70,6 +71,21 @@ final class SettingsSchema
                 'default' => '',
                 'rules'   => 'nullable|string|max:500',
                 'public'  => true,
+            ],
+
+            'services_import_rules' => [
+                'group'   => 'Service import',
+                'label'   => 'Import column rules',
+                'help'    => 'Which CSV columns must be filled, and what a blank cell '
+                           . 'falls back to on a new service.',
+                'type'    => 'json',
+                'default' => '{}',
+                'rules'   => 'nullable|string|max:8000',
+                'public'  => false,
+                // Edited on the Import screen, which is the only place that
+                // knows the column list. A one-line text input full of JSON
+                // would be worse than not showing it at all.
+                'hidden'  => true,
             ],
 
             'services_import_url_enabled' => [
@@ -201,16 +217,32 @@ final class SettingsSchema
         return $keys;
     }
 
-    /** Settings grouped for the form, in declaration order. */
+    /**
+     * Settings grouped for the form, in declaration order.
+     *
+     * Hidden settings are omitted: they are real settings, saved and audited
+     * through the same endpoint, but they have a purpose-built editor
+     * elsewhere and would only render here as an unusable text box.
+     */
     public static function groups(): array
     {
         $groups = [];
 
         foreach (self::definitions() as $key => $definition) {
+            if (self::isHidden($key)) {
+                continue;
+            }
+
             $groups[$definition['group']][] = $key;
         }
 
         return $groups;
+    }
+
+    /** Whether this setting is edited somewhere other than the Settings form. */
+    public static function isHidden(string $key): bool
+    {
+        return (bool) (self::definitions()[$key]['hidden'] ?? false);
     }
 
     // -----------------------------------------------------------------
@@ -269,6 +301,10 @@ final class SettingsSchema
      */
     public static function assertValid(array $clean): void
     {
+        if (array_key_exists(ServiceCsvSchema::RULES_SETTING, $clean)) {
+            self::assertImportRules((string) ($clean[ServiceCsvSchema::RULES_SETTING] ?? ''));
+        }
+
         if (array_key_exists('site_timezone', $clean)) {
             $zone = trim((string) ($clean['site_timezone'] ?? ''));
 
@@ -293,6 +329,96 @@ final class SettingsSchema
                     throw HttpException::validation(['services_import_sheet_url' => $reason]);
                 }
             }
+        }
+    }
+
+    /**
+     * Checks the per-column import rules before they are stored.
+     *
+     * Every default is run through the same coercion the import will apply to
+     * it, so "not a number" in the price default is refused here rather than
+     * surfacing as 500 identical row errors on the next import.
+     */
+    private static function assertImportRules(string $json): void
+    {
+        $key = ServiceCsvSchema::RULES_SETTING;
+
+        if (trim($json) === '') {
+            return;   // cleared; the base contract applies
+        }
+
+        $config = json_decode($json, true);
+
+        if (!is_array($config)) {
+            throw HttpException::validation([
+                $key => 'The import rules could not be read. Reset them and try again.',
+            ]);
+        }
+
+        $known  = ServiceCsvSchema::columnKeys();
+        $types  = ServiceCsvSchema::normalisableColumns();
+        $errors = [];
+
+        foreach ($config as $column => $rule) {
+            if (!is_string($column) || !in_array($column, $known, true)) {
+                $errors[] = '"' . ServiceCsvSchema::clip($column) . '" is not an import column.';
+                continue;
+            }
+
+            if (!is_array($rule)) {
+                $errors[] = 'The rule for "' . $column . '" is malformed.';
+                continue;
+            }
+
+            $default = $rule['default'] ?? null;
+
+            if ($default === null || trim((string) $default) === '') {
+                continue;
+            }
+
+            if (in_array($column, ServiceCsvSchema::NO_DEFAULT, true)) {
+                $errors[] = '"' . $column . '" identifies which service a row belongs to, '
+                    . 'so it cannot have a default.';
+                continue;
+            }
+
+            // `category` is resolved against the live category list rather
+            // than coerced, so it is checked separately.
+            if ($column === 'category') {
+                $exists = Database::fetchValue(
+                    'SELECT 1 FROM service_categories WHERE (name = ? OR slug = ?) AND deleted_at IS NULL',
+                    [trim((string) $default), trim((string) $default)]
+                );
+
+                if ($exists === null) {
+                    $errors[] = 'There is no category named "'
+                        . ServiceCsvSchema::clip($default) . '".';
+                }
+
+                continue;
+            }
+
+            if (!isset($types[$column])) {
+                continue;   // free text, nothing to coerce
+            }
+
+            $warnings = [];
+            $result   = ServiceCsvSchema::normalise(
+                $column,
+                $types[$column],
+                trim((string) $default),
+                $warnings
+            );
+
+            if ($result instanceof \RuntimeException) {
+                $errors[] = 'Default for "' . $column . '": ' . $result->getMessage();
+            } elseif ($warnings !== []) {
+                $errors[] = 'Default for "' . $column . '": ' . $warnings[0];
+            }
+        }
+
+        if ($errors !== []) {
+            throw HttpException::validation([$key => implode(' ', $errors)]);
         }
     }
 }

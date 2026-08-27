@@ -638,6 +638,36 @@ importer only creates and updates, never deletes and never creates categories, a
 column it writes is one the admin form already reaches, so for a role holding
 `services.create` and `services.edit` it adds speed rather than reach.
 
+### Import rules are configurable
+
+Which columns must be filled, and what a blank cell falls back to, are set per site on the
+**Import screen** (the only screen that knows the column list) and stored as one sparse
+JSON site setting, `services_import_rules`. A column nobody has touched keeps whatever
+`ServiceCsvSchema::columns()` says, so the built-in contract stays the source of truth.
+
+Three things are worth knowing:
+
+- **Defaults apply to NEW services only.** A blank cell on an existing service still means
+  "leave the stored value alone" — the promise that lets someone import a file carrying
+  only the columns they changed. Overriding stored data on every re-import would make the
+  feature actively dangerous. The `display_order` fallback in `writeAll()` set this
+  precedent. A literal `NULL` still clears a column, default or not.
+- **A required column with a default needs no header.** The default supplies the value, so
+  demanding an empty column would be busywork. That is why `requiredColumns()` (header
+  presence) and `requiredKeys()` (cell must carry a value) are two different lists.
+- **`name` and `slug` can never have a default.** `identitySlug()` reads them raw, before
+  normalisation, and its answer decides whether a row creates or updates. A default there
+  would silently change which record a row matches.
+
+Defaults are validated **when they are saved**, through the same coercion the import will
+apply — so "not a number" in the price default is a 422 on the settings write, not 500
+identical row errors on the next import. `ServiceCsvSchema::rules()` (the admin form) is
+deliberately *not* configurable; the importer calls `importRules()` instead, so a setting
+named "import rules" cannot change what someone typing a service by hand may leave blank.
+
+The blank template narrows to match: required columns first, then optional ones with no
+default. Give a column a default and it leaves the sheet.
+
 **Preview and commit are the same call.** `dry_run` defaults to `1`, so a request that
 omits it can only preview; only an explicit `dry_run=0` writes. On confirm the browser
 re-uploads the same file, which keeps the server stateless and means the preview and the
