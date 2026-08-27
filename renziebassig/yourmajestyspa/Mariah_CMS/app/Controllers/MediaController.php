@@ -72,23 +72,31 @@ final class MediaController
     }
 
     /**
-     * Walks every file into the folder its row names.
+     * Files every unsorted photo by what uses it, then walks the files on disk
+     * to match.
      *
-     * The migration that introduced folders could only stamp the column —
-     * moving files is a filesystem job. This is what actually reorganises a
-     * library uploaded before folders existed, and it is idempotent, so a
-     * second run reports nothing to do.
+     * This is what reorganises a library uploaded before folders existed, and
+     * the repair when filing has drifted. Idempotent, so a second run reports
+     * nothing to do.
      */
     public function reorganize(Request $request): never
     {
         $result = MediaFiler::reorganize();
 
-        $message = $result['moved'] === 0
-            ? 'Every image is already in its folder.'
-            : "Moved {$result['moved']} image(s) into their folders.";
+        $parts = [];
+        if ($result['filed'] > 0) {
+            $parts[] = "filed {$result['filed']} image(s) by where they are used";
+        }
+        if ($result['moved'] > 0) {
+            $parts[] = "moved {$result['moved']} file(s) on the server";
+        }
+
+        $message = $parts === []
+            ? 'Every image is already in the right folder.'
+            : ucfirst(implode(' and ', $parts)) . '.';
 
         if ($result['failed'] > 0) {
-            $message .= " {$result['failed']} could not be moved and were left where they are.";
+            $message .= " {$result['failed']} file(s) could not be moved and were left where they are.";
         }
 
         Response::json($result + ['message' => $message]);

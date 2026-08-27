@@ -124,10 +124,11 @@ export async function mediaPage(outlet) {
  */
 async function reorganize(button, refresh) {
   const ok = await confirmDialog({
-    title: 'Reorganise files into folders?',
-    message: 'Every photo is moved on the server into the folder shown here. '
-      + 'Image addresses change, but every page reads them from the library, so nothing breaks. '
-      + 'Photos already in the right folder are left alone.',
+    title: 'Reorganise the library into folders?',
+    message: 'Every photo still in Unsorted is filed into the folder of whatever uses it, '
+      + 'and uploaded files are moved on the server to match. Image addresses change, but '
+      + 'every page reads them from the library, so nothing breaks. Photos already in the '
+      + 'right folder are left alone.',
     confirmLabel: 'Reorganise',
   });
   if (!ok) return;

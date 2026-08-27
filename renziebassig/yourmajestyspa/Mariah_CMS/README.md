@@ -181,6 +181,16 @@ Filing is automatic and follows **first use wins**:
 - Detaching a photo leaves it where it is. "Move to folder" in the library is the manual
   override for the case where the automatic answer was the wrong one.
 
+Filing is two separable things, and the distinction matters:
+
+- **The folder recorded on the row** — what the library shows, badges and filters by. Every
+  photo gets one.
+- **The file moved on disk** into `storage/uploads/{folder}/` — only for files this CMS
+  actually stores. Rows whose `file_url` is not under `STORAGE_URL` are references to the
+  website's own artwork in `assets/` rather than uploads (the demo seed creates these).
+  There is nothing of ours to move, but they are still a service photo or a category photo,
+  so they are still **filed by label** and keep their file where it is.
+
 The move is real: `file_path` and `file_url` are rewritten, and **the database is only
 written once the file is confirmed at its new path**. If a `rename()` fails, the row keeps
 describing where the file actually still is, the live image keeps rendering, and the
@@ -188,12 +198,12 @@ failure is logged — an unfiled photo is a far smaller problem than a broken on
 runs *after* the content record has committed, so it can never turn a successful save into
 a 500.
 
-Two things are deliberately outside this. Rows whose `file_url` is not under `STORAGE_URL`
-are references to the website's own artwork rather than uploads (the demo seed creates
-these), so folders do not apply to them and nothing tries to move them. And a library that
-predates folders is caught up by **Reorganise files** in the admin (`POST /media/reorganize`),
-which walks each file to the folder its row already names — idempotent, so re-running it
-finds nothing to do.
+**Reorganise files** in the admin (`POST /media/reorganize`) is the catch-up and the repair:
+it re-derives a folder for everything still in `unsorted` from what currently uses it — the
+same statements and the same order as migration 011's backfill — then walks the files to
+match. Migration 011 only catches what was attached *at the moment it ran*, so an install
+seeded afterwards would otherwise be stuck in Unsorted with no way back. Running it is
+idempotent, and it never overrules a folder somebody picked by hand.
 
 ### The treatment menu: categories, tiers and add-ons
 
