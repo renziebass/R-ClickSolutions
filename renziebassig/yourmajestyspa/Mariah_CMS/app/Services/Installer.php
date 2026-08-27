@@ -1176,7 +1176,15 @@ final class Installer
             'fatal'  => true,
         ];
 
-        foreach (['pdo_mysql' => true, 'fileinfo' => true, 'mbstring' => true, 'curl' => false] as $ext => $fatal) {
+        // `dom` is fatal because HtmlSanitizer needs it to parse rich text.
+        // Without it the sanitiser falls back to stripping every tag, so the
+        // site stays safe but every formatted description silently loses its
+        // formatting — which is worth failing the install over rather than
+        // discovering months later.
+        foreach (
+            ['pdo_mysql' => true, 'fileinfo' => true, 'mbstring' => true,
+             'dom' => true, 'curl' => false] as $ext => $fatal
+        ) {
             $checks[] = [
                 'label'  => "PHP extension: {$ext}",
                 'ok'     => extension_loaded($ext),

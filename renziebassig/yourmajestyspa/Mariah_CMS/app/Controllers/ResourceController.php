@@ -11,6 +11,7 @@ use Mariah\Core\Slug;
 use Mariah\Core\Validator;
 use Mariah\Repositories\BaseRepository;
 use Mariah\Services\AuditLogger;
+use Mariah\Services\HtmlSanitizer;
 use Mariah\Services\MediaService;
 
 /**
@@ -63,6 +64,20 @@ abstract class ResourceController
         return $data;
     }
 
+    /**
+     * Columns holding operator-authored HTML from the rich text editor.
+     *
+     * Listed here rather than sanitised inside each prepare() so that a
+     * resource cannot acquire a rich field and quietly forget to clean it —
+     * store() and update() both run this before prepare() is ever called.
+     *
+     * @return string[]
+     */
+    protected function richTextFields(): array
+    {
+        return [];
+    }
+
     /** Runs inside the same transaction as the write (relations, etc.). */
     protected function afterSave(int $id, array $data, Request $request, bool $isUpdate): void
     {
@@ -111,6 +126,7 @@ abstract class ResourceController
         $data = Validator::make($request->body())
             ->validate($this->rules(false), $this->fieldLabels());
 
+        $data = $this->sanitizeRichText($data);
         $data = $this->prepare($data, $request, null);
 
         if ($this->hasSlug()) {
@@ -145,6 +161,7 @@ abstract class ResourceController
         $data = Validator::make($request->body())
             ->validate($this->rules(true), $this->fieldLabels());
 
+        $data = $this->sanitizeRichText($data);
         $data = $this->prepare($data, $request, $before);
 
         // Only re-slug when the client explicitly sent one, or the title moved.
@@ -299,6 +316,62 @@ abstract class ResourceController
     // -----------------------------------------------------------------
     // Helpers
     // -----------------------------------------------------------------
+
+    /**
+     * Reduces every rich text field to the allowlisted subset before anything
+     * else touches it.
+     *
+     * The length is re-checked afterwards because Validator measured what was
+     * submitted, and sanitising can add characters — a link gains
+     * `rel="noopener noreferrer" target="_blank"` it did not arrive with. The
+     * cap is what protects the column, so it has to apply to what is stored.
+     */
+    private function sanitizeRichText(array $data): array
+    {
+        $fields = $this->richTextFields();
+
+        if ($fields === []) {
+            return $data;
+        }
+
+        $rules  = $this->rules(true);
+        $labels = $this->fieldLabels();
+
+        foreach ($fields as $field) {
+            if (!array_key_exists($field, $data)) {
+                continue;   // a partial update that does not touch this column
+            }
+
+            $clean = HtmlSanitizer::clean($data[$field] === null ? '' : (string) $data[$field]);
+
+            // Cleared in the editor means cleared in the database, not an
+            // empty paragraph stored forever.
+            $data[$field] = $clean === '' ? null : $clean;
+
+            if ($clean === '') {
+                continue;
+            }
+
+            $max = self::maxLengthOf($rules[$field] ?? '');
+
+            if ($max !== null && mb_strlen($clean) > $max) {
+                throw HttpException::validation([
+                    $field => ($labels[$field] ?? $field)
+                        . ' is too long once formatting is included — '
+                        . number_format(mb_strlen($clean)) . ' of '
+                        . number_format($max) . ' characters. Try shortening it.',
+                ]);
+            }
+        }
+
+        return $data;
+    }
+
+    /** The `max:N` value out of a Validator rule string, if it carries one. */
+    private static function maxLengthOf(string $rules): ?int
+    {
+        return preg_match('/(?:^|\|)max:(\d+)/', $rules, $m) === 1 ? (int) $m[1] : null;
+    }
 
     protected function idFrom(array $args): int
     {

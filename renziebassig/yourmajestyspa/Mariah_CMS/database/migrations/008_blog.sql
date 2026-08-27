@@ -7,9 +7,14 @@
 -- typed in by a person — so "scheduled for Friday" is one date, not a chore
 -- someone has to remember on Friday morning.
 --
--- `content` holds PLAIN TEXT, with a blank line between paragraphs. The public
--- page escapes every character of it before rendering, so a post can never
--- inject markup or script into the website.
+-- `content` holds RICH TEXT — a small allowlisted subset of HTML, written in
+-- the admin editor and reduced to that subset by App\Services\HtmlSanitizer on
+-- every write. The public page renders it WITHOUT escaping, which is safe only
+-- because nothing outside the allowlist can reach this column.
+--
+-- Posts written before the editor existed hold plain text with a blank line
+-- between paragraphs; the page detects the absence of markup and applies the
+-- old paragraph rule, so nothing had to be migrated.
 -- =============================================================
 
 CREATE TABLE IF NOT EXISTS blog_categories (

@@ -5,7 +5,9 @@ import { navigate } from '../router.js';
 import { session } from '../session.js';
 import { esc } from '../ui/dom.js';
 import { DataTable } from '../ui/table.js';
-import { bindSlugPreview, field, fill, section, select, switchField, textarea } from '../ui/form.js';
+import {
+  bindSlugPreview, field, fill, readRichText, richText, section, select, switchField, textarea,
+} from '../ui/form.js';
 import { mediaField } from '../ui/media-picker.js';
 import { notify } from '../ui/feedback.js';
 import {
@@ -119,8 +121,9 @@ export async function giftCardFormPage(outlet, args) {
       name: 'badge_label', label: 'Badge', span: 6, value: record?.badge_label,
       placeholder: 'Members',
     }),
-    textarea({
-      name: 'description', label: 'Description', rows: 5, span: 12, value: record?.description,
+    richText({
+      name: 'description', label: 'Description', span: 12, minHeight: '13rem',
+      value: record?.description,
     }),
   );
 
@@ -200,7 +203,12 @@ export async function giftCardFormPage(outlet, args) {
   bindFormSubmit({
     form, base: '/gift-cards', id, redirectTo: '/gift-cards',
     successMessage: isEdit ? 'Offering updated.' : 'Offering created.',
-    transform: (payload) => {
+    transform: (payload, formEl) => {
+      // The editor is a contenteditable div with no name, so formValues()
+      // never saw it.
+      const richBody = readRichText(formEl, 'description');
+      if (richBody !== null) payload.description = richBody;
+
       payload.media_id = payload.media_id ? Number(payload.media_id) : null;
       return payload;
     },

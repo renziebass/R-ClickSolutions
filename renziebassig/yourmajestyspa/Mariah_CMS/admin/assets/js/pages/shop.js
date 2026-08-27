@@ -10,7 +10,9 @@ import { navigate } from '../router.js';
 import { session } from '../session.js';
 import { esc, relativeTime } from '../ui/dom.js';
 import { DataTable } from '../ui/table.js';
-import { bindSlugPreview, field, fill, section, select, switchField, textarea } from '../ui/form.js';
+import {
+  bindSlugPreview, field, fill, readRichText, richText, section, select, switchField, textarea,
+} from '../ui/form.js';
 import { mediaField } from '../ui/media-picker.js';
 import { notify } from '../ui/feedback.js';
 import {
@@ -138,8 +140,9 @@ export async function productFormPage(outlet, args) {
       name: 'badge_label', label: 'Badge', span: 4, value: record?.badge_label,
       placeholder: 'Best seller', hint: 'Shown as a corner label on the card.',
     }),
-    textarea({
-      name: 'description', label: 'Description', rows: 4, span: 12, value: record?.description,
+    richText({
+      name: 'description', label: 'Description', span: 12, value: record?.description,
+      minHeight: '11rem',
     }),
   ));
 
@@ -195,10 +198,16 @@ export async function productFormPage(outlet, args) {
   bindFormSubmit({
     form, base: '/products', id, redirectTo: '/products',
     successMessage: isEdit ? 'Product updated.' : 'Product created.',
-    transform: (payload) => {
+    transform: (payload, formEl) => {
       payload.media_id = payload.media_id ? Number(payload.media_id) : null;
       payload.brand_id = payload.brand_id ? Number(payload.brand_id) : null;
       payload.category_id = payload.category_id ? Number(payload.category_id) : null;
+
+      // The editor is a contenteditable div with no name, so formValues()
+      // never saw it.
+      const richBody = readRichText(formEl, 'description');
+      if (richBody !== null) payload.description = richBody;
+
       return payload;
     },
   });

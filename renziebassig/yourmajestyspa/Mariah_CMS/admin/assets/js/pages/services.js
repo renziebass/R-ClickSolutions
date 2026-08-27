@@ -6,7 +6,8 @@ import { session } from '../session.js';
 import { dateLabel, el, esc, relativeTime } from '../ui/dom.js';
 import { DataTable } from '../ui/table.js';
 import {
-  field, fill, readRepeater, repeater, section, select, switchField, textarea, bindSlugPreview,
+  field, fill, readRepeater, readRichText, repeater, richText, section, select,
+  switchField, textarea, bindSlugPreview,
 } from '../ui/form.js';
 import { mediaField } from '../ui/media-picker.js';
 import { notify } from '../ui/feedback.js';
@@ -208,10 +209,10 @@ export async function serviceFormPage(outlet, args) {
       value: record?.short_description,
       hint: 'One line, shown under the service name in listings. Max 500 characters.',
     }),
-    textarea({
-      name: 'description', label: 'Full description', rows: 6, span: 12,
+    richText({
+      name: 'description', label: 'Full description', span: 12,
       value: record?.description,
-      hint: 'The full copy shown when a guest expands the service card.',
+      hint: 'The full copy shown when a guest opens the treatment. Formatting is kept.',
     }),
   ));
 
@@ -279,18 +280,20 @@ export async function serviceFormPage(outlet, args) {
       'Guest information',
       'Shown when a guest opens the treatment. All optional.'
     ),
-    textarea({
-      name: 'benefits', label: 'Benefits', rows: 2, span: 6,
+    richText({
+      name: 'benefits', label: 'Benefits', span: 6, minHeight: '9rem',
       value: record?.benefits,
       placeholder: 'Releases knots, improves mobility',
+      hint: 'A bulleted list reads well here.',
     }),
-    textarea({
-      name: 'inclusions', label: 'What is included', rows: 2, span: 6,
+    richText({
+      name: 'inclusions', label: 'What is included', span: 6, minHeight: '9rem',
       value: record?.inclusions,
       placeholder: 'Heated stones, full-body massage',
+      hint: 'A bulleted list reads well here.',
     }),
-    textarea({
-      name: 'contraindications', label: 'Who should avoid this', rows: 2, span: 12,
+    richText({
+      name: 'contraindications', label: 'Who should avoid this', span: 12, minHeight: '9rem',
       value: record?.contraindications,
       placeholder: 'Heat sensitivity, diabetic neuropathy, recent injuries',
       hint: 'Shown prominently before booking. Worth filling in wherever it applies.',
@@ -383,6 +386,13 @@ export async function serviceFormPage(outlet, args) {
       // entirely, which tells the server to leave the tiers alone.
       const variants = readRepeater(formEl, 'variants');
       if (variants !== null) payload.variants = variants;
+
+      // Same reason as the tiers: the editors are contenteditable divs with no
+      // name, so formValues() never saw them.
+      ['description', 'benefits', 'inclusions', 'contraindications'].forEach((key) => {
+        const html = readRichText(formEl, key);
+        if (html !== null) payload[key] = html;
+      });
 
       return payload;
     },

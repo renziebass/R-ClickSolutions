@@ -49,6 +49,12 @@ final class SpecialController extends ResourceController
         ];
     }
 
+    /** The long special copy. */
+    protected function richTextFields(): array
+    {
+        return ['description'];
+    }
+
     protected function fieldLabels(): array
     {
         return [

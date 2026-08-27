@@ -13,7 +13,7 @@
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Lato:wght@300;400;700&family=Great+Vibes&display=swap"
     rel="stylesheet">
   <style>
-    @layer tokens-base, eyebrow-crown, buttons, nav, mobile-floating-actions, hero, specials, service-cards, bands, ranked, gift, shop, cart-drawer, standard, journal, testimonials, contact, footer, reveal, responsive, cms;
+    @layer tokens-base, eyebrow-crown, buttons, nav, mobile-floating-actions, hero, specials, service-cards, bands, ranked, gift, shop, cart-drawer, standard, journal, testimonials, contact, footer, reveal, responsive, cms, rich-text;
 
     @layer tokens-base {
     /* ============================================================
@@ -1306,7 +1306,8 @@
       margin: 0 0 .55rem
     }
 
-    .svc__panel p b {
+    .svc__panel p b,
+    .svc__panel p strong {
       color: var(--text);
       font-weight: 500
     }
@@ -1445,7 +1446,10 @@
       color: var(--text-soft)
     }
 
-    .svc-care b {
+    /* Direct child only. The card now also holds rich text, and a <strong>
+       inside that copy must stay inline rather than break to its own line
+       like the label above it. */
+    .svc-care > b {
       display: block;
       color: var(--text);
       font-weight: 500;
@@ -2998,6 +3002,128 @@
       }
     }
     } /* end responsive */
+
+    @layer rich-text {
+    /* ============================================================
+   RICH TEXT — the small allowlist of markup HtmlSanitizer permits.
+
+   Declared last in the layer order on purpose. The global reset in
+   tokens-base sets `a { color: inherit; text-decoration: none }`, which
+   would render an authored link indistinguishable from the words around
+   it. A later layer wins regardless of specificity, so this restores it
+   without touching the reset every other link on the page relies on.
+   ============================================================ */
+    .rte > :first-child { margin-top: 0 }
+    .rte > :last-child { margin-bottom: 0 }
+
+    .rte p {
+      margin: 0 0 1rem
+    }
+
+    .rte b,
+    .rte strong {
+      font-weight: 600;
+      color: var(--text)
+    }
+
+    .rte em,
+    .rte i {
+      font-style: italic
+    }
+
+    .rte u {
+      text-decoration: underline;
+      text-underline-offset: .15em
+    }
+
+    .rte s {
+      text-decoration: line-through;
+      opacity: .7
+    }
+
+    /* Nothing styled these before: lists fell to the UA default. */
+    .rte ul,
+    .rte ol {
+      margin: 0 0 1rem;
+      padding-left: 1.35rem
+    }
+
+    .rte ul { list-style: disc }
+    .rte ol { list-style: decimal }
+
+    .rte li {
+      margin-bottom: .4rem;
+      padding-left: .2rem
+    }
+
+    .rte li::marker { color: var(--gold-dp) }
+
+    .rte h2,
+    .rte h3 {
+      font-family: var(--f-display);
+      color: var(--emerald);
+      margin: 1.8rem 0 .7rem
+    }
+
+    .rte h2 { font-size: clamp(1.2rem, 1.1rem + .5vw, 1.5rem) }
+    .rte h3 { font-size: clamp(1.05rem, 1rem + .3vw, 1.2rem) }
+
+    .rte a {
+      color: var(--emerald-3);
+      text-decoration: underline;
+      text-underline-offset: .18em;
+      text-decoration-thickness: 1px
+    }
+
+    .rte a:hover { color: var(--gold-dp) }
+
+    /* The brand palette. These class names are the ones HtmlSanitizer
+       emits; anything else it strips, so this list is the whole set. */
+    .rte-c-emerald { color: var(--emerald) }
+    .rte-c-gold { color: var(--gold-dp) }
+    .rte-c-soft { color: var(--text-soft) }
+
+    .rte-h-gold,
+    .rte-h-mint {
+      padding: .05em .25em;
+      border-radius: 3px;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone
+    }
+
+    .rte-h-gold { background: var(--gold-lt) }
+    .rte-h-mint { background: #CFE6DD }
+
+    /* On a dark band the emerald link and body colours disappear, so the
+       specials card gets its own treatment. */
+    .special .rte,
+    .special .rte p { color: rgba(253, 252, 249, .86) }
+
+    .special .rte a,
+    .special .rte-c-emerald,
+    .special .rte-c-soft { color: var(--gold-lt) }
+
+    .special .rte li::marker { color: var(--gold-lt) }
+
+    /* The reader already sets its own measure and rhythm; inherit it
+       rather than overriding it. */
+    .reader__body.rte p {
+      font-size: clamp(1.02rem, .98rem + .2vw, 1.12rem);
+      line-height: 1.9;
+      margin: 0 0 1.4rem
+    }
+
+    .reader__body.rte li {
+      font-size: clamp(1.02rem, .98rem + .2vw, 1.12rem);
+      line-height: 1.8
+    }
+
+    /* Treatment detail copy sits a little tighter than an article. */
+    .svc-detail .rte p,
+    .svc-detail .rte li { font-size: .95rem }
+
+    .svc-care .rte p:last-child { margin-bottom: 0 }
+    } /* end rich-text */
   </style>
 </head>
 
@@ -3871,7 +3997,7 @@
             + '<div class="special__body">'
             + (s.badge_label ? '<p class="special__tag">' + esc(s.badge_label) + '</p>' : '')
             + '<h3>' + esc(s.title) + '</h3>'
-            + (s.description ? '<p>' + esc(s.description) + '</p>' : '')
+            + (s.description ? '<div class="rte">' + rich(s.description) + '</div>' : '')
             + price
             + bookBtn(s.booking_url, 'Book Now', 'btn btn--sm btn--white')
             + '</div></article>';
@@ -4003,7 +4129,13 @@
         var image       = section.querySelector('[data-cms="gift-image"]');
 
         if (title) title.textContent = card.title || '';
-        if (description) description.textContent = card.description || '';
+
+        // The description is rich text, so it needs innerHTML rather than
+        // textContent — which would print the tags as words.
+        if (description) {
+          description.innerHTML = rich(card.description);
+          description.classList.add('rte');
+        }
 
         if (link) {
           link.hidden = !card.purchase_url;
@@ -4184,9 +4316,37 @@
          line is escaped, so nothing an operator types can inject markup. */
       function svcProse(text) {
         if (!text) return '';
-        return String(text).split(/\n{2,}/).map(function (block) {
-          return '<p>' + esc(block.replace(/\n+/g, ' ').trim()) + '</p>';
+        return String(text).split(/\r?\n{2,}/).map(function (block) {
+          var line = block.replace(/\s+/g, ' ').trim();
+          return line ? '<p>' + esc(line) + '</p>' : '';
         }).join('');
+      }
+
+      /* The ONLY place on this page where server data is printed as markup
+         rather than as text.
+
+         It is safe for exactly one reason: these fields are reduced to a small
+         allowlist by App\Services\HtmlSanitizer on every write, so nothing
+         outside that allowlist can be in the database to print. Do not reach
+         for this helper for any other field — everything else goes through
+         esc(), and that is what keeps this page's attack surface one function
+         wide.
+
+         Copy written before the editor existed has no markup at all, so it
+         falls through to the old blank-line paragraph rule and renders exactly
+         as it always did. That is why nothing had to be migrated. */
+      var RICH_TAGS = /<(p|br|strong|em|u|s|ul|ol|li|a|span|h2|h3)\b/i;
+
+      function rich(value) {
+        if (!value) return '';
+        return RICH_TAGS.test(value) ? value : svcProse(value);
+      }
+
+      /* rich(), wrapped so the prose typography applies. Returns '' for an
+         empty field so svcSection() drops its heading with it. */
+      function richBlock(value) {
+        var html = rich(value);
+        return html ? '<div class="rte">' + html + '</div>' : '';
       }
 
       function renderTreatment(s) {
@@ -4232,18 +4392,20 @@
           + (s.short_description
             ? '<p class="svc-detail__lede">' + esc(s.short_description) + '</p>'
             : '')
-          + svcProse(s.description)
+          + '<div class="rte">' + rich(s.description) + '</div>'
+          /* complimentary_enhancement is a short plain field, so it stays
+             escaped — but it needs a block wrapper, which it never had. */
           + (s.complimentary_enhancement
             ? '<div class="svc-care"><b>Included with this treatment</b>'
-              + esc(s.complimentary_enhancement) + '</div>'
+              + '<p>' + esc(s.complimentary_enhancement) + '</p></div>'
             : '')
           + (tierRows ? svcSection('Choose your length', tierRows) : single)
-          + svcSection('What it is best for', svcProse(s.benefits))
-          + svcSection('What is included', svcProse(s.inclusions))
+          + svcSection('What it is best for', richBlock(s.benefits))
+          + svcSection('What is included', richBlock(s.inclusions))
           + svcSection('Enhance your treatment', addonRows)
           + (s.contraindications
             ? '<div class="svc-care"><b>Please let us know before booking</b>'
-              + esc(s.contraindications) + '</div>'
+              + '<div class="rte">' + rich(s.contraindications) + '</div></div>'
             : '')
           + '</div>';
       }
@@ -4380,9 +4542,19 @@
         if (post.read_label) meta.push('<span>' + esc(post.read_label) + '</span>');
         if (post.author_name) meta.push('<span>' + esc(post.author_name) + '</span>');
 
-        var paragraphs = (post.paragraphs && post.paragraphs.length)
-          ? post.paragraphs
-          : (post.excerpt ? [post.excerpt] : []);
+        /* A post written in the editor holds rich text and is printed as-is.
+           One written before it exists as `paragraphs`, split server-side on
+           blank lines — still escaped, one <p> each, exactly as before. */
+        var body;
+
+        if (post.content && RICH_TAGS.test(post.content)) {
+          body = post.content;
+        } else {
+          var paragraphs = (post.paragraphs && post.paragraphs.length)
+            ? post.paragraphs
+            : (post.excerpt ? [post.excerpt] : []);
+          body = paragraphs.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('');
+        }
 
         var tags = (post.tags || []).map(function (tag) {
           return '<span class="reader__tag">' + esc(tag) + '</span>';
@@ -4399,9 +4571,7 @@
             : '')
           + '<h1>' + esc(post.title) + '</h1>'
           + (meta.length ? '<div class="reader__meta">' + meta.join('') + '</div>' : '')
-          + '<div class="reader__body">'
-          + paragraphs.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('')
-          + '</div>'
+          + '<div class="reader__body rte">' + body + '</div>'
           + (tags ? '<div class="reader__tags">' + tags + '</div>' : '')
           + related;
       }

@@ -161,9 +161,11 @@ final class ServiceCsvSchema
             'slug'              => 'nullable|string|max:190',
             'short_description' => 'nullable|string|max:500',
             'description'       => 'nullable|string|max:20000',
-            'benefits'          => 'nullable|string|max:5000',
-            'inclusions'        => 'nullable|string|max:5000',
-            'contraindications' => 'nullable|string|max:5000',
+            // Raised from 5,000: these three hold rich text now, and markup
+            // costs characters the author never typed.
+            'benefits'          => 'nullable|string|max:8000',
+            'inclusions'        => 'nullable|string|max:8000',
+            'contraindications' => 'nullable|string|max:8000',
             'complimentary_enhancement' => 'nullable|string|max:500',
             'price'             => $required . 'numeric|min:0|max:100000',
             'price_display'     => 'nullable|string|max:60',

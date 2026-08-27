@@ -51,6 +51,12 @@ final class BlogPostController extends ResourceController
         ];
     }
 
+    /** The post body. excerpt and meta_description stay plain — markup in an SEO description is worse than useless. */
+    protected function richTextFields(): array
+    {
+        return ['content'];
+    }
+
     protected function fieldLabels(): array
     {
         return [

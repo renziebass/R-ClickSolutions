@@ -34,6 +34,12 @@ final class ServiceController extends ResourceController
         return ServiceCsvSchema::rules($isUpdate);
     }
 
+    /** All TEXT columns. short_description stays plain: it is a 500-character card blurb. */
+    protected function richTextFields(): array
+    {
+        return ['description', 'benefits', 'inclusions', 'contraindications'];
+    }
+
     protected function fieldLabels(): array
     {
         return ServiceCsvSchema::labels();

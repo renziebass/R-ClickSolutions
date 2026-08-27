@@ -43,6 +43,12 @@ final class GiftCardController extends ResourceController
         ];
     }
 
+    /** The long gift card copy. */
+    protected function richTextFields(): array
+    {
+        return ['description'];
+    }
+
     protected function fieldLabels(): array
     {
         return [

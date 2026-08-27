@@ -5,7 +5,9 @@ import { navigate } from '../router.js';
 import { session } from '../session.js';
 import { dateLabel, esc } from '../ui/dom.js';
 import { DataTable } from '../ui/table.js';
-import { bindSlugPreview, field, fill, section, select, switchField, textarea } from '../ui/form.js';
+import {
+  bindSlugPreview, field, fill, readRichText, richText, section, select, switchField, textarea,
+} from '../ui/form.js';
 import { mediaField } from '../ui/media-picker.js';
 import { notify } from '../ui/feedback.js';
 import {
@@ -135,10 +137,10 @@ export async function specialFormPage(outlet, args) {
       name: 'booking_url', label: 'Booking link', type: 'url', span: 8,
       value: record?.booking_url,
     }),
-    textarea({
-      name: 'description', label: 'Description', rows: 5, span: 12,
+    richText({
+      name: 'description', label: 'Description', span: 12, minHeight: '13rem',
       value: record?.description,
-      hint: 'What is included in the package.',
+      hint: 'What is included in the package. A bulleted list reads well here.',
     }),
   ));
 
@@ -205,7 +207,12 @@ export async function specialFormPage(outlet, args) {
     id,
     redirectTo: '/specials',
     successMessage: isEdit ? 'Special updated.' : 'Special created.',
-    transform: (payload) => {
+    transform: (payload, formEl) => {
+      // The editor is a contenteditable div with no name, so formValues()
+      // never saw it.
+      const richBody = readRichText(formEl, 'description');
+      if (richBody !== null) payload.description = richBody;
+
       payload.media_id = payload.media_id ? Number(payload.media_id) : null;
       return payload;
     },

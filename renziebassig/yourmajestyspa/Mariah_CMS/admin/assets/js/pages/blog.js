@@ -5,7 +5,9 @@ import { navigate } from '../router.js';
 import { session } from '../session.js';
 import { dateTimeLabel, esc } from '../ui/dom.js';
 import { DataTable } from '../ui/table.js';
-import { bindSlugPreview, field, fill, section, select, switchField, textarea } from '../ui/form.js';
+import {
+  bindSlugPreview, field, fill, readRichText, richText, section, select, switchField, textarea,
+} from '../ui/form.js';
 import { mediaField } from '../ui/media-picker.js';
 import { notify } from '../ui/feedback.js';
 import {
@@ -164,10 +166,11 @@ export async function blogPostFormPage(outlet, args) {
       placeholder: 'One or two sentences shown on the card.',
       hint: 'Leave blank and the opening of the post is used.',
     }),
-    textarea({
-      name: 'content', label: 'Post content', rows: 18, span: 12, required: true,
-      value: record?.content,
-      hint: 'Plain text — leave a blank line between paragraphs. Reading time is worked out for you.',
+    richText({
+      name: 'content', label: 'Post content', span: 12, required: true,
+      value: record?.content, minHeight: '24rem',
+      hint: 'Format it however reads best. Reading time is worked out for you, '
+        + 'and the excerpt is taken from the opening as plain text.',
     }),
   ));
 
@@ -232,7 +235,12 @@ export async function blogPostFormPage(outlet, args) {
     id,
     redirectTo: '/blog-posts',
     successMessage: isEdit ? 'Post updated.' : 'Post created.',
-    transform: (payload) => {
+    transform: (payload, formEl) => {
+      // The editor is a contenteditable div with no name, so formValues()
+      // never saw it.
+      const richBody = readRichText(formEl, 'content');
+      if (richBody !== null) payload.content = richBody;
+
       payload.media_id = payload.media_id ? Number(payload.media_id) : null;
       payload.category_id = payload.category_id ? Number(payload.category_id) : null;
       return payload;

@@ -831,10 +831,122 @@ select {
 
 .field.has-error input,
 .field.has-error select,
-.field.has-error textarea {
+.field.has-error textarea,
+.field.has-error .rte-wrap {
   border-color: var(--danger);
   background: #FFFBFA;
 }
+
+/* Rich text editor ------------------------------------------- */
+.rte-wrap {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r);
+  background: var(--surface);
+  overflow: hidden;
+  transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+.rte-wrap:focus-within {
+  border-color: var(--emerald-3);
+  box-shadow: 0 0 0 3px rgba(27, 90, 91, 0.12);
+}
+
+.rte-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.3rem 0.4rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+}
+
+.rte-btn {
+  border: 0;
+  background: none;
+  border-radius: 5px;
+  min-width: 1.9rem;
+  height: 1.9rem;
+  padding: 0 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text-soft);
+  cursor: pointer;
+  line-height: 1;
+}
+.rte-btn:hover { background: var(--muted-bg); color: var(--text); }
+.rte-btn:focus-visible { outline: 2px solid var(--emerald-3); outline-offset: 1px; }
+
+.rte-sep {
+  width: 1px;
+  height: 1.2rem;
+  margin: 0 0.25rem;
+  background: var(--line);
+}
+
+.rte-hl { background: #E7CE7E; padding: 0 0.15rem; border-radius: 2px; }
+
+.rte-swatch { position: relative; display: inline-flex; }
+.rte-swatch__menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 20;
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.35rem;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+.rte-dot {
+  width: 1.15rem;
+  height: 1.15rem;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+}
+.rte-dot--none {
+  background: var(--surface);
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  line-height: 1;
+}
+
+/* The editable surface. Kept visually identical to a textarea so the two
+   never look like different kinds of field. */
+.rte {
+  padding: 0.7rem 0.75rem;
+  font-family: var(--f-body);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--text);
+  overflow-y: auto;
+  max-height: 32rem;
+}
+.rte:focus { outline: none; }
+.rte:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text-faint);
+}
+
+/* WYSIWYG in fact: what the editor shows has to match what the website
+   renders, so these mirror the .rte rules on the public page. */
+.rte p { margin: 0 0 0.85rem; }
+.rte p:last-child { margin-bottom: 0; }
+.rte h2, .rte h3 { font-family: var(--f-body); font-weight: 600; margin: 1.2rem 0 0.5rem; }
+.rte h2 { font-size: 1.05rem; }
+.rte h3 { font-size: 0.95rem; }
+.rte ul, .rte ol { margin: 0 0 0.85rem; padding-left: 1.4rem; }
+.rte li { margin-bottom: 0.3rem; }
+.rte a { color: var(--emerald-3); text-decoration: underline; }
+.rte b, .rte strong { font-weight: 600; color: var(--text); }
+
+.rte-c-emerald { color: #0F3D3E; }
+.rte-c-gold    { color: #A8862A; }
+.rte-c-soft    { color: #6A6A66; }
+.rte-h-gold    { background: #E7CE7E; }
+.rte-h-mint    { background: #CFE6DD; }
 
 .field__error {
   display: block;

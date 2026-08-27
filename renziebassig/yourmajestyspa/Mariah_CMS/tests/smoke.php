@@ -205,9 +205,14 @@ $firstPost = $blogPosts['body']['data'][0] ?? null;
 
 if ($firstPost !== null) {
     $onePost = request('GET', '/public/blog-posts/' . rawurlencode((string) $firstPost['slug']), null, false);
+    // A post written in the rich text editor is HTML in `content` and has no
+    // paragraphs to split; one written before it still arrives pre-split.
+    // Either is a readable body, and the page handles both.
     check(
-        'GET /public/blog-posts/{slug} returns the post with its paragraphs',
-        $onePost['status'] === 200 && !empty($onePost['body']['data']['paragraphs']),
+        'GET /public/blog-posts/{slug} returns a readable body',
+        $onePost['status'] === 200
+            && (!empty($onePost['body']['data']['paragraphs'])
+                || !empty($onePost['body']['data']['content'])),
         describe($onePost)
     );
 } else {
@@ -1108,6 +1113,120 @@ section('Sub-categories, price tiers and add-ons');
             Database::run('DELETE FROM service_categories WHERE id = ?', [$childId]);
         }
         Database::run('DELETE FROM service_categories WHERE id = ?', [$parentId]);
+    }
+}
+
+// =====================================================================
+section('Rich text sanitising');
+
+// This is the security boundary. Rich text is the only content on the public
+// site that is printed as markup instead of escaped, so what survives this
+// class is what runs in a guest's browser. Every case below is a payload that
+// must not.
+{
+    $rteServiceId = null;
+
+    $rteService = request('POST', '/services', [
+        'name'        => 'Smoke RTE ' . bin2hex(random_bytes(3)),
+        'category_id' => $categoryId,
+        'price'       => 10,
+        'status'      => 'inactive',
+    ]);
+
+    $rteServiceId = $rteService['body']['data']['id'] ?? null;
+
+    if ($rteServiceId === null) {
+        skip('Rich text sanitising', 'could not create the test service');
+    } else {
+        $createdServiceIds[] = (int) $rteServiceId;
+
+        /** Saves $html into the description and returns what came back out. */
+        $sanitised = static function (string $html) use ($rteServiceId): string {
+            $result = request('PUT', "/services/{$rteServiceId}", ['description' => $html]);
+            return (string) ($result['body']['data']['description'] ?? '');
+        };
+
+        $cases = [
+            // label, input, must NOT contain, must contain ('' = skip)
+            ['A <script> block is removed with its contents',
+             '<p>before</p><script>alert(1)</script><p>after</p>', 'alert(1)', 'before'],
+
+            ['An event handler cannot ride in on an allowed tag',
+             '<p onclick="alert(1)">hi</p>', 'onclick', 'hi'],
+
+            ['An <img onerror> payload is removed entirely',
+             '<p>x</p><img src=x onerror=alert(1)>', 'onerror', 'x'],
+
+            ['A javascript: link is stripped but its words are kept',
+             '<a href="javascript:alert(1)">click me</a>', 'javascript', 'click me'],
+
+            ['A data: URL link is stripped',
+             '<a href="data:text/html,<script>alert(1)</script>">x</a>', 'data:', 'x'],
+
+            ['Control characters cannot smuggle a scheme past the check',
+             "<a href=\"java\tscript:alert(1)\">x</a>", 'script:', 'x'],
+
+            ['A real link survives, and is forced safe',
+             '<a href="https://go.booker.com/x">Book</a>', '', 'noopener noreferrer'],
+
+            ['An <iframe> is removed',
+             '<p>a</p><iframe src="https://evil.test"></iframe>', 'iframe', 'a'],
+
+            ['A style attribute never survives',
+             '<p style="position:fixed;inset:0">x</p>', 'style=', 'x'],
+
+            ['An on-palette colour becomes a class',
+             '<span style="color: rgb(168, 134, 42)">gold</span>', 'style=', 'rte-c-gold'],
+
+            ['An off-palette colour is dropped, keeping the words',
+             '<span style="color:#ff0000">red</span>', 'rte-c-', 'red'],
+
+            ['A forged class is stripped',
+             '<span class="evil-class">x</span>', 'evil-class', 'x'],
+
+            ['Formatting and lists survive intact',
+             '<p><strong>bold</strong> and <em>italic</em></p><ul><li>one</li><li>two</li></ul>',
+             '', '<li>one</li>'],
+
+            ['A valid dir is kept',
+             '<p dir="rtl">x</p>', '', 'dir="rtl"'],
+
+            ['An invalid dir is dropped',
+             '<p dir="javascript:alert(1)">x</p>', 'dir=', 'x'],
+
+            ['An unknown tag is unwrapped, keeping its text',
+             '<blockquote>quoted</blockquote>', 'blockquote', 'quoted'],
+        ];
+
+        foreach ($cases as [$label, $input, $mustNot, $must]) {
+            $out = $sanitised($input);
+
+            $ok = ($mustNot === '' || !str_contains(strtolower($out), strtolower($mustNot)))
+                && ($must === '' || str_contains($out, $must));
+
+            check($label, $ok, 'Got: ' . substr($out, 0, 200));
+        }
+
+        // Clearing the editor must clear the column, not store an empty
+        // paragraph that renders as a blank gap forever.
+        $cleared = request('PUT', "/services/{$rteServiceId}", ['description' => '<p><br></p>']);
+        check(
+            'An empty editor stores nothing',
+            ($cleared['body']['data']['description'] ?? 'x') === null,
+            'Got: ' . json_encode($cleared['body']['data']['description'] ?? 'missing')
+        );
+
+        // Plain text written before the editor existed must round-trip
+        // untouched, or every existing description would change on next save.
+        $legacy = $sanitised("First paragraph.\n\nSecond paragraph.");
+        check(
+            'Legacy plain text is left alone',
+            str_contains($legacy, 'First paragraph.') && !str_contains($legacy, '<'),
+            'Got: ' . substr($legacy, 0, 200)
+        );
+
+        Database::run('DELETE FROM services WHERE id = ?', [$rteServiceId]);
+        $createdServiceIds = array_values(array_diff($createdServiceIds, [(int) $rteServiceId]));
     }
 }
 

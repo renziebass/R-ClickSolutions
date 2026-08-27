@@ -114,6 +114,13 @@ effect on their very next request rather than at token expiry. `.env` therefore 
 **Soft deletes everywhere.** Content is never destroyed by the UI. `deleted_at` +
 `deleted_by` hide it, the "Deleted items" filter shows it, and Restore brings it back.
 
+**Rich text is an allowlist, not an editor setting.** Long-form descriptions are written
+with a formatting toolbar and stored as HTML — but only the subset
+`App\Services\HtmlSanitizer` rebuilds them into. It runs on **write**, in
+`ResourceController`, driven by each controller's `richTextFields()`. That is the one
+place on the public site where stored data is printed as markup instead of escaped, so
+the allowlist is the boundary; see §14.
+
 **Display overrides alongside numbers.** The live site shows `from $150`,
 `$199 – $225` and `1 hr & 40 mins`, not plain numbers. Services carry both a numeric
 `price` / `duration_minutes` (for sorting and reporting) and an optional
@@ -807,7 +814,30 @@ in version control. Back it up together with the database.
   Table names, sort columns and filter columns come from hardcoded allowlists, never
   from input. `LIKE` wildcards in search terms are escaped so `%` is matched literally.
 - **XSS** — the admin SPA escapes every database value through one `esc()` helper before
-  it reaches `innerHTML`; the public renderer uses the same approach.
+  it reaches `innerHTML`; the public renderer uses the same approach. **The one
+  exception is rich text**, and it is worth understanding precisely:
+  - Long-form descriptions (service `description`/`benefits`/`inclusions`/
+    `contraindications`, blog `content`, and the `description` on products, promotions,
+    specials and gift cards) are printed as markup by the `rich()` helper on the public
+    page, not escaped.
+  - That is safe only because `App\Services\HtmlSanitizer` rewrites those columns from
+    an allowlist on every write, server-side, in `ResourceController::store()`/`update()`.
+    Nothing outside the allowlist can be in the database to print.
+  - The allowlist is `p h2 h3 ul ol li br strong em u s a span`. Every attribute is
+    stripped and only `a[href]`, `span[class]` and `dir="ltr|rtl"` are put back.
+    `href` must be `http`/`https`/`mailto`/`tel` after control characters are removed,
+    and every anchor is forced to `rel="noopener noreferrer"`.
+  - Colour is a **class from a fixed palette**, never a `style` attribute. The editor
+    emits `style="color: rgb(…)"`, the sanitiser maps palette values onto classes and
+    drops the attribute — so `style` never reaches storage at all.
+  - It rebuilds rather than filters. `strip_tags()` is not a sanitiser: it keeps
+    `onerror=` on every tag it does not remove.
+  - It **fails closed**. Without `ext-dom` it returns text with all markup removed,
+    never the input unchanged — which is why `dom` is a fatal check in the installer.
+  - Every one of these rules has a payload asserting it in the `Rich text sanitising`
+    block of `tests/smoke.php`. Treat that block as the specification.
+  - **There is no CSP backstop.** The project sets no Content-Security-Policy, so the
+    sanitiser is the only control. Adding one is the obvious next hardening step.
 - **CSRF** — a double-submit token is required on every POST/PUT/PATCH/DELETE, on top of
   a `SameSite=Lax` session cookie.
 - **Session** — HttpOnly, Secure, SameSite=Lax, regenerated on sign-in (defeating

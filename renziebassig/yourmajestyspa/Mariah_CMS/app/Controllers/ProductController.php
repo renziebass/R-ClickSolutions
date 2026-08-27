@@ -46,6 +46,12 @@ final class ProductController extends ResourceController
         ];
     }
 
+    /** The long product copy shown in the shop. */
+    protected function richTextFields(): array
+    {
+        return ['description'];
+    }
+
     protected function fieldLabels(): array
     {
         return [

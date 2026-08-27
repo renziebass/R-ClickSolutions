@@ -47,6 +47,237 @@ export function textarea({ name, label, value = '', rows = 4, required = false, 
   `);
 }
 
+// ---------------------------------------------------------------
+// Rich text
+// ---------------------------------------------------------------
+
+/**
+ * The brand palette the editor offers. These exact values are what
+ * HtmlSanitizer maps onto classes; anything else it strips, so the swatches
+ * here and the PHP constants have to stay in step.
+ */
+const RTE_TEXT_COLOURS = [
+  { hex: '#0F3D3E', className: 'rte-c-emerald', label: 'Emerald' },
+  { hex: '#A8862A', className: 'rte-c-gold', label: 'Gold' },
+  { hex: '#6A6A66', className: 'rte-c-soft', label: 'Muted' },
+];
+
+const RTE_HIGHLIGHTS = [
+  { hex: '#E7CE7E', className: 'rte-h-gold', label: 'Gold' },
+  { hex: '#CFE6DD', className: 'rte-h-mint', label: 'Mint' },
+];
+
+const RTE_URL_OK = /^(https?:|mailto:|tel:|\/|#)/i;
+
+/**
+ * A formatting toolbar over a contenteditable surface, for long-form copy.
+ *
+ * Uses document.execCommand. It is deprecated and nothing has replaced it —
+ * the alternatives are a bundled library, and this project has no build step,
+ * no npm and no dependencies by design. Every browser still implements it.
+ *
+ * The editable div carries NO `name`, because formValues() (ui/dom.js)
+ * serialises by [name] and would read `.value` off a div and get undefined.
+ * Pages collect it with readRichText() in their `transform` hook, the same way
+ * repeater() is collected.
+ *
+ * Nothing here is a security control. The markup this produces is rewritten
+ * from an allowlist by HtmlSanitizer on the server; the client cannot be
+ * trusted to sanitise itself.
+ */
+export function richText({
+  name, label, value = '', required = false, hint = '', span = 12,
+  minHeight = '14rem', placeholder = '',
+}) {
+  const node = el(`
+    <div class="field col-${span}" data-field="${esc(name)}">
+      <label for="f-${esc(name)}">${esc(label)}${required ? '<span class="field__req">*</span>' : ''}</label>
+      <div class="rte-wrap">
+        <div class="rte-toolbar" role="toolbar" aria-label="${esc(label)} formatting"></div>
+        <div class="rte" id="f-${esc(name)}" data-rte="${esc(name)}"
+             contenteditable="true" role="textbox" aria-multiline="true"
+             data-placeholder="${esc(placeholder)}"
+             style="min-height:${esc(minHeight)}"></div>
+      </div>
+      ${hint ? `<small class="field__hint">${esc(hint)}</small>` : ''}
+    </div>
+  `);
+
+  const surface = node.querySelector('.rte');
+  const toolbar = node.querySelector('.rte-toolbar');
+
+  // Stored HTML is already sanitised — it could not have reached the database
+  // otherwise — and this is the admin, not the public page.
+  surface.innerHTML = value || '';
+
+  // Without this, execCommand emits <font color> instead of a style, and the
+  // sanitiser has no colour to map onto a class.
+  try { document.execCommand('styleWithCSS', false, true); } catch (e) { /* older engines */ }
+
+  const run = (command, argument = null) => {
+    surface.focus();
+    try {
+      document.execCommand(command, false, argument);
+    } catch (e) { /* unsupported command — the button simply does nothing */ }
+  };
+
+  const button = (title, html, onClick) => {
+    const btn = el(
+      `<button type="button" class="rte-btn" title="${esc(title)}" aria-label="${esc(title)}">${html}</button>`
+    );
+    // mousedown, not click: the surface loses its selection the moment the
+    // button takes focus, and execCommand works on the selection.
+    btn.addEventListener('mousedown', (event) => {
+      event.preventDefault();
+      onClick();
+    });
+    return btn;
+  };
+
+  const divider = () => el('<span class="rte-sep" aria-hidden="true"></span>');
+
+  toolbar.appendChild(button('Bold', '<b>B</b>', () => run('bold')));
+  toolbar.appendChild(button('Italic', '<i>I</i>', () => run('italic')));
+  toolbar.appendChild(button('Underline', '<u>U</u>', () => run('underline')));
+  toolbar.appendChild(divider());
+
+  toolbar.appendChild(swatches('Text colour', 'A', RTE_TEXT_COLOURS, (hex) => run('foreColor', hex)));
+  toolbar.appendChild(swatches('Highlight', '<span class="rte-hl">A</span>', RTE_HIGHLIGHTS, (hex) => {
+    // hiliteColor is the standard name; backColor is what old WebKit answers to.
+    surface.focus();
+    try {
+      if (!document.execCommand('hiliteColor', false, hex)) {
+        document.execCommand('backColor', false, hex);
+      }
+    } catch (e) { /* neither supported */ }
+  }));
+  toolbar.appendChild(divider());
+
+  toolbar.appendChild(button('Link', '🔗', () => {
+    const url = (window.prompt('Link address', 'https://') || '').trim();
+    if (!url) return;
+    // Checked here as well as on the server, so a mistyped link says so now
+    // rather than vanishing silently on save.
+    if (!RTE_URL_OK.test(url)) {
+      notifyInvalidUrl(node);
+      return;
+    }
+    run('createLink', url);
+  }));
+  toolbar.appendChild(button('Remove link', '⛓', () => run('unlink')));
+  toolbar.appendChild(divider());
+
+  toolbar.appendChild(button('Bulleted list', '•≡', () => run('insertUnorderedList')));
+  toolbar.appendChild(button('Numbered list', '1≡', () => run('insertOrderedList')));
+  toolbar.appendChild(divider());
+
+  toolbar.appendChild(button('Left to right', '⇥', () => setDirection(surface, 'ltr')));
+  toolbar.appendChild(button('Right to left', '⇤', () => setDirection(surface, 'rtl')));
+
+  return node;
+}
+
+/** A button that opens a small row of fixed colour swatches. */
+function swatches(title, faceHtml, palette, apply) {
+  const wrap = el(`
+    <span class="rte-swatch">
+      <button type="button" class="rte-btn" title="${esc(title)}" aria-label="${esc(title)}"
+        aria-expanded="false">${faceHtml}</button>
+      <span class="rte-swatch__menu" hidden></span>
+    </span>
+  `);
+
+  const trigger = wrap.querySelector('button');
+  const menu = wrap.querySelector('.rte-swatch__menu');
+
+  palette.forEach((colour) => {
+    const dot = el(
+      `<button type="button" class="rte-dot" title="${esc(colour.label)}"
+        aria-label="${esc(colour.label)}" style="background:${esc(colour.hex)}"></button>`
+    );
+    dot.addEventListener('mousedown', (event) => {
+      event.preventDefault();
+      apply(colour.hex);
+      menu.hidden = true;
+      trigger.setAttribute('aria-expanded', 'false');
+    });
+    menu.appendChild(dot);
+  });
+
+  const clear = el('<button type="button" class="rte-dot rte-dot--none" title="None">✕</button>');
+  clear.addEventListener('mousedown', (event) => {
+    event.preventDefault();
+    // An off-palette colour is stripped by the sanitiser, so "none" is just a
+    // colour it will never keep.
+    apply('#000001');
+    menu.hidden = true;
+  });
+  menu.appendChild(clear);
+
+  trigger.addEventListener('mousedown', (event) => {
+    event.preventDefault();
+    menu.hidden = !menu.hidden;
+    trigger.setAttribute('aria-expanded', menu.hidden ? 'false' : 'true');
+  });
+
+  return wrap;
+}
+
+/**
+ * Sets the direction of the block the cursor is in.
+ *
+ * execCommand has no direction command that works across engines, so this
+ * walks up to the nearest block and sets `dir` — which is the one attribute
+ * the sanitiser keeps on a block element.
+ */
+function setDirection(surface, direction) {
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0) {
+    surface.setAttribute('dir', direction);
+    return;
+  }
+
+  let node = selection.getRangeAt(0).startContainer;
+  if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+
+  const blocks = ['P', 'H2', 'H3', 'LI', 'UL', 'OL'];
+
+  while (node && node !== surface && !blocks.includes(node.nodeName)) {
+    node = node.parentNode;
+  }
+
+  // Nothing typed yet, or bare text: the surface itself is the only block.
+  (node && node !== surface ? node : surface).setAttribute('dir', direction);
+}
+
+function notifyInvalidUrl(fieldNode) {
+  const existing = fieldNode.querySelector('.field__error');
+  if (existing) existing.remove();
+  fieldNode.classList.add('has-error');
+  fieldNode.appendChild(el(
+    '<small class="field__error">Links must start with https://, mailto: or tel:.</small>'
+  ));
+}
+
+/**
+ * Reads one editor's HTML out of a form. Returns null when the editor is not
+ * on the page, so the caller can leave the key off the payload entirely.
+ */
+export function readRichText(form, name) {
+  const surface = form.querySelector(`[data-rte="${CSS.escape(name)}"]`);
+  if (!surface) return null;
+
+  const html = surface.innerHTML.trim();
+
+  // What an empty contenteditable leaves behind. Empty should mean empty, or
+  // every "cleared" field stores a paragraph of nothing.
+  if (html === '' || html === '<br>' || html === '<p><br></p>' || html === '<div><br></div>') {
+    return '';
+  }
+
+  return html;
+}
+
 export function select({
   name, label, value = '', options = [], required = false,
   hint = '', span = 6, placeholder = 'Select…',

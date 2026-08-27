@@ -51,6 +51,12 @@ final class PromotionController extends ResourceController
         ];
     }
 
+    /** The long promotion copy. */
+    protected function richTextFields(): array
+    {
+        return ['description'];
+    }
+
     protected function fieldLabels(): array
     {
         return [

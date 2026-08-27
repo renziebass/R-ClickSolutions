@@ -5,6 +5,7 @@ namespace Mariah\Repositories;
 
 use Mariah\Core\Database;
 use Mariah\Core\Request;
+use Mariah\Services\HtmlSanitizer;
 use Mariah\Services\ScheduleResolver;
 
 final class BlogPostRepository extends BaseRepository
@@ -141,7 +142,11 @@ final class BlogPostRepository extends BaseRepository
      */
     public static function estimateReadMinutes(?string $content): ?int
     {
-        if ($content === null || trim($content) === '') {
+        // The body is rich text, so the markup has to come off first: "<strong>"
+        // is not a word, and counting tags would inflate every estimate.
+        $content = HtmlSanitizer::toText($content);
+
+        if (trim($content) === '') {
             return null;
         }
 
@@ -150,10 +155,17 @@ final class BlogPostRepository extends BaseRepository
         return max(1, (int) ceil(count($words) / 200));
     }
 
-    /** First paragraph of a post, trimmed to a card-sized teaser. */
+    /**
+     * First paragraph of a post, trimmed to a card-sized teaser.
+     *
+     * Always plain text: the excerpt is printed on cards and in the SEO
+     * description, neither of which renders markup.
+     */
     public static function deriveExcerpt(?string $content, int $limit = 220): ?string
     {
-        if ($content === null || trim($content) === '') {
+        $content = HtmlSanitizer::toText($content);
+
+        if (trim($content) === '') {
             return null;
         }
 
